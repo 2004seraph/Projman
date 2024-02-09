@@ -222,6 +222,8 @@ GEM
     nio4r (2.7.0)
     nokogiri (1.16.0-arm64-darwin)
       racc (~> 1.4)
+    nokogiri (1.16.0-x86_64-darwin)
+      racc (~> 1.4)
     orm_adapter (0.5.0)
     package_json (0.1.0)
     pg (1.5.4)
@@ -348,6 +350,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-22
+  x86_64-darwin-23
 
 DEPENDENCIES
   activerecord-session_store
@@ -379,7 +382,7 @@ DEPENDENCIES
   letter_opener
   pg (~> 1.1)
   puma (~> 6.0)
-  rails (~> 7.0.8, < 7.1)
+  rails (>= 7.0.8, < 7.1)
   rspec-rails
   sanitize_email
   selenium-webdriver
