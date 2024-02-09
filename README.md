@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # README
 
 This README would normally document whatever steps are necessary to get the
@@ -23,8 +22,4 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
-=======
-# Software Hut - Team 5
 
-Project E, Solution repo.
->>>>>>> 81937eb (Created README)
