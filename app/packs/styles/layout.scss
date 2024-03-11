@@ -8,12 +8,39 @@ body {
   flex-direction: column;
   background-color: var(--primary-colour);
 
+  header{
+    background-color: var(--nav-colour);
+  }
+
   main{
     display:flex;
   }
 
   footer {
     margin-top: auto;
+  }
+}
+
+.top-navbar{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .navbar-nav{
+    flex-direction: row;
+    font-size: 1.5rem;
+    align-items: center;
+    color: white;
+
+    .nav-item{
+      padding-left: 0.25rem;
+      padding-right: 0.25rem;
+
+      a{
+        color: white;
+      }
+    }
   }
 }
 

@@ -19,26 +19,9 @@
     = javascript_pack_tag 'application'
 
   %body
-    %header.navbar.navbar-expand-lg.bg-light.mb-3
+    %header.navbar.navbar-expand-lg
       .container-fluid
-        = link_to '#', class: 'navbar-brand' do
-          = image_pack_tag 'images/logo.png', height: 40
-        %button.navbar-toggler{ type: :button, data: { bs_toggle: :collapse, bs_target: '#navbar-content' }, aria: { controls: 'navbar-content', expanded: 'false', label: 'Toggle navigation' } }
-          %span.navbar-toggler-icon
-        #navbar-content.navbar-collapse.collapse
-          %nav.navbar-nav
-            = link_to '/', class: 'active nav-link' do
-              %i.bi-house-fill
-              Home
-            = link_to '/projects', class: 'active nav-link' do
-              %i.bi-kanban
-              Projects
-            = link_to '/students', class: 'active nav-link' do
-              %i.bi-people-fill
-              Students
-            = link_to '/issues', class: 'active nav-link' do
-              %i.bi-exclamation-circle-fill
-              Issues
+        = render 'layouts/top-navbar'
 
     - if flash.present?
       .container-fluid.flash-messages
