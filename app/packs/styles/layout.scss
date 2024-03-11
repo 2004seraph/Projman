@@ -14,6 +14,7 @@ body {
 
   main{
     display:flex;
+    flex-direction: column;
   }
 
   footer {
@@ -26,12 +27,12 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: white;
+  font-size: 1.5rem;
 
   .navbar-nav{
     flex-direction: row;
-    font-size: 1.5rem;
     align-items: center;
-    color: white;
 
     .nav-item{
       padding-left: 0.25rem;
@@ -47,11 +48,13 @@ body {
 .left-navbar {
   background-color: var(--nav-colour);
   margin:0;
-  max-width: fit-content;
-  width:fit-content;
+  width:100%;
 
   .nav-item{
-    margin: 5px 0;
+    margin: 5px 5px;
+  }
+  .navbar-nav{
+    flex-direction: row;
   }
 
   .nav-link{
