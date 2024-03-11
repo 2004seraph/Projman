@@ -30,6 +30,15 @@
             = link_to '/', class: 'active nav-link' do
               %i.bi-house-fill
               Home
+            = link_to '/projects', class: 'active nav-link' do
+              %i.bi-kanban
+              Projects
+            = link_to '/students', class: 'active nav-link' do
+              %i.bi-people-fill
+              Students
+            = link_to '/issues', class: 'active nav-link' do
+              %i.bi-exclamation-circle-fill
+              Issues
 
     - if flash.present?
       .container-fluid.flash-messages
@@ -38,6 +47,8 @@
           .alert{ class: "alert-#{ message_type == 'notice' ? 'success' : 'danger' }" }= message
 
     %main
+      = render 'layouts/navbar'
+
       .container-fluid
         = yield
 
