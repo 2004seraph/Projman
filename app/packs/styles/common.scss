@@ -1,0 +1,88 @@
+// FILE FOR COMMON SCSS ELEMENT THAT WILL BE USED AROUND THE PROJECT
+
+.flex-end{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.common-button{
+    text-decoration: none;
+    color: inherit;
+    font-size: calc(0.6rem + 0.9vw);
+    display: flex;
+
+    border: 2px solid #000;
+    border-radius: calc(0.3rem + 0.45vw);
+    transition-duration: 0.1s;
+    padding: 0.2rem 1rem 0.2rem 0.5rem;
+
+    .bi{
+        padding-right: calc(0.2rem + 0.2vw);
+    }
+}
+.common-button:hover{
+    border-color:var(--sheffield-purple);
+    background-color: var(--sheffield-purple);
+    color: var(--primary-colour);
+}
+
+
+.separating-section{
+    h2{
+        margin-bottom:1rem;
+        font-size: calc(1.325rem + 0.9vw);
+        display: flex;
+        align-items: center;
+
+        .bi{
+            padding-right: calc(0.8rem + 0.1vw);
+            font-size: calc((1.325rem + 0.9vw)* 0.6);
+        }
+
+        .bi::before{
+            font-size: calc((1.325rem + 0.9vw)* 0.6);
+            vertical-align: middle;
+        }
+    }
+
+    .bi.fill-green{
+        color:var(--green);
+    }
+    .bi.fill-yellow{
+        color:var(--yellow);
+    }
+    .bi.fill-red{
+        color:var(--red);
+    }
+
+    padding-bottom:2rem;
+}
+
+.project-link{
+    text-decoration: none;
+    color: inherit;
+}
+
+.project-button{
+    width:100%;
+    background-color: var(--secondary-colour);
+    transition-duration: 0.1s;
+    margin: 1.4vh 0;
+    padding: 2rem 1rem;
+    border-radius: 1rem;
+
+    h3{
+        font-weight:400;
+        margin:0;
+        font-size: calc(1.1rem + 0.3vw);
+        display:flex;
+        justify-content: space-between;
+    }
+
+    .sub-status{
+        font-size: calc(0.9rem + 0.3vw);
+    }
+}
+.project-button:hover{
+    background-color: var(--secondary-colour-hover);
+}

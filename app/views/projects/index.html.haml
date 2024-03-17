@@ -1,1 +1,50 @@
-Your Projects
+
+-# Load all Projects that are tied to the user
+-# Have a different display of the projects depending on role:
+-#  Students see their projects and any alert markers
+-#  Module Leaders see projects divided by their status
+
+.flex-end
+    = link_to '/projects', class: 'common-button' do
+        %i.bi.bi-plus
+        Create New
+
+.separating-section 
+    %h2
+        %i.bi.bi-circle-fill.fill-green
+        Live
+
+    = render partial:'project-button'  
+    = render partial:'project-button' 
+
+.separating-section 
+    %h2
+        %i.bi.bi-circle-fill.fill-yellow
+        Reviewing Teams / Project Allocation
+
+    = render partial:'project-button'  
+    = render partial:'project-button' 
+
+.separating-section 
+    %h2
+        %i.bi.bi-circle-fill.fill-red
+        Awaiting Teams / Project Preference Form
+
+    = render partial:'project-button'  
+    = render partial:'project-button' 
+
+.separating-section 
+    %h2
+        %i.bi.bi-pencil-fill
+        Drafting
+
+    = render partial:'project-button'  
+    = render partial:'project-button' 
+
+.separating-section 
+    %h2
+        %i.bi.bi-archive-fill
+        Archived
+
+    = render partial:'project-button'  
+    = render partial:'project-button'

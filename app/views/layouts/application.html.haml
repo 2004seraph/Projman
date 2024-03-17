@@ -20,8 +20,9 @@
 
   %body
     %header.navbar.navbar-expand-lg
-      .container-fluid
+      .container-fluid.navbars-container
         = render 'layouts/top-navbar'
+        = render 'layouts/feature-navbar'
 
     - if flash.present?
       .container-fluid.flash-messages
@@ -30,12 +31,10 @@
           .alert{ class: "alert-#{ message_type == 'notice' ? 'success' : 'danger' }" }= message
 
     %main
-      = render 'layouts/feature-navbar'
-
-      .container-fluid
+      .content-container
         = yield
-
-    %footer
-      .container-fluid
-        .d-flex.p-3
-          Footer text
+      
+      %footer
+        .container-fluid
+          .d-flex.p-3
+            Footer text
