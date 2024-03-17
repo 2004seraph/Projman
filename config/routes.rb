@@ -7,4 +7,6 @@ Rails.application.routes.draw do
   get '/projects', to: 'projects#index'
   get '/students', to: 'students#index'
   get '/issues', to: 'issues#index'
+  get '/profile', to: 'profile#index'
+  get '/settings', to: 'settings#index'
 end
