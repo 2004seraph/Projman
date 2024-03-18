@@ -1,0 +1,23 @@
+%h1= "Facilitator Home"
+
+.card#teams
+    .card-header 
+        %strong Teams
+        
+    .card-body
+        - @my_teams.each do |team|
+            %div.navigation-list-item
+                = link_to "/facilitators/team/" + team do
+                    %div= "Team " + team 
+
+%br
+
+.card#mymarking
+    .card-header 
+        %strong My Marking 
+
+    .card-body
+        - @my_marking_modules.each do |m|
+            %div.navigation-list-item
+                = link_to "/facilitators/marking/" + m do
+                    %div= m

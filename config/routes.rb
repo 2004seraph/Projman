@@ -9,4 +9,8 @@ Rails.application.routes.draw do
   get '/issues', to: 'issues#index'
   get '/profile', to: 'profile#index'
   get '/settings', to: 'settings#index'
+
+  get '/facilitators', to: 'facilitators#index'
+  get '/facilitators/marking/:module', to: 'facilitators#marking'
+  get '/facilitators/team/:id', to: 'facilitators#team'
 end
