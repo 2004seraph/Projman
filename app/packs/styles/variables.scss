@@ -20,3 +20,13 @@
 
     // SIZING
 }
+
+$primary: #440099; // set the $primary variable
+
+// merge with existing $theme-colors map
+$theme-colors: map-merge($theme-colors, (
+  "primary": $primary
+));
+
+// set changes
+@import "bootstrap";

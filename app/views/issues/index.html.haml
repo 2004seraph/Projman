@@ -1,1 +1,31 @@
-Issues 
+
+.d-inline-flex.pb-2
+  %i.bi.bi-funnel-fill
+  Filter By: 
+.dropdown
+  %button.btn.btn-primary{ type: "button", id: "dropdownMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
+    Projects:
+    %span.current-selection
+    %i.bi.bi-caret-down-fill
+  .dropdown-menu{ "aria-labelledby": "dropdownMenuButton" }
+    %a.dropdown-item{ href: "#", onclick: "updateSelection('All')" } All
+    %a.dropdown-item{ href: "#", onclick: "updateSelection('Live')" } Live
+    %a.dropdown-item{ href: "#", onclick: "updateSelection('In Review')" } In Review
+    %a.dropdown-item{ href: "#", onclick: "updateSelection('Awaiting Preference')" } Awaiting Preference
+    %hr.dropdown-divider
+    %a.dropdown-item{ href: "#", onclick: "updateSelection('Project 1')" } Project 1
+    %a.dropdown-item{ href: "#", onclick: "updateSelection('Project 2')" } Project 2
+
+:javascript
+  document.addEventListener("DOMContentLoaded", function() {
+    updateSelection('All'); // Set initial selection to the first option
+  });
+
+  function updateSelection(selection) {
+    var currentSelection = document.getElementById("dropdownMenuButton").querySelector(".current-selection");
+    if (currentSelection) {
+      currentSelection.innerText = selection;
+    }
+  }
+
+%hr.divider
