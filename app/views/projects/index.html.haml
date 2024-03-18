@@ -5,8 +5,8 @@
 -#  Module Leaders see projects divided by their status
 
 .flex-end
-    = link_to '/projects', class: 'common-button' do
-        %i.bi.bi-plus
+    = link_to '/projects', class: 'btn btn-primary' do
+        %i.bi.bi-plus-square-fill
         Create New
 
 .separating-section 
@@ -16,6 +16,7 @@
 
     = render partial:'project-button'  
     = render partial:'project-button' 
+    %hr.divider
 
 .separating-section 
     %h2
@@ -24,6 +25,7 @@
 
     = render partial:'project-button'  
     = render partial:'project-button' 
+    %hr.divider
 
 .separating-section 
     %h2
@@ -32,6 +34,7 @@
 
     = render partial:'project-button'  
     = render partial:'project-button' 
+    %hr.divider
 
 .separating-section 
     %h2
@@ -39,7 +42,8 @@
         Drafting
 
     = render partial:'project-button'  
-    = render partial:'project-button' 
+    = render partial:'project-button'
+    %hr.divider
 
 .separating-section 
     %h2

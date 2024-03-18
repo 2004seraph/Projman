@@ -29,3 +29,21 @@
   }
 
 %hr.divider
+
+.separating-section 
+  %h2
+    %i.bi.bi-chat-left-dots-fill.fill-yellow
+    Open
+
+  = render partial:'issue-box'  
+  = render partial:'issue-box' 
+  %hr.divider
+
+.separating-section 
+  %h2
+    %i.bi.bi-check-circle-fill.fill-green
+    Resolved
+
+  = render partial:'issue-box'  
+  = render partial:'issue-box' 
+  %hr.divider

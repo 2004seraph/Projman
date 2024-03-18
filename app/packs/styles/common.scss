@@ -26,6 +26,15 @@
     color: var(--primary-colour);
 }
 
+.fill-green{
+    color:var(--green);
+}
+.fill-yellow{
+    color:var(--yellow);
+}
+.fill-red{
+    color:var(--red);
+}
 
 .separating-section{
     h2{
@@ -44,23 +53,45 @@
             vertical-align: middle;
         }
     }
-
-    .bi.fill-green{
-        color:var(--green);
-    }
-    .bi.fill-yellow{
-        color:var(--yellow);
-    }
-    .bi.fill-red{
-        color:var(--red);
-    }
-
     padding-bottom:2rem;
 }
 
 .project-link{
     text-decoration: none;
     color: inherit;
+}
+
+.issue-card{
+    margin: 1.4vh 0;
+
+    .card-header{
+        text-decoration: none;
+        .issue-date{
+            font-size: calc(0.6rem + 0.6vw);
+            font-weight: 300;
+        }
+        h3{
+            font-weight: 400;
+            font-size: calc(1rem + 0.6vw);
+        }
+        .bi{
+            transition-duration: 0.2s;
+        }
+    }
+    .issue-text, textarea{
+        font-size: calc(0.8em + 0.2vw);
+    }
+
+}
+
+.card-header{
+    &[aria-expanded="false"] .bi {
+        transform: rotate(0deg);
+    }
+      
+    &[aria-expanded="true"] .bi {
+        transform: rotate(90deg);
+    }
 }
 
 .project-button{
