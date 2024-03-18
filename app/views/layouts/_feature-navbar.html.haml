@@ -1,5 +1,8 @@
+-# The nav bar that contains the main features a user can access
+-# Will get populated with more buttons depending on role and route
+
 %nav.feature-navbar
-  %ul.navbar-nav
+  %ul.navbar-nav 
     %li.nav-item
       = link_to '/projects', class: 'active nav-link' do
         Projects 
@@ -9,3 +12,4 @@
     %li.nav-item
       = link_to '/issues', class: 'active nav-link' do
         Issues
+  .vertical-divider
