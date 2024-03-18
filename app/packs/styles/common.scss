@@ -25,6 +25,9 @@
     background-color: var(--sheffield-purple);
     color: var(--primary-colour);
 }
+.common-button.smaller{
+    font-size: calc(0.3rem + 0.6vw);
+}
 
 .fill-green{
     color:var(--green);

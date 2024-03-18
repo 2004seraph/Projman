@@ -26,7 +26,7 @@ class CreateProject < ActiveRecord::Migration[7.0]
       ]
 
     create_table :projects do |t|
-      t.references :module, null: false, foreign_key: { to_table: :modules }
+      t.references :course_module, null: false, foreign_key: { to_table: :course_modules }
 
       t.string :name, null: false
       t.column :status, :project_status, null: false
