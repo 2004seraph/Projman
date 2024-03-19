@@ -1,0 +1,83 @@
+.card.student-list-card
+  .card-header.d-flex.justify-content-end
+    %button.btn.btn-dark.me-2
+      %i.bi.bi-trash-fill
+      Remove
+    %button.btn.btn-primary
+      %i.bi.bi-plus
+      Add
+  .card-body.pt-1.pb-1
+    %table.table
+      %thead
+        %tr
+          %th{scope: "col"} 
+          %th{scope: "col"} Name
+          %th{scope: "col"} Email
+          %th{scope: "col"} Registration Number
+        %tbody
+          %tr
+            %td
+              %input.form-check-input{type: "checkbox", value: ""}
+            %td Jakub Bala
+            %td jbala1@sheffield.ac.uk
+            %td 11294124
+          %tr
+            %td
+              %input.form-check-input{type: "checkbox", value: ""}
+            %td Sam Taseff
+            %td sgttaseff@sheffield.ac.uk
+            %td 72384012
+          %tr
+            %td
+              %input.form-check-input{type: "checkbox", value: ""}
+            %td Adam Willis
+            %td awillis@sheffield.ac.uk
+            %td 327509327
+          %tr
+            %td
+              %input.form-check-input{type: "checkbox", value: ""}
+            %td Jack Edwards
+            %td jedwards@sheffield.ac.uk
+            %td 192709121
+          %tr
+            %td
+              %input.form-check-input{type: "checkbox", value: ""}
+            %td Jack Edwards
+            %td jedwards@sheffield.ac.uk
+            %td 192709121
+          %tr
+            %td
+              %input.form-check-input{type: "checkbox", value: ""}
+            %td Jack Edwards
+            %td jedwards@sheffield.ac.uk
+            %td 192709121
+
+-# This is so that when you click on the row, the checkbox is toggled
+:javascript
+  document.querySelectorAll('.table tbody tr').forEach(function(row) {
+    row.addEventListener('click', function() {
+      var checkbox = row.querySelector('.form-check-input');
+      checkbox.checked = !checkbox.checked; // Toggle checkbox state
+    });
+  });
+
+-# This is to ensure that you cant expand the card more than the content of the table
+:javascript
+  var container = document.querySelector('.card-body');
+  var content = container.querySelector('.table');
+
+  var resizeObserver = new ResizeObserver(function(event) {
+    var maxHeight = window.getComputedStyle(content).height.replace('px', '');
+    var containerHeight = event[0].contentRect.height;
+  
+    resizeObserver.disconnect();
+  
+    if (containerHeight > maxHeight) {
+      container.style.height = maxHeight + 'px';
+    }
+  
+    requestAnimationFrame(function() { resizeObserver.observe(container); });
+  });
+  
+  resizeObserver.observe(container);
+    

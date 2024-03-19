@@ -120,3 +120,12 @@
 .project-button:hover{
     background-color: var(--secondary-colour-hover);
 }
+
+.card.student-list-card{
+    .card-body{
+        resize: vertical;
+        height: 200px;
+        max-height: fit-content;
+        overflow-y: scroll;
+    }
+}
