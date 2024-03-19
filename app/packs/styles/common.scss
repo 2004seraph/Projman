@@ -42,7 +42,7 @@
 .separating-section{
     h2{
         margin-bottom:1rem;
-        font-size: calc(1.325rem + 0.9vw);
+        font-size: var(--seperating-section-h2-font-size);
         display: flex;
         align-items: center;
 

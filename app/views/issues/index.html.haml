@@ -2,19 +2,29 @@
 .d-inline-flex.pb-2
   %i.bi.bi-funnel-fill
   Filter By: 
-.dropdown
-  %button.btn.btn-primary{ type: "button", id: "dropdownMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
-    Projects:
-    %span.current-selection
-    %i.bi.bi-caret-down-fill
-  .dropdown-menu{ "aria-labelledby": "dropdownMenuButton" }
-    %a.dropdown-item{ href: "#", onclick: "updateSelection('All')" } All
-    %a.dropdown-item{ href: "#", onclick: "updateSelection('Live')" } Live
-    %a.dropdown-item{ href: "#", onclick: "updateSelection('In Review')" } In Review
-    %a.dropdown-item{ href: "#", onclick: "updateSelection('Awaiting Preference')" } Awaiting Preference
-    %hr.dropdown-divider
-    %a.dropdown-item{ href: "#", onclick: "updateSelection('Project 1')" } Project 1
-    %a.dropdown-item{ href: "#", onclick: "updateSelection('Project 2')" } Project 2
+.d-flex.align-items-center
+  .dropdown.me-3
+    %button.btn.btn-primary{ type: "button", id: "dropdownMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
+      Projects:
+      %span.current-selection
+      %i.bi.bi-caret-down-fill
+    .dropdown-menu{ "aria-labelledby": "dropdownMenuButton" }
+      %a.dropdown-item{ href: "#", onclick: "updateSelection('All')" } All
+      %a.dropdown-item{ href: "#", onclick: "updateSelection('Live')" } Live
+      %a.dropdown-item{ href: "#", onclick: "updateSelection('In Review')" } In Review
+      %a.dropdown-item{ href: "#", onclick: "updateSelection('Awaiting Preference')" } Awaiting Preference
+      %hr.dropdown-divider
+      %a.dropdown-item{ href: "#", onclick: "updateSelection('Project 1')" } Project 1
+      %a.dropdown-item{ href: "#", onclick: "updateSelection('Project 2')" } Project 2
+
+  .form-check.form-switch.form-check-reverse.me-3
+    %input.form-check-input{ type: "checkbox", role: "switch", id: "flexSwitchCheckOpen", checked:true}
+    %label.form-check-label{ for: "flexSwitchCheckOpen" }
+      Show Open
+  .form-check.form-switch.form-check-reverse.me-3
+    %input.form-check-input{ type: "checkbox", role: "switch", id: "flexSwitchCheckResolved", checked:true}
+    %label.form-check-label{ for: "flexSwitchCheckResolved" }
+      Show Resolved
 
 :javascript
   document.addEventListener("DOMContentLoaded", function() {
