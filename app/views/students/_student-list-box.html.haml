@@ -8,7 +8,8 @@
        "data-bs-target": "#removeStudentsModal", onclick: "prepareRemoveStudents(this)"}
         %i.bi.bi-trash-fill
         Remove
-      %button.btn.btn-primary
+      %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal",
+       "data-bs-target": "#addStudentsModal"}
         %i.bi.bi-plus
         Add
   .card-body.pt-1.pb-1
