@@ -1,5 +1,9 @@
 // FILE FOR COMMON SCSS ELEMENT THAT WILL BE USED AROUND THE PROJECT
 
+.display-none{
+    display: none;
+}
+
 .flex-end{
     display: flex;
     justify-content: flex-end;
@@ -127,5 +131,11 @@
         height: 200px;
         max-height: fit-content;
         overflow-y: scroll;
+    }
+    .card-header{
+        align-items: center;
+        .btn-sm{
+            height: fit-content;
+        }
     }
 }

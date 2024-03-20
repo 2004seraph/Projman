@@ -1,3 +1,110 @@
-.separating-selection
-    %h2 COM2420 Software Hut
-    = render partial:'student-list-box'  
+:javascript
+  // Function to expand the section to maxHeight
+  function expandSection(button) {
+    var section = button.closest('.student-list-card');
+    var container = section.querySelector('.card-body');
+    var content = container.querySelector('.table');
+    var maxHeight = window.getComputedStyle(content).height.replace('px', '');
+    var maxHeight = window.getComputedStyle(content).height;
+
+    container.style.height = maxHeight;
+  }
+
+  // Function to shrink the height of the section to 200 pixels
+  function shrinkSection(button) {
+    var section = button.closest('.student-list-card');
+    var container = section.querySelector('.card-body');
+    container.style.height = '200px';
+  }
+
+  // Function that will take all selected students of a module when the remove button is pressed,
+  // and place them on the content of the removal modal
+  function prepareRemoveStudents(button) {
+    var section = button.closest('.student-list-card');
+    var selectedCheckboxes = section.querySelectorAll('.form-check-input:checked'); // Get all checked checkboxes
+
+    var modal = document.querySelector('#removeStudentsModal');
+    var modalBody = modal.querySelector('.modal-body');
+    var modalFooter = document.querySelector('.modal-footer');
+
+    selectedStudentCount = selectedCheckboxes.length
+
+    var cancelButton = modalFooter.querySelector('.btn:nth-child(1)');
+    var removeButton = modalFooter.querySelector('.btn:nth-child(2)');
+
+    if (selectedStudentCount === 0) {
+      modalBody.textContent = "Please select students to remove.";
+
+      // Hide "REMOVE" button, make "CANCEL" primary 
+      removeButton.classList.add("display-none")
+      cancelButton.classList.remove("btn-secondary")
+      cancelButton.classList.add("btn-primary")
+      cancelButton.textContent = "OK"
+
+    } else {
+      modalBody.textContent = "Remove the following students?";
+
+      //Show both buttons normally
+      cancelButton.classList.remove("btn-primary")
+      cancelButton.classList.add("btn-secondary")
+      cancelButton.textContent = "Cancel"
+
+      removeButton.classList.remove("display-none")
+      removeButton.textContent = "Yes, remove them"
+
+    }
+  }
+
+
+.separating-section
+  %h2 COM2420 Software Hut
+  = render partial:'student-list-box'  
+.separating-section
+  %h2 COM2108 Functional Programming
+  = render partial:'student-list-box'  
+.separating-section
+  %h2 COM2108 Functional Programming
+  = render partial:'student-list-box'  
+
+.modal.fade#removeStudentsModal{tabindex: "-1", "aria-labelledby": "removeStudentsModal", "aria-hidden": "true"}
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      .modal-header
+        %h1.modal-title.fs-5#removeStudentsModal Remove Students from Module
+        %button.btn-close{"aria-label": "Close", "data-bs-dismiss": "modal", type: "button"}
+      .modal-body
+
+      .modal-footer
+        %button.btn.btn-secondary{"data-bs-dismiss": "modal", type: "button"} Cancel
+        %button.btn.btn-primary{type: "button"} Yes, remove them
+
+:javascript
+  // This is to allow a row to be clicked and have it check the selection box
+  document.querySelectorAll('.student-list-card .table tbody tr').forEach(function(row) {
+    row.addEventListener('click', function(event) {
+      if (event.target.tagName !== 'INPUT') { // Check if the clicked element is not an input
+        var checkbox = row.querySelector('.form-check-input');
+        checkbox.checked = !checkbox.checked; // Toggle checkbox state
+      }
+    });
+  });
+
+  // This is to ensure that you cant expand the card more than the content of the table
+  document.querySelectorAll('.student-list-card .card-body').forEach(function(container) {
+    var content = container.querySelector('.table');
+
+    var resizeObserver = new ResizeObserver(function(event) {
+      var maxHeight = window.getComputedStyle(content).height.replace('px', '');
+      var containerHeight = event[0].contentRect.height;
+
+      resizeObserver.disconnect();
+
+      if (containerHeight > maxHeight) {
+        container.style.height = maxHeight + 'px';
+      }
+
+      requestAnimationFrame(function() { resizeObserver.observe(container); });
+    });
+
+    resizeObserver.observe(container);
+  });

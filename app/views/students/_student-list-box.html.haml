@@ -1,11 +1,16 @@
-.card.student-list-card
-  .card-header.d-flex.justify-content-end
-    %button.btn.btn-dark.me-2
-      %i.bi.bi-trash-fill
-      Remove
-    %button.btn.btn-primary
-      %i.bi.bi-plus
-      Add
+- unique_id = "student-list-card-#{SecureRandom.hex(5)}"  # Generate a unique ID
+.card.student-list-card{id: unique_id}
+  .card-header.d-flex.justify-content-between
+    %button.btn.btn-light.btn-sm{onclick: "expandSection(this)"}
+      %i.bi.bi-arrows-angle-expand
+    .d-flex
+      %button.btn.btn-secondary.me-2{type: "button", "data-bs-toggle": "modal",
+       "data-bs-target": "#removeStudentsModal", onclick: "prepareRemoveStudents(this)"}
+        %i.bi.bi-trash-fill
+        Remove
+      %button.btn.btn-primary
+        %i.bi.bi-plus
+        Add
   .card-body.pt-1.pb-1
     %table.table
       %thead
@@ -51,33 +56,7 @@
             %td Jack Edwards
             %td jedwards@sheffield.ac.uk
             %td 192709121
-
--# This is so that when you click on the row, the checkbox is toggled
-:javascript
-  document.querySelectorAll('.table tbody tr').forEach(function(row) {
-    row.addEventListener('click', function() {
-      var checkbox = row.querySelector('.form-check-input');
-      checkbox.checked = !checkbox.checked; // Toggle checkbox state
-    });
-  });
-
--# This is to ensure that you cant expand the card more than the content of the table
-:javascript
-  var container = document.querySelector('.card-body');
-  var content = container.querySelector('.table');
-
-  var resizeObserver = new ResizeObserver(function(event) {
-    var maxHeight = window.getComputedStyle(content).height.replace('px', '');
-    var containerHeight = event[0].contentRect.height;
-  
-    resizeObserver.disconnect();
-  
-    if (containerHeight > maxHeight) {
-      container.style.height = maxHeight + 'px';
-    }
-  
-    requestAnimationFrame(function() { resizeObserver.observe(container); });
-  });
-  
-  resizeObserver.observe(container);
+  .d-flex.justify-content-end
+    %button.btn.btn-light.btn-sm.m-2{onclick: "shrinkSection(this)"}
+      %i.bi.bi-arrows-angle-contract
     
