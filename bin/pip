@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+APP_ROOT = File.expand_path("..", __dir__)
+Dir.chdir(APP_ROOT) do
+  pip = ENV["PATH"].split(File::PATH_SEPARATOR).
+    select { |dir| File.expand_path(dir) != __dir__ }.
+    product(["pip3", "pip"]).
+    map { |dir, file| File.expand_path(file, dir) }.
+    find { |file| File.executable?(file) }
+
+  if pip
+    exec pip, *ARGV
+  else
+    $stderr.puts "pip executable was not detected in the system."
+    exit 1
+  end
+end

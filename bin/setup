@@ -20,6 +20,9 @@ FileUtils.chdir APP_ROOT do
   # Install JavaScript dependencies
   system! "bin/yarn"
 
+  # Install Python dependencies
+  system! "bin/pip install -r vendor/dummy_data/requirements.txt"
+
   # puts "\n== Copying sample files =="
   unless File.exist?("config/database.yml")
     FileUtils.cp "config/database-sample.yml", "config/database.yml"
