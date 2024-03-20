@@ -29,6 +29,15 @@
 
     selectedStudentCount = selectedCheckboxes.length
 
+    var selectedStudentEmails = [];
+
+    // get all the email values for the associated 
+    selectedCheckboxes.forEach(function(checkbox) {
+      var row = checkbox.closest('tr');
+      var email = row.querySelectorAll('td')[2].textContent.trim();
+      selectedStudentEmails.push(email);
+    });
+
     var cancelButton = modalFooter.querySelector('.btn:nth-child(1)');
     var removeButton = modalFooter.querySelector('.btn:nth-child(2)');
 
@@ -42,7 +51,7 @@
       cancelButton.textContent = "OK"
 
     } else {
-      modalBody.textContent = "Remove the following students?";
+      modalBody.innerHTML = "Remove the following students?<br>" + selectedStudentEmails.join("<br>");
 
       //Show both buttons normally
       cancelButton.classList.remove("btn-primary")
@@ -55,6 +64,16 @@
     }
   }
 
+-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+-# NOTE TO SELF!!!!!!!!!!!!! 
+-# When you click on a table row, it will have an associated student, so can pass that to the controller then
+-# send THAT data back to the controller to delete said students
+-# This is to prevent the email being inspect-elemented and then when you go to delete it, it wont be a valid email
+-# EG IN CONTROLLER:
+-# @selected_students = [[], [], []],  where the number of sub-arrays is dependant on how many modules the page will display
+-# IN VIEW:
+-# When checkbox gets checked, you add the associated @student.email to the corresponding @selected_students index
+-# And do the the same but with removal for unchecking the box
 
 .separating-section
   %h2 COM2420 Software Hut
