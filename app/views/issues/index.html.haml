@@ -18,11 +18,13 @@
       %a.dropdown-item{ href: "#", onclick: "updateSelection('Project 2')" } Project 2
 
   .form-check.form-switch.form-check-reverse.me-3
-    %input.form-check-input{ type: "checkbox", role: "switch", id: "flexSwitchCheckOpen", checked:true}
+    %input.form-check-input{ type: "checkbox", role: "switch",
+     id: "flexSwitchCheckOpen", checked:true, onchange: "toggleSection('open-issues-section')"}
     %label.form-check-label{ for: "flexSwitchCheckOpen" }
       Show Open
   .form-check.form-switch.form-check-reverse.me-3
-    %input.form-check-input{ type: "checkbox", role: "switch", id: "flexSwitchCheckResolved", checked:true}
+    %input.form-check-input{ type: "checkbox", role: "switch",
+     id: "flexSwitchCheckResolved", checked:true, onchange: "toggleSection('resolved-issues-section')"}
     %label.form-check-label{ for: "flexSwitchCheckResolved" }
       Show Resolved
 
@@ -38,9 +40,18 @@
     }
   }
 
+  function toggleSection(sectionId) {
+    var section = document.getElementById(sectionId);
+    if (section.classList.contains('display-none')) {
+      section.classList.remove('display-none');
+    } else {
+      section.classList.add('display-none');
+    }
+  }
+
 %hr.divider
 
-.separating-section 
+.separating-section#open-issues-section
   %h2
     %i.bi.bi-chat-left-dots-fill.fill-yellow
     Open
@@ -49,7 +60,7 @@
   = render partial:'issue-box' 
   %hr.divider
 
-.separating-section 
+.separating-section#resolved-issues-section
   %h2
     %i.bi.bi-check-circle-fill.fill-green
     Resolved
