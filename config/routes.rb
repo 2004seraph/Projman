@@ -7,7 +7,9 @@ Rails.application.routes.draw do
   # get '/projects', to: 'projects#index'
   # get '/projects/new', to: 'projects#new'
 
-  resources :projects, only: [:index, :new]
+  resources :projects, only: [:index, :new] do
+    post 'new_project_add_project_choice', on: :collection
+  end
 
   get '/students', to: 'students#index'
   get '/issues', to: 'issues#index'

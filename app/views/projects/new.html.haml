@@ -1,32 +1,47 @@
 
+:javascript
+  function deleteGroupItem(button) {
+    // Get the parent list item of the button
+    var listItem = button.closest('.list-group-item');
+    
+    // Remove the parent list item
+    listItem.remove();
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    // Clearing Modal Input fields upon opening them
+    var modals = document.querySelectorAll('.modal');
+    modals.forEach(function(modal) {
+      modal.addEventListener('show.bs.modal', function () {
+        var inputFields = modal.querySelectorAll('input[type="text"]');
+        inputFields.forEach(function(inputField) {
+          inputField.value = ''; // Clear the input field
+        });
+      });
+    });
+  });
+
+-# MAIN CONTENT
 .mb-3
   .input-group
     %h2.input-group-text.fs-4.fw-bold.mb-0 Project Name
-    %input.form-control.fs-5.fw-semibold{type: "text", id:"project-name" placeholder:"Name"}
+    %input.form-control.fs-5.fw-semibold{type: "text", id:"project-name", placeholder:"Name"}
 
+-# PROJECT CHOICES
 .card#project-choices.mb-3
   .card-header.d-flex.align-items-center
     %input.form-check-input.p-2.me-2.mt-0#project-choices-enable{type: "checkbox", value: "", checked: "checked"}
     %h2.fs-4.m-0 Project Choices
 
   .card-body.pb-3
-    %ul.list-group.list-group-flush.mb-2
-      %li.list-group-item.d-flex.ps-1.align-items-center
-        %button.btn.btn-light.btn-sm.me-2
-          %i.bi.bi-x.text-secondary
-        Project Choice 1
+    %ul.list-group.list-group-flush.mb-2#project-choices-list
+      = render 'group-item-simple', item_text: 'Project Choice 1'
+      = render 'group-item-simple', item_text: 'Project Choice 2'
+      = render 'group-item-simple', item_text: 'Project Choice 3'      
 
-      %li.list-group-item.d-flex.ps-1.align-items-center
-        %button.btn.btn-light.btn-sm.me-2
-          %i.bi.bi-x.text-secondary
-        Project Choice 2
-
-      %li.list-group-item.d-flex.ps-1.align-items-center
-        %button.btn.btn-light.btn-sm.me-2
-          %i.bi.bi-x.text-secondary
-        Project Choice 3
-
-    %button.btn.btn-primary.mb-2{type: "button"}
+    %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal",
+       "data-bs-target": "#add-project-choice-modal"}
       %i.bi.bi-plus
       Add
     
@@ -39,6 +54,7 @@
           %option{value: "2"} Individual Preference Form 
           %option{value: "3"} Team Preference Form
   
+-# TEAM CONFIGURATION
 .card#team-configuration.mb-3
   .card-header
     %h2.fs-4.m-0 Team Configuration
@@ -59,6 +75,7 @@
           %option{selected: true, value: "1"} Random
           %option{value: "2"} Preference Form + Algorithm
 
+-# TEAM PREFERENCE FORM SETTINGS
 .card#team-preference-form-settings.mb-3
   .card-header
     %h2.fs-4.m-0 Team Preference Form Settings
@@ -78,6 +95,7 @@
         .input-group{style: "width:fit-content"}
           %input.form-control.form-control-sm{ type: "number", id: "avoided-teammates", min: "0"}
 
+-# DEADLINES AND MILESTONES
 .card#timings.mb-3
   .card-header
     %h2.fs-4.m-0 Timings
@@ -110,7 +128,7 @@
     %ul.list-group.list-group-flush.mb-2.overflow-hidden
       %li.list-group-item.ps-1.d-flex.align-items-center.row
         .col.d-flex.align-items-center
-          %button.btn.btn-light.btn-sm.me-2
+          %button.btn.btn-light.btn-sm.me-2.btn-delete
             %i.bi.bi-x.text-secondary
           Requirements Draft
         .col-8
@@ -119,7 +137,7 @@
 
       %li.list-group-item.ps-1.d-flex.align-items-center.row
         .col.d-flex.align-items-center
-          %button.btn.btn-light.btn-sm.me-2
+          %button.btn.btn-light.btn-sm.me-2.btn-delete
             %i.bi.bi-x.text-secondary
           Mockups Showcase
         .col-8
@@ -128,7 +146,7 @@
 
       %li.list-group-item.ps-1.d-flex.align-items-center.row
         .col.d-flex.align-items-center
-          %button.btn.btn-light.btn-sm.me-2
+          %button.btn.btn-light.btn-sm.me-2.btn-delete
             %i.bi.bi-x.text-secondary
           Final Pitch
         .col-8
@@ -139,6 +157,7 @@
       %i.bi.bi-plus
       Add
 
+-# PROJECT FACILITATORS
 .card#project-facilitators.mb-3
   .card-header.d-flex.align-items-center
     %h2.fs-4.m-0 Project Facilitators
@@ -146,17 +165,17 @@
   .card-body.pb-3
     %ul.list-group.list-group-flush.mb-2
       %li.list-group-item.d-flex.ps-1.align-items-center
-        %button.btn.btn-light.btn-sm.me-2
+        %button.btn.btn-light.btn-sm.me-2.btn-delete
           %i.bi.bi-x.text-secondary
         Islam Elgendy
 
       %li.list-group-item.d-flex.ps-1.align-items-center
-        %button.btn.btn-light.btn-sm.me-2
+        %button.btn.btn-light.btn-sm.me-2.btn-delete
           %i.bi.bi-x.text-secondary
         Emma Norling
 
       %li.list-group-item.d-flex.ps-1.align-items-center
-        %button.btn.btn-light.btn-sm.me-2
+        %button.btn.btn-light.btn-sm.me-2.btn-delete
           %i.bi.bi-x.text-secondary
         Sam Taseff
 
@@ -174,3 +193,21 @@
       Upload
       %input{type: "file", id: "mark-scheme", accept: ".csv", style: "display: none;"}
     
+-# MODALS
+
+-# ADD PROJECT CHOICE MODAL
+.modal.fade#add-project-choice-modal{tabindex: "-1", "aria-labelledby": "add-project-choice-modal", "aria-hidden": "true"}
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      .modal-header
+        %h1.modal-title.fs-5 New Project Choice
+        %button.btn-close{"aria-label": "Close", "data-bs-dismiss": "modal", type: "button"}
+
+      = form_with(url: new_project_add_project_choice_projects_path, method: :post, remote: true, id: "new-project-choice-form") do |form|
+        .modal-body
+          .form-group
+            %label.form-label{for: "new-project-choice-name"} Input project choice name
+            %input.form-control{type: "text", id: "new-project-choice-name", name: "project_choice_name", autocomplete: "off"}
+        .modal-footer
+          %button.btn.btn-secondary{"data-bs-dismiss": "modal", type: "button"} Cancel
+          %button.btn.btn-primary#confirm-project-choice-name{type: "submit", "data-bs-dismiss": "modal"} Confirm
