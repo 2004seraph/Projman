@@ -1,0 +1,11 @@
+
+-# Accepting local variables id and placeholder_text
+%span.input-group-text.datepicker-calender-icon-addon.p-2.pt-0.pb-0{style: "cursor: pointer"}
+  %i.bi.bi-calendar.text-secondary
+-# Check if id is present, then set the id attribute
+- if defined?(id) && id.present?
+  %input.form-control.form-control-sm.datepicker.datepicker-input{type: "text",
+   id: "#{id}", data: {provide: "datepicker", startDate: "-3d"}, placeholder: "#{defined?(placeholder_text) ? placeholder_text : ''}"}
+- else
+  %input.form-control.form-control-sm.datepicker.datepicker-input{type: "text",
+   data: {provide: "datepicker", startDate: "-3d"}, placeholder: "#{defined?(placeholder_text) ? placeholder_text : ''}"}

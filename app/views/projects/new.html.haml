@@ -2,14 +2,14 @@
 .mb-3
   .input-group
     %h2.input-group-text.fs-4.fw-bold.mb-0 Project Name
-    %input.form-control.fs-5.fw-semibold{type: "text", placeholder:"Name"}
+    %input.form-control.fs-5.fw-semibold{type: "text", id:"project-name" placeholder:"Name"}
 
 .card#project-choices.mb-3
   .card-header.d-flex.align-items-center
     %input.form-check-input.p-2.me-2.mt-0#project-choices-enable{type: "checkbox", value: "", checked: "checked"}
     %h2.fs-4.m-0 Project Choices
 
-  .card-body.pb-1
+  .card-body.pb-3
     %ul.list-group.list-group-flush.mb-2
       %li.list-group-item.d-flex.ps-1.align-items-center
         %button.btn.btn-light.btn-sm.me-2
@@ -30,11 +30,11 @@
       %i.bi.bi-plus
       Add
     
-    .mb-2.d-flex.row
+    .row.align-items-center
       .col
         %label.col-form-label.fs-6.me-3{for: "project-allocation-method"} Project Allocation
       .col-8
-        %select.form-select.fs-6{id: "project-allocation-method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
+        %select.form-select.form-select-sm{id: "project-allocation-method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
           %option{selected: true, value: "1"} Random
           %option{value: "2"} Individual Preference Form 
           %option{value: "3"} Team Preference Form
@@ -43,19 +43,19 @@
   .card-header
     %h2.fs-4.m-0 Team Configuration
 
-  .card-body.pb-1
-    .mb-2.d-flex.row
+  .card-body.pb-3
+    .row.align-items-center
       .col
         %label.col-form-label.fs-6.me-3{for: "team-size"} Team Size  
       .col-8  
         .input-group.mb-2{style: "width:fit-content"}
-          %input.form-control.fs-6{ type: "number", id: "team-size", min: "0"}
+          %input.form-control.form-control-sm{ type: "number", id: "team-size", min: "0"}
 
-    .mb-2.d-flex.row
+    .row.align-items-center
       .col
         %label.col-form-label.fs-6.me-3{for: "team-allocation-method"} Team Allocation Mode
       .col-8
-        %select.form-select.fs-6{id: "team-allocation-method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
+        %select.form-select.form-select-sm{id: "team-allocation-method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
           %option{selected: true, value: "1"} Random
           %option{value: "2"} Preference Form + Algorithm
 
@@ -63,21 +63,114 @@
   .card-header
     %h2.fs-4.m-0 Team Preference Form Settings
 
-  .card-body.pb-1
-    .row.mb-2.align-items-center
+  .card-body.pb-3
+    .row.align-items-center
       .col
         %label.col-form-label.fs-6.me-3{for: "preferred-teammates"} Preferred Teammates
       .col-8
         .input-group{style: "width:fit-content"}
-          %input.form-control.fs-6{ type: "number", id: "preferred-teammates", min: "0"}
+          %input.form-control.form-control-sm{ type: "number", id: "preferred-teammates", min: "0"}
 
-    .row.mb-2.align-items-center
+    .row.align-items-center
       .col
         %label.col-form-label.fs-6{for: "avoided-teammates"} Avoided Teammates
       .col-8
         .input-group{style: "width:fit-content"}
-          %input.form-control.fs-6{ type: "number", id: "avoided-teammates", min: "0"}
+          %input.form-control.form-control-sm{ type: "number", id: "avoided-teammates", min: "0"}
 
-%input.form-control.datepicker{type: "text", data: {provide: "datepicker", startDate: "-3d"}}
+.card#timings.mb-3
+  .card-header
+    %h2.fs-4.m-0 Timings
 
+  .card-body.pb-3
+    %h3.fs-5.mb-2 Deadlines
+    .mb-3
+      .row.align-items-center
+        .col
+          %label.col-form-label.fs-6.me-3{for: "project-deadline"} Project Deadline
+        .col-8
+          .input-group{style: "width:fit-content"}
+            = render partial: 'components/datepicker_input', locals: { id: 'project-deadline', placeholder_text: 'Select Date' }
+
+      .row.align-items-center
+        .col
+          %label.col-form-label.fs-6.me-3{for: "teammate-preference-form-deadline"} Teammate Preference Form
+        .col-8
+          .input-group{style: "width:fit-content"}
+            = render partial: 'components/datepicker_input', locals: { id: 'teammate-preference-form-deadline', placeholder_text: 'Select Date' }
+
+      .row.align-items-center
+        .col
+          %label.col-form-label.fs-6.me-3{for: "project-preference-form-deadline"} Project Preference Form
+        .col-8
+          .input-group{style: "width:fit-content"}
+            = render partial: 'components/datepicker_input', locals: { id: 'project-preference-form-deadline', placeholder_text: 'Select Date' }
+
+    %h3.fs-5.mb-2 Milestones
+    %ul.list-group.list-group-flush.mb-2.overflow-hidden
+      %li.list-group-item.ps-1.d-flex.align-items-center.row
+        .col.d-flex.align-items-center
+          %button.btn.btn-light.btn-sm.me-2
+            %i.bi.bi-x.text-secondary
+          Requirements Draft
+        .col-8
+          .input-group{style: "width:fit-content"}
+            = render partial: 'components/datepicker_input', locals: {placeholder_text: 'Select Date' }
+
+      %li.list-group-item.ps-1.d-flex.align-items-center.row
+        .col.d-flex.align-items-center
+          %button.btn.btn-light.btn-sm.me-2
+            %i.bi.bi-x.text-secondary
+          Mockups Showcase
+        .col-8
+          .input-group{style: "width:fit-content"}
+            = render partial: 'components/datepicker_input', locals: {placeholder_text: 'Select Date' }
+
+      %li.list-group-item.ps-1.d-flex.align-items-center.row
+        .col.d-flex.align-items-center
+          %button.btn.btn-light.btn-sm.me-2
+            %i.bi.bi-x.text-secondary
+          Final Pitch
+        .col-8
+          .input-group{style: "width:fit-content"}
+            = render partial: 'components/datepicker_input', locals: {placeholder_text: 'Select Date' }
+
+    %button.btn.btn-primary.mb-2{type: "button"}
+      %i.bi.bi-plus
+      Add
+
+.card#project-facilitators.mb-3
+  .card-header.d-flex.align-items-center
+    %h2.fs-4.m-0 Project Facilitators
+
+  .card-body.pb-3
+    %ul.list-group.list-group-flush.mb-2
+      %li.list-group-item.d-flex.ps-1.align-items-center
+        %button.btn.btn-light.btn-sm.me-2
+          %i.bi.bi-x.text-secondary
+        Islam Elgendy
+
+      %li.list-group-item.d-flex.ps-1.align-items-center
+        %button.btn.btn-light.btn-sm.me-2
+          %i.bi.bi-x.text-secondary
+        Emma Norling
+
+      %li.list-group-item.d-flex.ps-1.align-items-center
+        %button.btn.btn-light.btn-sm.me-2
+          %i.bi.bi-x.text-secondary
+        Sam Taseff
+
+    %button.btn.btn-primary.mb-2{type: "button"}
+      %i.bi.bi-plus
+      Add
+
+.card#mark-scheme.mb-3
+  .card-header.d-flex.align-items-center
+    %h2.fs-4.m-0 Mark Scheme
+
+  .card-body.pb-3.d-flex.justify-content-center.align-items-center
+    %label.btn.btn-primary.btn-lg{for: "mark-scheme"}
+      %i.bi.bi-upload
+      Upload
+      %input{type: "file", id: "mark-scheme", accept: ".csv", style: "display: none;"}
     
