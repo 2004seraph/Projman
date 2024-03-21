@@ -98,6 +98,8 @@ GEM
     bindex (0.8.1)
     bootsnap (1.17.1)
       msgpack (~> 1.2)
+    bootstrap-datepicker-rails (1.10.0.1)
+      railties (>= 3.0)
     brakeman (6.1.1)
       racc
     builder (3.2.4)
@@ -361,6 +363,7 @@ DEPENDENCIES
   annotate
   bcrypt_pbkdf (>= 1.0, < 2.0)
   bootsnap
+  bootstrap-datepicker-rails (~> 1.6, >= 1.6.1.1)
   brakeman
   bundler-audit
   byebug
