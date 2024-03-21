@@ -1,0 +1,81 @@
+
+.mb-3
+  .input-group
+    %h2.input-group-text.fs-4.fw-bold.mb-0 Project Name
+    %input.form-control.fs-5.fw-semibold{type: "text", placeholder:"Name"}
+
+.card#project-choices.mb-3
+  .card-header.d-flex.align-items-center
+    %input.form-check-input.p-2.me-2.mt-0#project-choices-enable{type: "checkbox", value: "", checked: "checked"}
+    %h2.fs-4.m-0 Project Choices
+
+  .card-body.pb-1
+    %ul.list-group.list-group-flush.mb-2
+      %li.list-group-item.d-flex.ps-1.align-items-center
+        %button.btn.btn-light.btn-sm.me-2
+          %i.bi.bi-x.text-secondary
+        Project Choice 1
+
+      %li.list-group-item.d-flex.ps-1.align-items-center
+        %button.btn.btn-light.btn-sm.me-2
+          %i.bi.bi-x.text-secondary
+        Project Choice 2
+
+      %li.list-group-item.d-flex.ps-1.align-items-center
+        %button.btn.btn-light.btn-sm.me-2
+          %i.bi.bi-x.text-secondary
+        Project Choice 3
+
+    %button.btn.btn-primary.mb-2{type: "button"}
+      %i.bi.bi-plus
+      Add
+    
+    .mb-2.d-flex.row
+      .col
+        %label.col-form-label.fs-6.me-3{for: "project-allocation-method"} Project Allocation
+      .col-8
+        %select.form-select.fs-6{id: "project-allocation-method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
+          %option{selected: true, value: "1"} Random
+          %option{value: "2"} Individual Preference Form 
+          %option{value: "3"} Team Preference Form
+  
+.card#team-configuration.mb-3
+  .card-header
+    %h2.fs-4.m-0 Team Configuration
+
+  .card-body.pb-1
+    .mb-2.d-flex.row
+      .col
+        %label.col-form-label.fs-6.me-3{for: "team-size"} Team Size  
+      .col-8  
+        .input-group.mb-2{style: "width:fit-content"}
+          %input.form-control.fs-6{ type: "number", id: "team-size", min: "0"}
+
+    .mb-2.d-flex.row
+      .col
+        %label.col-form-label.fs-6.me-3{for: "team-allocation-method"} Team Allocation Mode
+      .col-8
+        %select.form-select.fs-6{id: "team-allocation-method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
+          %option{selected: true, value: "1"} Random
+          %option{value: "2"} Preference Form + Algorithm
+
+.card#team-preference-form-settings.mb-3
+  .card-header
+    %h2.fs-4.m-0 Team Preference Form Settings
+
+  .card-body.pb-1
+    .row.mb-2.align-items-center
+      .col
+        %label.col-form-label.fs-6.me-3{for: "preferred-teammates"} Preferred Teammates
+      .col-8
+        .input-group{style: "width:fit-content"}
+          %input.form-control.fs-6{ type: "number", id: "preferred-teammates", min: "0"}
+
+    .row.mb-2.align-items-center
+      .col
+        %label.col-form-label.fs-6{for: "avoided-teammates"} Avoided Teammates
+      .col-8
+        .input-group{style: "width:fit-content"}
+          %input.form-control.fs-6{ type: "number", id: "avoided-teammates", min: "0"}
+
+    

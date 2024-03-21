@@ -8,4 +8,7 @@ class ProjectsController < ApplicationController
             render 'index_student'
         end
     end
+
+    def new
+    end
 end

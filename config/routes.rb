@@ -4,7 +4,11 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "pages#home"
 
-  get '/projects', to: 'projects#index'
+  # get '/projects', to: 'projects#index'
+  # get '/projects/new', to: 'projects#new'
+
+  resources :projects, only: [:index, :new]
+
   get '/students', to: 'students#index'
   get '/issues', to: 'issues#index'
   get '/profile', to: 'profile#index'
