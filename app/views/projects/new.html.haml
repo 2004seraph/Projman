@@ -16,6 +16,14 @@
       listGroup.insertAdjacentHTML('beforeend', newPartialHTML);
     }
   }
+  // Add Partial of type 'group-item-date'
+  function addNewDateGroupItem(itemText, groupId) {
+    var newPartialHTML = "#{escape_javascript(render(partial: 'group-item-date', locals: { item_text: 'ITEM_TEXT' }))}".replace('ITEM_TEXT', itemText);
+    var listGroup = document.getElementById(groupId);
+    if (listGroup) {
+      listGroup.insertAdjacentHTML('beforeend', newPartialHTML);
+    }
+  }
 
   document.addEventListener('DOMContentLoaded', function () {
 
@@ -152,12 +160,13 @@
             = render partial: 'components/datepicker_input', locals: { id: 'project-preference-form-deadline', placeholder_text: 'Select Date' }
 
     %h3.fs-5.mb-2 Milestones
-    %ul.list-group.list-group-flush.mb-2.overflow-hidden
+    %ul.list-group.list-group-flush.mb-2.overflow-hidden#project-milestones-list
       = render partial: 'group-item-date', locals: { item_text: 'Requirements Draft'}
       = render partial: 'group-item-date', locals: { item_text: 'Mockups Showcase'}
       = render partial: 'group-item-date', locals: { item_text: 'Final Pitch'}
 
-    %button.btn.btn-primary.mb-2{type: "button"}
+    %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal",
+       "data-bs-target": "#add-project-milestone-modal"}
       %i.bi.bi-plus
       Add
 
@@ -203,3 +212,4 @@
 
 -# ADD PROJECT CHOICE MODAL
 = render partial: 'modal_single_text_entry', locals: { modal_id: 'add-project-choice-modal', title: 'New Project Choice', prompt: 'Input project choice name', form_input_id: 'new-project-choice-name', form_input_name: 'project_choice_name', confirm_text: 'Confirm', confirm_onclick_function: "addNewSimpleGroupItem(document.getElementById('new-project-choice-name').value, 'project-choices-list')" }
+= render partial: 'modal_single_text_entry', locals: { modal_id: 'add-project-milestone-modal', title: 'New Project Milestone', prompt: 'Input milestone name', form_input_id: 'new-project-milestone-name', form_input_name: 'project_milestone_name', confirm_text: 'Confirm', confirm_onclick_function: "addNewDateGroupItem(document.getElementById('new-project-milestone-name').value, 'project-milestones-list')" }
