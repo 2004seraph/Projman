@@ -8,6 +8,15 @@
     listItem.remove();
   }
 
+  // Add Partial of type 'group-item-simple'
+  function addNewSimpleGroupItem(itemText, groupId) {
+    var newPartialHTML = "#{escape_javascript(render(partial: 'group-item-simple', locals: { item_text: 'ITEM_TEXT' }))}".replace('ITEM_TEXT', itemText);
+    var listGroup = document.getElementById(groupId);
+    if (listGroup) {
+      listGroup.insertAdjacentHTML('beforeend', newPartialHTML);
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
 
     // Clearing Modal Input fields upon opening them
@@ -19,6 +28,24 @@
           inputField.value = ''; // Clear the input field
         });
       });
+    });
+
+    // Ensure inputs are valid 
+    modals.forEach(function(modal) {
+      var inputField = modal.querySelector('input[type="text"]');
+      var confirmButton = modal.querySelector('.btn-primary[type="submit"]');
+
+      if (inputField && confirmButton) {
+        confirmButton.disabled = true;
+
+        inputField.addEventListener('input', function() {
+          if (inputField.checkValidity()) {
+            confirmButton.disabled = false;
+          } else {
+            confirmButton.disabled = true;
+          }
+        });
+      }
     });
   });
 
@@ -126,32 +153,9 @@
 
     %h3.fs-5.mb-2 Milestones
     %ul.list-group.list-group-flush.mb-2.overflow-hidden
-      %li.list-group-item.ps-1.d-flex.align-items-center.row
-        .col.d-flex.align-items-center
-          %button.btn.btn-light.btn-sm.me-2.btn-delete
-            %i.bi.bi-x.text-secondary
-          Requirements Draft
-        .col-8
-          .input-group{style: "width:fit-content"}
-            = render partial: 'components/datepicker_input', locals: {placeholder_text: 'Select Date' }
-
-      %li.list-group-item.ps-1.d-flex.align-items-center.row
-        .col.d-flex.align-items-center
-          %button.btn.btn-light.btn-sm.me-2.btn-delete
-            %i.bi.bi-x.text-secondary
-          Mockups Showcase
-        .col-8
-          .input-group{style: "width:fit-content"}
-            = render partial: 'components/datepicker_input', locals: {placeholder_text: 'Select Date' }
-
-      %li.list-group-item.ps-1.d-flex.align-items-center.row
-        .col.d-flex.align-items-center
-          %button.btn.btn-light.btn-sm.me-2.btn-delete
-            %i.bi.bi-x.text-secondary
-          Final Pitch
-        .col-8
-          .input-group{style: "width:fit-content"}
-            = render partial: 'components/datepicker_input', locals: {placeholder_text: 'Select Date' }
+      = render partial: 'group-item-date', locals: { item_text: 'Requirements Draft'}
+      = render partial: 'group-item-date', locals: { item_text: 'Mockups Showcase'}
+      = render partial: 'group-item-date', locals: { item_text: 'Final Pitch'}
 
     %button.btn.btn-primary.mb-2{type: "button"}
       %i.bi.bi-plus
@@ -193,21 +197,9 @@
       Upload
       %input{type: "file", id: "mark-scheme", accept: ".csv", style: "display: none;"}
     
+
+
 -# MODALS
 
 -# ADD PROJECT CHOICE MODAL
-.modal.fade#add-project-choice-modal{tabindex: "-1", "aria-labelledby": "add-project-choice-modal", "aria-hidden": "true"}
-  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
-    .modal-content
-      .modal-header
-        %h1.modal-title.fs-5 New Project Choice
-        %button.btn-close{"aria-label": "Close", "data-bs-dismiss": "modal", type: "button"}
-
-      = form_with(url: new_project_add_project_choice_projects_path, method: :post, remote: true, id: "new-project-choice-form") do |form|
-        .modal-body
-          .form-group
-            %label.form-label{for: "new-project-choice-name"} Input project choice name
-            %input.form-control{type: "text", id: "new-project-choice-name", name: "project_choice_name", autocomplete: "off"}
-        .modal-footer
-          %button.btn.btn-secondary{"data-bs-dismiss": "modal", type: "button"} Cancel
-          %button.btn.btn-primary#confirm-project-choice-name{type: "submit", "data-bs-dismiss": "modal"} Confirm
+= render partial: 'modal_single_text_entry', locals: { modal_id: 'add-project-choice-modal', title: 'New Project Choice', prompt: 'Input project choice name', form_input_id: 'new-project-choice-name', form_input_name: 'project_choice_name', confirm_text: 'Confirm', confirm_onclick_function: "addNewSimpleGroupItem(document.getElementById('new-project-choice-name').value, 'project-choices-list')" }

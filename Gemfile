@@ -57,6 +57,7 @@ gem 'hamlit'
 gem 'hamlit-rails'
 
 gem 'bootstrap-datepicker-rails', '~> 1.6', '>= 1.6.1.1'
+gem 'jquery-rails'
 
 gem 'simple_form'
 

@@ -1,4 +1,4 @@
-# Getting started
+# Getting woemong
 
 ## Additional configuration
 This template has most configuration set up already to work with our servers. There are however a few additional tweaks you need to make specific to your project.
