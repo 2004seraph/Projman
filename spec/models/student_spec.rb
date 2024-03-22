@@ -21,7 +21,8 @@ require 'rails_helper'
 RSpec.describe Student, type: :model do
   context "Should accept" do
     it "with a valid generated class list" do
-      Student.bootstrap_class_list "pe"
+      csv_data = FactoryBot.build(:csv_data)
+      Student.bootstrap_class_list csv_data
     end
   end
 end

@@ -5,3 +5,8 @@
 #
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
+
+require 'student_dummy_data_helper'
+
+class_data = StudentDummyDataHelper.generate_dummy_data_csv_string()
+Student.bootstrap_class_list(class_data)

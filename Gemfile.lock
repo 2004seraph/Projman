@@ -169,6 +169,8 @@ GEM
     factory_bot_rails (6.4.3)
       factory_bot (~> 6.4)
       railties (>= 5.0.0)
+    faker (3.2.3)
+      i18n (>= 1.8.11, < 2)
     git (1.19.1)
       addressable (~> 2.8)
       rchardet (~> 1.8)
@@ -232,7 +234,6 @@ GEM
     public_suffix (5.0.4)
     puma (6.4.2)
       nio4r (~> 2.0)
-    pycall (1.5.1)
     racc (1.7.3)
     rack (2.2.8)
     rack-proxy (0.7.7)
@@ -380,13 +381,13 @@ DEPENDENCIES
   ed25519 (>= 1.2, < 2.0)
   epi_deploy!
   factory_bot_rails
+  faker
   hamlit
   hamlit-rails
   launchy
   letter_opener
   pg (~> 1.1)
   puma (~> 6.0)
-  pycall
   rails (>= 7.0.8, < 7.1)
   rspec-rails
   sanitize_email

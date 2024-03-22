@@ -54,5 +54,7 @@ yarn-debug.log*
 .rspec-examples
 
 /vendor/webdrivers
+__pycache__
+build/
 
-*/dummy_data.csv
+dummy_data.csv
