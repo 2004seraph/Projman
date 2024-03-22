@@ -8,7 +8,8 @@
        "data-bs-target": "#removeStudentsModal", onclick: "prepareRemoveStudents(this)"}
         %i.bi.bi-trash-fill
         Remove
-      %button.btn.btn-primary
+      %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal",
+       "data-bs-target": "#addStudentsModal"}
         %i.bi.bi-plus
         Add
   .card-body.pt-1.pb-1
@@ -20,42 +21,14 @@
           %th{scope: "col"} Email
           %th{scope: "col"} Registration Number
         %tbody
-          %tr
-            %td
-              %input.form-check-input{type: "checkbox", value: ""}
-            %td Jakub Bala
-            %td jbala1@sheffield.ac.uk
-            %td 11294124
-          %tr
-            %td
-              %input.form-check-input{type: "checkbox", value: ""}
-            %td Sam Taseff
-            %td sgttaseff@sheffield.ac.uk
-            %td 72384012
-          %tr
-            %td
-              %input.form-check-input{type: "checkbox", value: ""}
-            %td Adam Willis
-            %td awillis@sheffield.ac.uk
-            %td 327509327
-          %tr
-            %td
-              %input.form-check-input{type: "checkbox", value: ""}
-            %td Jack Edwards
-            %td jedwards@sheffield.ac.uk
-            %td 192709121
-          %tr
-            %td
-              %input.form-check-input{type: "checkbox", value: ""}
-            %td Jack Edwards
-            %td jedwards@sheffield.ac.uk
-            %td 192709121
-          %tr
-            %td
-              %input.form-check-input{type: "checkbox", value: ""}
-            %td Jack Edwards
-            %td jedwards@sheffield.ac.uk
-            %td 192709121
+          - 20.times do
+            %tr
+              %td
+                %input.form-check-input{type: "checkbox", value: ""}
+              %td Jakub Bala
+              %td jbala1@sheffield.ac.uk
+              %td 11294124
+          
   .d-flex.justify-content-end
     %button.btn.btn-light.btn-sm.m-2{onclick: "shrinkSection(this)"}
       %i.bi.bi-arrows-angle-contract

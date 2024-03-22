@@ -1,0 +1,13 @@
+-# A partial for group items that have a delete button, piece of text, and a datepicker
+
+-# LOCAL VARIABLES:
+-# item_text
+
+%li.list-group-item.ps-1.d-flex.align-items-center.row
+  .col.d-flex.align-items-center
+    %button.btn.btn-light.btn-sm.me-2.btn-delete{onclick: "deleteGroupItem(this)"}
+      %i.bi.bi-x.text-secondary
+    = item_text
+  .col-8
+    .input-group{style: "width:fit-content"}
+      = render partial: 'components/datepicker_input', locals: { placeholder_text: "Select Date" }
