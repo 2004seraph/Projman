@@ -1,10 +1,51 @@
 require 'csv'
 require 'faker'
 
-module StudentDummyDataHelper
+module StudentDataHelper
   extend self
 
-  def generate_dummy_data_csv_string(num_records = 234, class_module_code = "COM3420")
+  # The three members below (two constants and one function) are
+  # how you define the schema for the class list CSV file that
+  # the app will ingest to add students to modules.
+
+  # Every single CSV header which the database uses MUST be declared here.
+  # The rest are here for testing.
+  def csv_headers
+    # Define CSV headers
+    [
+      'Surname', 'Forename', 'Middle Names',
+      'Title',
+      'Known As',
+      'Fee Status',
+      'Student Username',
+      'Ucard No',
+      'Email',
+      'Reg. Status',
+      'Programme',
+      'Period',
+      'Module Code',
+      '1st Grade', '2nd Grade', '3rd Grade', '4th Grade',
+      'NFC_Flag', 'HEFCE_Flag', 'Live Registration', 'Attending',
+      'Date of Birth',
+      'Personal Tutor', 'Supervisors'
+    ]
+  end
+
+  # the specific CSV field name of the student module enrollment.
+  MODULE_CODE_CSV_COLUMN = "Module Code"
+
+  # the parser automatically replaces spaces with _ and converts the
+  # string to lowercase, if this does not map to the correct field
+  # in the database, you can declare an explicit mapping below.
+  EXPLICIT_CSV_TO_FIELD_LINK = {
+    "Known As": "preferred_name",
+    "Student Username": "username",
+    "Ucard No": "ucard_number"
+  }
+
+
+
+  def generate_dummy_data_csv_string(class_module_code = "COM3420", num_records = 234)
     data = generate_dummy_data(num_records, class_module_code)
     csv_string = CSV.generate(headers: true) do |csv|
       csv << csv_headers
@@ -48,16 +89,5 @@ module StudentDummyDataHelper
       ]
     end
     data
-  end
-
-  def csv_headers
-    # Define CSV headers
-    [
-      'Surname', 'Forename', 'Middle Names', 'Title', 'Known As', 'Fee Status',
-      'Student Username', 'Ucard No', 'Email', 'Reg. Status', 'Programme',
-      'Period', 'Module Code', '1st Grade', '2nd Grade', '3rd Grade', '4th Grade',
-      'NFC_Flag', 'HEFCE_Flag', 'Live Registration', 'Attending', 'Date of Birth',
-      'Personal Tutor', 'Supervisors'
-    ]
   end
 end

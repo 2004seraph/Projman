@@ -21,6 +21,12 @@ require 'rails_helper'
 RSpec.describe Student, type: :model do
   context "Should accept" do
     it "with a valid generated class list" do
+      new_module = CourseModule.create ({
+        code: "COM3420",
+        name: "Software Hut",
+        lead_email: "emma_norling@sheffield.ac.uk"
+      })
+
       csv_data = FactoryBot.build(:csv_data)
       Student.bootstrap_class_list csv_data
     end

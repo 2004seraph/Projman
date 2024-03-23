@@ -26,7 +26,7 @@ class CreateProject < ActiveRecord::Migration[7.0]
       ]
 
     create_table :projects do |t|
-      t.references :course_module, null: false, foreign_key: { to_table: :course_modules }
+      t.string :course_module_code, null: false
 
       t.string :name, null: false
       t.column :status, :project_status, null: false
@@ -42,6 +42,8 @@ class CreateProject < ActiveRecord::Migration[7.0]
       t.json :markscheme_json, default: "{}"
 
       t.timestamps
+
+      t.foreign_key :course_modules, column: :course_module_code, primary_key: :code
     end
   end
 end

@@ -30,6 +30,22 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_17_231948) do
     t.index ["student_id"], name: "index_assigned_facilitators_on_student_id"
   end
 
+  create_table "course_modules", id: false, force: :cascade do |t|
+    t.string "code", null: false
+    t.string "name", limit: 32, null: false
+    t.string "lead_email", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_course_modules_on_code", unique: true
+  end
+
+  create_table "course_modules_students", id: false, force: :cascade do |t|
+    t.bigint "student_id", null: false
+    t.string "course_module_code", null: false
+    t.index ["student_id", "course_module_code"], name: "modules_students_index", unique: true
+    t.index ["student_id"], name: "index_course_modules_students_on_student_id"
+  end
+
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
@@ -89,20 +105,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_17_231948) do
     t.index ["project_id"], name: "index_milestones_on_project_id"
   end
 
-  create_table "modules", force: :cascade do |t|
-    t.string "name", limit: 32, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "modules_students", id: false, force: :cascade do |t|
-    t.bigint "student_id", null: false
-    t.bigint "module_id", null: false
-    t.index ["student_id", "module_id"], name: "index_modules_students_on_student_id_and_module_id"
-  end
-
   create_table "projects", force: :cascade do |t|
-    t.bigint "module_id", null: false
+    t.string "course_module_code", null: false
     t.string "name", null: false
     t.enum "status", null: false, enum_type: "project_status"
     t.integer "team_size", null: false
@@ -114,7 +118,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_17_231948) do
     t.json "markscheme_json", default: "{}"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["module_id"], name: "index_projects_on_module_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -142,6 +145,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_17_231948) do
   end
 
   add_foreign_key "assigned_facilitators", "students"
+  add_foreign_key "course_modules_students", "course_modules", column: "course_module_code", primary_key: "code"
+  add_foreign_key "course_modules_students", "students"
   add_foreign_key "events", "groups"
   add_foreign_key "groups", "assigned_facilitators"
   add_foreign_key "groups", "projects"
@@ -149,7 +154,5 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_17_231948) do
   add_foreign_key "groups_students", "students", on_delete: :cascade
   add_foreign_key "milestone_responses", "milestones"
   add_foreign_key "milestones", "projects"
-  add_foreign_key "modules_students", "modules", on_delete: :cascade
-  add_foreign_key "modules_students", "students", on_delete: :cascade
-  add_foreign_key "projects", "modules"
+  add_foreign_key "projects", "course_modules", column: "course_module_code", primary_key: "code"
 end

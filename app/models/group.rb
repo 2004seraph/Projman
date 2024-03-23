@@ -22,7 +22,6 @@
 #
 class Group < ApplicationRecord
   belongs_to :project
-  has_many :students
   has_many :events
   has_and_belongs_to_many :students
 
