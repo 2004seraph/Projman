@@ -1,0 +1,14 @@
+-# Load all modules in the database
+
+.flex-end
+    = link_to new_admin_path, class: 'btn btn-primary' do
+        %i.bi.bi-plus-square-fill
+        Create New
+
+.separating-section 
+    %h2
+        Modules
+
+    = render partial:'module-button'  
+    = render partial:'module-button' 
+    %hr.divider
