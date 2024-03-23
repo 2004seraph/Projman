@@ -4,7 +4,7 @@ require 'faker'
 module StudentDataHelper
   extend self
 
-  # The three members below (two constants and one function) are
+  # The four members below (two constants and one function) are
   # how you define the schema for the class list CSV file that
   # the app will ingest to add students to modules.
 
@@ -43,6 +43,13 @@ module StudentDataHelper
     "Ucard No": "ucard_number"
   }
 
+  # if any CSV cells require transforming the data
+  # to the correct format for the database
+  CSV_VALUE_TRANSLATIONS = {
+    fee_status: lambda { |s|
+      s.parameterize.to_sym
+    }
+  }
 
 
   def generate_dummy_data_csv_string(class_module_code = "COM3420", num_records = 234)

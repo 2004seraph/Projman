@@ -103,14 +103,10 @@ class Student < ApplicationRecord
     header_name
   end
 
-  CSV_VALUE_TRANSLATIONS = {
-    fee_status: lambda { |s|
-      s.parameterize.to_sym
-    }
-  }
+
   def self.translate_csv_value(field_symbol, value_string)
-    if CSV_VALUE_TRANSLATIONS.key?(field_symbol)
-      return CSV_VALUE_TRANSLATIONS[field_symbol].call(value_string)
+    if StudentDataHelper::CSV_VALUE_TRANSLATIONS.key?(field_symbol)
+      return StudentDataHelper::CSV_VALUE_TRANSLATIONS[field_symbol].call(value_string)
     end
     value_string
   end
