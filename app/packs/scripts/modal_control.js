@@ -13,26 +13,50 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Ensure modals with an input field cant have the field left empty
     modals.forEach(function(modal) {
-
-        // some modals will have you build up a list of items to submit, so the input field
-        // could be left empty
-        if (modal.hasAttribute('data-allow-confirm-empty-input')) {
-            return; // Skip this modal
+        
+        if (modal.hasAttribute('data-disallow-confirm-group-empty')) {
+            var inputField = modal.querySelector('input');
+            var confirmButton = modal.querySelector('.btn-primary[type="submit"]');
+            var listGroup = modal.querySelector('.list-group');
+    
+            // Function to enable confirm button based on list group children
+            function toggleConfirmButton() {
+                confirmButton.disabled = true
+                if (listGroup && listGroup.children.length > 0) {
+                    if (confirmButton) {
+                        confirmButton.disabled = false; // Enable the confirm button
+                    }
+                }
+            }
+            if (inputField && confirmButton) {
+                confirmButton.disabled = true;
+    
+                toggleConfirmButton();
+                var observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'childList') {
+                            toggleConfirmButton();
+                        }
+                    });
+                });
+                observer.observe(listGroup, { childList: true });
+                inputField.addEventListener('input', toggleConfirmButton);
+            }
         }
 
-        var inputField = modal.querySelector('input[type="text"]');
-        var confirmButton = modal.querySelector('.btn-primary[type="submit"]');
+        if (modal.hasAttribute('data-disallow-confirm-empty-input')) {
+            var inputField = modal.querySelector('input[type="text"]');
+            var confirmButton = modal.querySelector('.btn-primary[type="submit"]');
 
-        if (inputField && confirmButton) {
-        confirmButton.disabled = true;
+            if (inputField && confirmButton) {
+                confirmButton.disabled = true;
 
-        inputField.addEventListener('input', function() {
-            if (inputField.checkValidity()) {
-            confirmButton.disabled = false;
-            } else {
-            confirmButton.disabled = true;
+                inputField.addEventListener('input', function() {
+                    if (inputField.checkValidity()) {
+                        confirmButton.disabled = false;
+                    }
+                });
             }
-        });
         }
     });
 });

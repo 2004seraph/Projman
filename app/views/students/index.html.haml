@@ -97,24 +97,16 @@
         %button.btn.btn-secondary{"data-bs-dismiss": "modal", type: "button"} Cancel
         %button.btn.btn-primary{type: "button"} Yes, remove them
 
-.modal.fade#addStudentsModal{tabindex: "-1", "aria-labelledby": "addStudentsModal", "aria-hidden": "true"}
-  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable.modal-lg
-    .modal-content
-      .modal-header
-        %h1.modal-title.fs-5#removeStudentsModal Select students to add
-        %button.btn-close{"aria-label": "Close", "data-bs-dismiss": "modal", type: "button"}
-      .modal-body
-        %input.form-control.mr-sm-2.mb-4{type: "search", placeholder: "Search", aria: {label: "Search"}}
-        %b current selection:
-        %ul.list-group.list-group-flush
-
-          = render 'projects/group-item-simple', item_text: 'Student 1'
-          = render 'projects/group-item-simple', item_text: 'Student 1'
-          = render 'projects/group-item-simple', item_text: 'Student 1'
-            
-      .modal-footer
-        %button.btn.btn-secondary{"data-bs-dismiss": "modal", type: "button"} Cancel
-        %button.btn.btn-primary{type: "button"} Add 
+= render 'components/modal-search-multiple', 
+  modal_id: 'addStudentsModal', 
+  title: 'Add Students', 
+  prompt: 'Input students name', 
+  form_input_id: 'new-module-student-name', 
+  form_input_name: 'module_student_name', 
+  current_selection_text: 'current selection',
+  list_group_id: 'student-selection-group',
+  confirm_text: 'Confirm', 
+  confirm_onclick_function: ""
 
 :javascript
   // This is to allow a row to be clicked and have it check the selection box
