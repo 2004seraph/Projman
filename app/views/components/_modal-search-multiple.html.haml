@@ -1,0 +1,37 @@
+
+-# A partial that renders a search bar with a list group below for all things you accumulated
+
+-# LOCAL VARIABLES:
+-# modal_id
+-# title
+-# prompt
+-# form_input_id
+-# form_input_name
+-# current_selection_text
+-# list_group_id
+-# confirm_text
+-# confirm_onclick_function
+
+.modal.fade{ id: modal_id, tabindex: "-1", "aria-labelledby": "#{modal_id}", "aria-hidden": "true", "data-allow-confirm-empty-input": "", "data-disallow-confirm-group-empty": ""}
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      .modal-header
+        %h1.modal-title.fs-5= title
+        %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+
+      .modal-body
+        .form-group
+          %label.form-label{ for: form_input_id }= prompt
+          .input-group.mb-4
+            %input.form-control.mr-sm-2{type: "search", id: form_input_id, placeholder: "Search", aria: {label: "Search"}, autocomplete: "off"}
+            %button.btn.btn-outline-secondary{ type: "button", onclick: "addNewSimpleGroupItem(document.getElementById('#{form_input_id}'), '#{list_group_id}', true)"} Add
+          %span= current_selection_text
+          %ul.list-group.list-group-flush{id: list_group_id}
+
+            = render 'components/group-item-simple', item_text: 'Example Item'
+            = render 'components/group-item-simple', item_text: 'Example Item'
+            = render 'components/group-item-simple', item_text: 'Example Item'
+
+      .modal-footer
+        %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Close
+        %button.btn.btn-primary{ type: "submit", "data-bs-dismiss": "modal", onclick: confirm_onclick_function }= confirm_text
