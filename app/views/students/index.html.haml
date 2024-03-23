@@ -108,20 +108,9 @@
         %b current selection:
         %ul.list-group.list-group-flush
 
-          %li.list-group-item.d-flex.ps-1.align-items-center
-            %button.btn.btn-light.btn-sm.me-2
-              %i.bi.bi-x.text-secondary
-            student 1
-
-          %li.list-group-item.d-flex.ps-1.align-items-center
-            %button.btn.btn-light.btn-sm.me-2
-              %i.bi.bi-x.text-secondary
-            student 2
-
-          %li.list-group-item.d-flex.ps-1.align-items-center
-            %button.btn.btn-light.btn-sm.me-2
-              %i.bi.bi-x.text-secondary
-            student 3
+          = render 'projects/group-item-simple', item_text: 'Student 1'
+          = render 'projects/group-item-simple', item_text: 'Student 1'
+          = render 'projects/group-item-simple', item_text: 'Student 1'
             
       .modal-footer
         %button.btn.btn-secondary{"data-bs-dismiss": "modal", type: "button"} Cancel

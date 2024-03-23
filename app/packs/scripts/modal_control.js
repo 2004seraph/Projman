@@ -11,8 +11,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Ensure inputs are valid 
+    // Ensure modals with an input field cant have the field left empty
     modals.forEach(function(modal) {
+
+        // some modals will have you build up a list of items to submit, so the input field
+        // could be left empty
+        if (modal.hasAttribute('data-allow-confirm-empty-input')) {
+            return; // Skip this modal
+        }
+
         var inputField = modal.querySelector('input[type="text"]');
         var confirmButton = modal.querySelector('.btn-primary[type="submit"]');
 

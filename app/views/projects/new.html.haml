@@ -1,61 +1,24 @@
 
 :javascript
-  function deleteGroupItem(button) {
-    // Get the parent list item of the button
-    var listItem = button.closest('.list-group-item');
-    
-    // Remove the parent list item
-    listItem.remove();
-  }
-
   // Add Partial of type 'group-item-simple'
-  function addNewSimpleGroupItem(itemText, groupId) {
+  function addNewSimpleGroupItem(itemText, groupId, clearInput=false) {
     var newPartialHTML = "#{escape_javascript(render(partial: 'group-item-simple', locals: { item_text: 'ITEM_TEXT' }))}".replace('ITEM_TEXT', itemText);
-    var listGroup = document.getElementById(groupId);
-    if (listGroup) {
-      listGroup.insertAdjacentHTML('beforeend', newPartialHTML);
-    }
+    appendPartial(newPartialHTML, groupId, clearInput)
   }
   // Add Partial of type 'group-item-date'
-  function addNewDateGroupItem(itemText, groupId) {
+  function addNewDateGroupItem(itemText, groupId, clearInput=false) {
     var newPartialHTML = "#{escape_javascript(render(partial: 'group-item-date', locals: { item_text: 'ITEM_TEXT' }))}".replace('ITEM_TEXT', itemText);
+    appendPartial(newPartialHTML, groupId, clearInput)
+  }
+  function appendPartial(newPartialHTML, groupId, clearInput){
     var listGroup = document.getElementById(groupId);
     if (listGroup) {
       listGroup.insertAdjacentHTML('beforeend', newPartialHTML);
     }
+    if(clearInput){
+      inputField.value = '';
+    }
   }
-
-  document.addEventListener('DOMContentLoaded', function () {
-
-    // Clearing Modal Input fields upon opening them
-    var modals = document.querySelectorAll('.modal');
-    modals.forEach(function(modal) {
-      modal.addEventListener('show.bs.modal', function () {
-        var inputFields = modal.querySelectorAll('input[type="text"]');
-        inputFields.forEach(function(inputField) {
-          inputField.value = ''; // Clear the input field
-        });
-      });
-    });
-
-    // Ensure inputs are valid 
-    modals.forEach(function(modal) {
-      var inputField = modal.querySelector('input[type="text"]');
-      var confirmButton = modal.querySelector('.btn-primary[type="submit"]');
-
-      if (inputField && confirmButton) {
-        confirmButton.disabled = true;
-
-        inputField.addEventListener('input', function() {
-          if (inputField.checkValidity()) {
-            confirmButton.disabled = false;
-          } else {
-            confirmButton.disabled = true;
-          }
-        });
-      }
-    });
-  });
 
 -# MAIN CONTENT
 .mb-3
@@ -177,22 +140,12 @@
 
   .card-body.pb-3
     %ul.list-group.list-group-flush.mb-2
-      %li.list-group-item.d-flex.ps-1.align-items-center
-        %button.btn.btn-light.btn-sm.me-2.btn-delete
-          %i.bi.bi-x.text-secondary
-        Islam Elgendy
+      = render 'group-item-simple', item_text: 'Islam Elgendy' 
+      = render 'group-item-simple', item_text: 'Emma Norling'
+      = render 'group-item-simple', item_text: 'Jakub Bala'  
 
-      %li.list-group-item.d-flex.ps-1.align-items-center
-        %button.btn.btn-light.btn-sm.me-2.btn-delete
-          %i.bi.bi-x.text-secondary
-        Emma Norling
-
-      %li.list-group-item.d-flex.ps-1.align-items-center
-        %button.btn.btn-light.btn-sm.me-2.btn-delete
-          %i.bi.bi-x.text-secondary
-        Sam Taseff
-
-    %button.btn.btn-primary.mb-2{type: "button"}
+    %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal",
+       "data-bs-target": "#add-project-facilitators-modal"}
       %i.bi.bi-plus
       Add
 
@@ -211,5 +164,33 @@
 -# MODALS
 
 -# ADD PROJECT CHOICE MODAL
-= render partial: 'modal_single_text_entry', locals: { modal_id: 'add-project-choice-modal', title: 'New Project Choice', prompt: 'Input project choice name', form_input_id: 'new-project-choice-name', form_input_name: 'project_choice_name', confirm_text: 'Confirm', confirm_onclick_function: "addNewSimpleGroupItem(document.getElementById('new-project-choice-name').value, 'project-choices-list')" }
-= render partial: 'modal_single_text_entry', locals: { modal_id: 'add-project-milestone-modal', title: 'New Project Milestone', prompt: 'Input milestone name', form_input_id: 'new-project-milestone-name', form_input_name: 'project_milestone_name', confirm_text: 'Confirm', confirm_onclick_function: "addNewDateGroupItem(document.getElementById('new-project-milestone-name').value, 'project-milestones-list')" }
+= render 'modal-single-text-entry', 
+  modal_id: 'add-project-choice-modal',
+  title: 'New Project Choice',
+  prompt: 'Input project choice name',
+  form_input_id: 'new-project-choice-name', 
+  form_input_name: 'project_choice_name', 
+  confirm_text: 'Confirm', 
+  confirm_onclick_function: "addNewSimpleGroupItem(document.getElementById('new-project-choice-name').value, 'project-choices-list')"
+
+-# ADD MILESTONE MODAL
+= render 'modal-single-text-entry', 
+  modal_id: 'add-project-milestone-modal', 
+  title: 'New Project Milestone', 
+  prompt: 'Input milestone name', 
+  form_input_id: 'new-project-milestone-name', 
+  form_input_name: 'project_milestone_name', 
+  confirm_text: 'Confirm', 
+  confirm_onclick_function: "addNewDateGroupItem(document.getElementById('new-project-milestone-name').value, 'project-milestones-list')"
+
+-# ADD FACILITATORS MODAL
+= render 'modal-search-multiple', 
+  modal_id: 'add-project-facilitators-modal', 
+  title: 'Add Project Facilitators', 
+  prompt: 'Input facilitators name', 
+  form_input_id: 'new-project-facilitator-name', 
+  form_input_name: 'project_facilitator_name', 
+  current_selection_text: 'current selection',
+  list_group_id: 'facilitator-selection-group',
+  confirm_text: 'Confirm', 
+  confirm_onclick_function: ""
