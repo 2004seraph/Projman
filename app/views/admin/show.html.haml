@@ -1,1 +1,10 @@
-show
+-# Show the currently selected module and all available options
+
+.separating-section 
+    %h2
+        #{@current_module.code + ' ' + @current_module.name}
+
+.separating-section
+    - @students.each do |student|
+        %p
+            #{student.forename + ' ' + student.surname}

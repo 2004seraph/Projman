@@ -2,7 +2,7 @@ class AdminController < ApplicationController
     
     #GET /admin
     def index
-        @admin_module = [["COM3420 Software Hut"], ["COM2009 Robotics"]]
+        @admin_modules = CourseModule.all
     end
 
     #GET /admin/new
@@ -11,6 +11,8 @@ class AdminController < ApplicationController
 
     #GET /admin/show/{id}
     def show
+        @current_module = CourseModule.find(params[:id])
+        @students = @current_module.students
     end
 
 end
