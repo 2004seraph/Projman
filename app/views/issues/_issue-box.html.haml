@@ -1,26 +1,24 @@
 - unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
 
-.card.issue-card
-  %a.card-header.issue-card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+.card.issue-card.mb-2
+  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
    href: "##{unique_id}",
    role: "button",
    "aria-expanded" => "false",
    "aria-controls" => unique_id}
-    .issue-date-title.d-flex.align-items-center
-      %span.issue-date.me-3 DD/MM/YYYY
-      %h3.issue-title.m-0 Issue Title
+    .d-flex.align-items-center
+      %span.me-3.fs-6.fw-light DD/MM/YYYY
+      %h3.m-0.fs-5.fw-medium Issue Title
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id}
     .card-body.pt-1.pb-1
       .d-flex.align-items-center.justify-content-between.pt-2
-        %span Posted by: Firstname Lastname
-        %span MODULECODE Project Name
+        .fs-6 Posted by: Firstname Lastname
+        .fs-6 MODULECODE Project Name
       .issue-text.border.p-2.mb-2
-        Insert student whining and crying about some bs Insert student whining and crying about some bs
-        Insert student whining and crying about some bs Insert student whining and crying about some bs
-        Insert student whining and crying about some bs Insert student whining and crying about some bs
+        .fs-6 Issue Text Body
       .d-flex.align-items-center
-        %span reply via email 
+        .fs-6 reply via email 
       %textarea.form-control.pt-2.pb-2.mb-2{placeholder: "Enter your text here"}
       .d-flex.justify-content-end.mb-2
         %button.btn.btn-primary.me-2

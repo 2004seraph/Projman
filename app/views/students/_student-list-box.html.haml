@@ -1,35 +1,42 @@
-- unique_id = "student-list-card-#{SecureRandom.hex(5)}"  # Generate a unique ID
-.card.student-list-card{id: unique_id}
-  .card-header.d-flex.justify-content-between
-    %button.btn.btn-light.btn-sm{onclick: "expandSection(this)"}
-      %i.bi.bi-arrows-angle-expand
-    .d-flex
-      %button.btn.btn-secondary.me-2{type: "button", "data-bs-toggle": "modal",
-       "data-bs-target": "#removeStudentsModal", onclick: "prepareRemoveStudents(this)"}
-        %i.bi.bi-trash-fill
-        Remove
-      %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal",
-       "data-bs-target": "#addStudentsModal"}
-        %i.bi.bi-plus
-        Add
-  .card-body.pt-1.pb-1
-    %table.table
-      %thead
-        %tr
-          %th{scope: "col"} 
-          %th{scope: "col"} Name
-          %th{scope: "col"} Email
-          %th{scope: "col"} Registration Number
-        %tbody
-          - 20.times do
+- ran_num = "#{SecureRandom.hex(5)}"  # Generate a unique ID
+- unique_id = "student-list-card" + ran_num
+- unique_id_collapse = "student-list-card-collapse" + ran_num
+
+.card.mb-2
+  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+   href: "##{unique_id_collapse}",
+   role: "button",
+   "aria-expanded" => "false",
+   "aria-controls" => unique_id_collapse, id:ran_num}
+    .d-flex.align-items-center
+      %h2.m-0.fs-2.fw-normal= title
+    %i.bi.bi-caret-right-fill
+  .collapse{id: unique_id_collapse}
+    .card-body.student-list-card{id: unique_id}
+      .d-flex.justify-content-end
+        %button.btn.btn-secondary.me-2{type: "button", "data-bs-toggle": "modal",
+          "data-bs-target": "#removeStudentsModal", onclick: "prepareRemoveStudents(this)"}
+          %i.bi.bi-trash-fill
+          Remove
+        %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal",
+          "data-bs-target": "#addStudentsModal"}
+          %i.bi.bi-plus
+          Add
+      %div.overflow-auto
+        %table.table
+          %thead
             %tr
-              %td
-                %input.form-check-input{type: "checkbox", value: ""}
-              %td Jakub Bala
-              %td jbala1@sheffield.ac.uk
-              %td 11294124
-          
-  .d-flex.justify-content-end
-    %button.btn.btn-light.btn-sm.m-2{onclick: "shrinkSection(this)"}
-      %i.bi.bi-arrows-angle-contract
+              %th{scope: "col"} 
+              %th{scope: "col"} Name
+              %th{scope: "col"} Email
+              %th{scope: "col"} Registration Number
+            %tbody
+              - 20.times do
+                %tr
+                  %td
+                    %input.form-check-input{type: "checkbox", value: ""}
+                  %td Jakub Bala
+                  %td jbala1@sheffield.ac.uk
+                  %td 11294124
+        
     
