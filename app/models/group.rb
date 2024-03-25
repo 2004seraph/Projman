@@ -22,7 +22,8 @@
 #
 class Group < ApplicationRecord
   belongs_to :project
-  has_many :events
+  belongs_to :assigned_facilitator
+  has_many :events, dependent: :destroy
   has_and_belongs_to_many :students
 
 end

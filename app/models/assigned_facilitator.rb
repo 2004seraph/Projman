@@ -5,17 +5,17 @@
 #  id         :bigint           not null, primary key
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  staff_id   :bigint
 #  student_id :bigint
 #
 # Indexes
 #
+#  index_assigned_facilitators_on_staff_id    (staff_id)
 #  index_assigned_facilitators_on_student_id  (student_id)
 #
-# Foreign Keys
-#
-#  fk_rails_...  (student_id => students.id)
-#
 class AssignedFacilitator < ApplicationRecord
-  belongs_to :group
+  has_many :groups
+  belongs_to :staff, optional: true
+  belongs_to :student, optional: true
 
 end
