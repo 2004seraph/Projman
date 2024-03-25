@@ -1,27 +1,4 @@
 
-:javascript
-  // Add Partial of type 'group-item-simple'
-  function addNewSimpleGroupItem(inputField, groupId, clearInput=false) {
-    itemText = inputField.value 
-    var newPartialHTML = "#{escape_javascript(render(partial: 'components/group-item-simple', locals: { item_text: 'ITEM_TEXT' }))}".replace('ITEM_TEXT', itemText);
-    appendPartial(inputField, newPartialHTML, groupId, clearInput)
-  }
-  // Add Partial of type 'group-item-date'
-  function addNewDateGroupItem(inputField, groupId, clearInput=false) {
-    itemText = inputField.value 
-    var newPartialHTML = "#{escape_javascript(render(partial: 'components/group-item-date', locals: { item_text: 'ITEM_TEXT' }))}".replace('ITEM_TEXT', itemText);
-    appendPartial(inputField, newPartialHTML, groupId, clearInput)
-  }
-  function appendPartial(inputField, newPartialHTML, groupId, clearInput){
-    var listGroup = document.getElementById(groupId);
-    if (listGroup) {
-      listGroup.insertAdjacentHTML('beforeend', newPartialHTML);
-    }
-    if(clearInput){
-      inputField.value = '';
-    }
-  }
-
 -# MAIN CONTENT
 .mb-3
   .input-group
@@ -173,7 +150,7 @@
   form_input_id: 'new-project-choice-name', 
   form_input_name: 'project_choice_name', 
   confirm_text: 'Confirm', 
-  confirm_onclick_function: "addNewSimpleGroupItem(document.getElementById('new-project-choice-name'), 'project-choices-list')"
+  confirm_onclick_function: ""
 
 -# ADD MILESTONE MODAL
 = render 'components/modal-single-text-entry', 
@@ -183,7 +160,7 @@
   form_input_id: 'new-project-milestone-name', 
   form_input_name: 'project_milestone_name', 
   confirm_text: 'Confirm', 
-  confirm_onclick_function: "addNewDateGroupItem(document.getElementById('new-project-milestone-name'), 'project-milestones-list')"
+  confirm_onclick_function: ""
 
 -# ADD FACILITATORS MODAL
 = render 'components/modal-search-multiple', 

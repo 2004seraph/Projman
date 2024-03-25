@@ -24,7 +24,7 @@
           %label.form-label{ for: form_input_id }= prompt
           .input-group.mb-4
             %input.form-control.mr-sm-2{type: "search", id: form_input_id, placeholder: "Search", aria: {label: "Search"}, autocomplete: "off"}
-            %button.btn.btn-outline-secondary{ type: "button", onclick: "addNewSimpleGroupItem(document.getElementById('#{form_input_id}'), '#{list_group_id}', true)"} Add
+            %button.btn.btn-outline-secondary{ type: "button"} Add
           %span= current_selection_text
           %ul.list-group.list-group-flush{id: list_group_id}
 
