@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_17_231948) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_25_124723) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -25,18 +25,21 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_17_231948) do
 
   create_table "assigned_facilitators", force: :cascade do |t|
     t.bigint "student_id"
+    t.bigint "staff_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["staff_id"], name: "index_assigned_facilitators_on_staff_id"
     t.index ["student_id"], name: "index_assigned_facilitators_on_student_id"
   end
 
   create_table "course_modules", id: false, force: :cascade do |t|
     t.string "code", null: false
-    t.string "name", limit: 32, null: false
-    t.string "lead_email", null: false
+    t.string "name", limit: 64, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "staff_id"
     t.index ["code"], name: "index_course_modules_on_code", unique: true
+    t.index ["staff_id"], name: "index_course_modules_on_staff_id"
   end
 
   create_table "course_modules_students", id: false, force: :cascade do |t|
@@ -129,6 +132,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_17_231948) do
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
 
+  create_table "staffs", force: :cascade do |t|
+    t.string "email", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "unique_emails", unique: true
+  end
+
   create_table "students", force: :cascade do |t|
     t.string "preferred_name", limit: 24, null: false
     t.string "forename", limit: 24, null: false
@@ -144,7 +154,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_17_231948) do
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "assigned_facilitators", "students"
+  add_foreign_key "course_modules", "staffs"
   add_foreign_key "course_modules_students", "course_modules", column: "course_module_code", primary_key: "code"
   add_foreign_key "course_modules_students", "students"
   add_foreign_key "events", "groups"

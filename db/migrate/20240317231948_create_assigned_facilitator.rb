@@ -1,8 +1,8 @@
 class CreateAssignedFacilitator < ActiveRecord::Migration[7.0]
   def change
     create_table :assigned_facilitators do |t|
-      t.references :student, null: true, foreign_key: { to_table: :students }
-      # t.references :staff?, null: true, foreign_key: { to_table: :staff? }
+      t.references :student, null: true
+      t.references :staff, null: true
 
       t.timestamps
     end

@@ -23,7 +23,7 @@ require 'student_data_helper'
 class Student < ApplicationRecord
   has_many :groups, through: :groups_students
   has_and_belongs_to_many :course_modules, foreign_key: "course_module_code", association_foreign_key: "student_id", join_table: "course_modules_students"
-  has_many :assigned_facilitators
+  has_many :assigned_facilitators, dependent: :destroy
 
   enum :fee_status, { home: 'home', overseas: 'overseas' }
 

@@ -54,8 +54,12 @@ module StudentDataHelper
 
   def generate_dummy_data_csv_string(class_module_code = "COM3420", num_records = 234)
     data = generate_dummy_data(num_records, class_module_code)
+    convert_csv_to_text(data, csv_headers)
+  end
+
+  def convert_csv_to_text(data, headers = csv_headers)
     csv_string = CSV.generate(headers: true) do |csv|
-      csv << csv_headers
+      csv << headers
       data.each { |row| csv << row }
     end
     csv_string
