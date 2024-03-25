@@ -29,7 +29,7 @@ class CreateProject < ActiveRecord::Migration[7.0]
       t.string :course_module_code, null: false
 
       t.string :name, null: false
-      t.column :status, :project_status, null: false
+      t.column :status, :project_status, null: false, default: "draft"
 
       t.integer :team_size, null: false
       t.column :team_allocation, :project_team_allocation, null: false
