@@ -13,6 +13,7 @@ class AdminController < ApplicationController
     def show
         @current_module = CourseModule.find(params[:id])
         @students = @current_module.students
+        @module_lead = Staff.find(@current_module.staff_id)
     end
 
 end
