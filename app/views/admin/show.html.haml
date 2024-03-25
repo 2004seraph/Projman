@@ -1,10 +1,60 @@
 -# Show the currently selected module and all available options
 
+:javascript
+  // Function to expand the section to maxHeight
+  function expandSection(button) {
+    var section = button.closest('.student-list-card');
+    var container = section.querySelector('.card-body');
+    var content = container.querySelector('.table');
+    var maxHeight = window.getComputedStyle(content).height.replace('px', '');
+    var maxHeight = window.getComputedStyle(content).height;
+
+    container.style.height = maxHeight;
+  }
+
+  // Function to shrink the height of the section to 200 pixels
+  function shrinkSection(button) {
+    var section = button.closest('.student-list-card');
+    var container = section.querySelector('.card-body');
+    container.style.height = '200px';
+  }
+
+  // This is to ensure that you cant expand the card more than the content of the table
+  document.querySelectorAll('.student-list-card .card-body').forEach(function(container) {
+    var content = container.querySelector('.table');
+
+    var resizeObserver = new ResizeObserver(function(event) {
+      var maxHeight = window.getComputedStyle(content).height.replace('px', '');
+      var containerHeight = event[0].contentRect.height;
+
+      resizeObserver.disconnect();
+
+      if (containerHeight > maxHeight) {
+        container.style.height = maxHeight + 'px';
+      }
+
+      requestAnimationFrame(function() { resizeObserver.observe(container); });
+    });
+
+    resizeObserver.observe(container);
+  });
+
 .separating-section 
-    %h2
-        #{@current_module.code + ' ' + @current_module.name}
+  %h2
+    #{@current_module.code + ' ' + @current_module.name}
 
 .separating-section
-    - @students.each do |student|
-        %p
-            #{student.forename + ' ' + student.surname}
+  %h3
+    Module Lead
+  %p  
+    #{@current_module.lead_email}
+  %h3
+    Updated / Created
+  %p   
+    #{@current_module.updated_at} / #{@current_module.created_at}
+%hr.divider
+
+.separating-section
+  %h2
+    Students
+  =render partial: 'student-list-box', locals: {students: @students}
