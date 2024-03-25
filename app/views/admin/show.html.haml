@@ -19,6 +19,10 @@
     container.style.height = '200px';
   }
 
+  function formSubmit() {
+    document.getElementById("email_form").submit();
+  }
+
   // This is to ensure that you cant expand the card more than the content of the table
   document.querySelectorAll('.student-list-card .card-body').forEach(function(container) {
     var content = container.querySelector('.table');
@@ -48,6 +52,10 @@
     Module Lead
   %p  
     #{@module_lead.email}
+    %button.btn.btn-primary.btn-sm.m-2{type: "button", "data-bs-toggle": "modal",
+       "data-bs-target": "#changeEmailModal"}
+      %i.bi.bi-pencil
+      Edit
   %h3
     Updated / Created
   %p   
@@ -58,3 +66,18 @@
   %h2
     Students
   =render partial: 'student-list-box', locals: {students: @students}
+
+.modal.fade{ id: "changeEmailModal", tabindex: "-1", "aria-labelledby": "changeEmailModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      .modal-header
+        %h1.modal-title.fs-5= "Edit Module Lead E-mail"
+        %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+  
+      .modal-body
+        = form_for @current_module.id, html: { id: 'modal-details', method: :patch } do |f|
+          .form-group
+            %label.form-label{ for: "new_module_lead_email" }= "New E-mail"
+            %input.form-control{ type: "text", id: "new_module_lead_email", name: "new_module_lead_email", autocomplete: "off", required: true }
+          .modal-footer
+            %button.btn.btn-primary{ onclick: 'formSubmit()', type: "submit" }= "Confirm"

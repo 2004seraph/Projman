@@ -20,6 +20,6 @@ Rails.application.routes.draw do
   get '/facilitators/marking/:module', to: 'facilitators#marking'
   get '/facilitators/team/:id', to: 'facilitators#team'
 
-  resources :admin, only: [:index, :new, :show]
+  resources :admin
 
 end
