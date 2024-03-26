@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         //On Opening Section, close all other sections, 
                         accordionElements.forEach(element => {
                             if(element == currentAccordionElement) return;
-                            console.log("closing all other accordion elements")
                             var toggleElement = element.querySelector('[data-accordion-toggle]');
                             if(!toggleElement) return;
 
@@ -27,13 +26,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             if(expanded == "true"){
                                 toggleElement.click();
                             }
-
-                            //show backToTopButton, make its onClick function a scroll that targets this toggle element
-                            if(!backToTopButton) return;
-                            backToTopButton.classList.add('show');
-                            backToTopButton.addEventListener('click', () => {
-                                toggleElement.scrollIntoView({behavior: 'smooth', block:'start'});
-                            })
+                        })
+                        //show backToTopButton, make its onClick function a scroll that targets this toggle element
+                        if(!backToTopButton) return;
+                        backToTopButton.classList.add('show');
+                        console.log("back to top button will focus on: " + toggleElement)
+                        backToTopButton.addEventListener('click', () => {
+                            toggleElement.scrollIntoView({behavior: 'smooth', block:'start'});
                         })
                     }
                     //closing the open section hides the onclick button
