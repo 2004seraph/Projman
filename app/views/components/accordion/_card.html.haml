@@ -1,4 +1,5 @@
 - ran_num = "#{SecureRandom.hex(5)}"  # Generate a unique ID
+- unique_id = "accordion-card-" + ran_num
 - unique_id_collapse = "accordion-collapse-card-" + ran_num
 
 .card.mb-2.accordion-element
@@ -12,4 +13,5 @@
       %h2.m-0.fs-2.fw-normal= title
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id_collapse}
-    = yield
+    .card-body.list-card{id: unique_id}
+      = yield

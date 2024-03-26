@@ -1,32 +1,27 @@
-- ran_num = "#{SecureRandom.hex(5)}"  # Generate a unique ID
-- unique_id = "student-list-card-" + ran_num
-
-
 = render 'components/accordion/card', title: title do
-  .card-body.student-list-card{id: unique_id}
-    .d-flex.justify-content-end
-      %button.btn.btn-secondary.me-2{type: "button", "data-bs-toggle": "modal",
-        "data-bs-target": "#removeStudentsModal", onclick: "prepareRemoveStudents(this)"}
-        %i.bi.bi-trash-fill
-        Remove
-      %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal",
-        "data-bs-target": "#addStudentsModal"}
-        %i.bi.bi-plus
-        Add
-    %div.overflow-auto
-      %table.table
-        %thead
-          %tr
-            %th{scope: "col"}
-            %th{scope: "col"} Name
-            %th{scope: "col"} Email
-            %th{scope: "col"} Registration Number
-          %tbody
-            - 20.times do
-              %tr
-                %td
-                  %input.form-check-input{type: "checkbox", value: ""}
-                %td Jakub Bala
-                %td jbala1@sheffield.ac.uk
-                %td 11294124
+  .d-flex.justify-content-end
+    %button.btn.btn-secondary.me-2{type: "button", "data-bs-toggle": "modal",
+      "data-bs-target": "#removeStudentsModal", onclick: "prepareRemoveStudents(this)"}
+      %i.bi.bi-trash-fill
+      Remove
+    %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal",
+      "data-bs-target": "#addStudentsModal"}
+      %i.bi.bi-plus
+      Add
+  %div.overflow-auto
+    %table.table
+      %thead
+        %tr
+          %th{scope: "col"}
+          %th{scope: "col"} Name
+          %th{scope: "col"} Email
+          %th{scope: "col"} Registration Number
+        %tbody
+          - 20.times do
+            %tr
+              %td
+                %input.form-check-input{type: "checkbox", value: ""}
+              %td Jakub Bala
+              %td jbala1@sheffield.ac.uk
+              %td 11294124
 

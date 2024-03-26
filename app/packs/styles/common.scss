@@ -76,7 +76,7 @@
     &[aria-expanded="false"] .bi {
         transform: rotate(0deg);
     }
-      
+
     &[aria-expanded="true"] .bi {
         transform: rotate(90deg);
     }
@@ -117,13 +117,13 @@
     border: none;
     cursor: pointer;
     box-shadow: 0px 0px 20px rgb(68 0 153 / 44%);
-    
+
     &:not(.show){
         display: none;
     }
 }
 
-.card.student-list-card{
+.card.list-card {
     .card-body{
         resize: vertical;
         height: 200px;
