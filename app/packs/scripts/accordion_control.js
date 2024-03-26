@@ -22,14 +22,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             console.log("closing all other accordion elements")
                             var toggleElement = element.querySelector('[data-accordion-toggle]');
                             if(!toggleElement) return;
-                            setTimeout(() => {
-                                toggleElement.classList.add('collapsed');
-                            }, 0);
-                            toggleElement.setAttribute('aria-expanded', 'false');
-                            console.log(toggleElement.getAttribute('aria-expanded'));
-                            var collapseElement = element.querySelector('.collapse');
-                            if(!collapseElement) return;
-                            collapseElement.classList.remove('show');
+
+                            var expanded = toggleElement.getAttribute('aria-expanded');
+                            if(expanded == "true"){
+                                toggleElement.click();
+                            }
 
                             //show backToTopButton, make its onClick function a scroll that targets this toggle element
                             if(!backToTopButton) return;
