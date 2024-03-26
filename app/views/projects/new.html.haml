@@ -2,6 +2,12 @@
 -# MAIN CONTENT
 .mb-3
   .input-group
+    %h2.input-group-text.fs-4.fw-bold.mb-0 Module
+    %select.form-select.form-select-sm.fs-5{id: "module-selection", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
+      %option{selected: true, value: "1"} COM2420 Software Hut
+      %option{value: "2"} COM2008 Functional Programming
+      %option{value: "3"} COM1001 Software Engineering
+  .input-group
     %h2.input-group-text.fs-4.fw-bold.mb-0 Project Name
     %input.form-control.fs-5.fw-semibold{type: "text", id:"project-name", placeholder:"Name"}
 
