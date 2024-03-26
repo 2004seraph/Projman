@@ -10,12 +10,28 @@
     Back to Top
     %i.bi.bi-chevron-double-up
 
-:javascript
-  window.onload = function () {
-    $(() => {
-      $("##{unique_id_container}").click(() => {
-        alert("hello")
-      })
-      console.log("hello")
-    })
-  }
+-# :javascript
+-#   window.onload = function () {
+-#     const id = "##{unique_id_container}"
+-#     const updateEvent = "scrollHeightChanged"
+-#     $(() => {
+-#       $(id).on(updateEvent, () => {
+-#         if ($(id).hasScrollBar()) {
+-#           $('#backToTopButton').show()
+-#         } else {
+-#           $('#backToTopButton').hide()
+-#         }
+-#       })
+-#       $(id).bind('DOMSubtreeModified', () => {
+-#         setTimeout(() =>
+-#         {
+-#           // $(id).trigger(updateEvent)
+-#           if ($(id).hasScrollBar()) {
+-#             $('#backToTopButton').show()
+-#           } else {
+-#             $('#backToTopButton').hide()
+-#           }
+-#         }, 3000);
+-#       });
+-#     })
+-#   }
