@@ -9,4 +9,8 @@ import '../scripts/list_group_control';
 import '../scripts/modal_control';
 import '../scripts/accordion_control';
 
+import '../scripts/custom-functions'
+
+window.$ = $
+
 Rails.start();

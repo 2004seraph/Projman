@@ -1,8 +1,21 @@
+- ran_num = "#{SecureRandom.hex(5)}"  # Generate a unique ID
+- unique_id_container = "accordion-container-" + ran_num
 
-.accordion-section
+.accordion-section{id: "#{unique_id_container}"}
   -# the accordion cards
   = yield
+
 
   #backToTopButton.btn.btn-primary
     Back to Top
     %i.bi.bi-chevron-double-up
+
+:javascript
+  window.onload = function () {
+    $(() => {
+      $("##{unique_id_container}").click(() => {
+        alert("hello")
+      })
+      console.log("hello")
+    })
+  }
