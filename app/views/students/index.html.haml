@@ -57,10 +57,14 @@
 -# When checkbox gets checked, you add the associated @student.email to the corresponding @selected_students index
 -# And do the the same but with removal for unchecking the box
 
+.accordion-section
+  = render 'student-list-box', title: "COM2420 Software Hut" 
+  = render 'student-list-box', title: "COM2108 Functional Programming"   
+  = render 'student-list-box', title: "COM2108 Functional Programming"  
 
-= render 'student-list-box', title: "COM2420 Software Hut" 
-= render 'student-list-box', title: "COM2108 Functional Programming"   
-= render 'student-list-box', title: "COM2108 Functional Programming"   
+  #backToTopButton.btn.btn-primary
+    Back to Top
+    %i.bi.bi-chevron-double-up 
 
 .modal.fade#removeStudentsModal{tabindex: "-1", "aria-labelledby": "removeStudentsModal", "aria-hidden": "true"}
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
@@ -73,10 +77,6 @@
       .modal-footer
         %button.btn.btn-secondary{"data-bs-dismiss": "modal", type: "button"} Cancel
         %button.btn.btn-primary{type: "button"} Yes, remove them
-
-#backToTopButton.btn.btn-primary
-  Back to Top
-  %i.bi.bi-chevron-double-up
 
 = render 'components/modal-search-multiple', 
   modal_id: 'addStudentsModal', 
