@@ -20,6 +20,8 @@ Rails.application.routes.draw do
   get '/facilitators/marking/:module', to: 'facilitators#marking'
   get '/facilitators/team/:id', to: 'facilitators#team'
 
+  get '/projects/:id/teams', to: 'lead#teams'
+
   resources :admin
 
 end

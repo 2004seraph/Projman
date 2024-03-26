@@ -1,0 +1,15 @@
+- ran_num = "#{SecureRandom.hex(5)}"  # Generate a unique ID
+- unique_id_collapse = "accordion-collapse-card-" + ran_num
+
+.card.mb-2.accordion-element
+  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+   href: "##{unique_id_collapse}",
+   role: "button",
+   "data-accordion-toggle" => "",
+   "aria-expanded" => "false",
+   "aria-controls" => unique_id_collapse, id:ran_num}
+    .d-flex.align-items-center
+      %h2.m-0.fs-2.fw-normal= title
+    %i.bi.bi-caret-right-fill
+  .collapse{id: unique_id_collapse}
+    = yield
