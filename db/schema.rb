@@ -18,9 +18,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_25_124723) do
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "group_event_type", ["generic", "milestone", "chat", "issue"]
   create_enum "milestone_type", ["individual", "staff", "group", "live", "final"]
-  create_enum "project_choice_allocation", ["random", "individual_preference", "team_preference"]
+  create_enum "project_choice_allocation", ["random_project_allocation", "individual_preference_project_allocation", "team_preference_project_allocation"]
   create_enum "project_status", ["draft", "student_preference", "student_preference_review", "team_preference", "team_preference_review", "live", "completed", "archived"]
-  create_enum "project_team_allocation", ["random", "preference_based"]
+  create_enum "project_team_allocation", ["random_team_allocation", "preference_based_team_allocation"]
   create_enum "student_fee_status", ["home", "overseas"]
 
   create_table "assigned_facilitators", force: :cascade do |t|
@@ -49,6 +49,21 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_25_124723) do
     t.index ["student_id"], name: "index_course_modules_students_on_student_id"
   end
 
+  create_table "course_projects", force: :cascade do |t|
+    t.string "course_module_code", null: false
+    t.string "name", null: false
+    t.enum "status", default: "draft", null: false, enum_type: "project_status"
+    t.integer "team_size", null: false
+    t.enum "team_allocation", null: false, enum_type: "project_team_allocation"
+    t.integer "preferred_teammates", default: 0
+    t.integer "avoided_teammates", default: 0
+    t.enum "project_allocation", null: false, enum_type: "project_choice_allocation"
+    t.json "project_choices_json", default: "{}"
+    t.json "markscheme_json", default: "{}"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
@@ -74,14 +89,14 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_25_124723) do
   end
 
   create_table "groups", force: :cascade do |t|
-    t.bigint "project_id", null: false
+    t.bigint "course_projects_id", null: false
     t.string "name", default: "My Group"
     t.json "profile", default: "{}"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "assigned_facilitator_id"
     t.index ["assigned_facilitator_id"], name: "index_groups_on_assigned_facilitator_id"
-    t.index ["project_id"], name: "index_groups_on_project_id"
+    t.index ["course_projects_id"], name: "index_groups_on_course_projects_id"
   end
 
   create_table "groups_students", id: false, force: :cascade do |t|
@@ -99,28 +114,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_25_124723) do
   end
 
   create_table "milestones", force: :cascade do |t|
-    t.bigint "project_id", null: false
+    t.bigint "course_projects_id", null: false
     t.enum "type", null: false, enum_type: "milestone_type"
     t.date "deadline", null: false
     t.json "json_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["project_id"], name: "index_milestones_on_project_id"
-  end
-
-  create_table "projects", force: :cascade do |t|
-    t.string "course_module_code", null: false
-    t.string "name", null: false
-    t.enum "status", default: "draft", null: false, enum_type: "project_status"
-    t.integer "team_size", null: false
-    t.enum "team_allocation", null: false, enum_type: "project_team_allocation"
-    t.integer "preferred_teammates", default: 0
-    t.integer "avoided_teammates", default: 0
-    t.enum "project_allocation", null: false, enum_type: "project_choice_allocation"
-    t.json "project_choices_json", default: "{}"
-    t.json "markscheme_json", default: "{}"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.index ["course_projects_id"], name: "index_milestones_on_course_projects_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -157,12 +157,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_25_124723) do
   add_foreign_key "course_modules", "staffs"
   add_foreign_key "course_modules_students", "course_modules", column: "course_module_code", primary_key: "code"
   add_foreign_key "course_modules_students", "students"
+  add_foreign_key "course_projects", "course_modules", column: "course_module_code", primary_key: "code"
   add_foreign_key "events", "groups"
   add_foreign_key "groups", "assigned_facilitators"
-  add_foreign_key "groups", "projects"
+  add_foreign_key "groups", "course_projects", column: "course_projects_id"
   add_foreign_key "groups_students", "groups", on_delete: :cascade
   add_foreign_key "groups_students", "students", on_delete: :cascade
   add_foreign_key "milestone_responses", "milestones"
-  add_foreign_key "milestones", "projects"
-  add_foreign_key "projects", "course_modules", column: "course_module_code", primary_key: "code"
+  add_foreign_key "milestones", "course_projects", column: "course_projects_id"
 end

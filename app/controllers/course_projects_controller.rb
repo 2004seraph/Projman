@@ -1,4 +1,4 @@
-class ProjectsController < ApplicationController
+class CourseProjectsController < ApplicationController
 
     def index
         @view_as_manager = true
@@ -10,9 +10,10 @@ class ProjectsController < ApplicationController
     end
 
     def new
-        @project_choices = ["Mental Health Chatbot", "Software Hut Meta Project"]
+        @project = CourseProject.new
     end
 
+    # POST
     def new_project_add_project_choice
         project_choice_name = params[:project_choice_name]
         puts "Project choice name: #{project_choice_name}"
