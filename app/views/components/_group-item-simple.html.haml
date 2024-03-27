@@ -7,8 +7,8 @@
 - form_action = defined?(deletion_action_url) ? deletion_action_url : '/placeholder_post_url'
 
 %li.list-group-item.d-flex.ps-1.align-items-center.list-group-item-partial
-  %form{ action: form_action, method: :post, class: "d-flex align-items-center" }
-    %button.btn.btn-light.btn-sm.me-2.btn-delete(type="submit")
+  = form_with(url: form_action, method: :post, local: false, class: "d-flex align-items-center") do |form|
+    = form.button(type: "submit", class: "btn btn-light btn-sm me-2 btn-delete") do
       %i.bi.bi-x.text-secondary
     %span= item_text
-    %input(type="hidden" name="item_text" value=item_text)
+    = form.hidden_field :item_text, value: item_text

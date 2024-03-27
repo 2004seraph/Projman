@@ -3,10 +3,11 @@ import $ from 'jquery';
 
 $(function() {
     // Event delegation for button deletion functionality
-    $(document).on('click', '.list-group-item-partial button.btn-delete', function() {
+    $(document).on('click', '.list-group-item-partial button.btn-delete', function(event) {
+        event.preventDefault();
         var listItem = $(this).closest('.list-group-item-partial');
         var form_action = listItem.find('form').attr('action');
-        
+    
         // Make the AJAX request
         $.ajax({
             url: form_action, // Get the form action URL
