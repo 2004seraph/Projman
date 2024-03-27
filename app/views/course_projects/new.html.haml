@@ -1,11 +1,14 @@
+- project_data = nil
+- if session[:new_project_data].present?
+  - project_data = session[:new_project_data]
 
 -# MAIN CONTENT
 .mb-3
   .input-group
     %h2.input-group-text.fs-4.fw-bold.mb-0 Module
     %select.form-select.form-select-sm.fs-5{id: "module-selection", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
-      - @modules_hash.each do |code, name|
-        %option{value: code, selected: (code == @modules_hash.keys.first)}
+      - project_data[:modules_hash].each do |code, name|
+        %option{value: code, selected: (code == project_data[:modules_hash].keys.first)}
           = "#{code} #{name}"
 
   .input-group
@@ -20,6 +23,8 @@
 
   .card-body.pb-3
     %ul.list-group.list-group-flush.mb-2#project-choices-list    
+      - project_data[:project_choices].each do |name|
+        = render partial: 'components/group-item-simple', locals: { item_text: name, deletion_action_url:new_project_remove_project_choice_projects_path }
 
     %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal",
        "data-bs-target": "#add-project-choice-modal"}
@@ -31,8 +36,8 @@
         %label.col-form-label.fs-6.me-3{for: "project-allocation-method"} Project Allocation
       .col-8
         %select.form-select.form-select-sm{id: "project-allocation-method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
-          - @project_allocation_modes_hash.each do |value, string|
-            %option{value: value, selected: (value == @project_allocation_modes_hash.keys.first)}
+          - project_data[:project_allocation_modes_hash].each do |value, string|
+            %option{value: value, selected: (value == project_data[:project_allocation_modes_hash].keys.first)}
               = "#{string}"
   
 -# TEAM CONFIGURATION
@@ -145,6 +150,7 @@
   modal_id: 'add-project-choice-modal',
   title: 'New Project Choice',
   prompt: 'Input project choice name',
+  submission_url: new_project_add_project_choice_projects_path,
   form_input_id: 'new-project-choice-name', 
   form_input_name: 'project_choice_name', 
   confirm_text: 'Confirm', 

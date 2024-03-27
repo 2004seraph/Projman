@@ -3,6 +3,7 @@
 -# LOCAL VARIABLES:
 -# modal_id
 -# title
+-# submission_url    (form POST submission URL)
 -# prompt
 -# form_input_id
 -# form_input_name
@@ -12,14 +13,15 @@
 .modal.fade{ id: modal_id, tabindex: "-1", "aria-labelledby": "#{modal_id}", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
     .modal-content
-      .modal-header
-        %h1.modal-title.fs-5= title
-        %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+      = form_with(url: (defined?(submission_url) ? submission_url : '/placeholder_post_url'), method: :post, local: false) do |form|
+        .modal-header
+          %h1.modal-title.fs-5= title
+          %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
 
-      .modal-body
-        .form-group
-          %label.form-label{ for: form_input_id }= prompt
-          %input.form-control{ type: "text", id: form_input_id, name: form_input_name, autocomplete: "off", required: "true" }
+        .modal-body
+          .form-group
+            = form.label form_input_id, prompt
+            = form.text_field form_input_name, id: form_input_id, class: "form-control", autocomplete: "off", required: "true"
 
-      .modal-footer
-        %button.btn.btn-primary{ type: "submit", "data-bs-dismiss": "modal", onclick: confirm_onclick_function }= confirm_text
+        .modal-footer
+          %button.btn.btn-primary{ type: "submit", "data-bs-dismiss": "modal", onclick: confirm_onclick_function }= confirm_text
