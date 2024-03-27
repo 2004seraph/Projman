@@ -39,14 +39,14 @@ class CourseProject < ApplicationRecord
   }
 
   enum :team_allocation, {
-    random_team_allocation: 'random',
-    preference_based_team_allocation: 'preference_based'
+    random_team_allocation: 'Random',
+    preference_based_team_allocation: 'Preference Form Based'
   }
 
   enum :project_allocation, {
-    random_project_allocation: 'random',
-    individual_preference_project_allocation: 'individual_preference',
-    team_preference_project_allocation: 'team_preference'
+    random_project_allocation: 'Random',
+    individual_preference_project_allocation: 'Individial Preference Form',
+    team_preference_project_allocation: 'Team Preference Form'
   }
 
 end

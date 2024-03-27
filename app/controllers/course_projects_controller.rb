@@ -10,7 +10,12 @@ class CourseProjectsController < ApplicationController
     end
 
     def new
+        puts "CREATING NEW PROJECT"
         @project = CourseProject.new
+        @modules_hash = CourseModule.order(:code).pluck(:code, :name).to_h
+        @project_allocation_modes_hash = CourseProject.project_allocations
+        puts @project_allocation_modes_hash
+        
     end
 
     # POST

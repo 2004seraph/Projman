@@ -28,10 +28,6 @@
           %span= current_selection_text
           %ul.list-group.list-group-flush{id: list_group_id}
 
-            = render 'components/group-item-simple', item_text: 'Example Item'
-            = render 'components/group-item-simple', item_text: 'Example Item'
-            = render 'components/group-item-simple', item_text: 'Example Item'
-
       .modal-footer
         %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Close
         %button.btn.btn-primary{ type: "submit", "data-bs-dismiss": "modal", onclick: confirm_onclick_function }= confirm_text
