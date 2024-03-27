@@ -1,7 +1,7 @@
 class Project < ApplicationRecord
   has_many :groups, dependent: :destroy
   has_many :milestones, dependent: :destroy
-  belongs_to :module
+  belongs_to :course_module
 
   validates :name, presence: true
 

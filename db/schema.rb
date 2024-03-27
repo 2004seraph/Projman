@@ -111,7 +111,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_25_124723) do
   create_table "projects", force: :cascade do |t|
     t.string "course_module_code", null: false
     t.string "name", null: false
-    t.enum "status", null: false, enum_type: "project_status"
+    t.enum "status", default: "draft", null: false, enum_type: "project_status"
     t.integer "team_size", null: false
     t.enum "team_allocation", null: false, enum_type: "project_team_allocation"
     t.integer "preferred_teammates", default: 0

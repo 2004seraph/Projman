@@ -1,5 +1,16 @@
 
 = render 'components/accordion/container' do
-  = render 'teams-accordion-card', team_name: "hello"
-  = render 'teams-accordion-card', team_name: "hello 2"
-  = render 'teams-accordion-card', team_name: "hell 3o"
+  = render 'teams-accordion-card', team_name: "Team 1", team_facilitator: "Jerry Jackson"
+  = render 'teams-accordion-card', team_name: "Team 15", team_facilitator: "David Firth"
+  = render 'teams-accordion-card', team_name: "Team 3", team_facilitator: "Music Mouth"
+
+:javascript
+  // This is to allow a row to be clicked and have it check the selection box
+  document.querySelectorAll('.list-card .table tbody tr').forEach(function(row) {
+    row.addEventListener('click', function(event) {
+      if (event.target.tagName !== 'INPUT') { // Check if the clicked element is not an input
+        var checkbox = row.querySelector('.form-check-input');
+        checkbox.checked = !checkbox.checked; // Toggle checkbox state
+      }
+    });
+  });

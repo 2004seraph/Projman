@@ -21,7 +21,7 @@ FileUtils.chdir APP_ROOT do
   system! "bin/yarn"
 
   # Install Python dependencies
-  system! "bin/pip install -r vendor/dummy_data/requirements.txt"
+  #system! "bin/pip install -r vendor/dummy_data/requirements.txt"
 
   # puts "\n== Copying sample files =="
   unless File.exist?("config/database.yml")
