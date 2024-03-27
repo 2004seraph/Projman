@@ -1,3 +1,51 @@
+- ran_num = "#{SecureRandom.hex(5)}"  # Generate a unique ID
+- unique_id = "accordion-card-" + ran_num
+- unique_id_collapse = "accordion-collapse-card-" + ran_num
 
-= render 'components/accordion/card', title: team_name do
-  %h2=team_name
+.card.mb-2.accordion-element
+  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+   href: "##{unique_id_collapse}",
+   role: "button",
+   "data-accordion-toggle" => "",
+   "aria-expanded" => "false",
+   "aria-controls" => unique_id_collapse, id:ran_num}
+    .d-flex.align-items-center.gap-3{ style: "flex: 1;" }
+      %table{ style: "flex: 1;" }
+        %tbody
+          %tr.d-flex
+            %td{ style: "flex: 1;" }
+              %h2.fs-4=team_name
+            %td.d-flex.gap-2{ style: "flex: 3;" }
+              = button_tag '', type: 'button', class: "btn btn-secondary fs-8 bi-pencil-square", style: "height: auto;"
+              %h2.fs-4 Facilitator: #{team_facilitator}
+
+    %i.bi.bi-caret-right-fill
+  .collapse{id: unique_id_collapse}
+    .card-body.list-card{id: unique_id}
+      %div.overflow-auto
+        .d-flex.justify-content-between
+          -# %h3.fs-6 Group Members
+          .row
+        %table.table
+          %thead
+            %tr
+              %th{scope: "col"}
+              %th{scope: "col"} Name
+              %th{scope: "col"} Email
+              %th{scope: "col"} Registration Number
+            %tbody
+              - 5.times do
+                %tr
+                  %td
+                    %input.form-check-input{type: "checkbox", value: ""}
+                  %td Jakub Bala
+                  %td jbala1@sheffield.ac.uk
+                  %td 11294124
+              %tr
+                %td.bg-dark.rounded-start-4
+                  = button_tag '+', type: 'button', class: "btn btn-primary", style: "height: auto;"
+                %td.bg-dark Add Student
+                %td.bg-dark.rounded-end-4
+                  %input.form-control.mr-sm-2{type: "search", id: "team_add_student", placeholder: "Student Email", aria: {label: "Search"}, autocomplete: "email"}
+                %td
+                  = button_tag 'Remove Selected Students', type: 'button', class: "btn btn-secondary fs-8", style: "height: auto;"
