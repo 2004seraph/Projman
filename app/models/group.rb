@@ -8,17 +8,17 @@
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  assigned_facilitator_id :bigint
-#  project_id              :bigint           not null
+#  course_projects_id      :bigint           not null
 #
 # Indexes
 #
 #  index_groups_on_assigned_facilitator_id  (assigned_facilitator_id)
-#  index_groups_on_project_id               (project_id)
+#  index_groups_on_course_projects_id       (course_projects_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (assigned_facilitator_id => assigned_facilitators.id)
-#  fk_rails_...  (project_id => projects.id)
+#  fk_rails_...  (course_projects_id => course_projects.id)
 #
 class Group < ApplicationRecord
   belongs_to :project

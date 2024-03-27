@@ -1,4 +1,4 @@
-class ProjectsController < ApplicationController
+class CourseProjectsController < ApplicationController
 
     def index
         @view_as_manager = true
@@ -10,6 +10,7 @@ class ProjectsController < ApplicationController
     end
 
     def new
+        @project = CourseProject.new
     end
 
     # POST

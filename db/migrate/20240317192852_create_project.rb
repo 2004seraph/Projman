@@ -14,18 +14,18 @@ class CreateProject < ActiveRecord::Migration[7.0]
 
     create_enum :project_team_allocation,
       %w[
-        random
-        preference_based
+        random_team_allocation
+        preference_based_team_allocation
       ]
 
     create_enum :project_choice_allocation,
       %w[
-        random
-        individual_preference
-        team_preference
+        random_project_allocation
+        individual_preference_project_allocation
+        team_preference_project_allocation
       ]
 
-    create_table :projects do |t|
+    create_table :course_projects do |t|
       t.string :course_module_code, null: false
 
       t.string :name, null: false

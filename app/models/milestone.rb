@@ -2,21 +2,21 @@
 #
 # Table name: milestones
 #
-#  id         :bigint           not null, primary key
-#  deadline   :date             not null
-#  json_data  :json
-#  type       :enum             not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  project_id :bigint           not null
+#  id                 :bigint           not null, primary key
+#  deadline           :date             not null
+#  json_data          :json
+#  type               :enum             not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  course_projects_id :bigint           not null
 #
 # Indexes
 #
-#  index_milestones_on_project_id  (project_id)
+#  index_milestones_on_course_projects_id  (course_projects_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (project_id => projects.id)
+#  fk_rails_...  (course_projects_id => course_projects.id)
 #
 class Milestone < ApplicationRecord
   has_many :milestone_responses, dependent: :destroy
