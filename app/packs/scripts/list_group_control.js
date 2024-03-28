@@ -3,9 +3,25 @@ import $ from 'jquery';
 
 $(function() {
     // Event delegation for button deletion functionality
-    $(document).on('click', '.list-group-item-partial button.btn-delete', function() {
-        var listItem = $(this).closest('.list-group-item');
-        listItem.remove();
+    $(document).on('click', '.list-group-item-partial button.btn-delete', function(event) {
+        event.preventDefault();
+        var listItem = $(this).closest('.list-group-item-partial');
+        var form_action = listItem.find('form').attr('action');
+    
+        // Make the AJAX request
+        $.ajax({
+            url: form_action, // Get the form action URL
+            method: 'POST',
+            data: listItem.find('form').serialize(), // Serialize form data
+            success: function(response) {
+                // Handle success response here
+                listItem.remove(); // Remove the list item
+            },
+            error: function(xhr, status, error) {
+                // Handle error response here
+                console.error("AJAX request failed:", error);
+            }
+        });
     });
 });
 

@@ -20,6 +20,10 @@
 #
 #  fk_rails_...  (course_module_code => course_modules.code)
 #
+# project_choices_json format:
+# { "1": "Project Choice A"
+#   "2": "Project Choice B"}
+
 class CourseProject < ApplicationRecord
   has_many :groups, dependent: :destroy
   has_many :milestones, dependent: :destroy
@@ -39,14 +43,14 @@ class CourseProject < ApplicationRecord
   }
 
   enum :team_allocation, {
-    random_team_allocation: 'random_team_allocation',
-    preference_based_team_allocation: 'preference_based_team_allocation'
+    random_team_allocation: 'Random',
+    preference_based_team_allocation: 'Preference Form Based'
   }
 
   enum :project_allocation, {
-    random_project_allocation: 'random_project_allocation',
-    individual_preference_project_allocation: 'individual_preference_project_allocation',
-    team_preference_project_allocation: 'team_preference_project_allocation'
+    random_project_allocation: 'Random',
+    individual_preference_project_allocation: 'Individial Preference Form',
+    team_preference_project_allocation: 'Team Preference Form'
   }
 
 end

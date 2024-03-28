@@ -2,8 +2,13 @@
 
 -# LOCAL VARIABLES:
 -# item_text
+-# deletion_action_url
+
+- form_action = defined?(deletion_action_url) ? deletion_action_url : '/placeholder_post_url'
 
 %li.list-group-item.d-flex.ps-1.align-items-center.list-group-item-partial
-  %button.btn.btn-light.btn-sm.me-2.btn-delete
-    %i.bi.bi-x.text-secondary
-  = item_text
+  = form_with(url: form_action, method: :post, local: false, class: "d-flex align-items-center") do |form|
+    = form.button(type: "submit", class: "btn btn-light btn-sm me-2 btn-delete") do
+      %i.bi.bi-x.text-secondary
+    %span= item_text
+    = form.hidden_field :item_text, value: item_text
