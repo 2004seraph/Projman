@@ -4,11 +4,39 @@ document.addEventListener('DOMContentLoaded', function () {
     var modals = document.querySelectorAll('.modal');
     modals.forEach(function(modal) {
         modal.addEventListener('show.bs.modal', function () {
-        var inputFields = modal.querySelectorAll('input[type="text"]');
-        inputFields.forEach(function(inputField) {
-            inputField.value = ''; // Clear the input field
+
+            // CLEAR INPUT FIELDS
+            var inputFields = modal.querySelectorAll('input[type="text"]');
+            var confirmButton = modal.querySelector('.btn-primary[type="submit"]');
+            inputFields.forEach(function(inputField) {
+                inputField.value = ''; // Clear the input field
+                confirmButton.disabled = true;
+            });
+
+            // IF THIS IS A SEARCH-MULTIPLE-MODAL, CLEAR LIST
+            if (modal.classList.contains('search-multiple-modal')) {
+                // Find the element with the class ".list-group" and remove all its children
+                var listGroup = modal.querySelector('.list-group');
+                listGroup.innerHTML = ''; // Remove all children
+            }
+            //IF MODAL HAS A ON-OPEN-ACTION DEFINED, POST IT WITH AJAX
+            // Check if the modal has the data-on-open-action attribute
+            var onOpenActionUrl = modal.getAttribute('data-on-open-action');
+            if (onOpenActionUrl && onOpenActionUrl !== '') {
+                // Send AJAX request to the path specified in the attribute
+                $.ajax({
+                    url: onOpenActionUrl,
+                    method: 'POST',
+                    success: function(response) {
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error response
+                        console.error("AJAX request failed:", error);
+                    }
+                });
+            }
         });
-        });
+
     });
 
     // Ensure modals with an input field cant have the field left empty
@@ -52,8 +80,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 confirmButton.disabled = true;
 
                 inputField.addEventListener('input', function() {
-                    if (inputField.checkValidity()) {
+                    if (inputField && inputField.value !== '') {
                         confirmButton.disabled = false;
+                    }
+                    else{
+                        confirmButton.disabled = true;
                     }
                 });
             }

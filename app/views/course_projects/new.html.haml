@@ -51,7 +51,7 @@
         %label.col-form-label.fs-6.me-3{for: "team-size"} Team Size  
       .col-8  
         .input-group.mb-2{style: "width:fit-content"}
-          %input.form-control.form-control-sm{ type: "number", id: "team-size", min: "0"}
+          %input.form-control.form-control-sm{ type: "number", id: "team-size", min: "0", value: "4"}
 
     .row.align-items-center
       .col
@@ -72,14 +72,14 @@
         %label.col-form-label.fs-6.me-3{for: "preferred-teammates"} Preferred Teammates
       .col-8
         .input-group{style: "width:fit-content"}
-          %input.form-control.form-control-sm{ type: "number", id: "preferred-teammates", min: "0"}
+          %input.form-control.form-control-sm{ type: "number", id: "preferred-teammates", min: "0", value: "2"}
 
     .row.align-items-center
       .col
         %label.col-form-label.fs-6{for: "avoided-teammates"} Avoided Teammates
       .col-8
         .input-group{style: "width:fit-content"}
-          %input.form-control.form-control-sm{ type: "number", id: "avoided-teammates", min: "0"}
+          %input.form-control.form-control-sm{ type: "number", id: "avoided-teammates", min: "0",  value: "2"}
 
 -# DEADLINES AND MILESTONES
 .card#timings.mb-3
@@ -124,9 +124,9 @@
     %h2.fs-4.m-0 Project Facilitators
 
   .card-body.pb-3
-    %ul.list-group.list-group-flush.mb-2
+    %ul.list-group.list-group-flush.mb-2#project-facilitators-list
 
-    %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal",
+    %button.btn.btn-primary.mb-2{type: "button", id: "open-add-facilitators-modal", "data-bs-toggle": "modal",
        "data-bs-target": "#add-project-facilitators-modal"}
       %i.bi.bi-plus
       Add
@@ -161,6 +161,7 @@
   modal_id: 'add-project-milestone-modal', 
   title: 'New Project Milestone', 
   prompt: 'Input milestone name', 
+  submission_url: new_project_add_project_milestone_projects_path,
   form_input_id: 'new-project-milestone-name', 
   form_input_name: 'project_milestone_name', 
   confirm_text: 'Confirm', 
@@ -176,4 +177,7 @@
   current_selection_text: 'current selection',
   list_group_id: 'facilitator-selection-group',
   confirm_text: 'Confirm', 
-  confirm_onclick_function: ""
+  confirm_onclick_function: "",
+  add_to_selection_url: new_project_add_to_facilitator_selection_projects_path,
+  submission_url: new_project_add_facilitator_selection_projects_path,
+  on_open_action_url: new_project_clear_facilitator_selection_projects_path
