@@ -107,17 +107,21 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_25_124723) do
 
   create_table "milestone_responses", force: :cascade do |t|
     t.bigint "milestone_id", null: false
-    t.json "json_data"
+    t.bigint "students_id"
+    t.bigint "staff_id"
+    t.json "json_data", default: "{}", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["milestone_id"], name: "index_milestone_responses_on_milestone_id"
+    t.index ["staff_id"], name: "index_milestone_responses_on_staff_id"
+    t.index ["students_id"], name: "index_milestone_responses_on_students_id"
   end
 
   create_table "milestones", force: :cascade do |t|
     t.bigint "course_projects_id", null: false
     t.enum "type", null: false, enum_type: "milestone_type"
     t.date "deadline", null: false
-    t.json "json_data"
+    t.json "json_data", default: "{}", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_projects_id"], name: "index_milestones_on_course_projects_id"

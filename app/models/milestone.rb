@@ -4,7 +4,7 @@
 #
 #  id                 :bigint           not null, primary key
 #  deadline           :date             not null
-#  json_data          :json
+#  json_data          :json             not null
 #  type               :enum             not null
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null

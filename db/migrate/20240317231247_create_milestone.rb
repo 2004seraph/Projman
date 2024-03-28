@@ -8,7 +8,7 @@ class CreateMilestone < ActiveRecord::Migration[7.0]
       t.column :type, :milestone_type, null: false
       t.date :deadline, null: false
 
-      t.json :json_data
+      t.json :json_data, null: false, default: "{}"
 
       t.timestamps
     end
