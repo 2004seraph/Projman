@@ -32,11 +32,12 @@ class CourseProjectsController < ApplicationController
     def new
         modules_hash = CourseModule.order(:code).pluck(:code, :name).to_h
         project_allocation_modes_hash = CourseProject.project_allocations
-        puts project_allocation_modes_hash
+        team_allocation_modes_hash = CourseProject.team_allocations
 
         session[:new_project_data] = {
             modules_hash: modules_hash,
             project_allocation_modes_hash: project_allocation_modes_hash,
+            team_allocation_modes_hash: team_allocation_modes_hash,
             project_choices: ["Example Choice 1"],
             project_milestones: [],
             facilitator_selection: [],
@@ -122,9 +123,5 @@ class CourseProjectsController < ApplicationController
     def new_project_remove_facilitator
         @facilitator_email = params[:item_text]
         session[:new_project_data][:project_facilitators].delete(@facilitator_email)
-    end
-
-    def new_project_toggle_project_choices
-        session[:new_project_data][:project_choices_enabled] = params[:isChecked]
     end
 end
