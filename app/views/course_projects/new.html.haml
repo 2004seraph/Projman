@@ -60,8 +60,9 @@
         %label.col-form-label.fs-6.me-3{for: "team-allocation-method"} Team Allocation Mode
       .col-8
         %select.form-select.form-select-sm{id: "team-allocation-method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
-          %option{selected: true, value: "1"} Random
-          %option{value: "2"} Preference Form + Algorithm
+          - project_data[:team_allocation_modes_hash].each do |value, string|
+            %option{value: value, selected: (value == project_data[:team_allocation_modes_hash].keys.first)}
+              = "#{string}"
 
 -# TEAM PREFERENCE FORM SETTINGS
 .card#team-preference-form-settings.mb-3

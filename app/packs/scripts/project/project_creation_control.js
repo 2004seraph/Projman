@@ -1,25 +1,25 @@
 import $ from 'jquery';
 
 $(function() {
+
+    function runChecks() {
+        // Project choices enable checkbox change event
+        var projectChoicesChecked = $('#project-choices-enable').is(':checked');
+        $('#project-choices .card-body').toggleClass('display-none', !projectChoicesChecked);
+        $('#project-preference-form-deadline-row').toggleClass('display-none', !projectChoicesChecked);
+
+        // Team allocation method select box change event
+        var teamAllocationMethodValue = $('#team-allocation-method').val();
+        $('#team-preference-form-settings').toggleClass('display-none', teamAllocationMethodValue !== "preference_based_team_allocation");
+    }
+
+    runChecks();
+
     $(document).on('change', '#project-choices-enable', function() {
-        var isChecked = $(this).is(':checked');
-        console.log("Checkbox checked: ", isChecked);
-        var projectChoicesUrl = $(this).data('url');
+        runChecks();
 
-        $('#project-choices .card-body').toggleClass('display-none', !isChecked);
-        $('#project-preference-form-deadline-row').toggleClass('display-none', !isChecked);
-
-        // Send an AJAX request
-        $.ajax({
-            url: projectChoicesUrl,
-            method: 'POST',
-            data: { isChecked: isChecked },
-            success: function(response) {
-            },
-            error: function(xhr, status, error) {
-                // Handle the error response
-                console.error('AJAX request failed:', error);
-            }
-        });
+    });
+    $(document).on('change', '#team-allocation-method', function() {
+        runChecks();
     });
 });
