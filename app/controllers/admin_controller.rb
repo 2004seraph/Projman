@@ -15,13 +15,29 @@ class AdminController < ApplicationController
     def create 
 
         #Checks for unique module code
-        unless (CourseModule.where(code: params[:course_module][:code]).empty?)
+        unless (CourseModule.where(code: (params[:course_module][:code]).strip).empty?)
             redirect_to new_admin_path, alert: "The Module Code is already in use."
             return
         end
 
         #CHECK FOR EMAIL -EMAIL FUNCTIONALITY 
-        @lead = Staff.where(email: params[:new_module_lead_email]).first
+        @lead = params[:new_module_lead_email]
+        @confirmation = params[:new_module_lead_email_confirmation]
+
+        unless (@lead == @confirmation)
+            redirect_to new_admin_path, alert: "Update unsuccesful - E-mail inputs did not match."
+            return
+        end
+
+        @lead = Staff.where(email: @lead).first
+        
+        #Creates new staff account and links it to the module if no staff found in system
+        if @lead.nil?
+            @lead = Staff.new(email: @confirmation)
+            unless @lead.save 
+                redirect_to admin_path, alert: "Update unsuccesful - Invalid e-mail"
+            end    
+        end
 
         #Checks that the student_csv is compatible with the created module
         @student_csv = CSV.read(params[:student_csv].tempfile)
@@ -49,7 +65,10 @@ class AdminController < ApplicationController
     def update
 
         @new_name = params[:new_module_name]
-        @new_lead = params[:new_module_lead_emaill]
+
+        @new_lead = params[:new_module_lead_email]
+        @confirmation = params[:new_module_lead_email_confirmation]
+
         @new_student_list = params[:new_module_student_list]
 
         if @new_name.nil?
@@ -72,7 +91,26 @@ class AdminController < ApplicationController
                 end
 
             else
-                @current_module.update_attribute(:staff_id, @new_lead.id)
+
+                unless (@new_lead == @confirmation)
+                    redirect_to admin_path, alert: "Update unsuccesful - E-mail inputs did not match."
+                    return
+                end
+
+                @new_lead = Staff.where(email: @new_lead).first
+                
+                #Creates new staff account and links it to the module if no staff found in system
+                if @new_lead.nil?
+                    @new_staff = Staff.new(email: @confirmation)
+                    if @new_staff.save 
+                        @current_module.update_attribute(:staff_id, @new_staff.id)
+                    else
+                        redirect_to admin_path, alert: "Update unsuccesful - Invalid e-mail"
+                    end    
+                else
+                    @current_module.update_attribute(:staff_id, @new_lead.id)
+                end
+
                 if @current_module.valid?
                     redirect_to admin_path, notice: "Module Leader updated successfully."
                 else
