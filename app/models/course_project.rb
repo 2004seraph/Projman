@@ -20,9 +20,6 @@
 #
 #  fk_rails_...  (course_module_code => course_modules.code)
 #
-# project_choices_json format:
-# { "1": "Project Choice A"
-#   "2": "Project Choice B"}
 
 class CourseProject < ApplicationRecord
   has_many :groups, dependent: :destroy
