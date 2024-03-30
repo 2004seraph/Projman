@@ -1,3 +1,4 @@
+
 - project_data = nil
 - if session[:new_project_data].present?
   - project_data = session[:new_project_data]
@@ -18,7 +19,8 @@
 -# PROJECT CHOICES
 .card#project-choices.mb-3
   .card-header.d-flex.align-items-center
-    %input.form-check-input.p-2.me-2.mt-0#project-choices-enable{type: "checkbox", value: "", checked: "checked"}
+    %input.form-check-input.p-2.me-2.mt-0#project-choices-enable{type: "checkbox", value: "",
+     checked: "checked", name: "project_choices_enable", data: { url: new_project_toggle_project_choices_projects_path }}
     %h2.fs-4.m-0 Project Choices
 
   .card-body.pb-3
@@ -27,7 +29,7 @@
         = render partial: 'components/group-item-simple', locals: { item_text: name, deletion_action_url:new_project_remove_project_choice_projects_path }
 
     %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal",
-       "data-bs-target": "#add-project-choice-modal"}
+      "data-bs-target": "#add-project-choice-modal"}
       %i.bi.bi-plus
       Add
     
@@ -89,21 +91,21 @@
   .card-body.pb-3
     %h3.fs-5.mb-2 Deadlines
     .mb-3
-      .row.align-items-center
+      .row.align-items-center#project-deadline-row
         .col
           %label.col-form-label.fs-6.me-3{for: "project-deadline"} Project Deadline
         .col-8
           .input-group{style: "width:fit-content"}
             = render partial: 'components/datepicker_input', locals: { id: 'project-deadline', placeholder_text: 'Select Date' }
 
-      .row.align-items-center
+      .row.align-items-center#teammate-preference-form-deadline-row
         .col
           %label.col-form-label.fs-6.me-3{for: "teammate-preference-form-deadline"} Teammate Preference Form
         .col-8
           .input-group{style: "width:fit-content"}
             = render partial: 'components/datepicker_input', locals: { id: 'teammate-preference-form-deadline', placeholder_text: 'Select Date' }
 
-      .row.align-items-center
+      .row.align-items-center#project-preference-form-deadline-row
         .col
           %label.col-form-label.fs-6.me-3{for: "project-preference-form-deadline"} Project Preference Form
         .col-8

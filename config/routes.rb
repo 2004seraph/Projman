@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     post 'new_project_add_facilitator_selection', on: :collection
     post 'new_project_remove_facilitator', on: :collection 
     post 'new_project_clear_facilitator_selection', on: :collection
+    post 'new_project_toggle_project_choices', on: :collection
   end
   get '/projects/:id/teams', to: 'lead#teams'
 

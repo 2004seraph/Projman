@@ -16,7 +16,9 @@ require 'json'
 #   {"Name": "Peer Review", "Date: "dd-mm-yyyy"}]
 
 class CourseProjectsController < ApplicationController
-    skip_before_action :verify_authenticity_token, only: [:new_project_remove_project_choice, :new_project_clear_facilitator_selection]
+    skip_before_action :verify_authenticity_token, only: [:new_project_remove_project_choice,
+        :new_project_clear_facilitator_selection,
+        :new_project_toggle_project_choices]
 
     def index
         @view_as_manager = true
@@ -38,7 +40,8 @@ class CourseProjectsController < ApplicationController
             project_choices: ["Example Choice 1"],
             project_milestones: [],
             facilitator_selection: [],
-            project_facilitators: []
+            project_facilitators: [],
+            project_choices_enabled: true
         }
     end
 
@@ -119,5 +122,9 @@ class CourseProjectsController < ApplicationController
     def new_project_remove_facilitator
         @facilitator_email = params[:item_text]
         session[:new_project_data][:project_facilitators].delete(@facilitator_email)
+    end
+
+    def new_project_toggle_project_choices
+        session[:new_project_data][:project_choices_enabled] = params[:isChecked]
     end
 end
