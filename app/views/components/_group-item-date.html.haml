@@ -3,16 +3,16 @@
 -# LOCAL VARIABLES:
 -# item_text
 -# deletion_action_url
+-# name
 
 - form_action = defined?(deletion_action_url) ? deletion_action_url : '/placeholder_post_url'
 
-%li.list-group-item.ps-1.d-flex.align-items-start.row.list-group-item-partial
-  = form_with(url: form_action, method: :post, local: false, class: "d-flex align-items-center") do |form|
-    .col.d-flex.align-items-center
-      = form.button(type: "submit", class: "btn btn-light btn-sm me-2 btn-delete") do
-        %i.bi.bi-x.text-secondary
-      %span= item_text
-      = form.hidden_field :item_text, value: item_text
-    .col-8
-      .input-group{style: "width:fit-content"}
-        = render partial: 'components/datepicker_input', locals: { placeholder_text: "Select Date" }
+%li.list-group-item.ps-1.d-flex.align-items-start.row.list-group-item-partial{'form_action': form_action}
+  .col.d-flex.align-items-center
+    %button.btn.btn-light.btn-sm.me-2.btn-delete{type: "button"}
+      %i.bi.bi-x.text-secondary
+    %span= item_text
+    %input{ type: "hidden", name: name, value: name, "item_text": ""}
+  .col-8
+    .input-group{style: "width:fit-content"}
+      = render partial: 'components/datepicker_input', locals: { placeholder_text: "Select Date", name: name }

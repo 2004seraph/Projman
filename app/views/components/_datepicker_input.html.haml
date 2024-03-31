@@ -8,8 +8,8 @@
   %i.bi.bi-calendar.text-secondary
 -# Check if id is present, then set the id attribute
 - if defined?(id) && id.present?
-  %input.form-control.form-control-sm.datepicker.datepicker-input{type: "text",
+  %input.form-control.form-control-sm.datepicker.datepicker-input{type: "text", name: name,
    id: "#{id}", data: {provide: "datepicker", startDate: "-3d"}, placeholder: "#{defined?(placeholder_text) ? placeholder_text : ''}", autocomplete: "off"}
 - else
-  %input.form-control.form-control-sm.datepicker.datepicker-input{type: "text",
+  %input.form-control.form-control-sm.datepicker.datepicker-input{type: "text", name: name,
    data: {provide: "datepicker", startDate: "-3d"}, placeholder: "#{defined?(placeholder_text) ? placeholder_text : ''}", autocomplete: "off"}

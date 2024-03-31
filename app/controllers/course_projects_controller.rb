@@ -18,7 +18,8 @@ require 'json'
 class CourseProjectsController < ApplicationController
     skip_before_action :verify_authenticity_token, only: [:new_project_remove_project_choice,
         :new_project_clear_facilitator_selection,
-        :new_project_toggle_project_choices]
+        :new_project_toggle_project_choices,
+        :new_project_remove_project_milestone]
 
     def index
         @view_as_manager = true
@@ -74,10 +75,16 @@ class CourseProjectsController < ApplicationController
 
     def new_project_add_project_milestone
         @project_milestone_name = params[:project_milestone_name]
-        session[:new_project_data][:project_milestones] << {"Name": @project_milestone_name, "Date": ""}
+        project_milestone_unique = false
+        unless session[:new_project_data][:project_milestones].any? { |milestone| milestone[:Name] == @project_milestone_name }
+            session[:new_project_data][:project_milestones] << {"Name": @project_milestone_name, "Date": ""}
+            project_milestone_unique = true
+        end
         if request.xhr?
             respond_to do |format|
-                format.js
+                if project_milestone_unique
+                    format.js
+                end
             end
         else
             render :new
@@ -123,5 +130,39 @@ class CourseProjectsController < ApplicationController
     def new_project_remove_facilitator
         @facilitator_email = params[:item_text]
         session[:new_project_data][:project_facilitators].delete(@facilitator_email)
+    end
+
+    def create
+
+        puts "PRESSED SAVE..."
+        puts "SELECTED MODULE: " + params[:module_selection]
+        if params[:project_name].present?
+            puts "PROJECT NAME: " + params[:project_name]
+        else
+            puts "PROJECT NAME is not provided"
+        end
+
+        puts "---------------------------"
+
+        if params.key?(:project_choices_enable)
+            puts "PROJECTE CHOICES ENABLED: TRUE"
+        else
+            puts "PROJECT CHOICES ENABLED: FALSE"
+        end
+        puts "PROJECT CHOICES: "
+        puts session[:new_project_data][:project_choices]
+        puts "PROJECT ALLOC METHOD: " + params[:project_allocation_method]
+        puts "---------------------------"
+        puts "TEAM SIZE: " + params[:team_size]
+        puts "TEAM ALLOC METHOD: " + params[:team_allocation_method]
+        puts "PREFERRED TEAMMATES: " + params[:preferred_teammates]
+        puts "AVOIDED TEAMMATES: " + params[:avoided_teammates]
+        puts "---------------------------"
+        puts "PROJECT DEADLINE: " + params[:project_deadline]
+        puts "TEAMMATES PREF FROM DEADLINE: " + params[:teammate_preference_form_deadline]
+        puts "PROJECT PREF FORM DEADLINE: " + params[:project_preference_form_deadline]
+
+
+        render :new
     end
 end

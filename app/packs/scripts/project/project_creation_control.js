@@ -10,7 +10,8 @@ $(function() {
 
         // Team allocation method select box change event
         var teamAllocationMethodValue = $('#team-allocation-method').val();
-        $('#team-preference-form-settings').toggleClass('display-none', teamAllocationMethodValue !== "preference_based_team_allocation");
+        $('#team-preference-form-settings').toggleClass('display-none', (teamAllocationMethodValue !== "preference_based_team_allocation"));
+        $('#teammate-preference-form-deadline-row').toggleClass('display-none', (teamAllocationMethodValue !== "preference_based_team_allocation"));
     }
 
     runChecks();
