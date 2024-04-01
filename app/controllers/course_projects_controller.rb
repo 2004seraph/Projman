@@ -12,8 +12,8 @@ require 'json'
 # Project Milestones INTAKE/OUTTAKE:
 # New Milestone Model
 # Project Milestones Session Format:
-# [ {"Name": "Technical Review", "Date": "dd-mm-yyyy"}, 
-#   {"Name": "Peer Review", "Date: "dd-mm-yyyy"}]
+# [ {"Name": "Technical Review", "Date": "dd/mm/yyyy"}, 
+#   {"Name": "Peer Review", "Date: "dd/mm/yyyy"}]
 
 class CourseProjectsController < ApplicationController
     skip_before_action :verify_authenticity_token, only: [:new_project_remove_project_choice,
@@ -162,6 +162,20 @@ class CourseProjectsController < ApplicationController
         puts "TEAMMATES PREF FROM DEADLINE: " + params[:teammate_preference_form_deadline]
         puts "PROJECT PREF FORM DEADLINE: " + params[:project_preference_form_deadline]
 
+        params.each do |key, value|
+            # Check if the key starts with "milestone_"
+            if key.match?(/^milestone_[^_]+_date$/)
+                # Extract the milestone name from the key
+                milestone_name = key.match(/^milestone_([^_]+)_date$/)[1]
+          
+                # Find the corresponding milestone in the milestones hash and update its "Date" value
+                if milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
+                    milestone[:Date] = value
+                end
+            end
+        end
+        puts "MILESTONES:"
+        puts session[:new_project_data][:project_milestones]
 
         render :new
     end
