@@ -13,7 +13,9 @@ Rails.application.routes.draw do
     post 'new_project_remove_facilitator', on: :collection 
     post 'new_project_clear_facilitator_selection', on: :collection
     post 'new_project_toggle_project_choices', on: :collection
-    post 'create', on: :collection
+
+    # Define a separate POST route for the 'new' action
+    post 'new', to: 'course_projects#create', on: :collection
   end
   get '/projects/:id/teams', to: 'lead#teams'
 

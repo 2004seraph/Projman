@@ -1,9 +1,11 @@
 
-- project_data = nil
+- project_data = {}
+- errors = {}
 - if session[:new_project_data].present?
   - project_data = session[:new_project_data]
+  - errors = project_data[:errors]
 
-= form_tag "/projects/create", method: :post, local: false, remote: true, id:"create-project-form" do
+= form_tag "/projects/new", method: :post, id:"create-project-form" do
   %div
     .d-flex.justify-content-end
       %button.btn.btn-primary.mb-2.me-2#create-project-save-button{type: "submit"}
@@ -24,6 +26,10 @@
         %h2.input-group-text.fs-4.fw-bold.mb-0 Project Name
         %input.form-control.fs-5.fw-semibold{type: "text", id:"project-name", name: "project_name", placeholder:"Name"}
 
+      - if errors[:project_name_empty].present?
+        .container-fluid.fs-6.text-danger
+          = errors[:project_name_empty]
+
     -# PROJECT CHOICES
     .card#project-choices.mb-3
       .card-header.d-flex.align-items-center
@@ -32,7 +38,7 @@
         %h2.fs-4.m-0 Project Choices
 
       .card-body.pb-3
-        %ul.list-group.list-group-flush.mb-2#project-choices-list    
+        %ul.list-group.list-group-flush.mb-2#project-choices-list  
           - project_data[:project_choices].each do |name|
             = render partial: 'components/group-item-simple', locals: { item_text: name, deletion_action_url:new_project_remove_project_choice_projects_path }
 

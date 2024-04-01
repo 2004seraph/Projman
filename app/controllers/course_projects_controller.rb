@@ -36,6 +36,7 @@ class CourseProjectsController < ApplicationController
         team_allocation_modes_hash = CourseProject.team_allocations
 
         session[:new_project_data] = {
+            errors: {},
             modules_hash: modules_hash,
             project_allocation_modes_hash: project_allocation_modes_hash,
             team_allocation_modes_hash: team_allocation_modes_hash,
@@ -134,15 +135,20 @@ class CourseProjectsController < ApplicationController
 
     def create
 
+        session[:new_project_data][:errors] = {}
         puts "PRESSED SAVE..."
+        errors = session[:new_project_data][:errors]
         puts "SELECTED MODULE: " + params[:module_selection]
         if params[:project_name].present?
             puts "PROJECT NAME: " + params[:project_name]
         else
             puts "PROJECT NAME is not provided"
+            errors[:project_name_empty] = "Project Name cannot be empty"
         end
-
         puts "---------------------------"
+        @errors = errors
+        puts "ERRORS"
+        puts @errors
 
         if params.key?(:project_choices_enable)
             puts "PROJECTE CHOICES ENABLED: TRUE"
