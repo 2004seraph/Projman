@@ -19,7 +19,9 @@ class CourseProjectsController < ApplicationController
     skip_before_action :verify_authenticity_token, only: [:new_project_remove_project_choice,
         :new_project_clear_facilitator_selection,
         :new_project_toggle_project_choices,
-        :new_project_remove_project_milestone]
+        :new_project_remove_project_milestone,
+        :new_project_remove_from_facilitator_selection,
+        :new_project_remove_facilitator]
 
     def index
         @view_as_manager = true
@@ -40,10 +42,19 @@ class CourseProjectsController < ApplicationController
             modules_hash: modules_hash,
             project_allocation_modes_hash: project_allocation_modes_hash,
             team_allocation_modes_hash: team_allocation_modes_hash,
-            project_choices: ["Example Choice 1"],
+
+            selected_module: "",
+            project_name: "",
+            selected_project_allocation_mode: "",
+            project_choices: [],
+            team_size: 4,
+            selected_team_allocation_mode: "",
+            preferred_teammates: 2,
+            avoided_teammates: 2,
             project_milestones: [],
-            facilitator_selection: [],
             project_facilitators: [],
+
+            facilitator_selection: [],
             project_choices_enabled: true
         }
     end
@@ -136,37 +147,66 @@ class CourseProjectsController < ApplicationController
     def create
 
         session[:new_project_data][:errors] = {}
-        puts "PRESSED SAVE..."
         errors = session[:new_project_data][:errors]
-        puts "SELECTED MODULE: " + params[:module_selection]
-        if params[:project_name].present?
-            puts "PROJECT NAME: " + params[:project_name]
-        else
-            puts "PROJECT NAME is not provided"
-            errors[:project_name_empty] = "Project Name cannot be empty"
-        end
-        puts "---------------------------"
-        @errors = errors
-        puts "ERRORS"
-        puts @errors
 
-        if params.key?(:project_choices_enable)
-            puts "PROJECTE CHOICES ENABLED: TRUE"
-        else
-            puts "PROJECT CHOICES ENABLED: FALSE"
+        project_data = session[:new_project_data]
+
+        # Main Data
+        project_data[:project_name] = params[:project_name]
+        project_data[:selected_module] = params[:module_selection]
+        errors[:main] = {}
+        unless CourseModule.exists?(code: project_data[:selected_module])
+            errors[:main][:module_doesnt_exist] = "The selected module does not exist"
         end
-        puts "PROJECT CHOICES: "
-        puts session[:new_project_data][:project_choices]
-        puts "PROJECT ALLOC METHOD: " + params[:project_allocation_method]
-        puts "---------------------------"
-        puts "TEAM SIZE: " + params[:team_size]
-        puts "TEAM ALLOC METHOD: " + params[:team_allocation_method]
-        puts "PREFERRED TEAMMATES: " + params[:preferred_teammates]
-        puts "AVOIDED TEAMMATES: " + params[:avoided_teammates]
-        puts "---------------------------"
-        puts "PROJECT DEADLINE: " + params[:project_deadline]
-        puts "TEAMMATES PREF FROM DEADLINE: " + params[:teammate_preference_form_deadline]
-        puts "PROJECT PREF FORM DEADLINE: " + params[:project_preference_form_deadline]
+        unless project_data[:project_name].present?
+            errors[:main][:project_name_empty] = "Project name cannot be empty"
+        end
+
+        # Project Choices
+        project_data[:project_choices_enabled] = params.key?(:project_choices_enable)
+        project_data[:selected_project_allocation_mode] = params[:project_allocation_method]
+        errors[:project_choices] = {}
+        unless CourseProject.project_allocations.key?(project_data[:selected_project_allocation_mode])
+            errors[:project_choices][:project_allocation_mode_invalid] = "Invalid project allocation mode selected"
+        end
+        if !project_data[:project_choices].present? && project_data[:project_choices_enabled]
+            errors[:project_choices][:no_project_choices] = "Add some project choices, or disable this section"
+        end
+
+        # Team Config
+        project_data[:team_size] = params[:team_size]
+        project_data[:selected_team_allocation_mode] = params[:team_allocation_method]
+        errors[:team_config] = {}
+        unless CourseProject.team_allocations.key?(project_data[:selected_team_allocation_mode])
+            errors[:team_config][:selected_team_allocation_mode] = "Invalid team allocation mode selected"
+        end
+
+        # Team Preference Form
+        project_data[:preferred_teammates] = params[:preferred_teammates]
+        project_data[:avoided_teammates] = params[:avoided_teammates]
+        errors[:team_pref] = {}
+        unless project_data[:preferred_teammates].present?
+            errors[:team_pref][:invalid_pref_teammates] = "Invalid preferred teammates entry"
+        end
+        unless project_data[:avoided_teammates].present?
+            errors[:team_pref][:invalid_pref_teammates] = "Invalid avoided teammates entry"
+        end
+
+        # Timings
+        project_data[:project_deadline] = params[:project_deadline]
+        project_data[:teammate_preference_form_deadline] = params[:teammate_preference_form_deadline]
+        project_data[:project_preference_form_deadline] = params[:project_preference_form_deadline]
+        errors[:timings] = {}
+
+        unless project_data[:project_deadline].present?
+            errors[:timings][:project_deadline_not_set] = "Please set project deadline"
+        end
+        if project_data[:selected_team_allocation_mode] != "random_team_allocation" && !project_data[:teammate_preference_form_deadline].present?
+            errors[:timings][:team_pref_deadline_not_set] = "Please set team preference form deadline"
+        end
+        if (project_data[:project_choices_enabled] && project_data[:selected_project_allocation_mode] != "random_project_allocation") && !project_data[:project_preference_form_deadline].present?
+            errors[:timings][:project_pref_deadline_not_set] = "Please set project preference form deadline"
+        end
 
         params.each do |key, value|
             # Check if the key starts with "milestone_"
@@ -177,11 +217,12 @@ class CourseProjectsController < ApplicationController
                 # Find the corresponding milestone in the milestones hash and update its "Date" value
                 if milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
                     milestone[:Date] = value
+                    unless defined?(value) && value.present?
+                        errors[:timings][:milestone_date_not_set] = "Please make sure all milestones have a date"
+                    end
                 end
             end
         end
-        puts "MILESTONES:"
-        puts session[:new_project_data][:project_milestones]
 
         render :new
     end

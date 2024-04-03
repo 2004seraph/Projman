@@ -3,13 +3,14 @@
 -# LOCAL VARIABLES: 
 -# id : (Optional)
 -# placeholder_text (Optional)
+-# date_value
 
 %span.input-group-text.datepicker-calender-icon-addon.p-2.pt-0.pb-0{style: "cursor: pointer"}
   %i.bi.bi-calendar.text-secondary
 -# Check if id is present, then set the id attribute
 - if defined?(id) && id.present?
-  %input.form-control.form-control-sm.datepicker.datepicker-input{type: "text", name: name,
+  %input.form-control.form-control-sm.datepicker.datepicker-input{type: "text", name: name, value: (defined?(date_value) && date_value.present?) ? date_value : "",
    id: "#{id}", data: {provide: "datepicker", startDate: "-3d"}, placeholder: "#{defined?(placeholder_text) ? placeholder_text : ''}", autocomplete: "off"}
 - else
-  %input.form-control.form-control-sm.datepicker.datepicker-input{type: "text", name: name,
+  %input.form-control.form-control-sm.datepicker.datepicker-input{type: "text", name: name, value: (defined?(date_value) && date_value.present?) ? date_value : "",
    data: {provide: "datepicker", startDate: "-3d"}, placeholder: "#{defined?(placeholder_text) ? placeholder_text : ''}", autocomplete: "off"}

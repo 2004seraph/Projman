@@ -8,7 +8,6 @@ $(function() {
         var listItem = $(this).closest('.list-group-item-partial');
         var form_action = listItem.attr('form_action');
         var itemText = listItem.find('input[item_text]').val();
-        console.log(itemText)
     
         // Make the AJAX request
         $.ajax({
