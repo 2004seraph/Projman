@@ -11,8 +11,12 @@
 -# list_group_id
 -# confirm_text
 -# confirm_onclick_function
+-# add_to_selection_url 
+-# submission_url
+-# on_open_action_url
 
-.modal.fade{ id: modal_id, tabindex: "-1", "aria-labelledby": "#{modal_id}", "aria-hidden": "true", "data-allow-confirm-empty-input": "", "data-disallow-confirm-group-empty": ""}
+.modal.fade.search-multiple-modal{ id: modal_id, tabindex: "-1", "aria-labelledby": "#{modal_id}", "aria-hidden": "true", "data-allow-confirm-empty-input": "", "data-disallow-confirm-group-empty": "",
+"data-on-open-action": defined?(on_open_action_url) ? on_open_action_url : ''}
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
     .modal-content
       .modal-header
@@ -22,12 +26,16 @@
       .modal-body
         .form-group
           %label.form-label{ for: form_input_id }= prompt
-          .input-group.mb-4
-            %input.form-control.mr-sm-2{type: "search", id: form_input_id, placeholder: "Search", aria: {label: "Search"}, autocomplete: "off"}
-            %button.btn.btn-outline-secondary{ type: "button"} Add
+          = form_with(url: (defined?(add_to_selection_url) ? add_to_selection_url : '/placeholder_post_url'), method: :post, local: false) do |form|
+            .input-group.mb-4
+              = form.text_field :search, class: "form-control mr-sm-2", id: form_input_id, name: form_input_name, placeholder: "Search", aria: { label: "Search" }, autocomplete: "off"
+              = form.button(type: "submit", class: "btn btn-outline-secondary") do
+                Add 
           %span= current_selection_text
           %ul.list-group.list-group-flush{id: list_group_id}
 
       .modal-footer
         %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Close
-        %button.btn.btn-primary{ type: "submit", "data-bs-dismiss": "modal", onclick: confirm_onclick_function }= confirm_text
+        = form_with(url: (defined?(submission_url) ? submission_url : '/placeholder_post_url'), method: :post, local: false) do |form|
+          = form.button(type: "submit", class: "btn btn-primary", "data-bs-dismiss": "modal", onclick: confirm_onclick_function) do
+            = confirm_text

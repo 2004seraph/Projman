@@ -47,7 +47,7 @@ module StudentDataHelper
   # to the correct format for the database
   CSV_VALUE_TRANSLATIONS = {
     fee_status: lambda { |s|
-      s.parameterize.to_sym
+      s.force_encoding('UTF-8').parameterize.to_sym
     }
   }
 

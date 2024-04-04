@@ -19,11 +19,6 @@
     container.style.height = '200px';
   }
 
-  //Function that submits the form
-  function formSubmit() {
-    document.getElementById("email_form").submit();
-  }
-
   // This is to ensure that you cant expand the card more than the content of the table
   document.querySelectorAll('.list-card .card-body').forEach(function(container) {
     var content = container.querySelector('.table');
@@ -50,13 +45,21 @@
 
 .separating-section
   %h3
-    Module Lead
+    Module Name
+  %p 
+    #{@current_module.name}
+    %button.btn.btn-primary.btn-sm.m-2{type: "button", "data-bs-toggle": "modal",
+       "data-bs-target": "#changeNameModal"}
+      %i.bi.bi-pencil
+      Change
+  %h3
+    Module Leader
   %p
     #{@module_lead.email}
     %button.btn.btn-primary.btn-sm.m-2{type: "button", "data-bs-toggle": "modal",
        "data-bs-target": "#changeEmailModal"}
       %i.bi.bi-pencil
-      Edit
+      Change
   %h3
     Updated / Created
   %p
@@ -65,20 +68,61 @@
 
 .separating-section
   %h2
-    Students
+    Module Student List
+  %p
+    %button.btn.btn-primary.btn-sm.m-2{type: "button", "data-bs-toggle": "modal",
+       "data-bs-target": "#changeStudentListModal"}
+      %i.bi.bi-pencil
+      Change
   =render partial: 'student-list-box', locals: {students: @students}
+
+.modal.fade{ id: "changeNameModal", tabindex: "-1", "aria-labelledby": "changeNameModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      .modal-header
+        %h1.modal-title.fs-5= "Change Module Name"
+        %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+
+      .modal-body
+        %h1.fs-6.fw-normal.fst-italic= "Input a new Module Name only - the Module Code is unique and will not change."
+        = form_for @current_module.id, html: { id: 'name_form', method: :patch } do |f|
+          .form-group
+            %input.form-control.fs-5.fw-semibold{ id: "new_module_name", name: "new_module_name",placeholder: "Name", autocomplete: "off", required: true}
+          %h1
+          .modal-footer
+            %button.btn.btn-primary{ type: "submit" }= "Confirm"
 
 .modal.fade{ id: "changeEmailModal", tabindex: "-1", "aria-labelledby": "changeEmailModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
     .modal-content
       .modal-header
-        %h1.modal-title.fs-5= "Edit Module Lead E-mail"
+        %h1.modal-title.fs-5= "Change Module Leader"
         %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
 
       .modal-body
-        = form_for @current_module.id, html: { id: 'modal-details', method: :patch } do |f|
+        %h1.fs-6.fw-normal.fst-italic= "Input the new Module Leader's e-mail - if they do not have an account on the system, one will be created for them."
+        = form_for @current_module.id, html: { id: 'email_form', method: :patch } do |f|
           .form-group
-            %label.form-label{ for: "new_module_lead_email" }= "New E-mail"
-            %input.form-control{ type: "text", id: "new_module_lead_email", name: "new_module_lead_email", autocomplete: "off", required: true }
+            %input.form-control.fs-5.fw-semibold{ id: "new_module_lead_email", name: "new_module_lead_email",placeholder: "E-mail", autocomplete: "off", required: true}
+            %h1
+            %input.form-control.fs-5.fw-semibold{ id: "new_module_lead_email_confirmation", name: "new_module_lead_email_confirmation",placeholder: "Confirm E-mail", autocomplete: "off", required: true}
+          %h1
           .modal-footer
-            %button.btn.btn-primary{ onclick: 'formSubmit()', type: "submit" }= "Confirm"
+            %button.btn.btn-primary{ type: "submit" }= "Confirm"
+
+.modal.fade{ id: "changeStudentListModal", tabindex: "-1", "aria-labelledby": "changeStudentListModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      .modal-header
+        %h1.modal-title.fs-5= "Change Module Student List"
+        %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+
+      .modal-body
+        %h1.fs-6.fw-normal.fst-italic= "To ADD new students to a module, use the Students tab."
+        %h1.fs-6.fw-normal.fst-italic= "Upload as a '.csv' file containing data for this Module Code."  
+        = form_for @current_module.id, multipart: true, html: { id: 'student_form', method: :patch } do |f|
+          .form-group 
+            %input.form-control.fs-5.fw-semibold{ type: "file", id: "new_module_student_list", name: "new_module_student_list", autocomplete: "off", accept: "text/csv", required: true}
+          %h1
+          .modal-footer
+            %button.btn.btn-primary{ type: "submit" }= "Confirm"
