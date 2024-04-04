@@ -7,6 +7,52 @@ class ApplicationController < ActionController::Base
   # browser cache. If your app does not deal with sensitive information then it
   # may be worth enabling caching for performance.
   before_action :update_headers_to_disable_caching
+  before_action :authenticate_user!
+  before_action :load_current_user
+
+  def load_current_user
+    # account_type = user.account_type
+
+    # if account_type.include?("student")
+    #   # puts("student")
+    #   # student_controller = StudentsController.new
+    #   # @student = student_controller.load(user)
+      
+    # elsif account_type.include?("staff")
+    #   puts("staff")
+    # end
+
+    # if session[:account_type].present?
+    #   account_type = session[:account_type]
+
+    #   if account_type.include?("student")
+    #     if session[:username].present?
+    #       @student= Student.find_by(username: session[:username])
+    #     puts("Application controller ", @student.preferred_name)
+    #   elsif account_type.include?("staff")
+    #       puts("staff")
+    #   end
+    # end
+
+    if user_signed_in?
+      username = current_user.username
+      account_type = current_user.account_type
+
+      if account_type.include?("student")
+        puts("student")
+        # student_controller = StudentsController.new
+        # @student = student_controller.load(username)
+        if Student.exists?(username: username)
+          @student = Student.find_by(username: username)
+        else
+          reset_session
+          redirect_to new_user_session_path, alert: "User not found in the database. Please try again."
+        end
+      elsif account_type.include?("staff")
+        puts("staff")
+      end
+    end
+  end
 
   private
     def update_headers_to_disable_caching
@@ -14,4 +60,5 @@ class ApplicationController < ActionController::Base
       response.headers['Pragma'] = 'no-cache'
       response.headers['Expires'] = '-1'
     end
+
 end

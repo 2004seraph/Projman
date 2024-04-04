@@ -5,6 +5,8 @@
 
     %ul.navbar-nav
         %li.nav-item
+            = link_to 'Logout', destroy_user_session_path, method: :delete, class: 'btn btn-light', style: 'color: black'
+        %li.nav-item
             Emma Norling
         %li.nav-item
             = link_to '/settings', class: 'active nav-link' do
