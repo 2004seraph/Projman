@@ -121,7 +121,9 @@ class CourseProjectsController < ApplicationController
 
     def new_project_add_to_facilitator_selection
         @facilitator_email = params[:project_facilitator_name]
-        session[:new_project_data][:facilitator_selection] << @facilitator_email
+        if @facilitator_email.present?
+            session[:new_project_data][:facilitator_selection] << @facilitator_email
+        end
     end
 
     def new_project_remove_from_facilitator_selection
@@ -142,6 +144,14 @@ class CourseProjectsController < ApplicationController
     def new_project_remove_facilitator
         @facilitator_email = params[:item_text]
         session[:new_project_data][:project_facilitators].delete(@facilitator_email)
+        puts "REMOVING: ", @facilitator_email
+        puts session[:new_project_data][:project_facilitators]
+    end
+
+    def new_project_search_facilitators
+        query = params[:query]
+        @results = Student.where("email LIKE ?", "%#{query}%").limit(8).distinct
+        render json: @results.pluck(:email)
     end
 
     def create
@@ -223,6 +233,11 @@ class CourseProjectsController < ApplicationController
                 end
             end
         end
+
+        students_not_found = project_data[:project_facilitators].reject do |email|
+            Student.exists?(email: email)
+        end
+        errors[:facilitators_not_found] = students_not_found
 
         render :new
     end

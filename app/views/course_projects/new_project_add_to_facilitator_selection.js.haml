@@ -1,4 +1,5 @@
-var newPartialHTML = "#{j(render(partial: 'components/group-item-simple', locals: { item_text: @facilitator_email, deletion_action_url: new_project_remove_from_facilitator_selection_projects_path}))}";
-$("#facilitator-selection-group").append(newPartialHTML);
-$('input[id="new-project-facilitator-name"]').val('');
+- if @facilitator_email.present?
+    var newPartialHTML = "#{j(render(partial: 'components/group-item-simple', locals: { item_text: @facilitator_email, deletion_action_url: new_project_remove_from_facilitator_selection_projects_path}))}";
+    $("#facilitator-selection-group").append(newPartialHTML);
+    $('input[id="new-project-facilitator-name"]').val('');
 
