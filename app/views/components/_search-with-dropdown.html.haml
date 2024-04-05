@@ -1,0 +1,12 @@
+
+-# All you need to do to make this work is render it, and set its data_search_autocomplete_method to a valid GET route
+-# that replies with a list of some elements you want it the dropdown menu. Clicking on items in the dropdown menu sets their value
+-# to the one in the search bar.
+
+-# LOCALS
+-# form_input_id
+-# form_input_name
+-# data_search_autocomplete_method
+
+%input.form-control.mr-sm-2.search-collection.dropdown-toggle{id: form_input_id, name: form_input_name, placeholder: "Search", aria: {label: "Search"}, autocomplete: "off", "data-search-autocomplete-method" => data_search_autocomplete_method, "data-bs-toggle" => "dropdown", "aria-expanded" => "false", type: "search"}
+%ul.dropdown-menu

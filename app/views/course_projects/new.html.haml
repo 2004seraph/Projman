@@ -176,9 +176,16 @@
         %h2.fs-4.m-0 Project Facilitators
 
       .card-body.pb-3
+        - if errors[:facilitators_not_found].present?
+          %div
+            .d-flex.flex-column.fs-6.text-danger
+              - errors[:facilitators_not_found].each do |value|
+                %span= "\"" + value + "\"" + " is not a valid user email"
+            %hr
+
         %ul.list-group.list-group-flush.mb-2#project-facilitators-list
           - project_data[:project_facilitators].each do |facilitator| 
-            = render partial: 'components/group-item-simple', locals: { item_text: facilitator, deletion_action_url: new_project_remove_from_facilitator_selection_projects_path}
+            = render partial: 'components/group-item-simple', locals: { item_text: facilitator, deletion_action_url: new_project_remove_facilitator_projects_path}
 
         %button.btn.btn-primary.mb-2{type: "button", id: "open-add-facilitators-modal", "data-bs-toggle": "modal",
           "data-bs-target": "#add-project-facilitators-modal"}
@@ -225,7 +232,7 @@
 = render 'components/modal-search-multiple', 
   modal_id: 'add-project-facilitators-modal', 
   title: 'Add Project Facilitators', 
-  prompt: 'Input facilitators name', 
+  prompt: 'Input facilitators email', 
   form_input_id: 'new-project-facilitator-name', 
   form_input_name: 'project_facilitator_name', 
   current_selection_text: 'current selection',
