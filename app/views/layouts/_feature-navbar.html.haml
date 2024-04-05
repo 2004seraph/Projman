@@ -1,28 +1,29 @@
 -# The nav bar that contains the main features a user can access
 -# Will get populated with more buttons depending on role and route
 
-%nav.feature-navbar
-  %ul.navbar-nav
-    %li.nav-item
-      = link_to '/admin' , class: 'btn btn-light' do
-        Modules
-  .vertical-divider
-  %ul.navbar-nav
-    %li.nav-item
-      = link_to '/projects', class: 'btn btn-light' do
-        Projects
-    %li.nav-item
-      = link_to '/students', class: 'btn btn-light' do
-        Students
-    %li.nav-item
-      = link_to '/issues', class: 'btn btn-light' do
-        Issues
-  .vertical-divider
-  %ul.navbar-nav
-    %li.nav-item
-      = link_to '/facilitators', class: 'btn btn-light' do
-        Teams
-    %li.nav-item
-      = link_to '/facilitators', class: 'btn btn-light' do
-        Marking
-  .vertical-divider
+- if user_signed_in?
+  %nav.feature-navbar
+    %ul.navbar-nav
+      %li.nav-item
+        = link_to '/admin' , class: 'btn btn-light' do
+          Modules
+    .vertical-divider
+    %ul.navbar-nav
+      %li.nav-item
+        = link_to '/projects', class: 'btn btn-light' do
+          Projects
+      %li.nav-item
+        = link_to '/students', class: 'btn btn-light' do
+          Students
+      %li.nav-item
+        = link_to '/issues', class: 'btn btn-light' do
+          Issues
+    .vertical-divider
+    %ul.navbar-nav
+      %li.nav-item
+        = link_to '/facilitators', class: 'btn btn-light' do
+          Teams
+      %li.nav-item
+        = link_to '/facilitators', class: 'btn btn-light' do
+          Marking
+    .vertical-divider
