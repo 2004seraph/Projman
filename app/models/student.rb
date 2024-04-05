@@ -41,7 +41,7 @@ class Student < ApplicationRecord
   include EpiCas::DeviseHelper
 
   devise :trackable
-  
+
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   has_many :groups, through: :groups_students
   has_and_belongs_to_many :course_modules, foreign_key: "course_module_code", association_foreign_key: "student_id", join_table: "course_modules_students"

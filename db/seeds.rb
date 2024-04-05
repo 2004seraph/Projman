@@ -31,21 +31,35 @@ def create_staff(email)
   Staff.create(email: email)
 end
 
-class_COM3420 = StudentDataHelper.generate_dummy_data_csv_string(
-  "COM3420"
-)
-provision_module_class(
-  "COM3420",
-  "Software Hut",
-  create_staff("emma_norling@sheffield.ac.uk"),
-  class_COM3420
-)
+begin
+  class_COM3420 = StudentDataHelper.generate_dummy_data_csv_string(
+    "COM3420"
+  )
+  provision_module_class(
+    "COM3420",
+    "Software Hut",
+    create_staff("emma_norling@sheffield.ac.uk"),
+    class_COM3420
+  )
 
-# take the entire COM3420 class and enroll them in another module
-class_COM2004 = change_class_module(class_COM3420, "COM2004")
-provision_module_class(
-  "COM2004",
-  "Introduction to Software Engineering",
-  create_staff("mike.stannet@sheffield.ac.uk"),
-  class_COM2004
-)
+  # take the entire COM3420 class and enroll them in another module
+  class_COM2004 = change_class_module(class_COM3420, "COM2004")
+  provision_module_class(
+    "COM2004",
+    "Introduction to Software Engineering",
+    create_staff("mike.stannet@sheffield.ac.uk"),
+    class_COM2004
+  )
+rescue
+  puts "Module COM3420 already exists"
+end
+
+Student.create({
+  username: "aca21sgt",
+  preferred_name: "Sam",
+  forename: "Sam",
+  title: "Mx",
+  ucard_number: "298753043",
+  email: "sgttaseff1@sheffield.ac.uk",
+  fee_status: :home
+})
