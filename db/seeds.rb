@@ -63,3 +63,13 @@ Student.create({
   email: "sgttaseff1@sheffield.ac.uk",
   fee_status: :home
 })
+
+Student.create({
+  username: "ack21jb",
+  preferred_name: "Jakub",
+  forename: "Jakub",
+  title: "Mr",
+  ucard_number: "001793100",
+  email: "jbala1@sheffield.ac.uk",
+  fee_status: :home
+})
