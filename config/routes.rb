@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  devise_for :users
+
+  mount EpiCas::Engine, at: "/"
   root "pages#home"
   post '/placeholder_post_url', to: 'dummy#dummy_action'
 
@@ -18,6 +21,7 @@ Rails.application.routes.draw do
     # Define a separate POST route for the 'new' action
     post 'new', to: 'course_projects#create', on: :collection
   end
+  
   get '/projects/:id/teams', to: 'lead#teams'
 
   get '/students', to: 'students#index'

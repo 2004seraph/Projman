@@ -2,25 +2,47 @@
 #
 # Table name: students
 #
-#  id             :bigint           not null, primary key
-#  email          :string(254)      not null
-#  fee_status     :enum             not null
-#  forename       :string(24)       not null
-#  middle_names   :string(64)       default("")
-#  personal_tutor :string(64)       default("")
-#  preferred_name :string(24)       not null
-#  surname        :string(24)       default("")
-#  title          :string(4)        not null
-#  ucard_number   :string(9)        not null
-#  username       :string(16)       not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
+#  id                 :bigint           not null, primary key
+#  account_type       :string
+#  current_sign_in_at :datetime
+#  current_sign_in_ip :string
+#  dn                 :string
+#  email              :string(254)      default(""), not null
+#  fee_status         :enum             not null
+#  forename           :string(24)       not null
+#  givenname          :string
+#  last_sign_in_at    :datetime
+#  last_sign_in_ip    :string
+#  mail               :string
+#  middle_names       :string(64)       default("")
+#  ou                 :string
+#  personal_tutor     :string(64)       default("")
+#  preferred_name     :string(24)       not null
+#  sign_in_count      :integer          default(0), not null
+#  sn                 :string
+#  surname            :string(24)       default("")
+#  title              :string(4)        not null
+#  ucard_number       :string(9)        not null
+#  uid                :string
+#  username           :string(16)       not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#
+# Indexes
+#
+#  index_students_on_email     (email)
+#  index_students_on_username  (username) UNIQUE
 #
 
 require 'csv'
 require 'student_data_helper'
 
 class Student < ApplicationRecord
+  include EpiCas::DeviseHelper
+
+  devise :trackable
+  
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   has_many :groups, through: :groups_students
   has_and_belongs_to_many :course_modules, foreign_key: "course_module_code", association_foreign_key: "student_id", join_table: "course_modules_students"
   has_many :assigned_facilitators, dependent: :destroy
