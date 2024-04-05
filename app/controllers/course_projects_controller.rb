@@ -24,7 +24,7 @@ class CourseProjectsController < ApplicationController
         :new_project_remove_facilitator]
 
     def index
-        @view_as_manager = false
+        @view_as_manager = true
         if @view_as_manager            
             render 'index_module_leader'
         else

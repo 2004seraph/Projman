@@ -9,6 +9,7 @@ import '../scripts/list_group_control';
 import '../scripts/modal_control';
 import '../scripts/accordion_control';
 import '../scripts/search_collection_control';
+import '../scripts/selectable_row_control';
 
 import '../scripts/custom-functions';
 

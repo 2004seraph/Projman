@@ -46,6 +46,20 @@
     }
   }
 
+:javascript
+  document.addEventListener('DOMContentLoaded', function () {
+    var containers = document.querySelectorAll('.selectable-row-container');
+
+    // Iterate over each container
+    containers.forEach(container => {
+        // Add event listener to each container
+        container.addEventListener('row-selection-change', function () {
+            console.log("row clicked");
+            console.log(this.getSelectedRows());
+        });
+    });
+  });
+
 -# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 -# NOTE TO SELF!!!!!!!!!!!!!
 -# When you click on a table row, it will have an associated student (from @students), so can pass that to the controller then
@@ -84,59 +98,4 @@
   list_group_id: 'student-selection-group',
   confirm_text: 'Confirm',
   confirm_onclick_function: ""
-
-:javascript
-  selected_rows = {}
-  last_selected_card = null
-
-  // event that fires for each row
-  incrementing_id = 0
-  document.querySelectorAll('.accordion-element').forEach((card) => {
-    card.querySelector('.card-header').addEventListener('click', (event) => {
-      last_selected_card = event.target.id
-    })
-
-    content = card.querySelectorAll('.list-card .table tbody tr')
-    content.forEach((row) => {
-      row.id = "id_" + incrementing_id++;
-
-      row.addEventListener('click', (event) => {
-        // Check if the clicked element is not an input
-        if (event.target.tagName !== 'INPUT') {
-          var checkbox = row.querySelector('.form-check-input');
-
-          current_card = row.closest('.accordion-element').querySelector('.card-header').id
-          //if (last_selected_card !== current_card) {
-          //  content.forEach((row2) => {
-          //    var other_checkbox = row2.querySelector('.form-check-input');
-          //    console.log( other_checkbox.checked)
-          //    other_checkbox.checked = false
-          //  })
-          //  selected_rows = []
-          //  last_selected_card = current_card
-          //}
-
-          if (!checkbox.checked) {
-            if (selected_rows[current_card] == null) {
-              selected_rows[current_card] = []
-            }
-            selected_rows[current_card].push(row.id)
-          } else {
-            selected_rows[current_card] = selected_rows[current_card].filter(item => item !== row.id)
-          }
-
-          // Toggle checkbox state
-          checkbox.checked = !checkbox.checked;
-
-          console.log(selected_rows, last_selected_card, current_card)
-
-          if (selected_rows[current_card].length > 0) {
-
-          } else {
-
-          }
-        }
-      });
-    });
-  })
 
