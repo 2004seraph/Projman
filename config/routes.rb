@@ -21,7 +21,7 @@ Rails.application.routes.draw do
     # Define a separate POST route for the 'new' action
     post 'new', to: 'course_projects#create', on: :collection
   end
-  
+
   get '/projects/:id/teams', to: 'lead#teams'
 
   get '/students', to: 'students#index'

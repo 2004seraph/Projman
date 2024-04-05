@@ -55,12 +55,12 @@ rescue
 end
 
 Student.create({
-  username: "aca21sgt",
-  preferred_name: "Sam",
-  forename: "Sam",
-  title: "Mx",
-  ucard_number: "298753043",
-  email: "sgttaseff1@sheffield.ac.uk",
+  username: "aca21jlh",
+  preferred_name: "Josh",
+  forename: "Joshua",
+  title: "Mr",
+  ucard_number: "123456789",
+  email: "jhenson2@sheffield.ac.uk",
   fee_status: :home
 })
 
