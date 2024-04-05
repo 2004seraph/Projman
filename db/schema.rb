@@ -26,12 +26,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_28_165641) do
   create_table "assigned_facilitators", force: :cascade do |t|
     t.bigint "student_id"
     t.bigint "staff_id"
-    t.bigint "course_project_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["course_project_id"], name: "index_assigned_facilitators_on_course_project_id"
     t.index ["staff_id"], name: "index_assigned_facilitators_on_staff_id"
-    t.index ["student_id", "staff_id", "course_project_id"], name: "module_assignment", unique: true
     t.index ["student_id"], name: "index_assigned_facilitators_on_student_id"
   end
 

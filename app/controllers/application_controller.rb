@@ -11,37 +11,12 @@ class ApplicationController < ActionController::Base
   before_action :load_current_user
 
   def load_current_user
-    # account_type = user.account_type
-
-    # if account_type.include?("student")
-    #   # puts("student")
-    #   # student_controller = StudentsController.new
-    #   # @student = student_controller.load(user)
-      
-    # elsif account_type.include?("staff")
-    #   puts("staff")
-    # end
-
-    # if session[:account_type].present?
-    #   account_type = session[:account_type]
-
-    #   if account_type.include?("student")
-    #     if session[:username].present?
-    #       @student= Student.find_by(username: session[:username])
-    #     puts("Application controller ", @student.preferred_name)
-    #   elsif account_type.include?("staff")
-    #       puts("staff")
-    #   end
-    # end
-
     if user_signed_in?
       username = current_user.username
       account_type = current_user.account_type
 
       if account_type.include?("student")
         puts("student")
-        # student_controller = StudentsController.new
-        # @student = student_controller.load(username)
         if Student.exists?(username: username)
           @student = Student.find_by(username: username)
         else
