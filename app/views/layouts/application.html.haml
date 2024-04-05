@@ -27,8 +27,9 @@
     - if flash.present?
       .container-fluid.flash-messages
         - flash.each do |message_type, message|
-          - next unless message_type == 'alert' || message_type == 'notice'
-          .alert{ class: "alert-#{ message_type == 'notice' ? 'success' : 'danger' }" }= message
+          - if !message.empty?
+            - next unless message_type == 'alert' || message_type == 'notice'
+            .alert{ class: "alert-#{ message_type == 'notice' ? 'success' : 'danger' }" }= message
 
     %main
       .content-container
