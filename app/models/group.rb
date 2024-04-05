@@ -21,7 +21,7 @@
 #  fk_rails_...  (course_projects_id => course_projects.id)
 #
 class Group < ApplicationRecord
-  belongs_to :project
+  # belongs_to :project
   belongs_to :assigned_facilitator
   has_many :events, dependent: :destroy
   has_and_belongs_to_many :students
