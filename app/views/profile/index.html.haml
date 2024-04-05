@@ -1,11 +1,11 @@
 %h1 Personal Information
 
 .separating-section
-  %h3 Surname:
-  %h3 Forname(s):
-  %h3 Preferred Name:
-  %h3 Title:
-  %h3 Email:
+  %h3 Surname: #{@user.surname}
+  %h3 Forename(s): #{@user.forename}
+  %h3 Preferred Name: #{@user.preferred_name}
+  %h3 Title: #{@user.title}
+  %h3 Email: #{@user.email}
   %h3
     Gender:
     %button.common-button.smaller Request Change

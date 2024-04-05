@@ -58,6 +58,7 @@ Student.create({
   username: "aca21jlh",
   preferred_name: "Josh",
   forename: "Joshua",
+  surname: "Henson",
   title: "Mr",
   ucard_number: "123456789",
   email: "jhenson2@sheffield.ac.uk",
