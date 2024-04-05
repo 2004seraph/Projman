@@ -15,10 +15,11 @@
         %tbody
           %tr.d-flex
             %td{ style: "flex: 1;" }
-              %h2.fs-4=team_name
+              %h2.fs-4{ class: "m-0 p-0" } #{team_name}
             %td.d-flex.gap-2{ style: "flex: 3;" }
-              = button_tag '', type: 'button', class: "btn btn-light fs-8 bi-pencil-square", style: "height: auto;"
-              %h2.fs-4 Facilitator: #{team_facilitator}
+              %h2.fs-4{ class: "m-0 p-0" } Facilitator: #{ button_tag '', type: 'button', class: "btn btn-light fs-8 bi-pencil-square", style: "height: auto;" } #{team_facilitator}
+            %td{ class: "pr-4" }
+              #{ button_tag ' Email Team', type: 'button', class: "btn btn-secondary fs-8 bi-envelope-at mr-4", style: "height: auto;" }
 
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id_collapse}
@@ -43,10 +44,10 @@
                   %td jbala1@sheffield.ac.uk
                   %td 11294124
               %tr
-                %td.bg-light.rounded-start-4
+                %td.bg-secondary.rounded-start-4
                   = button_tag '+', type: 'button', class: "btn btn-primary", style: "height: auto;"
-                %td.bg-light Add Student
-                %td.bg-light.rounded-end-4
+                %td.bg-secondary Add Student
+                %td.bg-secondary.rounded-end-4
                   %input.form-control.mr-sm-2{type: "search", id: "team_add_student", placeholder: "Student Email", aria: {label: "Search"}, autocomplete: "email"}
                 %td
                   = button_tag 'Remove Selected Students', type: 'button', class: "btn btn-secondary fs-8", style: "height: auto;"

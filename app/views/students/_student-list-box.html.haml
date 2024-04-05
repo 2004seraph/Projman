@@ -1,13 +1,17 @@
 = render 'components/accordion/card', title: title do
-  .d-flex.justify-content-end
-    %button.btn.btn-secondary.me-2{type: "button", "data-bs-toggle": "modal",
-      "data-bs-target": "#removeStudentsModal", onclick: "prepareRemoveStudents(this)"}
-      %i.bi.bi-trash-fill
-      Remove
-    %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal",
-      "data-bs-target": "#addStudentsModal"}
-      %i.bi.bi-plus
-      Add
+  .d-flex
+    .justify-content-start
+      #{ button_tag ' Email Class', type: 'button', class: "btn btn-secondary fs-8 bi-envelope-at mr-4", style: "height: auto;" }
+      #{ button_tag ' Email Selected Students', type: 'button', class: "btn btn-primary disabled fs-8 bi-envelope-at mr-4", style: "height: auto;" }
+    .d-flex.justify-content-end{ style: "flex: 1;" }
+      %button.btn.btn-secondary.me-2{type: "button", "data-bs-toggle": "modal",
+        "data-bs-target": "#removeStudentsModal", onclick: "prepareRemoveStudents(this)"}
+        %i.bi.bi-trash-fill
+        Remove
+      %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal",
+        "data-bs-target": "#addStudentsModal"}
+        %i.bi.bi-plus
+        Add
   %div.overflow-auto
     %table.table
       %thead

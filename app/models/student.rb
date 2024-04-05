@@ -34,10 +34,10 @@ class Student < ApplicationRecord
   # required fields
   validates :preferred_name,  presence: true, length: { in: 2..24 },  format: { with: @text_validation_regex }
   validates :forename,        presence: true, length: { in: 2..24 },  format: { with: @text_validation_regex }
-  validates :username,        presence: true, length: { in: 5..16 },  format: { with: @text_validation_regex }
+  validates :username,        presence: true, length: { in: 5..16 },  format: { with: @text_validation_regex }, uniqueness: true
   validates :title,           presence: true, length: { in: 2..4 },   format: { with: @text_validation_regex }
-  validates :ucard_number,    presence: true, length: { is: 9 },      numericality: { only_integer: true }
-  validates :email,           presence: true, length: { in: 8..254 },format: { with: @email_validation_regex } # 16 = @sheffield.ac.uk
+  validates :ucard_number,    presence: true, length: { is: 9 },      numericality: { only_integer: true },     uniqueness: true
+  validates :email,           presence: true, length: { in: 8..254 },format: { with: @email_validation_regex }, uniqueness: true # 16 = @sheffield.ac.uk
   validates :fee_status,      presence: true
 
   validates :middle_names,    length: { maximum: 64 },  format: { with: @text_validation_regex }
