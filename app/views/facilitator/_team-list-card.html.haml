@@ -1,0 +1,32 @@
+- ran_num = "#{SecureRandom.hex(5)}"  # Generate a unique ID
+- unique_id = "accordion-card-" + ran_num
+- unique_id_collapse = "accordion-collapse-card-" + ran_num
+
+.card.mb-2
+  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+    href: "##{unique_id_collapse}",
+    role: "button",
+    "data-accordion-toggle" => "",
+    "aria-expanded" => "true",
+    "aria-controls" => unique_id_collapse, id:ran_num}
+
+    %h2.fs-4= "Teams"
+    %i.bi.bi-caret-right-fill
+
+  .collapse.show{id: unique_id_collapse}
+    .card-body.list-card{id: unique_id}
+      .form-check
+        %input.form-check-input{ type: "checkbox", id: "assignedOnlyCheckbox", checked: true }
+        %label.form-check-label{ for: "assignedOnlyCheckbox" }= "Assigned only"
+          
+      %hr.divider
+
+      .navigation-list-item
+        //= link_to "teams/" + "1" do
+        = link_to facilitator_project_team_path(project_id: 0, team_id: 0) do
+          %h6.p-1= "Team test 0"
+
+      .navigation-list-item
+        = link_to facilitator_project_team_path(project_id: 0, team_id: 1) do
+          %h6.p-1= "Team test 1"
+    

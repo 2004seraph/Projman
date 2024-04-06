@@ -1,11 +1,9 @@
-class FacilitatorsController < ApplicationController
-    # load_and_authorize_resource
-
-    # GET /facilitators
+class FacilitatorController < ApplicationController
+    # GET /facilitators 
     def index
-        @my_teams = Array.new(5) {|i| i.to_s }
-        @my_marking_modules = ["COM1001", "COM2002", "COM3003", "COM4004"]
     end
+
+    
 
     # GET /facilitators/team/{id}
     def team
@@ -20,5 +18,13 @@ class FacilitatorsController < ApplicationController
         @marking = params[:module]
     end
 
+    def projects
+        #@facilitator_projects = CourseProject.all
+        
+        # TEMP: Using modules as no courseprojects yet
+        @facilitator_projects = CourseModule.all
+    end
 
+    def projects_show
+    end
 end
