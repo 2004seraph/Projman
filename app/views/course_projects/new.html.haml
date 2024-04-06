@@ -137,33 +137,43 @@
             %hr
         %h3.fs-5.mb-2 Deadlines
         .mb-3
-          .row.align-items-center#project-deadline-row
+          .row.align-items-center#project-deadline-row.milestone-row.mb-2
             .col
               %label.col-form-label.fs-6.me-3{for: "project-deadline"} Project Deadline
-            .col-8
-              .input-group{style: "width:fit-content"}
-                = render partial: 'components/datepicker_input', locals: { id: 'project-deadline', name:"project_deadline", placeholder_text: 'Select Date', date_value: project_data[:project_deadline] }
+              %input{ type: "hidden", name: "milestone_Project Deadline", value: "milestone_Project Deadline", class: "hidden-row-value"}
+            .col-8.d-flex.fs-6
+              .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
+                = render partial: 'components/datepicker_input', locals: { id: 'project-deadline', name:"milestone_Project Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:project_deadline] }
+              .input-group.fs-6
+                %button.btn.btn-outline-secondary.fs-6.milestone-email-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email 
 
-          .row.align-items-center#teammate-preference-form-deadline-row
+          .row.align-items-center#teammate-preference-form-deadline-row.milestone-row.mb-2
             .col
               %label.col-form-label.fs-6.me-3{for: "teammate-preference-form-deadline"} Teammate Preference Form
-            .col-8
-              .input-group{style: "width:fit-content"}
-                = render partial: 'components/datepicker_input', locals: { id: 'teammate-preference-form-deadline',name:"teammate_preference_form_deadline", placeholder_text: 'Select Date', date_value: project_data[:teammate_preference_form_deadline] }
+              %input{ type: "hidden", name: "milestone_Teammate Preference Form Deadline", value: "milestone_Teammate Preference Form Deadline", class: "hidden-row-value"}
+            .col-8.d-flex.fs-6
+              .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
+                = render partial: 'components/datepicker_input', locals: { id: 'teammate-preference-form-deadline',name:"milestone_Teammate Preference Form Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:teammate_preference_form_deadline] }
+              .input-group.fs-6
+                %button.btn.btn-outline-secondary.fs-6.milestone-email-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email 
 
-          .row.align-items-center#project-preference-form-deadline-row
+          .row.align-items-center#project-preference-form-deadline-row.milestone-row.mb-2
             .col
               %label.col-form-label.fs-6.me-3{for: "project-preference-form-deadline"} Project Preference Form
-            .col-8
-              .input-group{style: "width:fit-content"}
-                = render partial: 'components/datepicker_input', locals: { id: 'project-preference-form-deadline',name:"project_preference_form_deadline", placeholder_text: 'Select Date', date_value: project_data[:project_preference_form_deadline]}
+              %input{ type: "hidden", name: "milestone_Project Preference Form Deadline", value: "milestone_Project Preference Form Deadline", class: "hidden-row-value"}
+            .col-8.d-flex.fs-6
+              .input-group{style: "min-width: fit-content; max-width: fit-content;"}
+                = render partial: 'components/datepicker_input', locals: { id: 'project-preference-form-deadline',name:"milestone_Project Preference Form Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:project_preference_form_deadline]}
+              .input-group.fs-6
+                %button.btn.btn-outline-secondary.fs-6.milestone-email-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email 
 
         %h3.fs-5.mb-2 Milestones
         %ul.list-group.list-group-flush.mb-2.overflow-hidden#project-milestones-list
           - project_data[:project_milestones].each do |milestone|
+            - next if milestone[:Deadline]
             - milestone_name = milestone[:Name]
             - milestone_date = milestone[:Date]
-            = render partial: 'components/group-item-date', locals: { item_text: milestone_name, name: "milestone_"+milestone_name, deletion_action_url: new_project_remove_project_milestone_projects_path, date_value: milestone_date}
+            = render partial: 'components/group-item-milestone', locals: { item_text: milestone_name, name: "milestone_"+milestone_name, deletion_action_url: new_project_remove_project_milestone_projects_path, date_value: milestone_date}
 
         %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal",
           "data-bs-target": "#add-project-milestone-modal"}
@@ -242,3 +252,39 @@
   add_to_selection_url: new_project_add_to_facilitator_selection_projects_path,
   submission_url: new_project_add_facilitator_selection_projects_path,
   on_open_action_url: new_project_clear_facilitator_selection_projects_path
+
+
+-# MILESTONE EMAIL MODAL
+= render 'components/modal-text-area', 
+  modal_id: 'milestone-email-modal', 
+  title: 'Set Automatic Email', 
+  prompt: 'Enter email content for an automatic email reminder, and set how many days before this deadline it should be sent.', 
+  form_input_id: 'milestone-email-input', 
+  form_input_name: 'milestone_email_content', 
+  confirm_text: 'Save', 
+  submission_url: new_project_set_milestone_email_data_projects_path,
+  confirm_onclick_function: "" do
+  %input{ type: "hidden", name: "milestone_name", value: "", class: "hidden-modal-value"}
+  .row.d-flex.align-items-center
+    .col-auto.fs-6
+      %label.form-label.mb-1{ for: "milestone-email-modal-advance-day-picker" } Days in advance of deadline to send automatic email:
+    .col-3.fs-6
+      %input.form-control{ id: "milestone-email-modal-advance-day-picker", name: "milestone_email_advance", type: "number", value: "7", min: "1" }
+
+
+-# MILESTONE COMMENT MODAL
+= render 'components/modal-text-area', 
+  modal_id: 'milestone-email-modal', 
+  title: 'Set Automatic Email', 
+  prompt: 'Enter email content for an automatic email reminder, and set how many days before this deadline it should be sent.', 
+  form_input_id: 'milestone-email-input', 
+  form_input_name: 'milestone_email_content', 
+  confirm_text: 'Save', 
+  submission_url: new_project_set_milestone_email_data_projects_path,
+  confirm_onclick_function: "" do
+  %input{ type: "hidden", name: "milestone_name", value: "", class: "hidden-modal-value"}
+  .row.d-flex.align-items-center
+    .col-auto.fs-6
+      %label.form-label.mb-1{ for: "milestone-email-modal-advance-day-picker" } Days in advance of deadline to send automatic email:
+    .col-3.fs-6
+      %input.form-control{ id: "milestone-email-modal-advance-day-picker", name: "milestone_email_advance", type: "number", value: "7", min: "1" }

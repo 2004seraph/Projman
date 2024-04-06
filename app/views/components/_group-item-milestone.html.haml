@@ -1,0 +1,16 @@
+
+
+
+- form_action = defined?(deletion_action_url) ? deletion_action_url : '/placeholder_post_url'
+
+%li.list-group-item.ps-1.d-flex.align-items-start.row.list-group-item-partial.milestone-row{'form_action': form_action}
+  .col.d-flex.align-items-center
+    %button.btn.btn-light.btn-sm.me-2.btn-delete{type: "button"}
+      %i.bi.bi-x.text-secondary
+    %span.fs-6= item_text
+    %input{ type: "hidden", name: name, value: name, "item_text": "", class: "hidden-row-value"}
+  .col-8.d-flex.fs-6
+    .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
+      = render partial: 'components/datepicker_input', locals: { placeholder_text: "Select Date", name: (name + "_date"), date_value: defined?(date_value) ? date_value : "" }
+    .input-group.fs-6  
+      %button.btn.btn-outline-secondary.fs-6.milestone-email-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email 
