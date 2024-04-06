@@ -17,8 +17,9 @@ Rails.application.routes.draw do
     post 'new_project_clear_facilitator_selection', on: :collection
     post 'new_project_toggle_project_choices', on: :collection
     get 'new_project_search_facilitators', on: :collection
-    get 'new_project_get_milestone_email_data', on: :collection
+    get 'new_project_get_milestone_data', on: :collection
     post 'new_project_set_milestone_email_data', on: :collection
+    post 'new_project_set_milestone_comment', on: :collection
 
     # Define a separate POST route for the 'new' action
     post 'new', to: 'course_projects#create', on: :collection

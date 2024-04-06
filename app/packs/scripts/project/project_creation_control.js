@@ -56,13 +56,46 @@ $(function() {
     
         //Send AJAX to request email data
         $.ajax({
-            url: '/projects/new_project_get_milestone_email_data',
+            url: '/projects/new_project_get_milestone_data',
             type: 'GET',
             dataType: 'json',
             data: { milestone_name: milestoneName },
             success: function(response) {
                 emailInput.val(response.Email.Content);
                 advanceInput.val(response.Email.Advance === "" ? "7" : response.Email.Advance);
+                submitButton.prop('disabled', false);
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    });
+    //  comment modal control
+    $(document).on('click', '#timings .milestone-row button.milestone-comment-btn', function(event) {
+        var milestoneName = $(this).closest('.milestone-row').find('.hidden-row-value').val();
+        console.log(milestoneName)
+        if (!milestoneName) {
+            return;
+        }
+    
+        var modal = $('#milestone-comment-modal');
+        var submitButton = modal.find('button[type="submit"]');
+        var modalValue = modal.find('input[type="hidden"].hidden-modal-value');
+        var commentInput = modal.find('#milestone-comment-input');
+    
+        modalValue.val(milestoneName);
+        submitButton.prop('disabled', true);
+        //Clear Inputs
+        commentInput.val('');
+    
+        //Send AJAX to request email data
+        $.ajax({
+            url: '/projects/new_project_get_milestone_data',
+            type: 'GET',
+            dataType: 'json',
+            data: { milestone_name: milestoneName },
+            success: function(response) {
+                commentInput.val(response.Comment);
                 submitButton.prop('disabled', false);
             },
             error: function(xhr, status, error) {

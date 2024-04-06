@@ -51,9 +51,9 @@ class CourseProjectsController < ApplicationController
             selected_team_allocation_mode: "",
             preferred_teammates: 2,
             avoided_teammates: 2,
-            project_milestones: [{"Name": "Project Deadline", "Date": "", "Deadline": true, "Email": {"Content": "", "Advance": ""}},
-                                {"Name": "Teammate Preference Form Deadline", "Date": "", "Deadline": true, "Email": {"Content": "", "Advance": ""}},
-                                {"Name": "Project Preference Form Deadline", "Date": "", "Deadline": true, "Email": {"Content": "", "Advance": ""}}],
+            project_milestones: [{"Name": "Project Deadline", "Date": "", "Deadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""},
+                                {"Name": "Teammate Preference Form Deadline", "Date": "", "Deadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""},
+                                {"Name": "Project Preference Form Deadline", "Date": "", "Deadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""}],
             project_facilitators: [],
 
             facilitator_selection: [],
@@ -91,7 +91,7 @@ class CourseProjectsController < ApplicationController
         @project_milestone_name = params[:project_milestone_name]
         project_milestone_unique = false
         unless session[:new_project_data][:project_milestones].any? { |milestone| milestone[:Name] == @project_milestone_name }
-            session[:new_project_data][:project_milestones] << {"Name": @project_milestone_name, "Date": "", "Deadline": false, "Email": {"Content": "", "Advance": ""}}
+            session[:new_project_data][:project_milestones] << {"Name": @project_milestone_name, "Date": "", "Deadline": false, "Email": {"Content": "", "Advance": ""}, "Comment": ""}
             project_milestone_unique = true
         end
         if request.xhr?
@@ -156,7 +156,7 @@ class CourseProjectsController < ApplicationController
         render json: @results.pluck(:email)
     end
 
-    def new_project_get_milestone_email_data
+    def new_project_get_milestone_data
         milestone_name = params[:milestone_name].split('_').drop(1).join('_')
         milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
         respond_to do |format|
@@ -169,6 +169,13 @@ class CourseProjectsController < ApplicationController
         milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
         milestone[:Email][:Content] = params[:milestone_email_content]
         milestone[:Email][:Advance] = params[:milestone_email_advance]
+    end
+    
+    def new_project_set_milestone_comment
+        milestone_name = params[:milestone_name].split('_').drop(1).join('_')
+        puts milestone_name
+        milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
+        milestone[:Comment] = params[:milestone_comment]
     end
 
     def create
@@ -254,7 +261,6 @@ class CourseProjectsController < ApplicationController
         end
 
         puts project_data[:project_milestones]
-
 
 
         students_not_found = project_data[:project_facilitators].reject do |email|
