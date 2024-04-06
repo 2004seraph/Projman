@@ -6,12 +6,10 @@
     - if user_signed_in?
         %ul.navbar-nav
             %li.nav-item
-                = link_to 'Logout', destroy_user_session_path, method: :delete, class: 'btn btn-light', style: 'color: black'
-            %li.nav-item
-                = "#{@user.forename} #{@user.surname}"
-            %li.nav-item
-                = link_to '/settings', class: 'active nav-link' do
-                    %i.bi-gear-fill
+                = "#{@user.forename} , #{@user.username}"
             %li.nav-item
                 = link_to '/profile', class: 'active nav-link' do
                     %i.bi-person-circle
+            %li.nav-item
+                = link_to destroy_user_session_path, method: :delete, class: 'active nav-link' do
+                    %i.bi-box-arrow-left
