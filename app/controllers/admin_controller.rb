@@ -1,6 +1,6 @@
 class AdminController < ApplicationController
     before_action :set_module, only: %i[ show edit update destroy ]
-
+    
     #GET /admin
     def index
         @admin_modules = CourseModule.all
@@ -20,15 +20,13 @@ class AdminController < ApplicationController
             return
         end
 
-        #CHECK FOR EMAIL -EMAIL FUNCTIONALITY 
+        #Checks for e-mail input confirmation
         @lead = params[:new_module_lead_email]
         @confirmation = params[:new_module_lead_email_confirmation]
-
         unless (@lead == @confirmation)
             redirect_to new_admin_path, alert: "Update unsuccesful - E-mail inputs did not match."
             return
         end
-
         @lead = Staff.where(email: @lead).first
         
         #Creates new staff account and links it to the module if no staff found in system
@@ -46,6 +44,7 @@ class AdminController < ApplicationController
             return
         end
 
+        #Creates new module
         @new_module = CourseModule.new(code: params[:course_module][:code], name: params[:course_module][:name], staff_id: @lead.id)
         if @new_module.save
             Student.bootstrap_class_list((params[:student_csv]).read)
@@ -65,10 +64,8 @@ class AdminController < ApplicationController
     def update
 
         @new_name = params[:new_module_name]
-
         @new_lead = params[:new_module_lead_email]
         @confirmation = params[:new_module_lead_email_confirmation]
-
         @new_student_list = params[:new_module_student_list]
 
         if @new_name.nil?
