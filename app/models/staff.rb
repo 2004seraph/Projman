@@ -5,8 +5,7 @@
 #  id                     :bigint           not null, primary key
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
-#  email                  :string           default(""), not null
-#  encrypted_password     :string           default(""), not null
+#  email                  :string           not null
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string
 #  remember_created_at    :datetime
@@ -20,16 +19,20 @@
 #
 #  index_staffs_on_email                 (email) UNIQUE
 #  index_staffs_on_reset_password_token  (reset_password_token) UNIQUE
-#  unique_emails                         (email) UNIQUE
 #
 class Staff < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable,
-         :trackable
+  # devise :registerable, :database_authenticatable,
+  #        :recoverable, :rememberable, :validatable,
+  #        :trackable
+  devise :trackable
   has_many :assigned_facilitators, dependent: :destroy
   has_many :modules
 
-  validates :email, uniqueness: true, presence: true
+  validates :email, presence: true, uniqueness: { case_sensitive: false }
+
+  # def password_required?
+  #   false
+  # end
 end

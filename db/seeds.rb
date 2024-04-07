@@ -7,52 +7,19 @@
 #   Character.create(name: "Luke", movie: movies.first)
 
 require 'student_data_helper'
+require 'database_helper'
 require 'csv'
 
-def provision_module_class(module_code, name, lead, class_data)
-  new_module = CourseModule.create ({
-    code: module_code,
-    name: name,
-    staff: lead
-  })
-
-  Student.bootstrap_class_list(class_data)
-end
-
-def change_class_module(class_csv, module_code)
-  csv = CSV.parse(class_csv, headers: true)
-  csv.each do |row|
-    row[StudentDataHelper::MODULE_CODE_CSV_COLUMN] = module_code
-  end
-  StudentDataHelper.convert_csv_to_text(csv)
-end
-
-def create_staff(email)
-  Staff.create(email: email)
-end
-
-begin
-  class_COM3420 = StudentDataHelper.generate_dummy_data_csv_string(
-    "COM3420"
-  )
-  provision_module_class(
-    "COM3420",
-    "Software Hut",
-    create_staff("emma_norling@sheffield.ac.uk"),
-    class_COM3420
-  )
-
-  # take the entire COM3420 class and enroll them in another module
-  class_COM2004 = change_class_module(class_COM3420, "COM2004")
-  provision_module_class(
-    "COM2004",
-    "Introduction to Software Engineering",
-    create_staff("mike.stannet@sheffield.ac.uk"),
-    class_COM2004
-  )
-rescue
-  puts "Module COM3420 already exists"
-end
+x = Student.create({
+  username: "aca21sgt",
+  preferred_name: "Sam",
+  forename: "Sam",
+  title: "Mx",
+  ucard_number: "777777777",
+  email: "sgttaseff1@sheffield.ac.uk",
+  fee_status: :home
+})
+puts DatabaseHelper.print_validation_errors(x)
 
 Student.create({
   username: "aca21jlh",
@@ -84,3 +51,21 @@ Student.create({
   email: "awillis4@sheffield.ac.uk",
   fee_status: :home
 })
+
+puts ""
+
+students_COM3420 = DatabaseHelper.provision_module_class(
+  "COM3420",
+  "Software Hut",
+  DatabaseHelper.create_staff("emma_norling@sheffield.ac.uk")
+)
+
+puts ""
+
+# take the entire COM3420 class and enroll them in another module
+DatabaseHelper.provision_module_class(
+  "COM2004",
+  "Introduction to Software Engineering",
+  DatabaseHelper.create_staff("mike.stannet@sheffield.ac.uk"),
+  DatabaseHelper.change_class_module(students_COM3420, "COM2004")
+)

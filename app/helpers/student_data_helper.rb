@@ -48,6 +48,9 @@ module StudentDataHelper
   CSV_VALUE_TRANSLATIONS = {
     fee_status: lambda { |s|
       s.force_encoding('UTF-8').parameterize.to_sym
+    },
+    username: lambda { |s|
+      s.upcase
     }
   }
 

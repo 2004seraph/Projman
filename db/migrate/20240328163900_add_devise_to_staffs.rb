@@ -5,7 +5,7 @@ class AddDeviseToStaffs < ActiveRecord::Migration[7.0]
     change_table :staffs do |t|
       ## Database authenticatable
       # t.string :email,              null: false, default: ""
-      t.string :encrypted_password, null: false, default: ""
+      # t.string :encrypted_password, null: false, default: ""
 
       ## Recoverable
       t.string   :reset_password_token
@@ -37,15 +37,8 @@ class AddDeviseToStaffs < ActiveRecord::Migration[7.0]
       # t.timestamps null: false
     end
 
-    add_index :staffs, :email,                unique: true
     add_index :staffs, :reset_password_token, unique: true
     # add_index :staffs, :confirmation_token,   unique: true
     # add_index :staffs, :unlock_token,         unique: true
-  end
-
-  def self.down
-    # By default, we don't want to make any assumption about how to roll back a migration when your
-    # model already existed. Please edit below which fields you would like to remove in this migration.
-    raise ActiveRecord::IrreversibleMigration
   end
 end

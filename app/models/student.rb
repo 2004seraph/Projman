@@ -7,7 +7,7 @@
 #  current_sign_in_at :datetime
 #  current_sign_in_ip :string
 #  dn                 :string
-#  email              :string(254)      default(""), not null
+#  email              :citext           not null
 #  fee_status         :enum             not null
 #  forename           :string(24)       not null
 #  givenname          :string
@@ -24,14 +24,15 @@
 #  title              :string(4)        not null
 #  ucard_number       :string(9)        not null
 #  uid                :string
-#  username           :string(16)       not null
+#  username           :citext           not null
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #
 # Indexes
 #
-#  index_students_on_email     (email)
-#  index_students_on_username  (username) UNIQUE
+#  index_students_on_email         (email)
+#  index_students_on_ucard_number  (ucard_number) UNIQUE
+#  index_students_on_username      (username) UNIQUE
 #
 
 require 'csv'
@@ -42,7 +43,6 @@ class Student < ApplicationRecord
 
   devise :trackable
 
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   has_many :groups, through: :groups_students
   has_and_belongs_to_many :course_modules, foreign_key: "course_module_code", association_foreign_key: "student_id", join_table: "course_modules_students"
   has_many :assigned_facilitators, dependent: :destroy
@@ -56,10 +56,10 @@ class Student < ApplicationRecord
   # required fields
   validates :preferred_name,  presence: true, length: { in: 2..24 },  format: { with: @text_validation_regex }
   validates :forename,        presence: true, length: { in: 2..24 },  format: { with: @text_validation_regex }
-  validates :username,        presence: true, length: { in: 5..16 },  format: { with: @text_validation_regex }, uniqueness: true
+  validates :username,        presence: true, length: { in: 5..16 },  format: { with: @text_validation_regex }, uniqueness: { case_sensitive: false }
   validates :title,           presence: true, length: { in: 2..4 },   format: { with: @text_validation_regex }
   validates :ucard_number,    presence: true, length: { is: 9 },      numericality: { only_integer: true },     uniqueness: true
-  validates :email,           presence: true, length: { in: 8..254 },format: { with: @email_validation_regex }, uniqueness: true # 16 = @sheffield.ac.uk
+  validates :email,           presence: true, length: { in: 8..254 },format: { with: @email_validation_regex }, uniqueness: { case_sensitive: false } # 16 = @sheffield.ac.uk
   validates :fee_status,      presence: true
 
   validates :middle_names,    length: { maximum: 64 },  format: { with: @text_validation_regex }
@@ -67,6 +67,10 @@ class Student < ApplicationRecord
   validates :personal_tutor,  length: { maximum: 64 },  format: { with: @text_validation_regex }
 
   # custom validation for presence on at least one module
+
+  # def password_required?
+  #   false
+  # end
 
   def enroll_module(module_code)
     # puts module_code
@@ -78,6 +82,7 @@ class Student < ApplicationRecord
     csv = CSV.parse(csv, headers: true)
 
     headers = StudentDataHelper.csv_headers
+    invalid_models = []
 
     csv.each { |csv_row|
       # put it in a hash of database_header => value
@@ -94,16 +99,21 @@ class Student < ApplicationRecord
         end
       }
 
-      new_student = create new_student_hash
-      if new_student.valid? and new_student.persisted?
-        # puts StudentDataHelper::MODULE_CODE_CSV_COLUMN
-        # puts csv_row[StudentDataHelper::MODULE_CODE_CSV_COLUMN]
-        # puts csv_row
-        new_student.enroll_module(csv_row[StudentDataHelper::MODULE_CODE_CSV_COLUMN])
+      student =
+        if Student.exists?(username: new_student_hash[:username])
+          Student.find_by(username: new_student_hash[:username])
+        else
+          create new_student_hash
+        end
+
+      if student.valid?
+        student.enroll_module(csv_row[StudentDataHelper::MODULE_CODE_CSV_COLUMN])
       else
-        puts new_student.errors.objects.first.full_message
+        invalid_models << student
       end
     }
+
+    invalid_models
   end
 
   # A static method to insert a single student into the database

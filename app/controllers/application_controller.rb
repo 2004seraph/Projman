@@ -18,6 +18,7 @@ class ApplicationController < ActionController::Base
       if account_type.include?("student")
         puts("student")
         if Student.exists?(username: username)
+          # if Staff.exists?(email: )
           @user = Student.find_by(username: username)
         else
           reset_session

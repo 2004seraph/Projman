@@ -22,18 +22,19 @@ class AddLdapInfoAndCleanUpStudents < ActiveRecord::Migration[7.0]
       add_column :students, column_name, :string
     end
 
-    reversible do |dir|
-      dir.up do
-        # Remove devise fields we don't need
-        unnecessary_columns = %w(reset_password_token reset_password_sent_at remember_created_at encrypted_password) & existing_columns
-        unnecessary_columns.each do |column_name|
-          remove_column :students, column_name
-        end
-      end
-      dir.down do
-        add_column :users, :reset_password_token, :string
-        add_index :users, :reset_password_token, unique: true
-      end
+    # Remove devise fields we don't need
+    unnecessary_columns = %w(reset_password_token reset_password_sent_at remember_created_at encrypted_password) & existing_columns
+    unnecessary_columns.each do |column_name|
+      remove_column :students, column_name
     end
+
+    # reversible do |dir|
+    #   dir.up do
+    #   end
+    #   dir.down do
+    #     add_column :users, :reset_password_token, :string
+    #     add_index :users, :reset_password_token, unique: true
+    #   end
+    # end
   end
 end
