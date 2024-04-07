@@ -23,10 +23,8 @@ class Milestone < ApplicationRecord
   belongs_to :project
 
   enum :type, {
-    individual: 'individual',
-    staff: 'staff',
-    group: 'group',
-    live: 'live',
-    final: 'final'
+    student: 'For each student',
+    staff: 'For each staff',
+    team: 'For each team',
   }
 end

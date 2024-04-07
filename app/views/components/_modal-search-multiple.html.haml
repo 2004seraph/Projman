@@ -31,7 +31,7 @@
               = render 'components/search-with-dropdown',
                 form_input_id: form_input_id, 
                 form_input_name: form_input_name, 
-                data_search_autocomplete_method: new_project_search_facilitators_projects_path
+                data_search_autocomplete_method: defined?(autocomplete_method) ? autocomplete_method : ""
               = form.button(type: "submit", class: "btn btn-outline-secondary") do
                 Add 
           %span= current_selection_text

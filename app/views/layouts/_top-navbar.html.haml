@@ -3,14 +3,13 @@
         %i.bi-kanban-fill
         Projman
 
-    %ul.navbar-nav
-        %li.nav-item
-            = link_to 'Logout', destroy_user_session_path, method: :delete, class: 'btn btn-light', style: 'color: black'
-        %li.nav-item
-            Emma Norling
-        %li.nav-item
-            = link_to '/settings', class: 'active nav-link' do
-                %i.bi-gear-fill
-        %li.nav-item
-            = link_to '/profile', class: 'active nav-link' do
-                %i.bi-person-circle
+    - if user_signed_in?
+        %ul.navbar-nav
+            %li.nav-item
+                = "#{@user.forename} , #{@user.username}"
+            %li.nav-item
+                = link_to '/profile', class: 'active nav-link' do
+                    %i.bi-person-circle
+            %li.nav-item
+                = link_to destroy_user_session_path, method: :delete, class: 'active nav-link' do
+                    %i.bi-box-arrow-left

@@ -27,10 +27,4 @@
 #
 class User < ApplicationRecord
   include EpiCas::DeviseHelper
-  
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-
-  def role?
-    
-  end
-  end
+end

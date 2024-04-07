@@ -1,6 +1,6 @@
 class CreateMilestone < ActiveRecord::Migration[7.0]
   def change
-    create_enum :milestone_type, %w[individual staff group live final]
+    create_enum :milestone_type, %w[student staff team]
 
     create_table :milestones do |t|
       t.references :course_projects, null: false, foreign_key: { to_table: :course_projects }
