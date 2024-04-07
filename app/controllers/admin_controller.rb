@@ -20,11 +20,11 @@ class AdminController < ApplicationController
             return
         end
 
-        #Checks for e-mail input confirmation
+        #Checks for correct e-mail confirmation
         @lead = params[:new_module_lead_email]
         @confirmation = params[:new_module_lead_email_confirmation]
         unless (@lead == @confirmation)
-            redirect_to new_admin_path, alert: "Update unsuccesful - E-mail inputs did not match."
+            redirect_to new_admin_path, alert: "Unsuccesful - E-mail addresses did not match."
             return
         end
         @lead = Staff.where(email: @lead).first
@@ -33,7 +33,7 @@ class AdminController < ApplicationController
         if @lead.nil?
             @lead = Staff.new(email: @confirmation)
             unless @lead.save 
-                redirect_to admin_path, alert: "Update unsuccesful - Invalid e-mail"
+                redirect_to admin_path, alert: "Unsuccesful - Invalid e-mail address"
             end    
         end
 
@@ -68,61 +68,64 @@ class AdminController < ApplicationController
         @confirmation = params[:new_module_lead_email_confirmation]
         @new_student_list = params[:new_module_student_list]
 
-        if @new_name.nil?
-            if @new_lead.nil?
-                if @new_student_list.nil?
-                    redirect_to admin_path, alert: "Update unsuccesful."
-                
-                else
-                    #Checks that the student_csv is compatible with the current module
-                    @parsed_csv = CSV.read(@new_student_list)
-                    unless (@parsed_csv[1][12] == @current_module.code)
-                        redirect_to admin_path, alert: "The Student List Module {#{@parsed_csv[1][12]}} is not compatible with the Module Code {#{@current_module.code}}"
-                        return
-                    end
+        #Update Module Name modal
+        unless @new_name.nil?
 
-                    #Removes old student list and adds new one
-                    @current_module.students.clear
-                    Student.bootstrap_class_list(@new_student_list.read)
-                    redirect_to admin_path, notice: "Student List updated successfully."
-                end
-
-            else
-
-                unless (@new_lead == @confirmation)
-                    redirect_to admin_path, alert: "Update unsuccesful - E-mail inputs did not match."
-                    return
-                end
-
-                @new_lead = Staff.where(email: @new_lead).first
-                
-                #Creates new staff account and links it to the module if no staff found in system
-                if @new_lead.nil?
-                    @new_staff = Staff.new(email: @confirmation)
-                    if @new_staff.save 
-                        @current_module.update_attribute(:staff_id, @new_staff.id)
-                    else
-                        redirect_to admin_path, alert: "Update unsuccesful - Invalid e-mail"
-                    end    
-                else
-                    @current_module.update_attribute(:staff_id, @new_lead.id)
-                end
-
-                if @current_module.valid?
-                    redirect_to admin_path, notice: "Module Leader updated successfully."
-                else
-                    redirect_to admin_path, alert: "Update unsuccesful - Invalid e-mail."
-                end
-            end
-
-        else
             @current_module.update_attribute(:name, @new_name)
+
             if @current_module.valid?
                 redirect_to admin_path, notice: "Module Name updated successfully."
             else
                 redirect_to admin_path, alert: "Update unsuccessful - Invalid name."
             end
         end
+
+        #Update Module Lead modal
+        unless @new_lead.nil?
+            
+            #Checks for correct e-mail confirmation
+            unless (@new_lead == @confirmation)
+                redirect_to admin_path, alert: "Update unsuccesful - E-mail addresses did not match."
+                return
+            end
+
+            @new_lead = Staff.where(email: @new_lead).first
+            
+            #Creates new staff account and links it to the module if no staff found in system
+            if @new_lead.nil?
+                @new_lead = Staff.new(email: @confirmation)
+
+                unless @new_lead.save 
+                    redirect_to admin_path, alert: "Update unsuccesful - Invalid e-mail address."
+                    return
+                end
+            end
+
+            @current_module.update_attribute(:staff_id, @new_lead.id)
+
+            if @current_module.valid?
+                redirect_to admin_path, notice: "Module Leader updated successfully."
+            else
+                redirect_to admin_path, alert: "Update unsuccesful - Invalid e-mail."
+            end
+        end
+
+        #Update Module Student List modal
+        unless @new_student_list.nil?
+
+            #Checks that the student_csv is compatible with the current module
+            @parsed_csv = CSV.read(@new_student_list)
+            unless (@parsed_csv[1][12] == @current_module.code)
+                redirect_to admin_path, alert: "The Student List Module {#{@parsed_csv[1][12]}} is not compatible with the Module Code {#{@current_module.code}}"
+                return
+            end
+
+            #Removes old student list and adds new one
+            @current_module.students.clear
+            Student.bootstrap_class_list(@new_student_list.read)
+            redirect_to admin_path, notice: "Student List updated successfully."
+        end
+
     end
 
     private
