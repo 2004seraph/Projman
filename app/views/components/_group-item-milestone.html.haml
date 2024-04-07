@@ -13,9 +13,11 @@
     .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
       = render partial: 'components/datepicker_input', locals: { placeholder_text: "Select Date", name: (name + "_date"), date_value: defined?(date_value) ? date_value : "" }
 
-    %select.form-select.fs-6.me-3{ "aria-label": "selection box", "style": "width: fit-content" }
-      %option{ selected: true } For groups 
-      %option{ value: "1" } For each student
-      %option{ value: "2" } For each staff
+    %select.form-select.fs-6.me-3{ "aria-label": "selection box", "style": "width: fit-content", name: name+"_type" }
+      - milestone_types = session[:new_project_data][:milestone_types_hash]
+      - milestone_types.each do |value, string|
+        %option{value: value, selected: (selected_type.present? ? selected_type == value : value == milestone_types)}
+          = "#{string}"
+
     %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email 
     %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment 

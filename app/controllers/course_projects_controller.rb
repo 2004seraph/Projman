@@ -36,14 +36,16 @@ class CourseProjectsController < ApplicationController
         modules_hash = CourseModule.order(:code).pluck(:code, :name).to_h
         project_allocation_modes_hash = CourseProject.project_allocations
         team_allocation_modes_hash = CourseProject.team_allocations
+        milestone_types_hash = Milestone.types
 
         session[:new_project_data] = {
             errors: {},
             modules_hash: modules_hash,
             project_allocation_modes_hash: project_allocation_modes_hash,
             team_allocation_modes_hash: team_allocation_modes_hash,
+            milestone_types_hash: milestone_types_hash,
 
-            selected_module: "",
+            selected_module: "", 
             project_name: "",
             selected_project_allocation_mode: "",
             project_choices: [],
@@ -51,9 +53,9 @@ class CourseProjectsController < ApplicationController
             selected_team_allocation_mode: "",
             preferred_teammates: 2,
             avoided_teammates: 2,
-            project_milestones: [{"Name": "Project Deadline", "Date": "", "Deadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""},
-                                {"Name": "Teammate Preference Form Deadline", "Date": "", "Deadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""},
-                                {"Name": "Project Preference Form Deadline", "Date": "", "Deadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""}],
+            project_milestones: [{"Name": "Project Deadline", "Date": "", "Type": "team", "Deadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""},
+                                {"Name": "Teammate Preference Form Deadline", "Date": "", "Type": "student", "Deadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""},
+                                {"Name": "Project Preference Form Deadline", "Date": "", "Type": "team", "Deadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""}],
             project_facilitators: [],
 
             facilitator_selection: [],
@@ -91,7 +93,7 @@ class CourseProjectsController < ApplicationController
         @project_milestone_name = params[:project_milestone_name]
         project_milestone_unique = false
         unless session[:new_project_data][:project_milestones].any? { |milestone| milestone[:Name] == @project_milestone_name }
-            session[:new_project_data][:project_milestones] << {"Name": @project_milestone_name, "Date": "", "Deadline": false, "Email": {"Content": "", "Advance": ""}, "Comment": ""}
+            session[:new_project_data][:project_milestones] << {"Name": @project_milestone_name, "Date": "", "Type": "", "Deadline": false, "Email": {"Content": "", "Advance": ""}, "Comment": ""}
             project_milestone_unique = true
         end
         if request.xhr?
@@ -255,6 +257,20 @@ class CourseProjectsController < ApplicationController
                     milestone[:Date] = value
                     unless defined?(value) && value.present?
                         errors[:timings][:milestone_date_not_set] = "Please make sure all milestones have a date"
+                    end
+                end
+            end
+
+            if key.match?(/^milestone_[^_]+_type$/)
+                # Extract the milestone name from the key
+                milestone_name = key.match(/^milestone_([^_]+)_type$/)[1]
+          
+                # Find the corresponding milestone in the milestones hash and update its "Type" value
+                if milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
+                    next if milestone[:Deadline]
+                    milestone[:Type] = value
+                    unless defined?(value) && value.present? && Milestone.types.key?(value)
+                        errors[:timings][:invalid_milestone_type] = "Please make sure all milestone types are valid"
                     end
                 end
             end

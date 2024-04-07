@@ -169,11 +169,13 @@
 
         %h3.fs-5.mb-2 Milestones
         %ul.list-group.list-group-flush.mb-2.overflow-hidden#project-milestones-list
+          - milestone_types = project_data[:milestone_types_hash]
           - project_data[:project_milestones].each do |milestone|
             - next if milestone[:Deadline]
             - milestone_name = milestone[:Name]
             - milestone_date = milestone[:Date]
-            = render partial: 'components/group-item-milestone', locals: { item_text: milestone_name, name: "milestone_"+milestone_name, deletion_action_url: new_project_remove_project_milestone_projects_path, date_value: milestone_date}
+            - selected_type = milestone[:Type]
+            = render partial: 'components/group-item-milestone', locals: { item_text: milestone_name, name: "milestone_"+milestone_name, selected_type: selected_type, milestone_types: milestone_types, deletion_action_url: new_project_remove_project_milestone_projects_path, date_value: milestone_date}
 
         %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal",
           "data-bs-target": "#add-project-milestone-modal"}
