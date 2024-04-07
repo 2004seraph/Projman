@@ -81,34 +81,12 @@ class Student < ApplicationRecord
   def self.bootstrap_class_list(csv)
     csv = CSV.parse(csv, headers: true)
 
-    headers = StudentDataHelper.csv_headers
     invalid_models = []
 
     csv.each { |csv_row|
-      # put it in a hash of database_header => value
-      # call Student.new with hash
-      new_student_hash = {}
+      success, student = bootstrap_student(csv_row)
 
-      csv_row.each_with_index { |_, index|
-        header_database_name = csv_header_to_field headers[index]
-        if column_names.include? header_database_name
-          new_student_hash.store(
-            header_database_name.to_sym,
-            translate_csv_value(header_database_name.to_sym, csv_row[headers[index]])
-          )
-        end
-      }
-
-      student =
-        if Student.exists?(username: new_student_hash[:username])
-          Student.find_by(username: new_student_hash[:username])
-        else
-          create new_student_hash
-        end
-
-      if student.valid?
-        student.enroll_module(csv_row[StudentDataHelper::MODULE_CODE_CSV_COLUMN])
-      else
+      if not success
         invalid_models << student
       end
     }
@@ -117,7 +95,35 @@ class Student < ApplicationRecord
   end
 
   # A static method to insert a single student into the database
-  def self.bootstrap_student(csv)
+  def self.bootstrap_student(csv_row)
+    headers = StudentDataHelper.csv_headers
+
+    username = csv_row[StudentDataHelper::USERNAME_CSV_COLUMN]
+
+    student =
+      if Student.exists?(username: username)
+        Student.find_by(username: username)
+      else
+        # marshal csv data into a hash of database_field_name => csv_value
+        new_student_hash = {}
+        csv_row.each_with_index { |_, index|
+          header_database_name = csv_header_to_field headers[index]
+          if column_names.include? header_database_name
+            new_student_hash.store(
+              header_database_name.to_sym,
+              translate_csv_value(header_database_name.to_sym, csv_row[headers[index]])
+            )
+          end
+        }
+        create new_student_hash
+      end
+
+    if student.valid?
+      student.enroll_module(csv_row[StudentDataHelper::MODULE_CODE_CSV_COLUMN])
+      return true, student
+    else
+      return false, student
+    end
   end
 
   private
