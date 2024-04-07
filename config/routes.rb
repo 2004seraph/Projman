@@ -20,6 +20,8 @@ Rails.application.routes.draw do
     get 'new_project_get_milestone_data', on: :collection
     post 'new_project_set_milestone_email_data', on: :collection
     post 'new_project_set_milestone_comment', on: :collection
+    get 'new_project_search_facilitators_student', on: :collection
+    get 'new_project_search_facilitators_staff', on: :collection
 
     # Define a separate POST route for the 'new' action
     post 'new', to: 'course_projects#create', on: :collection

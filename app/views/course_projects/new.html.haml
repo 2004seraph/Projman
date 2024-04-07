@@ -169,13 +169,12 @@
 
         %h3.fs-5.mb-2 Milestones
         %ul.list-group.list-group-flush.mb-2.overflow-hidden#project-milestones-list
-          - milestone_types = project_data[:milestone_types_hash]
           - project_data[:project_milestones].each do |milestone|
             - next if milestone[:Deadline]
             - milestone_name = milestone[:Name]
             - milestone_date = milestone[:Date]
             - selected_type = milestone[:Type]
-            = render partial: 'components/group-item-milestone', locals: { item_text: milestone_name, name: "milestone_"+milestone_name, selected_type: selected_type, milestone_types: milestone_types, deletion_action_url: new_project_remove_project_milestone_projects_path, date_value: milestone_date}
+            = render partial: 'components/group-item-milestone', locals: { item_text: milestone_name, name: "milestone_"+milestone_name, selected_type: selected_type, deletion_action_url: new_project_remove_project_milestone_projects_path, date_value: milestone_date}
 
         %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal",
           "data-bs-target": "#add-project-milestone-modal"}
@@ -199,10 +198,14 @@
           - project_data[:project_facilitators].each do |facilitator| 
             = render partial: 'components/group-item-simple', locals: { item_text: facilitator, deletion_action_url: new_project_remove_facilitator_projects_path}
 
-        %button.btn.btn-primary.mb-2{type: "button", id: "open-add-facilitators-modal", "data-bs-toggle": "modal",
-          "data-bs-target": "#add-project-facilitators-modal"}
+        %button.btn.btn-primary.mb-2{type: "button", id: "open-add-staff-facilitators-modal", "data-bs-toggle": "modal",
+          "data-bs-target": "#add-staff-project-facilitators-modal"}
           %i.bi.bi-plus
-          Add
+          Add Staff
+        %button.btn.btn-primary.mb-2{type: "button", id: "open-add-student-facilitators-modal", "data-bs-toggle": "modal",
+          "data-bs-target": "#add-student-project-facilitators-modal"}
+          %i.bi.bi-plus
+          Add Student
 
     .card#mark-scheme.mb-3
       .card-header.d-flex.align-items-center
@@ -240,11 +243,28 @@
   confirm_text: 'Confirm', 
   confirm_onclick_function: ""
 
--# ADD FACILITATORS MODAL
+-# ADD FACILITATORS MODAL (STAFF)
 = render 'components/modal-search-multiple', 
-  modal_id: 'add-project-facilitators-modal', 
+  modal_id: 'add-staff-project-facilitators-modal', 
+  autocomplete_method: new_project_search_facilitators_staff_projects_path,
   title: 'Add Project Facilitators', 
-  prompt: 'Input facilitators email', 
+  prompt: 'Input staff members email', 
+  form_input_id: 'new-project-facilitator-name', 
+  form_input_name: 'project_facilitator_name', 
+  current_selection_text: 'current selection',
+  list_group_id: 'facilitator-selection-group',
+  confirm_text: 'Confirm', 
+  confirm_onclick_function: "",
+  add_to_selection_url: new_project_add_to_facilitator_selection_projects_path,
+  submission_url: new_project_add_facilitator_selection_projects_path,
+  on_open_action_url: new_project_clear_facilitator_selection_projects_path
+
+-# ADD FACILITATORS MODAL (STUDENT)
+= render 'components/modal-search-multiple', 
+  modal_id: 'add-student-project-facilitators-modal', 
+  autocomplete_method: new_project_search_facilitators_student_projects_path,
+  title: 'Add Project Facilitators', 
+  prompt: 'Input students email', 
   form_input_id: 'new-project-facilitator-name', 
   form_input_name: 'project_facilitator_name', 
   current_selection_text: 'current selection',

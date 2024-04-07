@@ -10,6 +10,9 @@ $(function() {
         var query = $(this).val();
         var dropdownElement = $(this).siblings('.dropdown-menu');
         var searchUrl = $(this).attr("data-search-autocomplete-method")
+        if (searchUrl === undefined || searchUrl === "") {
+            return;
+        }
     
         $.ajax({
             url: searchUrl,

@@ -152,9 +152,15 @@ class CourseProjectsController < ApplicationController
         puts session[:new_project_data][:project_facilitators]
     end
 
-    def new_project_search_facilitators
+    def new_project_search_facilitators_student
         query = params[:query]
         @results = Student.where("email LIKE ?", "%#{query}%").limit(8).distinct
+        render json: @results.pluck(:email)
+    end
+
+    def new_project_search_facilitators_staff
+        query = params[:query]
+        @results = Staff.where("email LIKE ?", "%#{query}%").limit(8).distinct
         render json: @results.pluck(:email)
     end
 
@@ -279,10 +285,10 @@ class CourseProjectsController < ApplicationController
         puts project_data[:project_milestones]
 
 
-        students_not_found = project_data[:project_facilitators].reject do |email|
-            Student.exists?(email: email)
+        facilitators_not_found = project_data[:project_facilitators].reject do |email|
+            Student.exists?(email: email) || Staff.exists?(email: email)
         end
-        errors[:facilitators_not_found] = students_not_found
+        errors[:facilitators_not_found] = facilitators_not_found
 
         render :new
     end
