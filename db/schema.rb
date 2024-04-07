@@ -17,7 +17,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_28_165641) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "group_event_type", ["generic", "milestone", "chat", "issue"]
-  create_enum "milestone_type", ["individual", "staff", "group", "live", "final"]
+  create_enum "milestone_type", ["student", "staff", "team"]
   create_enum "project_choice_allocation", ["random_project_allocation", "individual_preference_project_allocation", "team_preference_project_allocation"]
   create_enum "project_status", ["draft", "student_preference", "student_preference_review", "team_preference", "team_preference_review", "live", "completed", "archived"]
   create_enum "project_team_allocation", ["random_team_allocation", "preference_based_team_allocation"]
@@ -26,9 +26,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_28_165641) do
   create_table "assigned_facilitators", force: :cascade do |t|
     t.bigint "student_id"
     t.bigint "staff_id"
+    t.bigint "course_project_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["course_project_id"], name: "index_assigned_facilitators_on_course_project_id"
     t.index ["staff_id"], name: "index_assigned_facilitators_on_staff_id"
+    t.index ["student_id", "staff_id", "course_project_id"], name: "module_assignment", unique: true
     t.index ["student_id"], name: "index_assigned_facilitators_on_student_id"
   end
 
