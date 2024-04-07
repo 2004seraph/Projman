@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
     #   # puts("student")
     #   # student_controller = StudentsController.new
     #   # @student = student_controller.load(user)
-      
+
     # elsif account_type.include?("staff")
     #   puts("staff")
     # end
@@ -44,6 +44,7 @@ class ApplicationController < ActionController::Base
         # @student = student_controller.load(username)
         if Student.exists?(username: username)
           @student = Student.find_by(username: username)
+          # staff patching
         else
           reset_session
           redirect_to new_user_session_path, alert: "User not found in the database. Please try again."
