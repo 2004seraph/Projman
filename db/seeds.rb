@@ -52,8 +52,6 @@ Student.create({
   fee_status: :home
 })
 
-puts ""
-
 students_COM3420 = DatabaseHelper.provision_module_class(
   "COM3420",
   "Software Hut",

@@ -142,7 +142,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_28_165641) do
   end
 
   create_table "staffs", force: :cascade do |t|
-    t.string "email", null: false
+    t.citext "email", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "reset_password_token"

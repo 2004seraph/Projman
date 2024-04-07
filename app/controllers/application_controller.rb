@@ -16,16 +16,20 @@ class ApplicationController < ActionController::Base
       account_type = current_user.account_type
 
       if account_type.include?("student")
-        puts("student")
         if Student.exists?(username: username)
-          # if Staff.exists?(email: )
           @user = Student.find_by(username: username)
+          if Staff.exists?(email: @user.email)
+            # this should be CanCanCan stuff, not a manual boolean
+            # @is_staff = true
+          end
         else
           reset_session
           redirect_to new_user_session_path, alert: "User not found in the database. Please try again."
         end
       elsif account_type.include?("staff")
-        puts("staff")
+        @user = Staff.find_by(email: current_user.email)
+        # this should be CanCanCan stuff, not a manual boolean
+        # @is_staff = true
       end
     end
   end

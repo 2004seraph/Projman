@@ -31,6 +31,8 @@ module StudentDataHelper
     ]
   end
 
+  USERNAME_CSV_COLUMN = "Student Username"
+
   # the specific CSV field name of the student module enrollment.
   MODULE_CODE_CSV_COLUMN = "Module Code"
 
