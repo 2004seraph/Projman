@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import 'bootstrap';
 
 $(function() {
     $('.search-collection').on('click', function() {
@@ -8,6 +9,7 @@ $(function() {
 
     $('.search-collection').on('input', function() {
         var query = $(this).val();
+        var toggleElement = $(this);
         var dropdownElement = $(this).siblings('.dropdown-menu');
         var searchUrl = $(this).attr("data-search-autocomplete-method")
         if (searchUrl === undefined || searchUrl === "") {
@@ -26,7 +28,7 @@ $(function() {
                     dropdownElement.removeClass('show');
                 }
                 else{
-                    dropdownElement.addClass('show');
+                    toggleElement.trigger('click')
                 }
 
                 // Append new results to dropdown
@@ -40,6 +42,9 @@ $(function() {
     $('.search-collection').siblings('.dropdown-menu').on('click', 'li', function() {
         // Set the value of the search bar to the value of the clicked list item
         var value = $(this).find('a').attr('value');
-        $('.search-collection').val(value);
+        if (value !== undefined) {
+            $(this).closest('.modal').find('.search-collection').val(value);
+            $(this).closest('.dropdown-menu').removeClass('show');
+        }
     });
 });

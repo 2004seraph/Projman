@@ -21,7 +21,8 @@ class CourseProjectsController < ApplicationController
         :new_project_toggle_project_choices,
         :new_project_remove_project_milestone,
         :new_project_remove_from_facilitator_selection,
-        :new_project_remove_facilitator]
+        :new_project_remove_facilitator,
+        :create]
 
     def index
         @view_as_manager = true
@@ -282,13 +283,14 @@ class CourseProjectsController < ApplicationController
             end
         end
 
-        puts project_data[:project_milestones]
-
-
         facilitators_not_found = project_data[:project_facilitators].reject do |email|
             Student.exists?(email: email) || Staff.exists?(email: email)
         end
         errors[:facilitators_not_found] = facilitators_not_found
+
+        puts errors
+        no_errors = errors.all? { |_, v| v.empty? }
+        puts no_errors
 
         render :new
     end
