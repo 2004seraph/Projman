@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
       account_type = current_user.account_type
       email = current_user.email
 
-      if account_type.include?("student")
+      if current_user.isStudent?
         if Student.exists?(username: username)
           @user = Student.find_by(username: username)
           if Staff.exists?(email: @user.email)
@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
           reset_session
           redirect_to new_user_session_path, alert: "User not found in the database. Please try again."
         end
-      elsif account_type.include?("staff")
+      elsif current_user.isStaff?
         if Staff.exists?(email: email)
           @user = Staff.find_by(email: email)
           # this should be CanCanCan stuff, not a manual boolean
@@ -39,6 +39,9 @@ class ApplicationController < ActionController::Base
 
           new_staff.save
         end
+      else
+        reset_session
+        redirect_to new_user_session_path, alert: "Unauthorised access."
       end
     end
   end
