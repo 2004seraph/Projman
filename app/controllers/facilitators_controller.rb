@@ -1,5 +1,7 @@
 class FacilitatorsController < ApplicationController
-    # GET /facilitators 
+    # load_and_authorize_resource
+
+    # GET /facilitators
     def index
         @my_teams = Array.new(5) {|i| i.to_s }
         @my_marking_modules = ["COM1001", "COM2002", "COM3003", "COM4004"]
@@ -18,5 +20,5 @@ class FacilitatorsController < ApplicationController
         @marking = params[:module]
     end
 
-    
+
 end

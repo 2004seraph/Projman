@@ -12,10 +12,12 @@ require 'json'
 # Project Milestones INTAKE/OUTTAKE:
 # New Milestone Model
 # Project Milestones Session Format:
-# [ {"Name": "Technical Review", "Date": "dd/mm/yyyy"}, 
+# [ {"Name": "Technical Review", "Date": "dd/mm/yyyy"},
 #   {"Name": "Peer Review", "Date: "dd/mm/yyyy"}]
 
 class CourseProjectsController < ApplicationController
+    load_and_authorize_resource
+
     skip_before_action :verify_authenticity_token, only: [:new_project_remove_project_choice,
         :new_project_clear_facilitator_selection,
         :new_project_toggle_project_choices,
@@ -25,8 +27,7 @@ class CourseProjectsController < ApplicationController
         :create]
 
     def index
-        @view_as_manager = true
-        if @view_as_manager            
+        if current_user.instance_of? Staff
             render 'index_module_leader'
         else
             render 'index_student'
@@ -46,7 +47,7 @@ class CourseProjectsController < ApplicationController
             team_allocation_modes_hash: team_allocation_modes_hash,
             milestone_types_hash: milestone_types_hash,
 
-            selected_module: "", 
+            selected_module: "",
             project_name: "",
             selected_project_allocation_mode: "",
             project_choices: [],
@@ -179,7 +180,7 @@ class CourseProjectsController < ApplicationController
         milestone[:Email][:Content] = params[:milestone_email_content]
         milestone[:Email][:Advance] = params[:milestone_email_advance]
     end
-    
+
     def new_project_set_milestone_comment
         milestone_name = params[:milestone_name].split('_').drop(1).join('_')
         puts milestone_name
@@ -257,7 +258,7 @@ class CourseProjectsController < ApplicationController
             if key.match?(/^milestone_[^_]+_date$/)
                 # Extract the milestone name from the key
                 milestone_name = key.match(/^milestone_([^_]+)_date$/)[1]
-          
+
                 # Find the corresponding milestone in the milestones hash and update its "Date" value
                 if milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
                     next if milestone[:Deadline]
@@ -271,7 +272,7 @@ class CourseProjectsController < ApplicationController
             if key.match?(/^milestone_[^_]+_type$/)
                 # Extract the milestone name from the key
                 milestone_name = key.match(/^milestone_([^_]+)_type$/)[1]
-          
+
                 # Find the corresponding milestone in the milestones hash and update its "Type" value
                 if milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
                     next if milestone[:Deadline]

@@ -1,6 +1,7 @@
 class PagesController < ApplicationController
+  authorize_resource :class => false
 
-  def home
+  def index
   end
 
 end

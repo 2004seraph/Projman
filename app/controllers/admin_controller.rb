@@ -1,6 +1,8 @@
 class AdminController < ApplicationController
+    load_and_authorize_resource
+
     before_action :set_module, only: %i[ show edit update destroy ]
-    
+
     #GET /admin
     def index
         @admin_modules = CourseModule.all
@@ -12,7 +14,7 @@ class AdminController < ApplicationController
     end
 
     #POST /admin
-    def create 
+    def create
 
         #Checks for unique module code
         unless (CourseModule.where(code: (params[:course_module][:code]).strip).empty?)
@@ -28,13 +30,13 @@ class AdminController < ApplicationController
             return
         end
         @lead = Staff.where(email: @lead).first
-        
+
         #Creates new staff account and links it to the module if no staff found in system
         if @lead.nil?
             @lead = Staff.new(email: @confirmation)
-            unless @lead.save 
+            unless @lead.save
                 redirect_to admin_path, alert: "Unsuccesful - Invalid e-mail address"
-            end    
+            end
         end
 
         #Checks that the student_csv is compatible with the created module
@@ -82,7 +84,7 @@ class AdminController < ApplicationController
 
         #Update Module Lead modal
         unless @new_lead.nil?
-            
+
             #Checks for correct e-mail confirmation
             unless (@new_lead == @confirmation)
                 redirect_to admin_path, alert: "Update unsuccesful - E-mail addresses did not match."
@@ -90,12 +92,12 @@ class AdminController < ApplicationController
             end
 
             @new_lead = Staff.where(email: @new_lead).first
-            
+
             #Creates new staff account and links it to the module if no staff found in system
             if @new_lead.nil?
                 @new_lead = Staff.new(email: @confirmation)
 
-                unless @new_lead.save 
+                unless @new_lead.save
                     redirect_to admin_path, alert: "Update unsuccesful - Invalid e-mail address."
                     return
                 end
@@ -133,9 +135,9 @@ class AdminController < ApplicationController
       def set_module
         @current_module = CourseModule.find(params[:id])
       end
-  
+
       def module_params
         params.require(:course_module).permit(:code, :name, :staff_id, :student_csv)
       end
-      
+
 end

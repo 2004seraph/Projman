@@ -56,8 +56,8 @@ module Project
                              helper_specs:     false,
                              controller_specs: false
     end
-    
-    #Email Config 
+
+    #Email Config
     config.action_mailer.smtp_settings = {
       address:              'mailhost.shef.ac.uk',
       port:                 587,
@@ -67,5 +67,6 @@ module Project
       ca_file:              '/etc/ssl/certs/ca-certificates.crt'
     }
 
+    config.action_dispatch.rescue_responses.merge!('CanCan::AccessDenied' => :unauthorized)
   end
 end
