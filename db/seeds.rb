@@ -68,6 +68,16 @@ DatabaseHelper.provision_module_class(
   Staff.find_by(email: "jhenson2@sheffield.ac.uk")
 )
 
+Student.create({
+  username: "aca22op",
+  preferred_name: "Oliver",
+  forename: "Oliver",
+  title: "Mr",
+  ucard_number: "001796094",
+  email: "opickford1@sheffield.ac.uk",
+  fee_status: :home
+})
+
 students_COM3420 = DatabaseHelper.provision_module_class(
   "COM3420",
   "Software Hut",
