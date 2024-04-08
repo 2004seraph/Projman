@@ -28,6 +28,8 @@ Rails.application.routes.draw do
   end
 
   get '/projects/:id/teams', to: 'lead#teams'
+  
+  get '/projects/student/:id', to: 'course_projects#show_student'
 
   get '/students', to: 'students#index'
   get '/issues', to: 'issues#index'

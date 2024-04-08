@@ -25,7 +25,7 @@ class CourseProjectsController < ApplicationController
         :create]
 
     def index
-        @view_as_manager = true
+        @view_as_manager = false
         if @view_as_manager            
             render 'index_module_leader'
         else
@@ -294,4 +294,8 @@ class CourseProjectsController < ApplicationController
 
         render :new
     end
+
+    def show_student
+    end
+    
 end
