@@ -32,6 +32,10 @@ Student.create({
   fee_status: :home
 })
 
+Staff.create({
+  email: "jhenson2@sheffield.ac.uk"
+})
+
 Student.create({
   username: "ack21jb",
   preferred_name: "Jakub",
