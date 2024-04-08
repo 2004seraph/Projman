@@ -1,0 +1,63 @@
+%h1 Progress Form
+
+%hr
+
+- absence_unique_id = "accordion-card-#{SecureRandom.hex(5)}"
+.accordion-section
+  .card.mb-2.accordion-element
+    %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+      href: "##{absence_unique_id}",
+      role: "button",
+      "data-accordion-toggle" => "",
+      "aria-expanded" => "false",
+      "aria-controls" => absence_unique_id}
+
+      %h2.fs-4= "Absences"
+      %i.bi.bi-caret-right-fill
+    
+    .collapse{id: absence_unique_id}
+      .card-body
+        - for n in 1..5 do
+          .form-check
+            %input.form-check-input.absent-checkbox{ type: "checkbox", id: "absentCheckbox-#{n}", checked: false }
+            %label.form-check-label{ for: "absentCheckbox-#{n}" }= "Oliver Pickford"
+            %input{type: "text", id: "reasonTextInput-#{n}", placeholder: "Reason", style: "display: none"}
+
+          :javascript
+            // Javascript for showing/hiding reasons for someone being absent
+            var checkboxes = document.querySelectorAll(".absent-checkbox");
+
+            checkboxes.forEach(function(checkbox) {
+              checkbox.addEventListener("change", function() {
+                var checkboxId = checkbox.id.split("-")[1];
+                var textInputContainer = document.getElementById(`reasonTextInput-${checkboxId}`);
+                
+                textInputContainer.style.display = this.checked ? "inline" : "none";
+              });
+            });  
+
+
+      
+            
+
+  - for n in 1..3 do
+    - unique_id = "accordion-question-card-" + "#{SecureRandom.hex(5)}"
+
+    .card.mb-2.accordion-element
+      %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+        href: "##{unique_id}",
+        role: "button",
+        "data-accordion-toggle" => "",
+        "aria-expanded" => "false",
+        "aria-controls" => unique_id}
+        
+        %h2.fs-4= "Question #{n}"
+        %i.bi.bi-caret-right-fill
+      
+      .collapse{id: unique_id}
+        .card-body
+          %h5="...."
+
+  %hr
+
+= link_to "Submit", facilitator_project_team_path(project_id: 0, team_id: 0), class: "btn btn-primary"

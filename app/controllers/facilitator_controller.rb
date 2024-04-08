@@ -27,4 +27,7 @@ class FacilitatorController < ApplicationController
 
     def projects_show
     end
+
+    def progress_form
+    end
 end

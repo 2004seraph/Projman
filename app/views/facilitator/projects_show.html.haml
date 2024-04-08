@@ -3,8 +3,12 @@
 // Projects -> Project -> Team or Marking
 
 %h1= "Project - Software Hut"
+%hr.divider
 
-%hr.divider
-= render 'team-list-card'
-%hr.divider
-= render 'marking-list-card'
+.accordion-section
+  = render partial: 'team-list-card'
+
+  %hr.divider
+  = render partial: 'marking-list-card'
+
+
