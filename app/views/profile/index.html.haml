@@ -1,12 +1,32 @@
-%h1 Personal Information
+.separating-section
+  %h2 Personal Information
 
 .separating-section
-  %h3 Surname: #{@user.surname}
-  %h3 Forename(s): #{@user.forename}
-  %h3 Preferred Name: #{@user.preferred_name}
-  %h3 Title: #{@user.title}
-  %h3 Email: #{@user.email}
-  %h3
-    Gender:
-    %button.common-button.smaller Request Change
+  %h3.m-0.fs-5.fw-medium Surname: #{current_user.sn}
+  %p
+  %h3.m-0.fs-5.fw-medium Forename(s): #{current_user.givenname}
+  %p
+  %h3.m-0.fs-5.fw-medium Email: #{current_user.email}
+  %p
+  - if current_user.isStudent?
+    %h3.m-0.fs-5.fw-medium Preferred Name: #{@user.preferred_name}
+    %p
+    %h3.m-0.fs-5.fw-medium Title: #{@user.title}
+
+  %hr.divider
+ 
+  - if current_user.isStudent?
+    %button.btn.btn-primary.btn-m.m-2{type: "button", "data-bs-toggle": "modal",
+       "data-bs-target": "#changeGenderModal"}
+      Request Title Change
   
+
+.modal.fade{ id: "changeGenderModal", tabindex: "-1", "aria-labelledby": "changeGenderModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      .modal-header
+        %h1.modal-title.fs-5= "Request Title Change"
+        %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+
+      .modal-body
+        %h1.fs-6.fw-normal.fst-italic= "gender drop down?"

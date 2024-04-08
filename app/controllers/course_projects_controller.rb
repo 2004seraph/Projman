@@ -295,4 +295,8 @@ class CourseProjectsController < ApplicationController
 
         render :new
     end
+
+    def show_student
+    end
+
 end

@@ -32,7 +32,7 @@ class Users::SessionsController < Devise::SessionsController
   def destroy
     super
     reset_session
-    redirect_to root_path, notice: "Logged our successfully"
+    redirect_to root_path, notice: "Logged out successfully"
   end
   
 end

@@ -27,6 +27,7 @@ Rails.application.routes.draw do
     post 'new', to: 'course_projects#create', on: :collection
 
     get ':id/teams', to: 'lead#teams', on: :collection
+    get 'student/:id', to: 'course_projects#show_student', on: :collection
   end
 
   get '/students', to: 'students#index'

@@ -1,0 +1,24 @@
+-# Show all features students get for chosen project
+
+.separating-section 
+    .d-flex.align-items-center.justify-content-between
+
+        %h2
+            -# CHOSEN PROJECT CODE HERE
+            COM3420 Software Hut: Project E
+
+        .flex-end
+            -# LINK TO CREATE ISSUES PAGE OR MODAL????
+            = link_to "/projects/student/1", class: 'btn btn-primary' do
+                %i.bi.bi-exclamation-circle.orange
+                Report Issue
+
+    %hr.divider
+
+    = render partial: 'course_projects/components/pref-form-box'
+    = render partial: 'course_projects/components/staff-info-box'
+    = render partial: 'course_projects/components/team-info-box'
+    = render partial: 'course_projects/components/deadlines-info-box'
+    = render partial: 'course_projects/components/mark-scheme-box'
+    = render partial: 'course_projects/components/team-chat-box'
+    

@@ -1,13 +1,13 @@
 -# Load all modules in the database
 
 .separating-section 
-    %h2
-        Modules
+    .d-flex.align-items-center.justify-content-between
+        %h2
+            Modules
 
-    .flex-end
-    = link_to new_admin_path, class: 'btn btn-primary' do
-        %i.bi.bi-plus-square-fill
-        Create New
+        = link_to new_admin_path, class: 'btn btn-primary' do
+            %i.bi.bi-plus-square-fill
+            Create New
     %hr.divider
 
     - @admin_modules.each do |mod|
