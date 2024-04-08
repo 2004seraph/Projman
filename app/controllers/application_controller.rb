@@ -38,6 +38,7 @@ class ApplicationController < ActionController::Base
           })
 
           new_staff.save
+        end
       end
     end
   end
