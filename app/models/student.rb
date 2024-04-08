@@ -7,7 +7,7 @@
 #  current_sign_in_at :datetime
 #  current_sign_in_ip :string
 #  dn                 :string
-#  email              :citext           not null
+#  email              :string(254)      default(""), not null
 #  fee_status         :enum             not null
 #  forename           :string(24)       not null
 #  givenname          :string
@@ -24,15 +24,14 @@
 #  title              :string(4)        not null
 #  ucard_number       :string(9)        not null
 #  uid                :string
-#  username           :citext           not null
+#  username           :string(16)       not null
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #
 # Indexes
 #
-#  index_students_on_email         (email)
-#  index_students_on_ucard_number  (ucard_number) UNIQUE
-#  index_students_on_username      (username) UNIQUE
+#  index_students_on_email     (email)
+#  index_students_on_username  (username) UNIQUE
 #
 
 require 'csv'

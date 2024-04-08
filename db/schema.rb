@@ -10,15 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_28_165641) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_08_101811) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "citext"
   enable_extension "plpgsql"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "group_event_type", ["generic", "milestone", "chat", "issue"]
-  create_enum "milestone_type", ["student", "staff", "team"]
+  create_enum "milestone_type", ["individual", "staff", "group", "live", "final"]
   create_enum "project_choice_allocation", ["random_project_allocation", "individual_preference_project_allocation", "team_preference_project_allocation"]
   create_enum "project_status", ["draft", "student_preference", "student_preference_review", "team_preference", "team_preference_review", "live", "completed", "archived"]
   create_enum "project_team_allocation", ["random_team_allocation", "preference_based_team_allocation"]
@@ -27,12 +26,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_28_165641) do
   create_table "assigned_facilitators", force: :cascade do |t|
     t.bigint "student_id"
     t.bigint "staff_id"
-    t.bigint "course_project_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["course_project_id"], name: "index_assigned_facilitators_on_course_project_id"
     t.index ["staff_id"], name: "index_assigned_facilitators_on_staff_id"
-    t.index ["student_id", "staff_id", "course_project_id"], name: "module_assignment", unique: true
     t.index ["student_id"], name: "index_assigned_facilitators_on_student_id"
   end
 
@@ -142,11 +138,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_28_165641) do
   end
 
   create_table "staffs", force: :cascade do |t|
-    t.citext "email", null: false
+    t.string "email", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
     t.integer "sign_in_count", default: 0, null: false
     t.datetime "current_sign_in_at"
@@ -154,7 +148,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_28_165641) do
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
     t.index ["email"], name: "index_staffs_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_staffs_on_reset_password_token", unique: true
+    t.index ["email"], name: "unique_emails", unique: true
   end
 
   create_table "students", force: :cascade do |t|
@@ -162,11 +156,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_28_165641) do
     t.string "forename", limit: 24, null: false
     t.string "middle_names", limit: 64, default: ""
     t.string "surname", limit: 24, default: ""
-    t.citext "username", null: false
+    t.string "username", limit: 16, null: false
     t.string "title", limit: 4, null: false
     t.enum "fee_status", null: false, enum_type: "student_fee_status"
     t.string "ucard_number", limit: 9, null: false
-    t.citext "email", null: false
+    t.string "email", limit: 254, default: "", null: false
     t.string "personal_tutor", limit: 64, default: ""
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -183,7 +177,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_28_165641) do
     t.string "givenname"
     t.string "account_type"
     t.index ["email"], name: "index_students_on_email"
-    t.index ["ucard_number"], name: "index_students_on_ucard_number", unique: true
     t.index ["username"], name: "index_students_on_username", unique: true
   end
 

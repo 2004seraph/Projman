@@ -8,8 +8,8 @@ class AddDeviseToStaffs < ActiveRecord::Migration[7.0]
       # t.string :encrypted_password, null: false, default: ""
 
       ## Recoverable
-      t.string   :reset_password_token
-      t.datetime :reset_password_sent_at
+      # t.string   :reset_password_token
+      # t.datetime :reset_password_sent_at
 
       ## Rememberable
       t.datetime :remember_created_at
@@ -37,7 +37,7 @@ class AddDeviseToStaffs < ActiveRecord::Migration[7.0]
       # t.timestamps null: false
     end
 
-    add_index :staffs, :reset_password_token, unique: true
+    # add_index :staffs, :reset_password_token, unique: true
     # add_index :staffs, :confirmation_token,   unique: true
     # add_index :staffs, :unlock_token,         unique: true
   end
