@@ -30,6 +30,8 @@ class CourseProjectsController < ApplicationController
         if @user.instance_of? Staff
             render 'index_module_leader'
         else
+            #FILTER FOR PROJECTS THAT ARE AVAILABLE FOR STUDENT ... 
+            @projects = CourseProject.all
             render 'index_student'
         end
     end
@@ -297,6 +299,9 @@ class CourseProjectsController < ApplicationController
     end
 
     def show_student
+        @current_project = CourseProject.find(params[:id])
+        @linked_module = @current_project.course_module
+        @lead = @linked_module.staff
     end
 
     def teams

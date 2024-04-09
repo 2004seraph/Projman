@@ -8,9 +8,12 @@
 
     -#NEED EXAMPLES TO CREATE PROJECT BUTTONS
 
-    = link_to "projects/student/1", class: "project-link" do
-        .project-button
-            %h3
-                COM3420 Software Hut: Project E
-                .sub-status
-                    %i.bi.bi-circle-fill.fill-green
+    - @projects.each do |project|
+        = link_to "projects/student/#{project.id}", class: "project-link" do
+            .project-button
+                %h3
+                    #{project.course_module.code} #{project.course_module.name} - #{project.name}
+                    .sub-status
+                        #{project.status}
+                        -#Change colour according to deadlines or status????
+                        %i.bi.bi-circle-fill.fill-green
