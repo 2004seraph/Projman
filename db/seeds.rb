@@ -60,7 +60,7 @@ Student.find_or_create_by({
 DatabaseHelper.provision_module_class(
   "COM2009",
   "Robotics",
-  2
+  Staff.find_by(email: "jhenson2@sheffield.ac.uk")
 )
 
 students_COM3420 = DatabaseHelper.provision_module_class(
@@ -82,11 +82,13 @@ DatabaseHelper.provision_module_class(
 puts ""
 
 DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
-  course_module: CourseModule.find_by(code: "COM2004"),
-  markscheme_json: {test: "test"}.to_json,
+  course_module: CourseModule.find_by(code: "COM2009"),
+  # dont specify it to leave it as the default {}
+  # markscheme_json: {test: "test"}.to_json,
   name: "TurtleBot Project",
   project_allocation: :individual_preference_project_allocation,
-  project_choices_json: {test: "test"}.to_json,
+  # dont specify it to leave it as the default {}
+  # project_choices_json: {test: "test"}.to_json,
   team_allocation: :random,
   team_size: 8
 }))
