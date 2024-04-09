@@ -3,6 +3,7 @@
 # Table name: events
 #
 #  id         :bigint           not null, primary key
+#  completed  :boolean          default(FALSE)
 #  json_data  :json             not null
 #  type       :enum             not null
 #  created_at :datetime         not null

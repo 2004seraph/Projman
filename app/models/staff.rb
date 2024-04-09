@@ -5,7 +5,7 @@
 #  id                  :bigint           not null, primary key
 #  current_sign_in_at  :datetime
 #  current_sign_in_ip  :string
-#  email               :string           default(""), not null
+#  email               :citext           not null
 #  last_sign_in_at     :datetime
 #  last_sign_in_ip     :string
 #  remember_created_at :datetime
@@ -16,7 +16,6 @@
 # Indexes
 #
 #  index_staffs_on_email  (email) UNIQUE
-#  unique_emails          (email) UNIQUE
 #
 class Staff < ApplicationRecord
   # Include default devise modules. Others available are:
