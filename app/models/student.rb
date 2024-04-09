@@ -74,22 +74,22 @@ class Student < ApplicationRecord
 
   def enroll_module(module_code)
     # puts module_code
-    CourseModule.find(module_code).students << self
+    if CourseModule.find_by(code: module_code).students.find_by(username: username) != nil
+      return nil
+    end
+    CourseModule.find_by(code: module_code).students << self
   end
 
   # A static method to insert a classlist into the database
   def self.bootstrap_class_list(csv)
-    csv = CSV.parse(csv, headers: true)
-
     invalid_models = []
 
-    csv.each { |csv_row|
-      success, student = bootstrap_student(csv_row)
-
+    CSV.parse(csv, headers: true).each do |x|
+      success, student = self.bootstrap_student(x)
       if not success
         invalid_models << student
       end
-    }
+    end
 
     invalid_models
   end
