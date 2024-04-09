@@ -60,7 +60,7 @@ module DatabaseHelper
   end
 
   def create_staff(email)
-    x = Staff.create(email: email)
+    x = Staff.find_or_create_by(email: email)
     DatabaseHelper.print_validation_errors(x)
     x
   end

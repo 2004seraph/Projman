@@ -10,7 +10,7 @@ require 'student_data_helper'
 require 'database_helper'
 require 'csv'
 
-x = Student.create({
+x = Student.find_or_create_by({
   username: "aca21sgt",
   preferred_name: "Sam",
   forename: "Sam",
@@ -20,9 +20,9 @@ x = Student.create({
   fee_status: :home
 })
 puts DatabaseHelper.print_validation_errors(x)
-puts DatabaseHelper.print_validation_errors(Staff.create({ email: "sgttaseff1@sheffield.ac.uk" }))
+puts DatabaseHelper.print_validation_errors(Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk" }))
 
-Student.create({
+Student.find_or_create_by({
   username: "aca21jlh",
   preferred_name: "Josh",
   forename: "Joshua",
@@ -33,11 +33,11 @@ Student.create({
   fee_status: :home
 })
 
-Staff.create({
+Staff.find_or_create_by({
   email: "jhenson2@sheffield.ac.uk"
 })
 
-Student.create({
+Student.find_or_create_by({
   username: "ack21jb",
   preferred_name: "Jakub",
   forename: "Jakub",
@@ -47,7 +47,7 @@ Student.create({
   fee_status: :home
 })
 
-Student.create({
+Student.find_or_create_by({
   username: "acc22aw",
   preferred_name: "Adam",
   forename: "Adam",
@@ -79,7 +79,7 @@ DatabaseHelper.provision_module_class(
   DatabaseHelper.change_class_module(students_COM3420, "COM2004")
 )
 
-puts :preference_based_team_allocation.to_s
+puts ""
 
 DatabaseHelper.print_validation_errors(CourseProject.create({
   course_module: CourseModule.find_by(code: "COM2004"),
