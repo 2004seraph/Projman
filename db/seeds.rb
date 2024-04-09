@@ -81,7 +81,7 @@ DatabaseHelper.provision_module_class(
 
 puts ""
 
-DatabaseHelper.print_validation_errors(CourseProject.create({
+DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
   course_module: CourseModule.find_by(code: "COM2004"),
   markscheme_json: {test: "test"}.to_json,
   name: "TurtleBot Project",
