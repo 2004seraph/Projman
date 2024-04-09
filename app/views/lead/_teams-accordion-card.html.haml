@@ -19,7 +19,7 @@
             %td.d-flex.gap-2{ style: "flex: 3;" }
               %h2.fs-4{ class: "m-0 p-0" } Facilitator: #{ button_tag '', type: 'button', class: "btn btn-light fs-8 bi-pencil-square", style: "height: auto;" } #{team_facilitator}
             %td{ class: "pr-4" }
-              #{ button_tag ' Email Team', type: 'button', class: "btn btn-secondary fs-8 bi-envelope-at mr-4", style: "height: auto;" }
+              #{ button_tag ' Email Team', type: 'button', class: "btn btn-light fs-8 bi-envelope-at mr-4", style: "height: auto;" }
 
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id_collapse}
@@ -27,6 +27,7 @@
       %div.overflow-auto
         .d-flex.justify-content-between
           -# %h3.fs-6 Group Members
+          %p Facilitator email: {none}
           .row
         %table.table
           %thead

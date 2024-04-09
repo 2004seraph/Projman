@@ -19,7 +19,7 @@
 #  fk_rails_...  (staff_id => staffs.id)
 #
 class CourseModule < ApplicationRecord
-  has_and_belongs_to_many :students, foreign_key: "course_module_code", association_foreign_key: "student_id", join_table: "course_modules_students"
+  has_and_belongs_to_many :students
   has_many :projects, dependent: :destroy
   belongs_to :staff
 

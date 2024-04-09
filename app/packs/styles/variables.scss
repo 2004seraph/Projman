@@ -27,12 +27,14 @@ $enable-responsive-font-sizes: true;
     --seperating-section-h2-font-size: calc(1.325rem + 0.9vw);
 }
 
-$primary: #440099; // set the $primary variable
+$primary: #440099;
+$secondary: #c9c9c9;
 $dark: #616161;
 
 // merge with existing $theme-colors map
 $theme-colors: map-merge($theme-colors, (
   "primary": $primary,
+  "secondary": $secondary,
   "dark": $dark
 ));
 
