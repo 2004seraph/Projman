@@ -46,30 +46,28 @@
 .separating-section
   %h3
     Module Name
-  %p 
-    #{@current_module.name}
     %button.btn.btn-primary.btn-sm.m-2{type: "button", "data-bs-toggle": "modal",
        "data-bs-target": "#changeNameModal"}
       %i.bi.bi-pencil
       Change
+  %p 
+    #{@current_module.name}
   %h3
     Module Leader
-  %p
-    #{@module_lead.email}
     %button.btn.btn-primary.btn-sm.m-2{type: "button", "data-bs-toggle": "modal",
        "data-bs-target": "#changeEmailModal"}
       %i.bi.bi-pencil
       Change
+  %p
+    #{@module_lead.email}
   %h3
     Updated / Created
   %p
     #{@current_module.updated_at} / #{@current_module.created_at}
-%hr.divider
+  %hr.divider
 
-.separating-section
-  %h2
+  %h3
     Module Student List
-  %p
     %button.btn.btn-primary.btn-sm.m-2{type: "button", "data-bs-toggle": "modal",
        "data-bs-target": "#changeStudentListModal"}
       %i.bi.bi-pencil
@@ -100,7 +98,8 @@
         %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
 
       .modal-body
-        %h1.fs-6.fw-normal.fst-italic= "Input the new Module Leader's '@sheffield.ac.uk' e-mail address - if they do not have an account on the system, one will be created for them."
+        %h1.fs-6.fw-normal.fst-italic= "Input the new Module Leader's '@sheffield.ac.uk' e-mail address."
+        %h1.fs-6.fw-normal.fst-italic= "If they do not have an account on the system, one will be created for them."
         = form_tag admin_path, method: :patch, id: 'email_form' do
           .form-group
             %input.form-control.fs-5.fw-semibold{ type: "email", id: "new_module_lead_email", name: "new_module_lead_email",placeholder: "E-mail", autocomplete: "off", required: true}
@@ -118,7 +117,8 @@
         %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
 
       .modal-body
-        %h1.fs-6.fw-normal.fst-italic= "To ADD new students to a module, use the Students tab."
+        %h1.fs-6.fw-normal.fst-italic= "This will clear the student list and replace it with new students."
+        %h1.fs-6.fw-normal.fst-italic= "To add MORE students to a module, use the Students tab."
         %h1.fs-6.fw-normal.fst-italic= "Upload as a '.csv' file containing data for this Module Code."  
         = form_tag admin_path,  method: :patch, multipart: true, id: 'student_form' do
           .form-group 
