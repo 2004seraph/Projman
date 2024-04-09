@@ -48,7 +48,7 @@
                 %span= value
             %hr
 
-        %ul.list-group.list-group-flush.mb-2#project-choices-list  
+        %ul.list-group.list-group-flush.mb-2#project-choices-list
           - project_data[:project_choices].each do |name|
             = render partial: 'components/group-item-simple', locals: { item_text: name, deletion_action_url:new_project_remove_project_choice_projects_path }
 
@@ -56,7 +56,7 @@
           "data-bs-target": "#add-project-choice-modal"}
           %i.bi.bi-plus
           Add
-        
+
         .row.align-items-center
           .col
             %label.col-form-label.fs-6.me-3{for: "project-allocation-method"} Project Allocation
@@ -64,8 +64,8 @@
             %select.form-select.form-select-sm{id: "project-allocation-method", name: "project_allocation_method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
               - project_data[:project_allocation_modes_hash].each do |value, string|
                 %option{value: value, selected: (project_data[:selected_project_allocation_mode].present? ? project_data[:selected_project_allocation_mode] == value : value == project_data[:project_allocation_modes_hash].keys.first)}
-                  = "#{string}"
-      
+                  = "#{ViewHelper.unparamaterize(string)}"
+
       -# TEAM CONFIGURATION
     .card#team-configuration.mb-3
       .card-header
@@ -80,8 +80,8 @@
             %hr
         .row.align-items-center
           .col
-            %label.col-form-label.fs-6.me-3{for: "team-size"} Team Size  
-          .col-8  
+            %label.col-form-label.fs-6.me-3{for: "team-size"} Team Size
+          .col-8
             .input-group.mb-2{style: "width:fit-content"}
               %input.form-control.form-control-sm{ type: "number", id: "team-size", name:"team_size", min: "1", value: project_data[:team_size]}
 
@@ -92,8 +92,8 @@
             %select.form-select.form-select-sm{id: "team-allocation-method", name: "team_allocation_method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
               - project_data[:team_allocation_modes_hash].each do |value, string|
                 %option{value: value, selected: (project_data[:selected_team_allocation_mode].present? ? project_data[:selected_team_allocation_mode] == value : value == project_data[:team_allocation_modes_hash].keys.first)}
-                  = "#{string}"
-                  
+                  = "#{ViewHelper.unparamaterize(string)}"
+
 
     -# TEAM PREFERENCE FORM SETTINGS
     .card#team-preference-form-settings.mb-3
@@ -144,8 +144,8 @@
             .col-8.d-flex.fs-6
               .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
                 = render partial: 'components/datepicker_input', locals: { id: 'project-deadline', name:"milestone_Project Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:project_deadline] }
-              %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email 
-              %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment 
+              %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
+              %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
 
           .row.align-items-center#teammate-preference-form-deadline-row.milestone-row.mb-2
             .col
@@ -154,8 +154,8 @@
             .col-8.d-flex.fs-6
               .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
                 = render partial: 'components/datepicker_input', locals: { id: 'teammate-preference-form-deadline',name:"milestone_Teammate Preference Form Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:teammate_preference_form_deadline] }
-              %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email 
-              %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment 
+              %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
+              %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
 
           .row.align-items-center#project-preference-form-deadline-row.milestone-row.mb-2
             .col
@@ -164,8 +164,8 @@
             .col-8.d-flex.fs-6
               .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
                 = render partial: 'components/datepicker_input', locals: { id: 'project-preference-form-deadline',name:"milestone_Project Preference Form Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:project_preference_form_deadline]}
-              %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email 
-              %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment  
+              %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
+              %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
 
         %h3.fs-5.mb-2 Milestones
         %ul.list-group.list-group-flush.mb-2.overflow-hidden#project-milestones-list
@@ -195,7 +195,7 @@
             %hr
 
         %ul.list-group.list-group-flush.mb-2#project-facilitators-list
-          - project_data[:project_facilitators].each do |facilitator| 
+          - project_data[:project_facilitators].each do |facilitator|
             = render partial: 'components/group-item-simple', locals: { item_text: facilitator, deletion_action_url: new_project_remove_facilitator_projects_path}
 
         %button.btn.btn-primary.mb-2{type: "button", id: "open-add-staff-facilitators-modal", "data-bs-toggle": "modal",
@@ -216,60 +216,60 @@
           %i.bi.bi-upload
           Upload
           %input{type: "file", id: "mark-scheme", accept: ".csv", style: "display: none;"}
-    
+
 
 
 -# MODALS
 
 -# ADD PROJECT CHOICE MODAL
-= render 'components/modal-single-text-entry', 
+= render 'components/modal-single-text-entry',
   modal_id: 'add-project-choice-modal',
   title: 'New Project Choice',
   prompt: 'Input project choice name',
   submission_url: new_project_add_project_choice_projects_path,
-  form_input_id: 'new-project-choice-name', 
-  form_input_name: 'project_choice_name', 
-  confirm_text: 'Confirm', 
+  form_input_id: 'new-project-choice-name',
+  form_input_name: 'project_choice_name',
+  confirm_text: 'Confirm',
   confirm_onclick_function: ""
 
 -# ADD MILESTONE MODAL
-= render 'components/modal-single-text-entry', 
-  modal_id: 'add-project-milestone-modal', 
-  title: 'New Project Milestone', 
-  prompt: 'Input milestone name', 
+= render 'components/modal-single-text-entry',
+  modal_id: 'add-project-milestone-modal',
+  title: 'New Project Milestone',
+  prompt: 'Input milestone name',
   submission_url: new_project_add_project_milestone_projects_path,
-  form_input_id: 'new-project-milestone-name', 
-  form_input_name: 'project_milestone_name', 
-  confirm_text: 'Confirm', 
+  form_input_id: 'new-project-milestone-name',
+  form_input_name: 'project_milestone_name',
+  confirm_text: 'Confirm',
   confirm_onclick_function: ""
 
 -# ADD FACILITATORS MODAL (STAFF)
-= render 'components/modal-search-multiple', 
-  modal_id: 'add-staff-project-facilitators-modal', 
+= render 'components/modal-search-multiple',
+  modal_id: 'add-staff-project-facilitators-modal',
   autocomplete_method: new_project_search_facilitators_staff_projects_path,
-  title: 'Add Project Facilitators', 
-  prompt: 'Input staff members email', 
-  form_input_id: 'new-project-facilitator-name-staff', 
-  form_input_name: 'project_facilitator_name', 
+  title: 'Add Project Facilitators',
+  prompt: 'Input staff members email',
+  form_input_id: 'new-project-facilitator-name-staff',
+  form_input_name: 'project_facilitator_name',
   current_selection_text: 'current selection',
   list_group_id: 'facilitator-selection-group-staff',
-  confirm_text: 'Confirm', 
+  confirm_text: 'Confirm',
   confirm_onclick_function: "",
   add_to_selection_url: new_project_add_to_facilitator_selection_projects_path,
   submission_url: new_project_add_facilitator_selection_projects_path,
   on_open_action_url: new_project_clear_facilitator_selection_projects_path
 
 -# ADD FACILITATORS MODAL (STUDENT)
-= render 'components/modal-search-multiple', 
-  modal_id: 'add-student-project-facilitators-modal', 
+= render 'components/modal-search-multiple',
+  modal_id: 'add-student-project-facilitators-modal',
   autocomplete_method: new_project_search_facilitators_student_projects_path,
-  title: 'Add Project Facilitators', 
-  prompt: 'Input students email', 
-  form_input_id: 'new-project-facilitator-name-student', 
-  form_input_name: 'project_facilitator_name', 
+  title: 'Add Project Facilitators',
+  prompt: 'Input students email',
+  form_input_id: 'new-project-facilitator-name-student',
+  form_input_name: 'project_facilitator_name',
   current_selection_text: 'current selection',
   list_group_id: 'facilitator-selection-group-student',
-  confirm_text: 'Confirm', 
+  confirm_text: 'Confirm',
   confirm_onclick_function: "",
   add_to_selection_url: new_project_add_to_facilitator_selection_projects_path,
   submission_url: new_project_add_facilitator_selection_projects_path,
@@ -277,13 +277,13 @@
 
 
 -# MILESTONE EMAIL MODAL
-= render 'components/modal-text-area', 
-  modal_id: 'milestone-email-modal', 
-  title: 'Set Automatic Email', 
-  prompt: 'Enter email content for an automatic email reminder, and set how many days before this deadline it should be sent.', 
-  form_input_id: 'milestone-email-input', 
-  form_input_name: 'milestone_email_content', 
-  confirm_text: 'Save', 
+= render 'components/modal-text-area',
+  modal_id: 'milestone-email-modal',
+  title: 'Set Automatic Email',
+  prompt: 'Enter email content for an automatic email reminder, and set how many days before this deadline it should be sent.',
+  form_input_id: 'milestone-email-input',
+  form_input_name: 'milestone_email_content',
+  confirm_text: 'Save',
   submission_url: new_project_set_milestone_email_data_projects_path,
   confirm_onclick_function: "" do
   %input{ type: "hidden", name: "milestone_name", value: "", class: "hidden-modal-value"}
@@ -295,13 +295,13 @@
 
 
 -# MILESTONE COMMENT MODAL
-= render 'components/modal-text-area', 
-  modal_id: 'milestone-comment-modal', 
-  title: 'Add Comment', 
-  prompt: 'Enter a comment to better describe this milestone', 
-  form_input_id: 'milestone-comment-input', 
-  form_input_name: 'milestone_comment', 
-  confirm_text: 'Save', 
+= render 'components/modal-text-area',
+  modal_id: 'milestone-comment-modal',
+  title: 'Add Comment',
+  prompt: 'Enter a comment to better describe this milestone',
+  form_input_id: 'milestone-comment-input',
+  form_input_name: 'milestone_comment',
+  confirm_text: 'Save',
   submission_url: new_project_set_milestone_comment_projects_path,
   confirm_onclick_function: "" do
   %input{ type: "hidden", name: "milestone_name", value: "", class: "hidden-modal-value"}

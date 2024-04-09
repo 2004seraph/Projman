@@ -63,16 +63,6 @@ DatabaseHelper.provision_module_class(
   2
 )
 
-CourseProject.create({
-  course_module_code: "COM2009",
-  markscheme_json: {test: "test"}.to_json,
-  name: "TurtleBot Project",
-  project_allocation: :individual_preference_project_allocation,
-  project_choices_json: {test: "test"}.to_json,
-  team_allocation: :preference_based_team_allocation,
-  team_size: 8
-})
-
 students_COM3420 = DatabaseHelper.provision_module_class(
   "COM3420",
   "Software Hut",
@@ -88,3 +78,15 @@ DatabaseHelper.provision_module_class(
   DatabaseHelper.create_staff("mike.stannet@sheffield.ac.uk"),
   DatabaseHelper.change_class_module(students_COM3420, "COM2004")
 )
+
+puts :preference_based_team_allocation.to_s
+
+DatabaseHelper.print_validation_errors(CourseProject.create({
+  course_module: CourseModule.find_by(code: "COM2004"),
+  markscheme_json: {test: "test"}.to_json,
+  name: "TurtleBot Project",
+  project_allocation: :individual_preference_project_allocation,
+  project_choices_json: {test: "test"}.to_json,
+  team_allocation: :random,
+  team_size: 8
+}))
