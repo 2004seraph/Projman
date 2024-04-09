@@ -1,0 +1,70 @@
+
+%h3 Student
+
+.d-inline-flex.pb-2
+  %i.bi.bi-funnel-fill
+  Filter By: 
+.d-flex.align-items-center
+  .dropdown.me-3
+    %button.btn.btn-primary{ type: "button", id: "dropdownMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
+      Projects:
+      %span.current-selection
+      %i.bi.bi-caret-down-fill
+    .dropdown-menu{ "aria-labelledby": "dropdownMenuButton" }
+      %a.dropdown-item{ href: "#", onclick: "updateSelection('All')" } All
+      %hr.dropdown-divider
+      %a.dropdown-item{ href: "#", onclick: "updateSelection('Project 1')" } Project 1
+      %a.dropdown-item{ href: "#", onclick: "updateSelection('Project 2')" } Project 2
+
+  .form-check.form-switch.form-check-reverse.me-3
+    %input.form-check-input{ type: "checkbox", role: "switch",
+     id: "flexSwitchCheckOpen", checked:true, onchange: "toggleSection('open-issues-section')"}
+    %label.form-check-label{ for: "flexSwitchCheckOpen" }
+      Show Open
+  .form-check.form-switch.form-check-reverse.me-3
+    %input.form-check-input{ type: "checkbox", role: "switch",
+     id: "flexSwitchCheckResolved", checked:true, onchange: "toggleSection('resolved-issues-section')"}
+    %label.form-check-label{ for: "flexSwitchCheckResolved" }
+      Show Resolved
+
+:javascript
+  document.addEventListener("DOMContentLoaded", function() {
+    updateSelection('All'); // Set initial selection to the first option
+  });
+
+  function updateSelection(selection) {
+    var currentSelection = document.getElementById("dropdownMenuButton").querySelector(".current-selection");
+    if (currentSelection) {
+      currentSelection.innerText = selection;
+    }
+  }
+
+  function toggleSection(sectionId) {
+    var section = document.getElementById(sectionId);
+    if (section.classList.contains('display-none')) {
+      section.classList.remove('display-none');
+    } else {
+      section.classList.add('display-none');
+    }
+  }
+
+%hr.divider
+
+.accordion-section
+  .separating-section#open-issues-section
+    %h2
+      %i.bi.bi-chat-left-dots-fill.fill-yellow
+      Open
+
+    = render partial:'issue-box'  
+    = render partial:'issue-box' 
+    %hr.divider
+
+  .separating-section#resolved-issues-section
+    %h2
+      %i.bi.bi-check-circle-fill.fill-green
+      Resolved
+
+    = render partial:'issue-box'  
+    = render partial:'issue-box' 
+    %hr.divider
