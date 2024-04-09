@@ -16,7 +16,7 @@ require 'json'
 #   {"Name": "Peer Review", "Date: "dd/mm/yyyy"}]
 
 class CourseProjectsController < ApplicationController
-    load_and_authorize_resource
+    # load_and_authorize_resource
 
     skip_before_action :verify_authenticity_token, only: [:new_project_remove_project_choice,
         :new_project_clear_facilitator_selection,
@@ -27,7 +27,7 @@ class CourseProjectsController < ApplicationController
         :create]
 
     def index
-        if current_user.instance_of? Staff
+        if @user.instance_of? Staff
             render 'index_module_leader'
         else
             render 'index_student'
@@ -299,4 +299,7 @@ class CourseProjectsController < ApplicationController
     def show_student
     end
 
+    def teams
+
+    end
 end

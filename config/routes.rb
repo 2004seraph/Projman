@@ -3,7 +3,6 @@ Rails.application.routes.draw do
 
   mount EpiCas::Engine, at: "/"
   root "pages#index"
-  post '/placeholder_post_url', to: 'dummy#dummy_action'
 
   resources :projects, only: [:index, :new], controller: :course_projects do
     post 'new_project_add_project_choice', on: :collection

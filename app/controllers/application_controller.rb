@@ -16,12 +16,12 @@ class ApplicationController < ActionController::Base
   # def store_current_location
   #   store_location_for(:user, request.url)
   # end
-  rescue_from CanCan::AccessDenied do |exception|
-    Rails.logger.debug "Access denied on #{exception.action} #{exception.subject.inspect}"
+  # rescue_from CanCan::AccessDenied do |exception|
+  #   Rails.logger.debug "Access denied on #{exception.action} #{exception.subject.inspect}"
 
-    # session["user_return_to"] = request.fullpath
-    redirect_to new_user_session_path, alert: "#{exception.message}"
-  end
+  #   # session["user_return_to"] = request.fullpath
+  #   redirect_to new_user_session_path, alert: "#{exception.message}"
+  # end
 
   def load_current_user
     if user_signed_in?
@@ -32,8 +32,6 @@ class ApplicationController < ActionController::Base
       if current_user.isStudent?
         if Student.exists?(username: username)
           if Staff.exists?(email: current_user.email)
-            # this should be CanCanCan stuff, not a manual boolean
-            # @is_staff = true
             @user = Staff.find_by(email: current_user.email)
           else
             @user = Student.find_by(username: username)
@@ -46,14 +44,10 @@ class ApplicationController < ActionController::Base
       elsif current_user.isStaff?
         if Staff.exists?(email: email)
           @user = Staff.find_by(email: email)
-          # this should be CanCanCan stuff, not a manual boolean
-          # @is_staff = true
         else
           new_staff = Staff.create({
             email: email
           })
-
-          new_staff.save
         end
       else
         reset_session

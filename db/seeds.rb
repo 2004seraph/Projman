@@ -20,6 +20,7 @@ x = Student.create({
   fee_status: :home
 })
 puts DatabaseHelper.print_validation_errors(x)
+puts DatabaseHelper.print_validation_errors(Staff.create({ email: "sgttaseff1@sheffield.ac.uk" }))
 
 Student.create({
   username: "aca21jlh",

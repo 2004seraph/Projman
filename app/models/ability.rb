@@ -13,7 +13,11 @@ class Ability
     return unless user.instance_of? Staff
 
     can :update, CourseProject
+    can :read, :lead
+    # the staff need to be allowed to view and update the projects/:id/teams route
 
     return unless user.admin?
+
+    can :create, CourseProject
   end
 end

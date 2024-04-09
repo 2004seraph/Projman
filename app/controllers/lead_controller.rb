@@ -1,7 +1,7 @@
 class LeadController < ApplicationController
-  # load_and_authorize_resource
+  # authorize_resource :class => false
 
   def teams
-
+    # authorize! :read, controller_name.to_sym
   end
 end
