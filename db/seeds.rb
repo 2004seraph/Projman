@@ -56,6 +56,22 @@ Student.create({
   fee_status: :home
 })
 
+DatabaseHelper.provision_module_class(
+  "COM2009",
+  "Robotics",
+  2
+)
+
+CourseProject.create({
+  course_module_code: "COM2009",
+  markscheme_json: {test: "test"}.to_json,
+  name: "TurtleBot Project",
+  project_allocation: :individual_preference_project_allocation,
+  project_choices_json: {test: "test"}.to_json,
+  team_allocation: :preference_based_team_allocation,
+  team_size: 8
+})
+
 students_COM3420 = DatabaseHelper.provision_module_class(
   "COM3420",
   "Software Hut",
