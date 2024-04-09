@@ -5,28 +5,29 @@
    href: "##{unique_id}",
    role: "button",
    "data-accordion-toggle" => "",
-   "aria-expanded" => "false",
+   "aria-expanded" => "true",
    "aria-controls" => unique_id}
 
     %h2.fs-4= "Teams"
     %i.bi.bi-caret-right-fill
 
-  .collapse{id: unique_id}
+  .collapse.show{id: unique_id}
     .card-body
       .form-check
         %input.form-check-input{ type: "checkbox", id: "assignedOnlyCheckbox", checked: true }
         %label.form-check-label{ for: "assignedOnlyCheckbox" }= "Assigned only"
-          
+      
       %hr.divider
 
-      .navigation-list-item
-        //= link_to "teams/" + "1" do
-        = link_to facilitator_project_team_path(project_id: 0, team_id: 0) do
-          %h6.p-1= "Team 0"
+      %div#teams-display
+        .navigation-list-item
+          //= link_to "teams/" + "1" do
+          = link_to facilitator_project_team_path(project_id: 0, team_id: 0) do
+            %h6.p-1= "Team 0"
 
-      .navigation-list-item
-        = link_to facilitator_project_team_path(project_id: 0, team_id: 1) do
-          %h6.p-1= "Team 1"
+        .navigation-list-item
+          = link_to facilitator_project_team_path(project_id: 0, team_id: 1) do
+            %h6.p-1= "Team 1"
     
 - unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
 

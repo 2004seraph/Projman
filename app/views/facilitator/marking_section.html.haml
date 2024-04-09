@@ -1,0 +1,86 @@
+%h1 Section - Testing
+%h3 Description - There should be clear and strong evidence of comprehensive unit and system testing.
+
+%table.table.table-bordered#markingTable
+  %thead
+    %tr
+      %th Team
+      %th Marks Given (5 Available)
+      %th Reasoning and Feedback
+  %tbody
+    %tr
+      %td A
+      %td.editable.onlynumeric{contenteditable: "true"} 5
+      %td.editable{contenteditable: "true"} Because you're amazing just the way you are.
+    %tr
+      %td B
+      %td.editable.onlynumeric{contenteditable: "true"} 4
+      %td.editable{contenteditable: "true"} Not quite so amazing.
+
+.modal.fade#markErrorModal{role: "dialog"}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h4.modal-title Invalid Marks Given
+
+      .modal-body
+        %p The maximum number of marks was exceeded, please check your marking.
+
+      .modal-footer
+        %button.btn.btn-default.close{type: "close", "aria-label" => "Close", "data-bs-dismiss" => "modal"} Close
+
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+    var cells = document.querySelectorAll('#markingTable .editable.onlynumeric');
+    
+    cells.forEach(function(cell) {
+      ["keypress", "keyup"].forEach(function(e) {
+        cell.addEventListener(e, function() {
+          var keyCode = event.keyCode || event.which;
+          var keyValue = String.fromCharCode(keyCode);
+          
+          if (/\D/.test(keyValue)) {
+            event.preventDefault();
+          }
+
+        })
+      });
+      cell.addEventListener("blur", function() {
+        cell.innerHTML = cell.innerHTML.replace(/[^\d].+/, '');
+      })
+    });
+
+    let modal = document.getElementById("markErrorModal");
+
+    document.getElementById("saveButton").onclick = function () {
+      // TEMP: Function for validating the max marks set (not sure if this is right or it should be done in ruby)
+      // But doesn't matter so much for now.
+      let MAX_MARKS_TEMP = 5;
+      let dataInvalid = false;
+
+      // TODO: I think we should be submitting a form here, then the controller will validate it all?
+    
+      cells.forEach(function(cell) {
+        if (Number(cell.innerHTML) > MAX_MARKS_TEMP) {
+          cell.classList.add("bg-danger");
+          dataInvalid = true;
+        }
+        else {
+          cell.classList.remove("bg-danger");
+        }
+      });
+
+      if (dataInvalid) {
+        modal.classList.add('show');
+        modal.style.display = 'block';
+      }
+    };
+
+    // Let the close button close the modal (doesn't work without this when modal opened from js...?)
+    modal.querySelector(".close").addEventListener("click", function() {
+      modal.classList.remove("show");
+      modal.style.display = "none";
+    });
+  });
+
+%button.btn.btn-primary#saveButton Save

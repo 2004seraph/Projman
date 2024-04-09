@@ -38,20 +38,13 @@ Rails.application.routes.draw do
   get '/profile', to: 'profile#index'
   get '/settings', to: 'settings#index'
 
-<<<<<<< HEAD
-  get '/facilitators', to: 'facilitators#index'
-  get '/facilitators/marking/:module', to: 'facilitators#marking'
-  get '/facilitators/team/:id', to: 'facilitators#team'\
-
-  
-=======
   # TEMP: Facilitator paths
   get '/facilitator/projects/', to: 'facilitator#projects'
   get '/facilitator/projects/:project_id', to: 'facilitator#projects_show'
   get '/facilitator/projects/:project_id/teams/:team_id', to: 'facilitator#team', as: 'facilitator_project_team'
   get '/facilitator/progress_form/:week', to: 'facilitator#progress_form', as: 'facilitator_progress_form'
+  get '/facilitator/projects/:project_id/marking_section/:section_id', to: 'facilitator#marking_section', as: 'facilitator_marking_section'
   resources :facilitator
->>>>>>> 62ef464 (Begin sorting facilitator)
 
   resources :admin
 end

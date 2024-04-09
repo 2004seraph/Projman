@@ -1,16 +1,8 @@
 class FacilitatorController < ApplicationController
+    skip_authorization_check # TEMP: Not sure why needed.
+
     # GET /facilitators 
     def index
-    end
-
-    
-
-    # GET /facilitators/team/{id}
-    def team
-        @team = params[:id]
-        @members = ["Oliver Pickford", "Jack Sparrow"]
-        @emails = ["opickford1@sheffield.ac.uk", "jacksparrow1@sheffield.ac.uk"]
-
     end
 
     # GET /facilitators/marking/{module}
@@ -19,8 +11,7 @@ class FacilitatorController < ApplicationController
     end
 
     def projects
-        #@facilitator_projects = CourseProject.all
-        
+        #@facilitator_projects_temp = CourseProject.all
         # TEMP: Using modules as no courseprojects yet
         @facilitator_projects = CourseModule.all
     end

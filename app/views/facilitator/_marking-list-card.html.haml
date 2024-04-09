@@ -14,11 +14,11 @@
   .collapse{id: unique_id}
     .card-body
       .navigation-list-item
-        = link_to "/facilitator/marking/" + "test" do
-          %h6.p-1= "Marking test 1"
+        = link_to facilitator_marking_section_path(section_id: 0) do
+          %h6.p-1= "Testing"
 
       .navigation-list-item
-        = link_to "/facilitator/marking/" + "test2" do
-          %h6.p-1= "Marking test 2"
+        = link_to facilitator_marking_section_path(section_id: 1) do
+          %h6.p-1= "Management"
 
           
