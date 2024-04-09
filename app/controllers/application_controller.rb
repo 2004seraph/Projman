@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
-  check_authorization unless: :devise_controller?
+  # check_authorization unless: :devise_controller?
 
   # Disabling caching will prevent sensitive information being stored in the
   # browser cache. If your app does not deal with sensitive information then it

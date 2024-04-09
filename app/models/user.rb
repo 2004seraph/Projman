@@ -33,6 +33,6 @@ class User < ApplicationRecord
   end
 
   def isStaff?
-    account_type..include?("staff")
+    account_type.include?("staff")
   end
 end
