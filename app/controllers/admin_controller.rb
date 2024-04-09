@@ -24,20 +24,15 @@ class AdminController < ApplicationController
 
         #Checks for correct e-mail confirmation
         @lead = params[:new_module_lead_email]
+        
         @confirmation = params[:new_module_lead_email_confirmation]
         unless (@lead == @confirmation)
             redirect_to new_admin_path, alert: "Unsuccesful - E-mail addresses did not match."
             return
         end
-        @lead = Staff.where(email: @lead).first
 
-        #Creates new staff account and links it to the module if no staff found in system
-        if @lead.nil?
-            @lead = Staff.new(email: @confirmation)
-            unless @lead.save
-                redirect_to admin_path, alert: "Unsuccesful - Invalid e-mail address"
-            end
-        end
+        #Creates new staff account if no staff found in system
+        @lead = Staff.find_or_create_by(email: @lead)
 
         #Checks that the student_csv is compatible with the created module
         @student_csv = CSV.read(params[:student_csv].tempfile)
@@ -72,7 +67,6 @@ class AdminController < ApplicationController
 
         #Update Module Name modal
         unless @new_name.nil?
-
             @current_module.update_attribute(:name, @new_name)
 
             if @current_module.valid?
@@ -91,17 +85,8 @@ class AdminController < ApplicationController
                 return
             end
 
-            @new_lead = Staff.where(email: @new_lead).first
-
-            #Creates new staff account and links it to the module if no staff found in system
-            if @new_lead.nil?
-                @new_lead = Staff.new(email: @confirmation)
-
-                unless @new_lead.save
-                    redirect_to admin_path, alert: "Update unsuccesful - Invalid e-mail address."
-                    return
-                end
-            end
+            #Creates new staff account if no staff found in system
+            @new_lead = Staff.find_or_create_by(email: @new_lead)
 
             @current_module.update_attribute(:staff_id, @new_lead.id)
 

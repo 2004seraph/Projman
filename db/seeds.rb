@@ -56,6 +56,7 @@ Student.find_or_create_by({
   email: "awillis4@sheffield.ac.uk",
   fee_status: :home
 })
+DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
 
 DatabaseHelper.provision_module_class(
   "COM2009",
