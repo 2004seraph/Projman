@@ -20,7 +20,7 @@
 #
 class CourseModule < ApplicationRecord
   has_and_belongs_to_many :students
-  has_many :projects, dependent: :destroy
+  has_many :course_projects, dependent: :destroy
   belongs_to :staff
 
   validates :code, presence: true, uniqueness: { case_sensitive: false }

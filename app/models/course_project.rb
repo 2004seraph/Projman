@@ -50,7 +50,7 @@ class CourseProject < ApplicationRecord
   }
 
   enum :team_allocation, {
-    random: 'random',
+    random_team_allocation: 'random',
     preference_form_based: 'preference_form_based'
   }
 

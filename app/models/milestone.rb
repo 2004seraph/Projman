@@ -20,11 +20,11 @@
 #
 class Milestone < ApplicationRecord
   has_many :milestone_responses, dependent: :destroy
-  belongs_to :project
+  belongs_to :course_project
 
   enum :type, {
-    student: 'For each student',
-    staff: 'For each staff',
-    team: 'For each team',
+    student: 'for_each_student',
+    staff: 'for_each_staff',
+    team: 'for_each_team',
   }
 end

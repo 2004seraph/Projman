@@ -22,7 +22,7 @@
 #
 class MilestoneResponse < ApplicationRecord
   belongs_to :milestone
-  has_one :project, through: :milestone
+  has_one :course_project, through: :milestone
 
   belongs_to :staff, optional: true
   belongs_to :student, optional: true

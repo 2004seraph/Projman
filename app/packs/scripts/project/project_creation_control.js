@@ -19,8 +19,8 @@ $(function() {
             $('#project-preference-form-deadline-row').removeClass('display-none');
         }
 
-        $('#team-preference-form-settings').toggleClass('display-none', (teamAllocationMethodValue !== "preference_based_team_allocation"));
-        $('#teammate-preference-form-deadline-row').toggleClass('display-none', (teamAllocationMethodValue !== "preference_based_team_allocation"));
+        $('#team-preference-form-settings').toggleClass('display-none', (teamAllocationMethodValue !== "preference_form_based"));
+        $('#teammate-preference-form-deadline-row').toggleClass('display-none', (teamAllocationMethodValue !== "preference_form_based"));
     }
 
     runChecks();

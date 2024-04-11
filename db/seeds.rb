@@ -47,6 +47,10 @@ Student.find_or_create_by({
   fee_status: :home
 })
 
+Staff.find_or_create_by({
+  email: "jbala1@sheffield.ac.uk"
+})
+
 Student.find_or_create_by({
   username: "acc22aw",
   preferred_name: "Adam",
@@ -90,6 +94,6 @@ DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
   project_allocation: :individual_preference_project_allocation,
   # dont specify it to leave it as the default {}
   # project_choices_json: {test: "test"}.to_json,
-  team_allocation: :random,
+  team_allocation: :random_team_allocation,
   team_size: 8
 }))

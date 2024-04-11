@@ -296,11 +296,8 @@ class CourseProjectsController < ApplicationController
         puts no_errors
         if no_errors
             # Creating Project Model
-            puts project_data[:selected_module]
-            puts CourseModule.all.pluck(:code)
-            puts CourseModule.exists?(code: project_data[:selected_module])
             new_project = CourseProject.new(
-                course_module_code: project_data[:selected_module],
+                course_module_id: CourseModule.where(code: project_data[:selected_module]).first.id,
                 name: project_data[:project_name],
                 project_choices_json: project_data[:project_choices].to_json,
                 project_allocation: project_data[:selected_project_allocation_mode].to_sym,
@@ -317,6 +314,7 @@ class CourseProjectsController < ApplicationController
 
                 # dd/mm/yyyy to yyyy-mm-dd
                 date_string = milestone_data["Date"]
+                next if !date_string.present?   #dont push the milestone if its not got a set date
                 parsed_date = Date.strptime(date_string, "%d/%m/%Y").strftime("%Y-%m-%d")
 
                 json_data = {
@@ -334,6 +332,22 @@ class CourseProjectsController < ApplicationController
 
                 milestone.save!
             end
+
+            #Creating assigned facilitators
+            project_data[:project_facilitators].each do |user_email|
+
+                facilitator = AssignedFacilitator.new(course_project_id: new_project.id);
+
+                if Staff.exists?(email: user_email)
+                    facilitator.staff_id = Staff.where(email: user_email).first.id
+                elsif Student.exists?(email: user_email)
+                    facilitator.student_id = Student.where(email: user_email).first.id
+                end
+
+                facilitator.save!
+            end
+
+            # redirect to projects on success
         end
 
         render :new
