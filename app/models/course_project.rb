@@ -4,7 +4,6 @@
 #
 #  id                   :bigint           not null, primary key
 #  avoided_teammates    :integer          default(0)
-#  course_module_code   :string           not null
 #  markscheme_json      :json
 #  name                 :string           not null
 #  preferred_teammates  :integer          default(0)
@@ -15,10 +14,15 @@
 #  team_size            :integer          not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
+#  course_module_id     :bigint           not null
+#
+# Indexes
+#
+#  index_course_projects_on_course_module_id  (course_module_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (course_module_code => course_modules.code)
+#  fk_rails_...  (course_module_id => course_modules.id)
 #
 
 class CourseProject < ApplicationRecord
@@ -39,15 +43,15 @@ class CourseProject < ApplicationRecord
     archived: 'archived'
   }
 
-  enum :team_allocation, {
-    random_team_allocation: 'Random',
-    preference_based_team_allocation: 'Preference Form Based'
+  enum :project_allocation, {
+    random_project_allocation: 'random',
+    individual_preference_project_allocation: 'individual_preference_form',
+    team_preference_project_allocation: 'team_preference_form'
   }
 
-  enum :project_allocation, {
-    random_project_allocation: 'Random',
-    individual_preference_project_allocation: 'Individial Preference Form',
-    team_preference_project_allocation: 'Team Preference Form'
+  enum :team_allocation, {
+    random: 'random',
+    preference_form_based: 'preference_form_based'
   }
 
 end

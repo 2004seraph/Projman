@@ -2,7 +2,8 @@
 #
 # Table name: course_modules
 #
-#  code       :string           not null, primary key
+#  id         :bigint           not null, primary key
+#  code       :citext           not null
 #  name       :string(64)       not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null

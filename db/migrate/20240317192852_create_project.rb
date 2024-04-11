@@ -14,19 +14,19 @@ class CreateProject < ActiveRecord::Migration[7.0]
 
     create_enum :project_team_allocation,
       %w[
-        random_team_allocation
-        preference_based_team_allocation
+        random
+        preference_form_based
       ]
 
     create_enum :project_choice_allocation,
       %w[
-        random_project_allocation
-        individual_preference_project_allocation
-        team_preference_project_allocation
+        random
+        individual_preference_form
+        team_preference_form
       ]
 
     create_table :course_projects do |t|
-      t.string :course_module_code, null: false
+      t.references :course_module, null: false, foreign_key: true
 
       t.string :name, null: false
       t.column :status, :project_status, null: false, default: "draft"
@@ -42,8 +42,6 @@ class CreateProject < ActiveRecord::Migration[7.0]
       t.json :markscheme_json, default: "{}"
 
       t.timestamps
-
-      t.foreign_key :course_modules, column: :course_module_code, primary_key: :code
     end
   end
 end

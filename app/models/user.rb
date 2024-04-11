@@ -27,4 +27,12 @@
 #
 class User < ApplicationRecord
   include EpiCas::DeviseHelper
+
+  def isStudent?
+    account_type.include?("student")
+  end
+
+  def isStaff?
+    account_type.include?("staff")
+  end
 end

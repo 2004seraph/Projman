@@ -2,8 +2,7 @@ Rails.application.routes.draw do
   devise_for :users
 
   mount EpiCas::Engine, at: "/"
-  root "pages#home"
-  post '/placeholder_post_url', to: 'dummy#dummy_action'
+  root "pages#index"
 
   resources :projects, only: [:index, :new], controller: :course_projects do
     post 'new_project_add_project_choice', on: :collection
@@ -13,7 +12,7 @@ Rails.application.routes.draw do
     post 'new_project_add_to_facilitator_selection', on: :collection
     post 'new_project_remove_from_facilitator_selection', on: :collection
     post 'new_project_add_facilitator_selection', on: :collection
-    post 'new_project_remove_facilitator', on: :collection 
+    post 'new_project_remove_facilitator', on: :collection
     post 'new_project_clear_facilitator_selection', on: :collection
     post 'new_project_toggle_project_choices', on: :collection
     get 'new_project_search_facilitators', on: :collection
@@ -25,9 +24,10 @@ Rails.application.routes.draw do
 
     # Define a separate POST route for the 'new' action
     post 'new', to: 'course_projects#create', on: :collection
-  end
 
-  get '/projects/:id/teams', to: 'lead#teams'
+    get ':id/teams', to: 'lead#teams', on: :collection
+    get 'student/:id', to: 'course_projects#show_student', on: :collection
+  end
 
   get '/students', to: 'students#index'
   get '/issues', to: 'issues#index'

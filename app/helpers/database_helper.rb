@@ -29,15 +29,15 @@ module DatabaseHelper
         class_list
       end
 
-    begin
+    # begin
       new_module = CourseModule.create ({
         code: module_code,
         name: name,
         staff: lead
       })
-    rescue ActiveRecord::RecordNotUnique
-      puts "#{WARNING} Module #{module_code} already exists"
-    else
+    # rescue ActiveRecord::RecordNotUnique
+      # puts "#{WARNING} Module #{module_code} already exists"
+    # else
       DatabaseHelper.print_validation_errors(new_module)
 
       errors = Student.bootstrap_class_list(student_csv)
@@ -46,9 +46,9 @@ module DatabaseHelper
         DatabaseHelper.print_validation_errors(errors[0])
         puts errors.length
       end
-    ensure
+    # ensure
       return student_csv
-    end
+    # end
   end
 
   def change_class_module(class_csv, module_code)
@@ -60,7 +60,7 @@ module DatabaseHelper
   end
 
   def create_staff(email)
-    x = Staff.create(email: email)
+    x = Staff.find_or_create_by(email: email)
     DatabaseHelper.print_validation_errors(x)
     x
   end
