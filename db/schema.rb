@@ -10,11 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema[7.0].define(version: 2024_03_28_165641) do
-=======
 ActiveRecord::Schema[7.0].define(version: 2024_04_08_174343) do
->>>>>>> 3747a175941b6e84bb6d41dc5e04d10846804f8a
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
@@ -23,11 +19,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_08_174343) do
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "group_event_type", ["generic", "milestone", "chat", "issue"]
   create_enum "milestone_type", ["student", "staff", "team"]
-<<<<<<< HEAD
-  create_enum "project_choice_allocation", ["random_project_allocation", "individual_preference_project_allocation", "team_preference_project_allocation"]
-=======
   create_enum "project_choice_allocation", ["random", "individual_preference_form", "team_preference_form"]
->>>>>>> 3747a175941b6e84bb6d41dc5e04d10846804f8a
   create_enum "project_status", ["draft", "student_preference", "student_preference_review", "team_preference", "team_preference_review", "live", "completed", "archived"]
   create_enum "project_team_allocation", ["random", "preference_form_based"]
   create_enum "student_fee_status", ["home", "overseas"]
@@ -161,15 +153,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_08_174343) do
   end
 
   create_table "staffs", force: :cascade do |t|
-<<<<<<< HEAD
-    t.string "email", null: false
-=======
     t.citext "email", null: false
->>>>>>> 3747a175941b6e84bb6d41dc5e04d10846804f8a
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
     t.integer "sign_in_count", default: 0, null: false
     t.datetime "current_sign_in_at"
@@ -177,10 +163,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_08_174343) do
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
     t.index ["email"], name: "index_staffs_on_email", unique: true
-<<<<<<< HEAD
-    t.index ["reset_password_token"], name: "index_staffs_on_reset_password_token", unique: true
-=======
->>>>>>> 3747a175941b6e84bb6d41dc5e04d10846804f8a
   end
 
   create_table "students", force: :cascade do |t|
