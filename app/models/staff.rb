@@ -2,21 +2,23 @@
 #
 # Table name: staffs
 #
-#  id                  :bigint           not null, primary key
-#  current_sign_in_at  :datetime
-#  current_sign_in_ip  :string
-#  email               :string           default(""), not null
-#  last_sign_in_at     :datetime
-#  last_sign_in_ip     :string
-#  remember_created_at :datetime
-#  sign_in_count       :integer          default(0), not null
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
+#  id                     :bigint           not null, primary key
+#  current_sign_in_at     :datetime
+#  current_sign_in_ip     :string
+#  email                  :string           not null
+#  last_sign_in_at        :datetime
+#  last_sign_in_ip        :string
+#  remember_created_at    :datetime
+#  reset_password_sent_at :datetime
+#  reset_password_token   :string
+#  sign_in_count          :integer          default(0), not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
 #
 # Indexes
 #
-#  index_staffs_on_email  (email) UNIQUE
-#  unique_emails          (email) UNIQUE
+#  index_staffs_on_email                 (email) UNIQUE
+#  index_staffs_on_reset_password_token  (reset_password_token) UNIQUE
 #
 class Staff < ApplicationRecord
   # Include default devise modules. Others available are:

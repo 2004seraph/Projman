@@ -291,6 +291,47 @@ class CourseProjectsController < ApplicationController
         puts errors
         no_errors = errors.all? { |_, v| v.empty? }
         puts no_errors
+        if no_errors
+            # Creating Project Model
+            puts project_data[:selected_module]
+            puts CourseModule.all.pluck(:code)
+            puts CourseModule.exists?(code: project_data[:selected_module])
+            new_project = CourseProject.new(
+                course_module_code: project_data[:selected_module],
+                name: project_data[:project_name],
+                project_choices_json: project_data[:project_choices].to_json,
+                project_allocation: project_data[:selected_project_allocation_mode].to_sym,
+                team_size: project_data[:team_size],
+                team_allocation: project_data[:selected_team_allocation_mode].to_sym,
+                preferred_teammates:  project_data[:preferred_teammates],
+                avoided_teammates: project_data[:avoided_teammates],
+                status: :draft
+            )
+            new_project.save!
+
+            # Creating associated milestones
+            project_data[:project_milestones].each do |milestone_data|
+
+                # dd/mm/yyyy to yyyy-mm-dd
+                date_string = milestone_data["Date"]
+                parsed_date = Date.strptime(date_string, "%d/%m/%Y").strftime("%Y-%m-%d")
+
+                json_data = {
+                    "Deadline" => milestone_data["Deadline"],
+                    "Email" => milestone_data["Email"],
+                    "Comment" => milestone_data["Comment"]
+                },
+
+                milestone = Milestone.new(
+                    json_data: json_data,
+                    deadline: parsed_date,
+                    type: milestone_data["Type"].to_sym,
+                    course_projects_id: new_project.id
+                )
+
+                milestone.save!
+            end
+        end
 
         render :new
     end
