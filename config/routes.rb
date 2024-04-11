@@ -30,13 +30,19 @@ Rails.application.routes.draw do
   end
 
   get '/students', to: 'students#index'
+
   get '/issues', to: 'issues#index'
+  post '/issues/create', to: 'issues#create'
+  post '/issues/project-selected', to: 'issues#update_selection'
+
   get '/profile', to: 'profile#index'
   get '/settings', to: 'settings#index'
 
   get '/facilitators', to: 'facilitators#index'
   get '/facilitators/marking/:module', to: 'facilitators#marking'
-  get '/facilitators/team/:id', to: 'facilitators#team'
+  get '/facilitators/team/:id', to: 'facilitators#team'\
+
+  
 
   resources :admin
 end

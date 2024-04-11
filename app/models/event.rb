@@ -4,8 +4,8 @@
 #
 #  id         :bigint           not null, primary key
 #  completed  :boolean          default(FALSE)
+#  event_type :enum             not null
 #  json_data  :json             not null
-#  type       :enum             not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  group_id   :bigint           not null
@@ -21,5 +21,5 @@
 class Event < ApplicationRecord
   belongs_to :group
 
-  enum :type, { generic: 'generic', milestone: 'milestone', chat: 'chat', issue: 'issue' }
+  enum :event_type, { generic: 'generic', milestone: 'milestone', chat: 'chat', issue: 'issue' }
 end

@@ -31,12 +31,16 @@ class ApplicationController < ActionController::Base
 
       if current_user.isStudent?
         if Student.exists?(username: username)
-          if Staff.exists?(email: current_user.email)
-            @user = Staff.find_by(email: current_user.email)
-          else
-            @user = Student.find_by(username: username)
-          end
+          
+          #Uncomment below if you want to act as staff member
 
+          # if Staff.exists?(email: current_user.email)
+          #   @user = Staff.find_by(email: current_user.email)
+          # else
+          #   @user = Student.find_by(username: username)
+          # end
+
+          @user = Student.find_by(username: username)
         else
           reset_session
           redirect_to new_user_session_path, alert: "User not found in the database. Please try again."

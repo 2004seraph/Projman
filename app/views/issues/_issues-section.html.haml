@@ -1,0 +1,17 @@
+.separating-section#open-issues-section
+  %h2
+    %i.bi.bi-chat-left-dots-fill.fill-yellow
+    Open
+
+  - @open_issues.each do |issue|
+    = render partial:'issue-box', locals: { issue: issue }
+  %hr.divider
+
+.separating-section#resolved-issues-section
+  %h2
+    %i.bi.bi-check-circle-fill.fill-green
+    Resolved
+
+  - @resolved_issues.each do |issue| 
+    = render partial:'issue-box', locals: { issue: issue } 
+  %hr.divider

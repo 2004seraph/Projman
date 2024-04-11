@@ -1,5 +1,4 @@
 import Rails from "@rails/ujs";
-require('jquery')
 import $ from 'jquery';
 import 'bootstrap';
 import 'bootstrap-datepicker';

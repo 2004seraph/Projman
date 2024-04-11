@@ -1,4 +1,7 @@
 - unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
+- issue_data = JSON.parse(issue.json_data)
+- course_project = CourseProject.find_by(id: Group.find_by(id: issue.group.id).course_projects_id)
+- course_module = CourseModule.find_by(id: course_project.course_module_id)
 
 .card.issue-card.mb-2.accordion-element
   %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
@@ -8,16 +11,16 @@
    "aria-expanded" => "false",
    "aria-controls" => unique_id}
     .d-flex.align-items-center
-      %span.me-3.fs-6.fw-light DD/MM/YYYY
-      %h3.m-0.fs-5.fw-medium Issue Title
+      %span.me-3.fs-6.fw-light #{issue.created_at}
+      %h3.m-0.fs-5.fw-medium #{issue_data['title']}
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id}
     .card-body.pt-1.pb-1
       .d-flex.align-items-center.justify-content-between.pt-2
-        .fs-6 Posted by: Firstname Lastname
-        .fs-6 MODULECODE Project Name
+        .fs-6 Posted by: #{issue_data['author']}
+        .fs-6 #{course_module.code} - #{course_project.name}
       .issue-text.border.p-2.mb-2
-        .fs-6 Issue Text Body
+        .fs-6 #{issue_data['content']}
       - if current_user.isStaff?
         .d-flex.align-items-center
           .fs-6 reply via email 

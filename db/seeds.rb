@@ -97,3 +97,38 @@ DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
   team_allocation: :random_team_allocation,
   team_size: 8
 }))
+
+DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
+  course_module: CourseModule.find_by(code: "COM3420"),
+  # dont specify it to leave it as the default {}
+  # markscheme_json: {test: "test"}.to_json,
+  name: "AI Project",
+  project_allocation: :individual_preference_project_allocation,
+  # dont specify it to leave it as the default {}
+  # project_choices_json: {test: "test"}.to_json,
+  team_allocation: :random,
+  team_size: 4
+}))
+
+DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
+  course_project_id: CourseProject.find_by(name: "TurtleBot Project").id,
+  staff_id: Staff.find_by(email: "jhenson2@sheffield.ac.uk").id
+}))
+
+DatabaseHelper.print_validation_errors(Group.find_or_create_by({
+  name: "Team 28",
+  assigned_facilitator_id: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "jhenson2@sheffield.ac.uk").id).id,
+  course_projects_id: CourseProject.find_by(name: "TurtleBot Project").id
+}))
+
+DatabaseHelper.print_validation_errors(Group.find_or_create_by({
+  name: "Team 29",
+  assigned_facilitator_id: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "jhenson2@sheffield.ac.uk").id).id,
+  course_projects_id: CourseProject.find_by(name: "TurtleBot Project").id
+}))
+
+DatabaseHelper.print_validation_errors(Group.find_or_create_by({
+  name: "Team 5",
+  assigned_facilitator_id: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "jhenson2@sheffield.ac.uk").id).id,
+  course_projects_id: CourseProject.find_by(name: "AI Project").id
+}))
