@@ -50,6 +50,12 @@ RSpec.configure do |config|
   # (e.g. if a process got killed and things weren't cleaned up)
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
+    DatabaseCleaner.start
+  end
+
+  config.after(:suite) do
+    Warden.test_reset!
+    DatabaseCleaner.clean
   end
 
   # Use transactions for non-javascript tests as it is much faster than truncation
@@ -64,14 +70,15 @@ RSpec.configure do |config|
     DatabaseCleaner.strategy = :truncation
   end
 
-  config.before(:each) do
-    DatabaseCleaner.start
-  end
+  # THIS SHOULD BE PLACED IN YOUR OWN TEST SUITES 
+  # config.before(:each) do
+  #   DatabaseCleaner.start
+  # end
 
-  config.after(:each) do
-    Warden.test_reset!
-    DatabaseCleaner.clean
-  end
+  # config.after(:each) do
+  #   Warden.test_reset!
+  #   DatabaseCleaner.clean
+  # end
 
   # Help debug tests
   config.after(:each, screenshot_on_failure: true) do |example|

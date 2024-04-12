@@ -52,7 +52,7 @@
           - project_data[:project_choices].each do |name|
             = render partial: 'components/group-item-simple', locals: { item_text: name, deletion_action_url:new_project_remove_project_choice_projects_path }
 
-        %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal",
+        %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal", id: "add-project-choice-btn",
           "data-bs-target": "#add-project-choice-modal"}
           %i.bi.bi-plus
           Add

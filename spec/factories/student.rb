@@ -13,4 +13,14 @@ FactoryBot.define do
       num_records)
     }
   end
+
+  factory :standard_student, class: Student do
+    username {"acc22aw"}
+    preferred_name {"Adam"}
+    forename {"Adam"}
+    title {"Mr"}
+    ucard_number {"001787692"}
+    email {"awillis4@sheffield.ac.uk"}
+    fee_status {:home}
+  end
 end

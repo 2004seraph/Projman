@@ -38,6 +38,7 @@ class CourseProjectsController < ApplicationController
 
     def new
         modules_hash = CourseModule.order(:code).pluck(:code, :name).to_h
+        puts modules_hash
         project_allocation_modes_hash = CourseProject.project_allocations
         team_allocation_modes_hash = CourseProject.team_allocations
         milestone_types_hash = Milestone.types
