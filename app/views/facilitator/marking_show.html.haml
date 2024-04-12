@@ -42,20 +42,6 @@
         %button.btn.btn-primary{type: "button", "aria-label" => "Confirm", "data-bs-dismiss" => "modal"} Confirm
         %button.btn.btn-secondary.close{type: "close", "aria-label" => "Close", "data-bs-dismiss" => "modal"} Close
 
-.modal.fade{ id: "changeEmailModal", tabindex: "-1", "aria-labelledby": "changeEmailModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
-  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
-    .modal-content
-      .modal-header
-        %h1.modal-title.fs-5= "Change Module Leader"
-        %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
-
-      .modal-body
-        %h1.fs-6.fw-normal.fst-italic= "Input the new Module Leader's '@sheffield.ac.uk' e-mail address - if they do not have an account on the system, one will be created for them."
-        = form_for @current_module.id, html: { id: 'email_form', method: :patch } do |f|
-          .modal-footer
-            %button.btn.btn-primary{ type: "submit" }= "Confirm"
-
-
 
 
 :javascript
