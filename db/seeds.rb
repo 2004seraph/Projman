@@ -74,6 +74,12 @@ students_COM3420 = DatabaseHelper.provision_module_class(
   DatabaseHelper.create_staff("emma_norling@sheffield.ac.uk")
 )
 
+students_COM3420 = DatabaseHelper.provision_module_class(
+  "COM9999",
+  "Systems and Security",
+  DatabaseHelper.create_staff("jbala1@sheffield.ac.uk")
+)
+
 puts ""
 
 # take the entire COM3420 class and enroll them in another module
@@ -106,7 +112,7 @@ DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
   project_allocation: :individual_preference_project_allocation,
   # dont specify it to leave it as the default {}
   # project_choices_json: {test: "test"}.to_json,
-  team_allocation: :random,
+  team_allocation: :random_team_allocation,
   team_size: 4
 }))
 

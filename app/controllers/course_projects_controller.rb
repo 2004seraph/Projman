@@ -27,7 +27,7 @@ class CourseProjectsController < ApplicationController
         :create]
 
     def index
-        if @user.instance_of? Staff
+        if (@user.instance_of?(Staff) || Staff.exists?(email: @user.email))
             render 'index_module_leader'
         else
             #FILTER FOR PROJECTS THAT ARE AVAILABLE FOR STUDENT ... 
@@ -207,6 +207,9 @@ class CourseProjectsController < ApplicationController
         unless project_data[:project_name].present?
             errors[:main][:project_name_empty] = "Project name cannot be empty"
         end
+        if !errors[:main].present? && CourseProject.exists?(name: project_data[:project_name], course_module_id: CourseModule.where(code: project_data[:selected_module]).first.id)
+            errors[:main][:project_name_empty] = "There exists a project on this module with the same name"
+        end
 
         # Project Choices
         project_data[:project_choices_enabled] = params.key?(:project_choices_enable)
@@ -291,9 +294,7 @@ class CourseProjectsController < ApplicationController
         end
         errors[:facilitators_not_found] = facilitators_not_found
 
-        puts errors
         no_errors = errors.all? { |_, v| v.empty? }
-        puts no_errors
         if no_errors
             # Creating Project Model
             new_project = CourseProject.new(
@@ -346,11 +347,15 @@ class CourseProjectsController < ApplicationController
 
                 facilitator.save!
             end
-
-            # redirect to projects on success
         end
 
-        render :new
+        # May need further changes here to accoutn for if any of the database commits (.save!) dont go through
+        if no_errors
+            flash[:notice] = "Project has been created successfully"
+            redirect_to action: :index
+        else
+            render :new
+        end
     end
 
     def show_student
