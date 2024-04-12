@@ -1,0 +1,139 @@
+%h1 Section - Testing
+%h3 Description - There should be clear and strong evidence of comprehensive unit and system testing.
+
+%table.table.table-bordered#markingTable
+  %thead
+    %tr
+      %th Team
+      %th Marks Given (5 Available)
+      %th Reasoning and Feedback
+  %tbody
+    %tr
+      %td A
+      %td.editable.onlynumeric{contenteditable: "true"} 5
+      %td.editable{contenteditable: "true"} Because you're amazing just the way you are.
+    %tr
+      %td B
+      %td.editable.onlynumeric{contenteditable: "true"} 4
+      %td.editable{contenteditable: "true"} Not quite so amazing.
+
+.modal.fade#markErrorModal{role: "dialog"}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h4.modal-title Invalid Marks Given
+
+      .modal-body
+        %p The maximum number of marks was exceeded, please check your marking.
+
+      .modal-footer
+        %button.btn.btn-default.close{type: "close", "aria-label" => "Close", "data-bs-dismiss" => "modal"} Close
+
+.modal.fade#confirmSaveModal{role: "dialog", tabindex: "-1",}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h4.modal-title Are you sure you want to save?
+
+      .modal-body
+        %p Click confirm to save your marks and feedback.
+
+      .modal-footer
+        %button.btn.btn-primary{type: "button", "aria-label" => "Confirm", "data-bs-dismiss" => "modal"} Confirm
+        %button.btn.btn-secondary.close{type: "close", "aria-label" => "Close", "data-bs-dismiss" => "modal"} Close
+
+.modal.fade{ id: "changeEmailModal", tabindex: "-1", "aria-labelledby": "changeEmailModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      .modal-header
+        %h1.modal-title.fs-5= "Change Module Leader"
+        %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+
+      .modal-body
+        %h1.fs-6.fw-normal.fst-italic= "Input the new Module Leader's '@sheffield.ac.uk' e-mail address - if they do not have an account on the system, one will be created for them."
+        = form_for @current_module.id, html: { id: 'email_form', method: :patch } do |f|
+          .modal-footer
+            %button.btn.btn-primary{ type: "submit" }= "Confirm"
+
+
+
+
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+    var cells = document.querySelectorAll('#markingTable .editable.onlynumeric');
+    let markErrorModal = document.getElementById("markErrorModal");
+    let confirmSaveModal = document.getElementById("confirmSaveModal");
+    let MAX_MARKS_TEMP = 5;
+
+    cells.forEach(function(cell) {
+      ["keypress", "keyup"].forEach(function(e) {
+        cell.addEventListener(e, function() {
+          var keyValue = String.fromCharCode(event.keyCode || event.which);
+          
+          if (/\D/.test(keyValue)) {
+            event.preventDefault();
+          }
+        })
+      });
+      cell.addEventListener("blur", function() {
+        // When the user clicks off a cell, remove all nonnumeric characters
+        cell.innerHTML = cell.innerHTML.replace(/[^\d].+/, '');
+
+        if (!cell.innerHTML) {
+          return;
+        }
+
+        // Alert the user if the cell exceeds the maximum marks
+        if (Number(cell.innerHTML) > MAX_MARKS_TEMP) {
+          cell.classList.add("bg-danger");
+          markErrorModal.classList.add('show');
+          markErrorModal.style.display = 'block';
+        }
+        else {
+          cell.classList.remove("bg-danger");
+        }
+      })
+    });
+
+    document.getElementById("saveButton").onclick = function () {
+      // TEMP: Function for validating the max marks set (not sure if this is right or it should be done in ruby)
+      // But doesn't matter so much for now.
+      
+      let dataInvalid = false;
+
+      // TODO: I think we should be submitting a form here, then the controller will validate it all?
+      
+      cells.forEach(function(cell) {
+        if (Number(cell.innerHTML) > MAX_MARKS_TEMP) {
+          cell.classList.add("bg-danger");
+          dataInvalid = true;
+        }
+        else {
+          cell.classList.remove("bg-danger");
+        }
+      });
+
+      if (dataInvalid) {
+        markErrorModal.classList.add('show');
+        markErrorModal.style.display = 'block';
+      }
+      else {
+        
+        confirmSaveModal.classList.add('show');
+        confirmSaveModal.style.display = 'block';
+      }
+    };
+
+    // Let the close button close the modals (doesn't work without this when modal opened from js...?)
+    markErrorModal.querySelector(".close").addEventListener("click", function() {
+      markErrorModal.classList.remove("show");
+      markErrorModal.style.display = "none";
+    });
+    confirmSaveModal.querySelector(".close").addEventListener("click", function() {
+      confirmSaveModal.classList.remove("show");
+      confirmSaveModal.style.display = "none";
+    });
+  });
+
+%button.btn.btn-primary#saveButton Save
+%button.btn.btn-primary.btn-sm.m-2{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#confirmSaveModal"} Test

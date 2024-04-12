@@ -43,7 +43,7 @@ Rails.application.routes.draw do
   get '/facilitator/projects/:project_id', to: 'facilitator#projects_show'
   get '/facilitator/projects/:project_id/teams/:team_id', to: 'facilitator#team', as: 'facilitator_project_team'
   get '/facilitator/progress_form/:week', to: 'facilitator#progress_form', as: 'facilitator_progress_form'
-  get '/facilitator/projects/:project_id/marking_section/:section_id', to: 'facilitator#marking_section', as: 'facilitator_marking_section'
+  get '/facilitator/projects/:project_id/marking_section/:section_id', to: 'facilitator#marking_show', as: 'facilitator_marking_show'
   resources :facilitator
 
   resources :admin

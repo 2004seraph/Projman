@@ -1,6 +1,4 @@
 class FacilitatorController < ApplicationController
-    skip_authorization_check # TEMP: Not sure why needed.
-
     # GET /facilitators 
     def index
     end
@@ -12,11 +10,15 @@ class FacilitatorController < ApplicationController
 
     def projects
         #@facilitator_projects_temp = CourseProject.all
+        #puts "projects count: " + @facilitator_projects_temp.length.to_s
         # TEMP: Using modules as no courseprojects yet
         @facilitator_projects = CourseModule.all
     end
 
     def projects_show
+        @facilitator_project = CourseProject
+
+
     end
 
     def progress_form
