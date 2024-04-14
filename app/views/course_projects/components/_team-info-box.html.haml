@@ -12,9 +12,8 @@
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id}
     .card-body.pt-1.pb-1
-      %h1.fs-6.fw-normal Team Member 1 Information
-      %h1.fs-6.fw-normal Team Member 2 Information
-      %h1.fs-6.fw-normal Team Member 3 Information
-      %h1.fs-6.fw-normal Team Member 4 Information
-      %h1.fs-6.fw-normal Team Member 5 Information
+      - 5.times do
+        %h1.fs-5.fw-semibold Firstname Lastname
+        %h1.fs-5.fw-normal.fst-italic firstname_lastname@email
+        %hr.divider
         
