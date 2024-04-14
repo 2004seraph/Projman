@@ -1,30 +1,12 @@
 require 'rails_helper'
 
 describe 'Managing modules' do
+    let!(:user) { FactoryBot.create(:standard_student_user) }
+    let!(:student) { FactoryBot.create(:standard_student) }
+
+    before { login_as user }
 
     specify 'I can add a module' do
-
-        Student.create({
-            username: "acc22aw",
-            preferred_name: "Adam",
-            forename: "Adam",
-            title: "Mr",
-            ucard_number: "001787692",
-            email: "awillis4@sheffield.ac.uk",
-            fee_status: :home
-        })
-        user = User.create({
-            email: 'awillis4@sheffield.ac.uk',
-            username: 'acc22aw',
-            uid: 'acc22aw',
-            mail: 'awillis4@sheffield.ac.uk',
-            ou: 'COM',
-            dn: nil,
-            sn: 'Willis',
-            givenname: 'Adam',
-            account_type: 'student - ug'
-        })
-        login_as user
         
         visit '/admin'
         click_on 'Create New'
@@ -42,4 +24,72 @@ describe 'Managing modules' do
         expect(page).to have_content 'COM1002 Introduction'
     end
 
+    context 'With one existing module' do
+        
+        before do
+            DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
+            DatabaseHelper.provision_module_class(
+                "COM1002",
+                "Introduction",
+                Staff.find_by(email: "awillis4@sheffield.ac.uk")
+            )
+        end
+
+        before { visit '/admin' }
+
+        specify "I can view modules in a list" do
+            expect(page).to have_content 'COM1002 Introduction'
+        end
+    end
+
+    context "When viewing a module" do
+
+        before do
+            DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
+            DatabaseHelper.provision_module_class(
+                "COM1002",
+                "Introduction",
+                Staff.find_by(email: "awillis4@sheffield.ac.uk")
+            )
+        end
+
+        before { visit '/admin' }
+        
+        before { click_on 'COM1002 Introduction'}
+
+        specify "I can view all module information" do
+            expect(page).to have_content 'Introduction'
+            expect(page).to have_content 'awillis4@sheffield.ac.uk'
+            expect(page).to have_content CourseModule.find_by(code: 'COM1002').students.first.forename
+        end     
+
+        specify "I can edit the module name" do
+            click_on 'change_name'
+
+            fill_in 'new_module_name', with: 'Test'
+            click_on 'name_confirm'
+
+            expect(page).to have_content 'Test'
+        end
+
+        specify "I can edit the module leader" do
+            click_on 'change_lead'
+
+            fill_in 'new_module_lead_email', with: 'test@email'
+            fill_in 'new_module_lead_email_confirmation', with: 'test@email'
+            click_on 'lead_confirm'
+
+            expect(page).to have_content 'test@email'
+        end
+
+        specify "I can edit the module name" do
+            click_on 'change_students'
+
+            attach_file 'new_module_student_list', "#{Rails.root}/spec/data/COM1002.csv"
+            click_on 'list_confirm'
+
+            expect(page).to have_content 'John Dyer'
+        end
+    
+    end
 end

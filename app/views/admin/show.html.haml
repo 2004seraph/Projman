@@ -47,7 +47,7 @@
 
   %h3
     Module Name
-    %button.btn.btn-primary.btn-sm.m-2{type: "button", "data-bs-toggle": "modal",
+    %button.btn.btn-primary.btn-sm.m-2{type: "button", id: "change_name", "data-bs-toggle": "modal",
        "data-bs-target": "#changeNameModal"}
       %i.bi.bi-pencil
       Change
@@ -55,7 +55,7 @@
     #{@current_module.name}
   %h3
     Module Leader
-    %button.btn.btn-primary.btn-sm.m-2{type: "button", "data-bs-toggle": "modal",
+    %button.btn.btn-primary.btn-sm.m-2{type: "button", id: "change_lead", "data-bs-toggle": "modal",
        "data-bs-target": "#changeEmailModal"}
       %i.bi.bi-pencil
       Change
@@ -69,7 +69,7 @@
 
   %h3
     Module Student List
-    %button.btn.btn-primary.btn-sm.m-2{type: "button", "data-bs-toggle": "modal",
+    %button.btn.btn-primary.btn-sm.m-2{type: "button", id: "change_students", "data-bs-toggle": "modal",
        "data-bs-target": "#changeStudentListModal"}
       %i.bi.bi-pencil
       Change
@@ -89,7 +89,7 @@
             %input.form-control.fs-5.fw-semibold{ id: "new_module_name", name: "new_module_name", placeholder: "Name", autocomplete: "off", required: true }
             %h1
           .modal-footer
-            %button.btn.btn-primary{ type: "submit" }= "Confirm"
+            %button.btn.btn-primary{ type: "submit", id: "name_confirm" }= "Confirm"
 
 .modal.fade{ id: "changeEmailModal", tabindex: "-1", "aria-labelledby": "changeEmailModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
@@ -108,7 +108,7 @@
             %input.form-control.fs-5.fw-semibold{ type: "email", id: "new_module_lead_email_confirmation", name: "new_module_lead_email_confirmation",placeholder: "Confirm E-mail", autocomplete: "off", required: true}
             %h1
           .modal-footer
-            %button.btn.btn-primary{ type: "submit" }= "Confirm"
+            %button.btn.btn-primary{ type: "submit", id: "lead_confirm" }= "Confirm"
 
 .modal.fade{ id: "changeStudentListModal", tabindex: "-1", "aria-labelledby": "changeStudentListModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
@@ -126,4 +126,4 @@
             %input.form-control.fs-5.fw-semibold{ type: "file", id: "new_module_student_list", name: "new_module_student_list", autocomplete: "off", accept: "text/csv", required: true}
             %h1
           .modal-footer
-            %button.btn.btn-primary{ type: "submit" }= "Confirm"
+            %button.btn.btn-primary{ type: "submit", id: "list_confirm" }= "Confirm"
