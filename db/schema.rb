@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_04_09_172148) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_08_174343) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
@@ -104,14 +104,14 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_09_172148) do
   end
 
   create_table "groups", force: :cascade do |t|
-    t.bigint "course_projects_id", null: false
+    t.bigint "course_project_id", null: false
     t.string "name", default: "My Group"
     t.json "profile", default: "{}"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "assigned_facilitator_id"
     t.index ["assigned_facilitator_id"], name: "index_groups_on_assigned_facilitator_id"
-    t.index ["course_projects_id"], name: "index_groups_on_course_projects_id"
+    t.index ["course_project_id"], name: "index_groups_on_course_project_id"
   end
 
   create_table "groups_students", id: false, force: :cascade do |t|
@@ -223,7 +223,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_09_172148) do
   add_foreign_key "event_responses", "events"
   add_foreign_key "events", "groups"
   add_foreign_key "groups", "assigned_facilitators"
-  add_foreign_key "groups", "course_projects", column: "course_projects_id"
+  add_foreign_key "groups", "course_projects"
   add_foreign_key "groups_students", "groups", on_delete: :cascade
   add_foreign_key "groups_students", "students", on_delete: :cascade
   add_foreign_key "milestone_responses", "milestones"
