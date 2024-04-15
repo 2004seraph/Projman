@@ -20,20 +20,17 @@
           %label.form-check-label{ for: "filter-checkbox" }= "Assigned only"
           
         .dropdown.d-flex.inline-block
-          %button.btn.btn-primary{ type: "button", id: "project-selection-button", "data-bs-toggle": "dropdown", 
-            "aria-haspopup": "true", "aria-expanded": "false" }
-
-            Projects: All
-            %span.current-selection
+          %button.btn.btn-primary{ type: "button", id: "project-selection-button", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false"}
+            %span#project-selection-label Projects: All
             %i.bi.bi-caret-down-fill
             
           .dropdown-menu{ "aria-labelledby": "project-selection-button" }
-            %a.dropdown-item{ onclick: "update_project_selection('All')" } All
+            %a.dropdown-item{ onclick: "update_project_filter('All')" }= "All"
             %hr.dropdown-divider
 
             - @assigned_projects.each do |project|
-              %a.dropdown-item{ onclick: "update_project_selection('#{project.name}')" }
-                = project.name
+              %a.dropdown-item{ onclick: "update_project_filter('#{project.name}')" }
+                =project.name
 
       %hr.divider
 
@@ -44,13 +41,12 @@
               = link_to facilitator_team_path(team_id: group.id) do
                 %h6.p-1
                   = "#{group.assigned_facilitator.course_project.name} - #{group.name}"
+                  
   :javascript 
-
     function update_team_list() {
       var checkbox = document.getElementById('filter-checkbox');
-      
-      var selectionButton = document.getElementById('project-selection-button');
-      
+      var selectionButton = document.getElementById('project-selection-label');
+
       fetch("facilitator/update_teams_list", {
         method: "POST",
         headers: {
@@ -59,21 +55,20 @@
         },
         body: JSON.stringify({ 
           assigned_only: checkbox.checked,
-          projects_filter: selectionButton.innerHTML.replace("Projects: ", "")
+          projects_filter: selectionButton.textContent.replace("Projects: ", "")
         })
       })
       .then(response => response.text())
       .then(data => {
         document.getElementById("teams-partial-container").innerHTML = data;
         document.getElementById("filter-checkbox").checked = checkbox.checked;
-        document.getElementById("project-selection-button").innerHTML = selectionButton.innerHTML;
+        document.getElementById("project-selection-label").textContent = selectionButton.textContent;
       })
       .catch(error => console.error('Error when updating teams partial:', error));
     }
 
-    function update_project_selection(selection) {
-      var selectionBox = document.getElementById('project-selection-button');
-      selectionBox.innerHTML = "Projects: " + selection;
+    function update_project_filter(selection) {
+      document.getElementById('project-selection-label').textContent = "Projects: " + selection;
       update_team_list();
     }
     
