@@ -24,7 +24,7 @@ RSpec.feature "Project Creation", type: :feature do
             team_size: 8
         })
 
-        Capybara.current_driver = :selenium
+        # Capybara.current_driver = :selenium
     end
     after(:all) do
         # Capybara.current_driver = Capybara.default_driver
@@ -43,23 +43,42 @@ RSpec.feature "Project Creation", type: :feature do
         end
     end
 
-    describe "Project Choices visibility persists after failed submission" do
-        context "when it was previousely enabled" do
-            it "stays enabled" do
-            end
-        end
-        context "when it was previously disabled" do
-            it "stays disabled" do
-            end
-        end
-    end
-
     describe "Creation form gets filled with correct fields" do
-        it "fills in module options with modules that user is a module lead for" do
+        context "when the page is first loaded" do
+            it "fills in module options with modules that user is a module lead for" do
+            end
+            it "fills in correct project allocation methods into selection" do
+            end
+            it "fills in correct team allocation methods into selection" do
+            end
         end
-        it "fills in correct project allocation methods into selection" do
-        end
-        it "fills in correct team allocation methods into selection" do
+        context "when the page is reloaded on a failed submission" do
+            it "fills in module options with modules that user is a module lead for" do
+            end
+            it "fills in correct project allocation methods into selection" do
+            end
+            it "fills in correct team allocation methods into selection" do
+            end
+            it "persists the project name" do
+            end
+            it "persists the previous selected module" do
+            end
+            it "persists all added project choices" do
+            end
+            it "persists the previous selected project allocation method" do
+            end
+            it "persists the previous seleted team allocation method" do
+            end 
+            it "persists set team size" do
+            end
+            it "persists preferred and avoided teammates" do 
+            end
+            it "persists all deadline data" do
+            end
+            it "persists all added milestones and their data" do
+            end
+            it "persists all added facilitators" do
+            end
         end
     end
 

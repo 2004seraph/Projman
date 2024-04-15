@@ -301,7 +301,7 @@ class CourseProjectsController < ApplicationController
             new_project = CourseProject.new(
                 course_module_id: CourseModule.where(code: project_data[:selected_module]).first.id,
                 name: project_data[:project_name],
-                project_choices_json: project_data[:project_choices].to_json,
+                project_choices_json: project_data[:project_choices_enabled] ? project_data[:project_choices].to_json : "[]",
                 project_allocation: project_data[:selected_project_allocation_mode].to_sym,
                 team_size: project_data[:team_size],
                 team_allocation: project_data[:selected_team_allocation_mode].to_sym,
