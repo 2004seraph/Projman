@@ -15,7 +15,7 @@
   .collapse.show{id: unique_id}
     .card-body
       .d-flex.justify-content-between.align-items-center
-        %div
+        .form-check.form-switch
           %input.form-check-input{ type: "checkbox", id: "filter-checkbox", checked: true, onchange: "update_team_list()" }
           %label.form-check-label{ for: "filter-checkbox" }= "Assigned only"
           

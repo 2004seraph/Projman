@@ -14,7 +14,7 @@ class FacilitatorController < ApplicationController
             # NOTE: I am assuming here that a facilitator will only be asked to facilitate for teams in projects
             #       that they're already a facilitator for
 
-            # TODO: Test
+            # TODO: Need to test
             facilitator_project_ids = get_assigned_facilitators.map{|x| x.course_project_id}
             @assigned_facilitators = AssignedFacilitator.where(course_project_id: facilitator_project_ids)
         end
@@ -70,9 +70,6 @@ class FacilitatorController < ApplicationController
             elsif facilitator.staff_id
                 return Staff.find_by(id: facilitator.staff_id).email
             end
-
             # TODO: Handle better?
         end
-
-        
 end
