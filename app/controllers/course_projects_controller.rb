@@ -41,7 +41,7 @@ class CourseProjectsController < ApplicationController
         puts modules_hash
         project_allocation_modes_hash = CourseProject.project_allocations
         team_allocation_modes_hash = CourseProject.team_allocations
-        milestone_types_hash = Milestone.types
+        milestone_types_hash = Milestone.milestone_types
 
         session[:new_project_data] = {
             errors: {},
@@ -58,9 +58,9 @@ class CourseProjectsController < ApplicationController
             selected_team_allocation_mode: "",
             preferred_teammates: 2,
             avoided_teammates: 2,
-            project_milestones: [{"Name": "Project Deadline", "Date": "", "Type": "team", "Deadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""},
-                                {"Name": "Teammate Preference Form Deadline", "Date": "", "Type": "student", "Deadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""},
-                                {"Name": "Project Preference Form Deadline", "Date": "", "Type": "team", "Deadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""}],
+            project_milestones: [{"Name": "Project Deadline", "Date": "", "Type": "team", "isDeadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""},
+                                {"Name": "Teammate Preference Form Deadline", "Date": "", "Type": "student", "isDeadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""},
+                                {"Name": "Project Preference Form Deadline", "Date": "", "Type": "team", "isDeadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""}],
             project_facilitators: [],
 
             facilitator_selection: [],
@@ -98,7 +98,7 @@ class CourseProjectsController < ApplicationController
         @project_milestone_name = params[:project_milestone_name]
         project_milestone_unique = false
         unless session[:new_project_data][:project_milestones].any? { |milestone| milestone[:Name] == @project_milestone_name }
-            session[:new_project_data][:project_milestones] << {"Name": @project_milestone_name, "Date": "", "Type": "", "Deadline": false, "Email": {"Content": "", "Advance": ""}, "Comment": ""}
+            session[:new_project_data][:project_milestones] << {"Name": @project_milestone_name, "Date": "", "Type": "", "isDeadline": false, "Email": {"Content": "", "Advance": ""}, "Comment": ""}
             project_milestone_unique = true
         end
         if request.xhr?
@@ -267,9 +267,8 @@ class CourseProjectsController < ApplicationController
 
                 # Find the corresponding milestone in the milestones hash and update its "Date" value
                 if milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
-                    next if milestone[:Deadline]
                     milestone[:Date] = value
-                    unless defined?(value) && value.present?
+                    unless (defined?(value) && value.present?) || milestone[:isDeadline]
                         errors[:timings][:milestone_date_not_set] = "Please make sure all milestones have a date"
                     end
                 end
@@ -281,9 +280,9 @@ class CourseProjectsController < ApplicationController
 
                 # Find the corresponding milestone in the milestones hash and update its "Type" value
                 if milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
-                    next if milestone[:Deadline]
+                    next if milestone[:isDeadline]
                     milestone[:Type] = value
-                    unless defined?(value) && value.present? && Milestone.types.key?(value)
+                    unless defined?(value) && value.present? && Milestone.milestone_types.key?(value)
                         errors[:timings][:invalid_milestone_type] = "Please make sure all milestone types are valid"
                     end
                 end
@@ -309,30 +308,53 @@ class CourseProjectsController < ApplicationController
                 avoided_teammates: project_data[:avoided_teammates],
                 status: :draft
             )
-            new_project.save!
+            if new_project.save!
+                puts new_project.id
+            end
+
+            # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
+            if project_data[:selected_team_allocation_mode] == "random_team_allocation"
+                if milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == "Teammate Preference Form Deadline"}
+                    milestone[:Date] = ""
+                end
+            end
+            if !project_data[:project_choices_enabled] || project_data[:selected_project_allocation_mode] == "random_project_allocation"
+                if milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == "Project Preference Form Deadline"}
+                    milestone[:Date] = ""
+                end
+            end
 
             # Creating associated milestones
             project_data[:project_milestones].each do |milestone_data|
+                puts "Preparing milestone: ", milestone_data
+                puts "course id: ", new_project.id
 
                 # dd/mm/yyyy to yyyy-mm-dd
-                date_string = milestone_data["Date"]
+                date_string = milestone_data[:Date]
+                puts date_string
                 next if !date_string.present?   #dont push the milestone if its not got a set date
                 parsed_date = Date.strptime(date_string, "%d/%m/%Y").strftime("%Y-%m-%d")
+                puts parsed_date
 
                 json_data = {
-                    "Deadline" => milestone_data["Deadline"],
-                    "Email" => milestone_data["Email"],
-                    "Comment" => milestone_data["Comment"]
-                },
+                    "isDeadline" => milestone_data[:isDeadline],
+                    "Email" => milestone_data[:Email],
+                    "Comment" => milestone_data[:Comment]
+                }
+                puts json_data
 
                 milestone = Milestone.new(
                     json_data: json_data,
                     deadline: parsed_date,
-                    type: milestone_data["Type"].to_sym,
-                    course_projects_id: new_project.id
+                    milestone_type: milestone_data[:Type],
+                    course_project_id: new_project.id
                 )
 
-                milestone.save!
+                if milestone.save!
+                    puts "milestone: ", milestone, "saved succesfully"
+                else
+                    puts "milestone: ", milestone, "was not saved"
+                end
             end
 
             #Creating assigned facilitators

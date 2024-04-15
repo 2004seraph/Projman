@@ -3,9 +3,9 @@ class CreateMilestone < ActiveRecord::Migration[7.0]
     create_enum :milestone_type, %w[for_each_student for_each_staff for_each_team]
 
     create_table :milestones do |t|
-      t.references :course_projects, null: false, foreign_key: { to_table: :course_projects }
+      t.references :course_project, null: false, foreign_key: { to_table: :course_projects }
 
-      t.column :type, :milestone_type, null: false
+      t.column :milestone_type, :milestone_type, null: false
       t.date :deadline, null: false
 
       t.json :json_data, null: false, default: "{}"

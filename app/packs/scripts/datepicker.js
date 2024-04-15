@@ -1,6 +1,7 @@
 import $ from 'jquery';
 
 $(function(){
+    $.fn.datepicker.defaults.format = 'dd/mm/yyyy';
     $('.datepicker').datepicker({
         format: 'dd/mm/yyyy'
     });

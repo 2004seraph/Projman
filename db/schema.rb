@@ -133,13 +133,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_09_172148) do
   end
 
   create_table "milestones", force: :cascade do |t|
-    t.bigint "course_projects_id", null: false
-    t.enum "type", null: false, enum_type: "milestone_type"
+    t.bigint "course_project_id", null: false
+    t.enum "milestone_type", null: false, enum_type: "milestone_type"
     t.date "deadline", null: false
     t.json "json_data", default: "{}", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["course_projects_id"], name: "index_milestones_on_course_projects_id"
+    t.index ["course_project_id"], name: "index_milestones_on_course_project_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -227,5 +227,5 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_09_172148) do
   add_foreign_key "groups_students", "groups", on_delete: :cascade
   add_foreign_key "groups_students", "students", on_delete: :cascade
   add_foreign_key "milestone_responses", "milestones"
-  add_foreign_key "milestones", "course_projects", column: "course_projects_id"
+  add_foreign_key "milestones", "course_projects"
 end

@@ -44,11 +44,19 @@ RSpec.feature "Project Creation", type: :feature do
     end
 
     describe "Creation form gets filled with correct fields" do
-
+        it "fills in module options with modules that user is a module lead for" do
+        end
+        it "fills in correct project allocation methods into selection" do
+        end
+        it "fills in correct team allocation methods into selection" do
+        end
     end
 
 
     describe "User tries to create a new project with invalid parameters" do
+        after(:each) do
+            expect(page.current_path).to eq("/projects/new")
+        end
         context "Project Name is left empty" do
             it "shows error" do
                 login_as user
@@ -56,6 +64,10 @@ RSpec.feature "Project Creation", type: :feature do
                 click_button 'create-project-save-button'
                 save_and_open_page
                 expect(page).to have_text("Project name cannot be empty")
+            end
+        end
+        context "Project Name is taken by another on the module" do
+            it "shows error" do
             end
         end
     end
