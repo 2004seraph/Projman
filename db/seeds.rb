@@ -10,7 +10,7 @@ require 'student_data_helper'
 require 'database_helper'
 require 'csv'
 
-x = Student.find_or_create_by({
+sam = Student.find_or_create_by({
   username: "aca21sgt",
   preferred_name: "Sam",
   forename: "Sam",
@@ -19,7 +19,7 @@ x = Student.find_or_create_by({
   email: "sgttaseff1@sheffield.ac.uk",
   fee_status: :home
 })
-puts DatabaseHelper.print_validation_errors(x)
+puts DatabaseHelper.print_validation_errors(sam)
 puts DatabaseHelper.print_validation_errors(Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk" }))
 
 Student.find_or_create_by({
@@ -85,6 +85,7 @@ students_COM3420 = DatabaseHelper.provision_module_class(
   "Software Hut",
   DatabaseHelper.create_staff("emma_norling@sheffield.ac.uk")
 )
+sam.enroll_module "COM3420"
 
 DatabaseHelper.provision_module_class(
   "COM9999",

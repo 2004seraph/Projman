@@ -1,10 +1,11 @@
 class AdminController < ApplicationController
-    #load_and_authorize_resource
+    # authorize_resource class: false
 
     before_action :set_module, only: %i[ show edit update destroy ]
 
     #GET /admin
     def index
+        # authorize! :read, :admin
         @admin_modules = CourseModule.all
     end
 
@@ -24,7 +25,7 @@ class AdminController < ApplicationController
 
         #Checks for correct e-mail confirmation
         @lead = params[:new_module_lead_email]
-        
+
         @confirmation = params[:new_module_lead_email_confirmation]
         unless (@lead == @confirmation)
             redirect_to new_admin_path, alert: "Unsuccesful - E-mail addresses did not match."
