@@ -3,6 +3,9 @@
 class Ability
   include CanCan::Ability
 
+  # This is an amazing best practices cheatsheet that I'm using for this file:
+  # https://greena13.github.io/blog/2019/07/12/cancancan-cheatsheet/
+
   def initialize(user)
     # you must log in to do anything on the entire site.
     return unless user.present?
@@ -20,6 +23,7 @@ class Ability
       can :read, Event, group: { id: user.student.groups.pluck(:id) }
 
       can [:create], EventResponse
+      # can read their own responses
       can [:read], EventResponse, student: { id: user.student.id }
       return
     end

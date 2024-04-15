@@ -5,7 +5,6 @@ class AdminController < ApplicationController
 
     #GET /admin
     def index
-        # authorize! :read, :admin
         @admin_modules = CourseModule.all
     end
 
