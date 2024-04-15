@@ -190,3 +190,16 @@ group2.students << Student.find_by(username: "aca21jlh")
 group2.students << Student.find_by(username: "aca21sgt")
 group2.students << Student.find_by(username: "aca22op")
 
+group3 = Group.find_or_create_by({
+  name: "Team 2",
+  assigned_facilitator_id: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk").id, 
+    course_project_id: CourseProject.find_by(name: "TurtleBot Project").id).id,
+  course_projects_id: CourseProject.find_by(name: "TurtleBot Project").id
+})
+group3.students.clear
+group3.students << Student.find_by(username: "aca21jlh")
+group3.students << Student.find_by(username: "aca21sgt")
+group3.students << Student.find_by(username: "aca22op")
+group3.students << Student.find_by(username: "ack21jb")
+
+

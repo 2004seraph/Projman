@@ -1,9 +1,8 @@
 class FacilitatorController < ApplicationController
-    before_action :set_group, only: %i[ team ]
-
     # GET /facilitators 
     def index
         @assigned_facilitators = get_assigned_facilitators
+        set_assigned_projects
     end
 
     def update_teams_list
@@ -16,18 +15,32 @@ class FacilitatorController < ApplicationController
             #       that they're already a facilitator for
 
             # TODO: Test
-            facilitator_project_ids = get_assigned_facilitators.map{|x| x.course_project_id}   
+            facilitator_project_ids = get_assigned_facilitators.map{|x| x.course_project_id}
             @assigned_facilitators = AssignedFacilitator.where(course_project_id: facilitator_project_ids)
         end
+
+        unless params[:projects_filter] == "All" || params[:projects_filter].nil?
+            target_project_id = CourseProject.find_by(name: params[:projects_filter]).id
+            @assigned_facilitators = @assigned_facilitators.select{|x| x.course_project_id == target_project_id}
+        end
+
+
         
+        set_assigned_projects
         render partial: "teams-list-card"
     end
 
-    # GET /facilitators/marking/{module}
+    
     def progress_form
+        set_group
     end
 
     def team
+        set_group
+    end
+
+    def set_assigned_projects
+        @assigned_projects = get_assigned_facilitators.map{|x| CourseProject.find(x.course_project_id)}
     end
 
     private
@@ -59,6 +72,8 @@ class FacilitatorController < ApplicationController
             elsif facilitator.staff_id
                 return Staff.find_by(id: facilitator.staff_id).email
             end
+
+            # TODO: Handle better?
         end
 
         
