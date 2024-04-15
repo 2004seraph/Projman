@@ -23,11 +23,22 @@ RSpec.feature "Project Creation", type: :feature do
             team_allocation: :random_team_allocation,
             team_size: 8
         })
+
+        Capybara.current_driver = :selenium
+    end
+    after(:all) do
+        # Capybara.current_driver = Capybara.default_driver
     end
 
     describe "User can toggle Project Choices visibility" do
         context "when clicking the toggle button" do
             it "hides the Project Choices panel if it is currently visible" do
+                # login_as user
+                # visit "/projects/new"
+                # wait_for_javascript
+                # find('#project-choices-enable').uncheck
+                # sleep(5)
+                # expect(page).to have_css('#project-choices.display-none')
             end
         end
     end
@@ -62,7 +73,6 @@ RSpec.feature "Project Creation", type: :feature do
                 login_as user
                 visit "/projects/new"
                 click_button 'create-project-save-button'
-                save_and_open_page
                 expect(page).to have_text("Project name cannot be empty")
             end
         end

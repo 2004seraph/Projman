@@ -134,3 +134,9 @@ Capybara.automatic_label_click = true
 def sleep_for_js(sleep_time: 0.5)
   sleep sleep_time
 end
+
+def wait_for_javascript
+  Timeout.timeout(Capybara.default_max_wait_time) do
+    loop until page.evaluate_script('return document.readyState') == 'complete'
+  end
+end
