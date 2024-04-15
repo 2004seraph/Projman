@@ -62,21 +62,23 @@ Student.find_or_create_by({
 })
 DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
 
-DatabaseHelper.provision_module_class(
-  "COM2009",
-  "Robotics",
-  Staff.find_by(email: "jhenson2@sheffield.ac.uk")
-)
-
-Student.create({
+Student.find_or_create_by({
   username: "aca22op",
   preferred_name: "Oliver",
   forename: "Oliver",
+  surname: "Pickford",
   title: "Mr",
   ucard_number: "001796094",
   email: "opickford1@sheffield.ac.uk",
   fee_status: :home
 })
+DatabaseHelper.create_staff("opickford1@sheffield.ac.uk")
+
+DatabaseHelper.provision_module_class(
+  "COM2009",
+  "Robotics",
+  Staff.find_by(email: "jhenson2@sheffield.ac.uk")
+)
 
 students_COM3420 = DatabaseHelper.provision_module_class(
   "COM3420",
@@ -148,3 +150,43 @@ DatabaseHelper.print_validation_errors(Group.find_or_create_by({
   assigned_facilitator_id: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "jhenson2@sheffield.ac.uk").id).id,
   course_projects_id: CourseProject.find_by(name: "AI Project").id
 }))
+
+# Facilitator testing data for Oliver
+DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
+  course_project_id: CourseProject.find_by(name: "AI Project").id,
+  staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk").id
+}))
+
+DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
+  course_project_id: CourseProject.find_by(name: "TurtleBot Project").id,
+  staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk").id
+}))
+
+#DatabaseHelper.print_validation_errors(Group.find_or_create_by({
+#  name: "Team 6",
+#  assigned_facilitator_id: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk").id).id,
+#  course_projects_id: CourseProject.find_by(name: "AI Project").id
+#}))
+
+group = Group.find_or_create_by({
+  name: "Team 6",
+  assigned_facilitator_id: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk").id,
+    course_project_id: CourseProject.find_by(name: "AI Project").id).id,
+  course_projects_id: CourseProject.find_by(name: "AI Project").id
+})
+group.students.clear
+group.students << Student.find_by(username: "aca22op")
+group.students << Student.find_by(username: "acc22aw")
+group.students << Student.find_by(username: "ack21jb")
+
+group2 = Group.find_or_create_by({
+  name: "Team 1",
+  assigned_facilitator_id: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk").id, 
+    course_project_id: CourseProject.find_by(name: "TurtleBot Project").id).id,
+  course_projects_id: CourseProject.find_by(name: "TurtleBot Project").id
+})
+group2.students.clear
+group2.students << Student.find_by(username: "aca21jlh")
+group2.students << Student.find_by(username: "aca21sgt")
+group2.students << Student.find_by(username: "aca22op")
+

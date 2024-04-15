@@ -8,17 +8,20 @@
     "aria-expanded" => "true"}
 
     %h2.fs-4= "Members"
+    %h2.fs-4= "Facilitator: " + @current_group_facilitator_repr
     %i.bi.bi-caret-right-fill
 
   .collapse.show{id: unique_id_collapse}
     .card-body
-      %table.table.selectable-row-container
+      %table.table
         %thead
           %tr
+          %th{scope: "col"} Title
           %th{scope: "col"} Name
           %th{scope: "col"} Email
         %tbody
-          - 8.times do
-            %tr.selectable-row
-            %td Oliver Pickford
-            %td opickford1@sheffield.ac.uk
+          - @current_group.students.each do |student|
+            %tr
+              %td= student.title
+              %td= "#{student.forename} #{student.surname}"
+              %td= student.email

@@ -40,10 +40,15 @@ Rails.application.routes.draw do
 
   # TEMP: Facilitator paths
   get '/facilitator/projects/', to: 'facilitator#projects'
-  get '/facilitator/projects/:project_id', to: 'facilitator#projects_show'
-  get '/facilitator/projects/:project_id/teams/:team_id', to: 'facilitator#team', as: 'facilitator_project_team'
+  #get '/facilitator/projects/:project_id', to: 'facilitator#projects_show'
+  #get '/facilitator/projects/:project_id/teams/:team_id', to: 'facilitator#team', as: 'facilitator_project_team'
   get '/facilitator/progress_form/:week', to: 'facilitator#progress_form', as: 'facilitator_progress_form'
-  get '/facilitator/projects/:project_id/marking_section/:section_id', to: 'facilitator#marking_show', as: 'facilitator_marking_show'
+  #get '/facilitator/projects/:project_id/marking_section/:section_id', to: 'facilitator#marking_show', as: 'facilitator_marking_show'
+  get '/facilitator/marking/:section_id', to: 'facilitator#marking_show', as: 'facilitator_marking_show'
+
+  get '/facilitator/teams/:team_id', to: 'facilitator#team', as: 'facilitator_team'
+  post '/facilitator/update_teams_list' => 'facilitator#update_teams_list'
+
   resources :facilitator
 
   resources :admin
