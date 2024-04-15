@@ -338,6 +338,7 @@ class CourseProjectsController < ApplicationController
                 puts parsed_date
 
                 json_data = {
+                    "Name" => milestone_data[:Name],
                     "isDeadline" => milestone_data[:isDeadline],
                     "Email" => milestone_data[:Email],
                     "Comment" => milestone_data[:Comment]
