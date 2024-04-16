@@ -226,8 +226,11 @@ class CourseProjectsController < ApplicationController
 
         # Team Config
         project_data[:team_size] = params[:team_size]
-        project_data[:selected_team_allocation_mode] = params[:team_allocation_method]
         errors[:team_config] = {}
+        unless project_data[:team_size].present?
+            errors[:team_config][:invalid_team_size] = "Invalid team size set"
+        end
+        project_data[:selected_team_allocation_mode] = params[:team_allocation_method]
         unless CourseProject.team_allocations.key?(project_data[:selected_team_allocation_mode])
             errors[:team_config][:selected_team_allocation_mode] = "Invalid team allocation mode selected"
         end

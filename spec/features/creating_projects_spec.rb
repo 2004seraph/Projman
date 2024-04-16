@@ -30,15 +30,24 @@ RSpec.feature "Project Creation", type: :feature do
         # Capybara.current_driver = Capybara.default_driver
     end
 
+    # UX
+
     describe "User can toggle Project Choices visibility" do
         context "when clicking the toggle button" do
-            it "hides the Project Choices panel if it is currently visible" do
+            it "hides the Project Choices panel if it is currently visible", js: true do
                 # login_as user
                 # visit "/projects/new"
-                # wait_for_javascript
                 # find('#project-choices-enable').uncheck
-                # sleep(5)
                 # expect(page).to have_css('#project-choices.display-none')
+            end
+        end
+    end
+
+    describe "User gets shown deadline for the teammate preference form, and the preference form settings" do
+        context "when they set the team allocation mode to preference form" do
+            it "Shows teammate preference form deadline" do
+            end
+            it "Shows teammate preference form settings" do
             end
         end
     end
@@ -83,6 +92,8 @@ RSpec.feature "Project Creation", type: :feature do
     end
 
 
+    # INVALID SUBMISSIONS
+
     describe "User tries to create a new project with invalid parameters" do
         after(:each) do
             expect(page.current_path).to eq("/projects/new")
@@ -97,6 +108,65 @@ RSpec.feature "Project Creation", type: :feature do
         end
         context "Project Name is taken by another on the module" do
             it "shows error" do
+            end
+        end
+
+        context "Module is invalid" do
+            it "shows error" do
+            end
+        end
+        context "Project choices enabled but none given" do
+            it "shows error" do
+            end
+        end
+        context "Project Allocation method is invalid" do
+            it "shows error" do
+            end
+        end
+        context "Team size is invalid" do
+            it "shows error" do
+            end
+        end
+        context "Team allocation mode is invalid" do
+            it "shows error" do
+            end
+        end
+        context "Project deadline not set" do
+            it "shows error" do
+            end
+        end
+
+    end
+
+    # VALID SUBMISSIONS
+
+    describe "User can succesfully create a new project with valid parameters" do
+        context "by filling in module, name, team size, deadline" do
+            it "creates the project" do
+            end
+        end
+        context "by filling in module, name, project choices, team size, deadline" do
+            it "creates the project" do
+            end
+        end
+        context "by filling in module, name, project choices, team size, deadline, preference form deadline" do
+            it "creates the project" do
+            end
+        end
+        context "by filling in all fields" do
+            it "creates the project" do
+            end 
+        end
+        context "and define additional milestones" do
+            it "creates the project with associated milestones" do
+            end
+        end
+        context "and associate students/staff as facilitators" do
+            it "creates the project with associated facilitators" do
+            end
+        end
+        context "and define additional milestones, and associated facilitators" do
+            it "creates the project with associated milestones and facilitators" do
             end
         end
     end
