@@ -63,4 +63,9 @@ module DatabaseHelper
     DatabaseHelper.print_validation_errors(x)
     x
   end
+
+  def get_student_by_module(module_code)
+    puts CourseModule.find_by(code: module_code).students[0]
+    return CourseModule.find_by(code: module_code).students.all
+  end
 end

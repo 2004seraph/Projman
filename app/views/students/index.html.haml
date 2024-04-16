@@ -71,8 +71,11 @@
 -# And do the the same but with removal for unchecking the box
 
 = render 'components/accordion/container' do
-  = render 'student-list-box', title: "COM2420 Software Hut"
+  - m = "COM3420"
+  = render 'student-list-box', title: "COM3420 Software Hut"
+  - m = "COM2108"
   = render 'student-list-box', title: "COM2108 Functional Programming"
+  - m = "COM2108"
   = render 'student-list-box', title: "COM2108 Functional Programming"
 
 .modal.fade#removeStudentsModal{tabindex: "-1", "aria-labelledby": "removeStudentsModal", "aria-hidden": "true"}
