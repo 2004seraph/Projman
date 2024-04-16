@@ -28,11 +28,14 @@
 class User < ApplicationRecord
   include EpiCas::DeviseHelper
 
-  def isStudent?
+  attr_accessor :student
+  attr_accessor :staff
+
+  def is_student?
     account_type.include?("student")
   end
 
-  def isStaff?
+  def is_staff?
     account_type.include?("staff")
   end
 end

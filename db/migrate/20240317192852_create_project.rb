@@ -28,7 +28,7 @@ class CreateProject < ActiveRecord::Migration[7.0]
     create_table :course_projects do |t|
       t.references :course_module, null: false, foreign_key: true
 
-      t.string :name, null: false
+      t.string :name, null: false, default: "Unnamed Project"
       t.column :status, :project_status, null: false, default: "draft"
 
       t.integer :team_size, null: false

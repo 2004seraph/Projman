@@ -1,0 +1,74 @@
+- unique_id = "teams_display_#{SecureRandom.hex(4)}"
+
+// TODO: Dropdown for project selection and filters for team view
+.card.mb-2.accordion-element
+  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+   href: "##{unique_id}",
+   role: "button",
+   "data-accordion-toggle" => "",
+   "aria-expanded" => "true",
+   "aria-controls" => unique_id}
+
+    %h2.fs-4= "Teams"
+    %i.bi.bi-caret-right-fill
+
+  .collapse.show{id: unique_id}
+    .card-body
+      .d-flex.justify-content-between.align-items-center
+        .form-check.form-switch
+          %input.form-check-input{ type: "checkbox", id: "filter-checkbox", checked: true, onchange: "update_team_list()" }
+          %label.form-check-label{ for: "filter-checkbox" }= "Assigned only"
+          
+        .dropdown.d-flex.inline-block
+          %button.btn.btn-primary{ type: "button", id: "project-selection-button", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false"}
+            %span#project-selection-label Projects: All
+            %i.bi.bi-caret-down-fill
+            
+          .dropdown-menu{ "aria-labelledby": "project-selection-button" }
+            %a.dropdown-item{ onclick: "update_project_filter('All')" }= "All"
+            %hr.dropdown-divider
+
+            - @assigned_projects.each do |project|
+              %a.dropdown-item{ onclick: "update_project_filter('#{project.name}')" }
+                =project.name
+
+      %hr.divider
+
+      %div#teams-display
+        - @assigned_facilitators.each do |facilitator|
+          - facilitator.groups.each do |group|
+            .navigation-list-item
+              = link_to facilitator_team_path(team_id: group.id) do
+                %h6.p-1
+                  = "#{group.assigned_facilitator.course_project.name} - #{group.name}"
+                  
+  :javascript 
+    function update_team_list() {
+      var checkbox = document.getElementById('filter-checkbox');
+      var selectionButton = document.getElementById('project-selection-label');
+
+      fetch("facilitator/update_teams_list", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+        },
+        body: JSON.stringify({ 
+          assigned_only: checkbox.checked,
+          projects_filter: selectionButton.textContent.replace("Projects: ", "")
+        })
+      })
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("teams-partial-container").innerHTML = data;
+        document.getElementById("filter-checkbox").checked = checkbox.checked;
+        document.getElementById("project-selection-label").textContent = selectionButton.textContent;
+      })
+      .catch(error => console.error('Error when updating teams partial:', error));
+    }
+
+    function update_project_filter(selection) {
+      document.getElementById('project-selection-label').textContent = "Projects: " + selection;
+      update_team_list();
+    }
+    

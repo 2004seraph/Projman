@@ -1,0 +1,24 @@
+- unique_id = "marking_display_#{SecureRandom.hex(4)}"
+
+.card.mb-2.accordion-element
+  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+   href: "##{unique_id}",
+   role: "button",
+   "data-accordion-toggle" => "",
+   "aria-expanded" => "false",
+   "aria-controls" => unique_id}
+
+    %h2.fs-4.ml-2= "My Marking"
+    %i.bi.bi-caret-right-fill
+
+  .collapse{id: unique_id}
+    .card-body
+      .navigation-list-item
+        = link_to facilitator_marking_show_path(section_id: 0) do
+          %h6.p-1= "Project A - Testing"
+
+      .navigation-list-item
+        = link_to facilitator_marking_show_path(section_id: 1) do
+          %h6.p-1= "Project B - Management"
+
+          

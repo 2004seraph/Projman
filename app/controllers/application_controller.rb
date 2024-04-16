@@ -29,9 +29,9 @@ class ApplicationController < ActionController::Base
       account_type = current_user.account_type
       email = current_user.email
 
-      if current_user.isStudent?
+      if current_user.is_student?
         if Student.exists?(username: username)
-          
+
           #Uncomment below if you want to act as staff member
 
           # if Staff.exists?(email: current_user.email)
@@ -40,19 +40,14 @@ class ApplicationController < ActionController::Base
           #   @user = Student.find_by(username: username)
           # end
 
-          @user = Student.find_by(username: username)
+          current_user.student = Student.find_by(username: username)
+          # @user = Student.find_by(username: username)
         else
           reset_session
           redirect_to new_user_session_path, alert: "User not found in the database. Please try again."
         end
-      elsif current_user.isStaff?
-        if Staff.exists?(email: email)
-          @user = Staff.find_by(email: email)
-        else
-          new_staff = Staff.create({
-            email: email
-          })
-        end
+      elsif current_user.is_staff?
+        current_user.staff = Staff.find_or_create_by(email: email)
       else
         reset_session
         redirect_to new_user_session_path, alert: "Unauthorised access."

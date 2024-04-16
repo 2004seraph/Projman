@@ -20,6 +20,10 @@
 #
 class Event < ApplicationRecord
   belongs_to :group
+  has_one :course_project, through: :group
+  has_one :course_module, through: :course_project
+
+  has_many :event_responses, dependent: :destroy
 
   enum :event_type, { generic: 'generic', milestone: 'milestone', chat: 'chat', issue: 'issue' }
 end

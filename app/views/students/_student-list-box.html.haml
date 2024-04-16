@@ -21,11 +21,15 @@
           %th{scope: "col"} Email
           %th{scope: "col"} Registration Number
         %tbody
-          - 20.times do
+          - x = get_student_by_module(remove_after_indent(title))
+          - for i in 0...x.size do
             %tr.selectable-row
               %td
                 %input.form-check-input{type: "checkbox", value: ""}
-              %td Jakub Bala
-              %td jbala1@sheffield.ac.uk
-              %td 11294124
-
+              %td 
+                = x[i].preferred_name
+                = x[i].surname
+              %td 
+                = x[i].email
+              %td 
+                = x[i].ucard_number

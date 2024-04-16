@@ -19,8 +19,17 @@
 class AssignedFacilitator < ApplicationRecord
   has_many :groups
 
-  belongs_to :staff, optional: true
-  belongs_to :student, optional: true
+  belongs_to :staff,    optional: true
+  belongs_to :student,  optional: true
+
   belongs_to :course_project
 
+  validate :staff_xor_student
+
+  def staff_xor_student
+    # you set one field or the other, not both, not neither
+    return if staff.blank? ^ student.blank?
+
+    errors.add(:base, 'Specify a staff or a student, not both, for an assigned facilitator entry')
+  end
 end

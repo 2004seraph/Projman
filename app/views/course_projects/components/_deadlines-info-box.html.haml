@@ -13,10 +13,8 @@
   .collapse{id: unique_id}
     .card-body.pt-1.pb-1
       %h1.fs-5.fw-semibold Project Deadline
-      %h1.fs-5.fw-normal.fst-italic dd/mm/yyyy
+      %h1.fs-5.fw-normal.fst-italic #{@deadline}
       %hr.divider
       %h1.fs-5.fw-semibold Project Milestones
-      %h1.fs-5.fw-normal.fst-italic Milestone Name - dd/mm/yyyy
-      %h1.fs-5.fw-normal.fst-italic Milestone Name - dd/mm/yyyy
-      %h1.fs-5.fw-normal.fst-italic Milestone Name - dd/mm/yyyy
-      %h1.fs-5.fw-normal.fst-italic Milestone Name - dd/mm/yyyy
+      - @milestones.each do |milestone|
+        %h1.fs-5.fw-normal.fst-italic #{milestone}

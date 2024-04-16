@@ -42,9 +42,8 @@ module DatabaseHelper
 
       errors = Student.bootstrap_class_list(student_csv)
       if errors.length > 0
-        puts "#{WARNING} Some students had validation errors, their entries were not committed"
+        puts "#{WARNING} #{errors.length} students had validation errors, their entries were not committed. Displaying first error:"
         DatabaseHelper.print_validation_errors(errors[0])
-        puts errors.length
       end
     # ensure
       return student_csv
@@ -64,4 +63,10 @@ module DatabaseHelper
     DatabaseHelper.print_validation_errors(x)
     x
   end
+
+  def get_student_by_module(module_code)
+    puts CourseModule.find_by(code: module_code).students[0]
+    return CourseModule.find_by(code: module_code).students.all
+  end
+
 end
