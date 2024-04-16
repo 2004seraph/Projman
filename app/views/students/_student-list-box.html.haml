@@ -21,7 +21,7 @@
           %th{scope: "col"} Email
           %th{scope: "col"} Registration Number
         %tbody
-          - x = get_student_by_module("COM3420")
+          - x = get_student_by_module(remove_after_indent(title))
           - for i in 0...x.size do
             %tr.selectable-row
               %td

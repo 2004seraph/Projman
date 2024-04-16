@@ -68,4 +68,5 @@ module DatabaseHelper
     puts CourseModule.find_by(code: module_code).students[0]
     return CourseModule.find_by(code: module_code).students.all
   end
+
 end
