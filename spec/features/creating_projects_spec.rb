@@ -95,13 +95,16 @@ RSpec.feature "Project Creation", type: :feature do
     # INVALID SUBMISSIONS
 
     describe "User tries to create a new project with invalid parameters" do
+
+        before(:each) do
+            login_as user
+            visit "/projects/new"
+        end
         after(:each) do
             expect(page.current_path).to eq("/projects/new")
         end
         context "Project Name is left empty" do
             it "shows error" do
-                login_as user
-                visit "/projects/new"
                 click_button 'create-project-save-button'
                 expect(page).to have_text("Project name cannot be empty")
             end
@@ -110,7 +113,6 @@ RSpec.feature "Project Creation", type: :feature do
             it "shows error" do
             end
         end
-
         context "Module is invalid" do
             it "shows error" do
             end
@@ -127,11 +129,31 @@ RSpec.feature "Project Creation", type: :feature do
             it "shows error" do
             end
         end
+        context "Teammate Preference form has both fields as 0" do
+            it "shows error" do
+            end
+        end
         context "Team allocation mode is invalid" do
             it "shows error" do
             end
         end
         context "Project deadline not set" do
+            it "shows error" do
+            end
+        end
+        context "Teammate preference form deadline not set" do
+            it "shows error" do
+            end
+        end
+        context "Project preference form deadline not set" do
+            it "shows error" do
+            end
+        end
+        context "milestone dates left unset" do
+            it "shows error" do
+            end
+        end
+        context "added facilitator is not a valid user" do
             it "shows error" do
             end
         end
@@ -141,32 +163,64 @@ RSpec.feature "Project Creation", type: :feature do
     # VALID SUBMISSIONS
 
     describe "User can succesfully create a new project with valid parameters" do
+
+        before(:each) do
+            DatabaseCleaner.start
+            login_as user
+            visit "/projects/new"
+        end
+        after(:each) do
+            Warden.test_reset!
+            DatabaseCleaner.clean
+            expect(page.current_path).to eq("/projects")
+        end
+
         context "by filling in module, name, team size, deadline" do
             it "creates the project" do
             end
-        end
-        context "by filling in module, name, project choices, team size, deadline" do
-            it "creates the project" do
+            it "creates groups of specified team size associated to the project" do
             end
         end
-        context "by filling in module, name, project choices, team size, deadline, preference form deadline" do
+        context "by filling in module, name, team size, deadline" do
             it "creates the project" do
+            end
+            it "creates groups of specified team size associated to the project" do
+            end
+        end
+        context "by filling in module, name, project choices, team size, deadline, project preference form deadline" do
+            it "creates the project" do
+            end
+            it "creates groups of specified team size associated to the project" do
+            end
+        end
+        context "by filling in module, name, project choices, team size, deadline, preferred/avoided teammates, project preference form deadline, teammates preference form deadline" do
+            it "creates the project" do
+            end
+            it "creates groups of specified team size associated to the project" do
             end
         end
         context "by filling in all fields" do
             it "creates the project" do
             end 
+            it "creates groups of specified team size associated to the project" do
+            end
         end
         context "and define additional milestones" do
             it "creates the project with associated milestones" do
+            end
+            it "creates groups of specified team size associated to the project" do
             end
         end
         context "and associate students/staff as facilitators" do
             it "creates the project with associated facilitators" do
             end
+            it "creates groups of specified team size associated to the project" do
+            end
         end
         context "and define additional milestones, and associated facilitators" do
             it "creates the project with associated milestones and facilitators" do
+            end
+            it "creates groups of specified team size associated to the project" do
             end
         end
     end

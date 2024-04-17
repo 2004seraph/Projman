@@ -5,7 +5,7 @@
 #  id                :bigint           not null, primary key
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
-#  course_project_id :bigint
+#  course_project_id :bigint           not null
 #  staff_id          :bigint
 #  student_id        :bigint
 #
@@ -15,6 +15,10 @@
 #  index_assigned_facilitators_on_staff_id           (staff_id)
 #  index_assigned_facilitators_on_student_id         (student_id)
 #  module_assignment                                 (student_id,staff_id,course_project_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (course_project_id => course_projects.id)
 #
 class AssignedFacilitator < ApplicationRecord
   has_many :groups

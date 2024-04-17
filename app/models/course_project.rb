@@ -5,7 +5,7 @@
 #  id                   :bigint           not null, primary key
 #  avoided_teammates    :integer          default(0)
 #  markscheme_json      :json
-#  name                 :string           not null
+#  name                 :string           default("Unnamed Project"), not null
 #  preferred_teammates  :integer          default(0)
 #  project_allocation   :enum             not null
 #  project_choices_json :json
@@ -45,8 +45,8 @@ class CourseProject < ApplicationRecord
 
   enum :project_allocation, {
     random_project_allocation: 'random',
-    individual_preference_project_allocation: 'individual_preference_form',
-    team_preference_project_allocation: 'team_preference_form'
+    single_preference_project_allocation: 'single_preference_submission',
+    team_preference_project_allocation: 'team_average_preference'
   }
 
   enum :team_allocation, {

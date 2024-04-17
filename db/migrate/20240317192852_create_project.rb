@@ -21,8 +21,8 @@ class CreateProject < ActiveRecord::Migration[7.0]
     create_enum :project_choice_allocation,
       %w[
         random
-        individual_preference_form
-        team_preference_form
+        single_preference_submission
+        team_average_preference
       ]
 
     create_table :course_projects do |t|

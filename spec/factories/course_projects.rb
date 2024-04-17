@@ -5,7 +5,7 @@
 #  id                   :bigint           not null, primary key
 #  avoided_teammates    :integer          default(0)
 #  markscheme_json      :json
-#  name                 :string           not null
+#  name                 :string           default("Unnamed Project"), not null
 #  preferred_teammates  :integer          default(0)
 #  project_allocation   :enum             not null
 #  project_choices_json :json

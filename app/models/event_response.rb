@@ -7,10 +7,12 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  event_id   :bigint           not null
+#  student_id :bigint
 #
 # Indexes
 #
-#  index_event_responses_on_event_id  (event_id)
+#  index_event_responses_on_event_id    (event_id)
+#  index_event_responses_on_student_id  (student_id)
 #
 # Foreign Keys
 #

@@ -22,7 +22,7 @@
 #
 class Group < ApplicationRecord
   belongs_to :course_project
-  belongs_to :assigned_facilitator
+  belongs_to :assigned_facilitator, optional: true
   has_many :events, dependent: :destroy
   has_and_belongs_to_many :students
 

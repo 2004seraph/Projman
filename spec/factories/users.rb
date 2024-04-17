@@ -7,7 +7,7 @@
 #  current_sign_in_at :datetime
 #  current_sign_in_ip :string
 #  dn                 :string
-#  email              :string           default(""), not null
+#  email              :citext           default(""), not null
 #  givenname          :string
 #  last_sign_in_at    :datetime
 #  last_sign_in_ip    :string

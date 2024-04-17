@@ -19,7 +19,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_08_174343) do
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "group_event_type", ["generic", "milestone", "chat", "issue"]
   create_enum "milestone_type", ["for_each_student", "for_each_staff", "for_each_team"]
-  create_enum "project_choice_allocation", ["random", "individual_preference_form", "team_preference_form"]
+  create_enum "project_choice_allocation", ["random", "single_preference_submission", "team_average_preference"]
   create_enum "project_status", ["draft", "student_preference", "student_preference_review", "team_preference", "team_preference_review", "live", "completed", "archived"]
   create_enum "project_team_allocation", ["random", "preference_form_based"]
   create_enum "student_fee_status", ["home", "overseas"]
@@ -27,7 +27,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_08_174343) do
   create_table "assigned_facilitators", force: :cascade do |t|
     t.bigint "student_id"
     t.bigint "staff_id"
-    t.bigint "course_project_id"
+    t.bigint "course_project_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_project_id"], name: "index_assigned_facilitators_on_course_project_id"
@@ -56,7 +56,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_08_174343) do
 
   create_table "course_projects", force: :cascade do |t|
     t.bigint "course_module_id", null: false
-    t.string "name", null: false
+    t.string "name", default: "Unnamed Project", null: false
     t.enum "status", default: "draft", null: false, enum_type: "project_status"
     t.integer "team_size", null: false
     t.enum "team_allocation", null: false, enum_type: "project_team_allocation"
@@ -87,10 +87,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_08_174343) do
 
   create_table "event_responses", force: :cascade do |t|
     t.bigint "event_id", null: false
+    t.bigint "student_id"
     t.json "json_data", default: "{}", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_event_responses_on_event_id"
+    t.index ["student_id"], name: "index_event_responses_on_student_id"
   end
 
   create_table "events", force: :cascade do |t|
@@ -196,7 +198,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_08_174343) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "email", default: "", null: false
+    t.citext "email", default: "", null: false
     t.integer "sign_in_count", default: 0, null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
@@ -216,6 +218,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_08_174343) do
     t.index ["username"], name: "index_users_on_username"
   end
 
+  add_foreign_key "assigned_facilitators", "course_projects"
   add_foreign_key "course_modules", "staffs"
   add_foreign_key "course_modules_students", "course_modules"
   add_foreign_key "course_modules_students", "students"
