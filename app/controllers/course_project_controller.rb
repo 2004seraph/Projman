@@ -15,7 +15,7 @@ require 'json'
 # [ {"Name": "Technical Review", "Date": "dd/mm/yyyy"},
 #   {"Name": "Peer Review", "Date: "dd/mm/yyyy"}]
 
-class CourseProjectsController < ApplicationController
+class CourseProjectController < ApplicationController
     # load_and_authorize_resource
 
     skip_before_action :verify_authenticity_token, only: [:new_project_remove_project_choice,
@@ -27,10 +27,10 @@ class CourseProjectsController < ApplicationController
         :create]
 
     def index
-        if (current_user.instance_of?(Staff) || Staff.exists?(email: current_user.email))
+        if current_user.is_staff?
             render 'index_module_leader'
         else
-            #FILTER FOR PROJECTS THAT ARE AVAILABLE FOR STUDENT ... 
+            #FILTER FOR PROJECTS THAT ARE AVAILABLE FOR STUDENT ...
             @projects = CourseProject.all
             render 'index_student'
         end
@@ -226,11 +226,8 @@ class CourseProjectsController < ApplicationController
 
         # Team Config
         project_data[:team_size] = params[:team_size]
-        errors[:team_config] = {}
-        unless project_data[:team_size].present?
-            errors[:team_config][:invalid_team_size] = "Invalid team size set"
-        end
         project_data[:selected_team_allocation_mode] = params[:team_allocation_method]
+        errors[:team_config] = {}
         unless CourseProject.team_allocations.key?(project_data[:selected_team_allocation_mode])
             errors[:team_config][:selected_team_allocation_mode] = "Invalid team allocation mode selected"
         end
@@ -244,10 +241,6 @@ class CourseProjectsController < ApplicationController
         end
         unless project_data[:avoided_teammates].present?
             errors[:team_pref][:invalid_pref_teammates] = "Invalid avoided teammates entry"
-        end
-        if project_data[:preferred_teammates].present? && project_data[:avoided_teammates].present? &&
-            (project_data[:preferred_teammates].to_i + project_data[:avoided_teammates].to_i == 0)
-            errors[:team_pref][:both_zero] = "Both values cannot be 0"
         end
 
         # Timings
@@ -379,35 +372,6 @@ class CourseProjectsController < ApplicationController
 
                 facilitator.save!
             end
-
-            # Creating groups (currently just puts everyone in groups of X size, no randomness or preference)
-            puts "CREATING TEAMS"
-            module_students = CourseModule.find_by(code: project_data[:selected_module]).students.all
-            team_size = project_data[:team_size].to_i
-            puts "TEAM SIZE: ", team_size
-            groups = []
-            current_group = nil
-            team_count = 0
-
-            module_students.each_slice(team_size) do |students_slice|
-                # Create a new group for each slice of students
-                current_group = Group.new
-                team_count += 1
-                current_group.name = "Team " + team_count.to_s
-                current_group.course_project_id = new_project.id
-              
-                # Add students to the current group
-                students_slice.each do |student|
-                  current_group.students << student
-                end
-              
-                # Add the current group to the list of groups
-                groups << current_group
-            end
-              
-            # Save each group using save!
-            groups.each(&:save!)
-
         end
 
         # May need further changes here to accoutn for if any of the database commits (.save!) dont go through
@@ -425,10 +389,10 @@ class CourseProjectsController < ApplicationController
         @proj_name = linked_module.code+' '+linked_module.name+' - '+@current_project.name
         @lead = linked_module.staff.email
 
-        #TODO - Change database interactions to only get records 
+        #TODO - Change database interactions to only get records
         #       relevant to the GROUP the student is part of - only one facilitator?
 
-        #Get staff + facilitator information 
+        #Get staff + facilitator information
         @facilitators = []
         AssignedFacilitator.where(course_project_id: @current_project.id).each do |facilitator|
             if facilitator.staff_id == nil

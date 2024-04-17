@@ -3,6 +3,8 @@ class Project < ApplicationRecord
   has_many :milestones, dependent: :destroy
   belongs_to :course_module
 
+  has_many :sub_projects, dependent: :destroy
+
   validates :name, presence: true
 
   enum :status, {

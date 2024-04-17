@@ -9,6 +9,9 @@ class CreateEvent < ActiveRecord::Migration[7.0]
       t.boolean :completed, default: false
       t.json :json_data, null: false, default: "{}"
 
+      t.references :student, null: true
+      t.references :staff, null: true
+
       t.timestamps
     end
   end

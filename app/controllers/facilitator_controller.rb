@@ -1,5 +1,7 @@
 class FacilitatorController < ApplicationController
-    # GET /facilitators 
+    # authorize_resource class: false
+
+    # GET /facilitators
     def index
         @assigned_facilitators = get_assigned_facilitators
         set_assigned_projects
@@ -28,7 +30,7 @@ class FacilitatorController < ApplicationController
         render partial: "teams-list-card"
     end
 
-    
+
     def progress_form
         set_group
     end
@@ -44,11 +46,10 @@ class FacilitatorController < ApplicationController
     private
         def get_assigned_facilitators
             # Returns the entries of AssignedFacilitator for the logged in user
-            if Staff.exists?(id: @user.id)
-                return AssignedFacilitator.where(staff_id: @user.id)
-
-            elsif Student.exists?(id: @user.id)
-                return AssignedFacilitator.where(student_id: @user.id)            
+            if current_user.is_staff?
+                return AssignedFacilitator.where(staff_id: current_user.staff.id)
+            elsif current_user.is_student?
+                return AssignedFacilitator.where(student_id: current_user.student.id)
             end
         end
 
@@ -57,11 +58,11 @@ class FacilitatorController < ApplicationController
             @current_group = Group.find(params[:team_id])
             @current_group_facilitator_repr = get_current_group_facilitator_repr
         end
-        
+
         def get_current_group_facilitator_repr
             # NOTE: There isn't a name currently for staff members I beleive
             facilitator = @current_group.assigned_facilitator
-            
+
             # TODO: Test student
             if facilitator.student_id
                 student = Student.find_by(id: facilitator.student_id)
