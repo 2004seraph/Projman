@@ -16,7 +16,7 @@ require 'json'
 #   {"Name": "Peer Review", "Date: "dd/mm/yyyy"}]
 
 class CourseProjectController < ApplicationController
-    # load_and_authorize_resource
+    load_and_authorize_resource
 
     skip_before_action :verify_authenticity_token, only: [:new_project_remove_project_choice,
         :new_project_clear_facilitator_selection,

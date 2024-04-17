@@ -18,7 +18,6 @@
 #  fk_rails_...  (course_project_id => course_projects.id)
 #
 class Subproject < ApplicationRecord
-  # Include default devise modules. Others available are:
 
   belongs_to :course_project
   belongs_to :course_module, through: :course_project
