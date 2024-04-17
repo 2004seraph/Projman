@@ -408,7 +408,7 @@ class CourseProjectController < ApplicationController
             if milestone.json_data['Name'] == 'Project Deadline'
                 @deadline = milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
             else
-                @milestones << milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
+                @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
             end
         end
     end
