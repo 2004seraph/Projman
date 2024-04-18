@@ -87,11 +87,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
 
   create_table "event_responses", force: :cascade do |t|
     t.bigint "event_id", null: false
+    t.bigint "staff_id"
     t.bigint "student_id"
     t.json "json_data", default: "{}", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_event_responses_on_event_id"
+    t.index ["staff_id"], name: "index_event_responses_on_staff_id"
     t.index ["student_id"], name: "index_event_responses_on_student_id"
   end
 
@@ -100,9 +102,13 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
     t.enum "event_type", null: false, enum_type: "group_event_type"
     t.boolean "completed", default: false
     t.json "json_data", default: "{}", null: false
+    t.bigint "student_id"
+    t.bigint "staff_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["group_id"], name: "index_events_on_group_id"
+    t.index ["staff_id"], name: "index_events_on_staff_id"
+    t.index ["student_id"], name: "index_events_on_student_id"
   end
 
   create_table "groups", force: :cascade do |t|
@@ -126,14 +132,14 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
 
   create_table "milestone_responses", force: :cascade do |t|
     t.bigint "milestone_id", null: false
-    t.bigint "students_id"
+    t.bigint "student_id"
     t.bigint "staff_id"
     t.json "json_data", default: "{}", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["milestone_id"], name: "index_milestone_responses_on_milestone_id"
     t.index ["staff_id"], name: "index_milestone_responses_on_staff_id"
-    t.index ["students_id"], name: "index_milestone_responses_on_students_id"
+    t.index ["student_id"], name: "index_milestone_responses_on_student_id"
   end
 
   create_table "milestones", force: :cascade do |t|
@@ -158,6 +164,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
 
   create_table "staffs", force: :cascade do |t|
     t.citext "email", null: false
+    t.boolean "admin", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "remember_created_at"

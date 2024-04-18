@@ -20,7 +20,8 @@ sam = Student.find_or_create_by({
   fee_status: :home
 })
 DatabaseHelper.print_validation_errors(sam)
-# DatabaseHelper.print_validation_errors(Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk" }))
+sam_staff = Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: true })
+DatabaseHelper.print_validation_errors(sam_staff)
 
 josh = Student.find_or_create_by({
   username: "aca21jlh",
@@ -169,6 +170,11 @@ DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
 DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
   course_project: CourseProject.find_by(name: "AI Project"),
   staff: Staff.find_by(email: "opickford1@sheffield.ac.uk")
+}))
+
+DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
+  course_project: CourseProject.find_by(name: "AI Project"),
+  staff: Staff.find_by(email: "sgttaseff1@sheffield.ac.uk")
 }))
 
 DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({

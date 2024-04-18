@@ -23,12 +23,9 @@ Rails.application.routes.draw do
     get 'search_facilitators_staff', on: :collection
 
     # Define a separate POST route for the 'new' action
-    post 'new', to: 'course_project#create', on: :collection
 
-    get ':id/teams', to: 'lead#teams', on: :collection
-    get 'student/:id', to: 'course_project#show_student', on: :collection
+    get '/teams', to: 'lead#teams', on: :member
   end
-  get '/projects', to: 'course_project#index'
 
   get '/students', to: 'student#index'
 
