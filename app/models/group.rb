@@ -37,7 +37,6 @@ class Group < ApplicationRecord
   has_and_belongs_to_many :students, after_add: :students_must_be_enrolled_on_the_same_module
   has_many :events, dependent: :destroy
 
-
   private
 
   def students_must_be_enrolled_on_the_same_module(student)

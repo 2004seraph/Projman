@@ -31,17 +31,26 @@ class Ability
     end
 
     # Facilitator permissions
+    return unless user.is_facilitator?
+
     can :read, :facilitator
+
     if user.is_staff?
       can :read, Group, id: user.staff.assigned_facilitators.pluck(:course_project_id)
-      can [:read, :update], Event, group: { assigned_facilitator: { staff_id: user.staff.id } }
-      can [:read], EventResponse, event: { group: { assigned_facilitator: { staff_id: user.staff.id } } }
+      can [:read, :update], Event, group: {
+        assigned_facilitator: { staff_id: user.staff.id } }
+      can [:read], EventResponse, event: {
+        group: { assigned_facilitator: { staff_id: user.staff.id } } }
+
     elsif user.is_student?
       can :read, Group, id: user.student.assigned_facilitators.pluck(:course_project_id)
-      can [:read, :update], Event, group: { assigned_facilitator: { student_id: user.student.id } }
-      can [:read], EventResponse, event: { group: { assigned_facilitator: { student_id: user.student.id } } }
+      can [:read, :update], Event, group: {
+        assigned_facilitator: { student_id: user.student.id } }
+      can [:read], EventResponse, event: {
+        group: { assigned_facilitator: { student_id: user.student.id } } }
     end
 
+    # staff permissions
     return unless user.is_staff?
 
     # a staff can only view the modules they lead, not change them.
@@ -52,11 +61,13 @@ class Ability
     # staff can then edit them and only them as they please.
     can [:read, :update], CourseProject, course_module: { staff_id: user.staff.id }
 
-    return unless user.admin?
+    return unless user.staff.admin
 
     can [:read], :admin
 
     can [:create, :read, :update, :destroy], CourseModule
     can [:create, :read, :update, :destroy], CourseProject
   end
+
+  private
 end

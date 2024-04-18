@@ -20,14 +20,10 @@
 #
 class Staff < ApplicationRecord
   # Include default devise modules. Others available are:
-  
+
   devise :trackable
   has_many :assigned_facilitators, dependent: :destroy
   has_many :modules
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }
-
-  # def password_required?
-  #   false
-  # end
 end

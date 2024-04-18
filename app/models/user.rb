@@ -43,4 +43,15 @@ class User < ApplicationRecord
       true
     end
   end
+
+  def is_facilitator?
+    is_fac = false
+    if is_student?
+      is_fac |= AssignedFacilitator.exists?(student: student)
+    end
+    if is_staff?
+      is_fac |= AssignedFacilitator.exists?(staff: staff)
+    end
+    is_fac
+  end
 end
