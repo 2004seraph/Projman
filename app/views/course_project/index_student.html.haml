@@ -14,6 +14,6 @@
                 %h3
                     #{project.course_module.code} #{project.course_module.name} - #{project.name}
                     .sub-status
-                        #{project.status}
+                        #{ViewHelper.unparamaterize project.status}
                         -#Change colour according to deadlines or status????
                         %i.bi.bi-circle-fill.fill-green
