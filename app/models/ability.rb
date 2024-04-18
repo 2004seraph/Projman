@@ -56,8 +56,10 @@ class Ability
     # a staff can only view the modules they lead, not change them.
     can [:read], CourseModule, staff_id: user.staff.id
 
+    # a staff can create projects
     # a staff can only view and edit projects they lead.
-    can [:create, :read, :update], CourseProject, course_module: { staff_id: user.staff.id }
+    can [:create], CourseProject
+    can [:read, :update], CourseProject, course_module: { staff_id: user.staff.id }
 
     return unless user.staff.admin
 
