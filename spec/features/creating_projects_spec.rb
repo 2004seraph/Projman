@@ -61,7 +61,7 @@ RSpec.feature "Project Creation", type: :feature do
     describe "Creation form gets filled with correct fields" do
         before(:each) do
             login_as user
-            visit "/project/new"
+            visit "/projects/new"
         end
         context "when the page is first loaded" do
             it "fills in module options with modules that user is a module lead for" do
