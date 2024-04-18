@@ -56,7 +56,7 @@ $(function() {
     
         //Send AJAX to request email data
         $.ajax({
-            url: '/projects/new_project_get_milestone_data',
+            url: '/projects/get_milestone_data',
             type: 'GET',
             dataType: 'json',
             data: { milestone_name: milestoneName },
@@ -90,7 +90,7 @@ $(function() {
     
         //Send AJAX to request email data
         $.ajax({
-            url: '/projects/new_project_get_milestone_data',
+            url: '/projects/get_milestone_data',
             type: 'GET',
             dataType: 'json',
             data: { milestone_name: milestoneName },

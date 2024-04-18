@@ -58,7 +58,20 @@ class Ability
 
     # a staff can create projects
     # a staff can only view and edit projects they lead.
-    can [:create], CourseProject
+    can [:create, :add_project_choice,
+    :remove_project_choice,
+    :add_project_milestone,
+    :remove_project_milestone,
+    :clear_facilitator_selection,
+    :add_to_facilitator_selection,
+    :remove_from_facilitator_selection,
+    :add_facilitator_selection,
+    :remove_facilitator,
+    :search_facilitators_student,
+    :search_facilitators_staff,
+    :get_milestone_data,
+    :set_milestone_email_data,
+    :set_milestone_comment], CourseProject
     can [:read, :update], CourseProject, course_module: { staff_id: user.staff.id }
 
     return unless user.staff.admin
