@@ -23,63 +23,23 @@
     = render partial: 'course_project/components/team-chat-box'
 
 .modal.fade{ id: "reportIssueModal", tabindex: "-1", "aria-labelledby": "reportIssueModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
-    .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
-        .modal-content
-            .modal-header
-                %h1.modal-title.fs-5= "Report Issue"
-                %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
-            .modal-body
-                = form_with(model: @event, method: "post", local: true, id: "issue-form") do |form|
+    .modal-dialog.modal-dialog-centered.modal-dialog-scrollable#reportIssueModalDialog
+        .modal-content{id: "modalContent"}
+            = form_with(url: "/issues/create", method: "post", local: false, id: "issue-form") do |form|       
+                .modal-header
+                    %h1.modal-title.fs-5= "Report Issue"
+                    %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+                    %input{ type: "hidden", name: "project_id", value: "#{@current_project.id}"}
+                    %input{ type: "hidden", name: "author", value: "#{current_user.givenname} #{current_user.sn}"}
+                .modal-body
                     .form-group
                         = form.label :title
                         = form.text_field :title, class: "form-control", placeholder: "Enter issue title", required: true
                     .form-group
                         = form.label :description
                         = form.text_area :description, class: "form-control", rows: 5, placeholder: "Enter issue description", required: true
-            .modal-footer
-                %button.btn.btn-primary{ type: "submit", id: "submit-form" } Submit
+                .modal-footer
+                    %button.btn.btn-primary{ type: "submit", id: "submit-form" } Submit
 
 #success-message.alert.alert-success{style: "display: none;"}
     Issue submitted successfully!
-
-:javascript
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('submit-form').addEventListener('click', (event) => {
-            event.preventDefault();
-
-            const formData = {
-                title: document.getElementById('title').value,
-                content: document.getElementById('description').value,
-                author: "#{current_user.student.preferred_name} #{current_user.student.surname}",
-                project_id: #{@current_project.id}
-            };
-
-            fetch('/issues/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': document.querySelector("meta[name='csrf-token']").getAttribute("content")
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => {
-                if (response.ok) {
-                    document.getElementById('issue-form').reset();
-                    document.getElementById('reportIssueModal').style.display = 'none';
-                    document.body.classList.remove('modal-open');
-                    document.getElementsByClassName('modal-backdrop')[0].remove();
-
-                    document.getElementById('success-message').style.display = 'block';
-                    setTimeout(function() {
-                        document.getElementById('success-message').style.display = 'none';
-                    }, 3000);
-                } else {
-                    console.error('Error:', response.statusText);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-    });
-

@@ -1,34 +1,59 @@
-- unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
-- issue_data = JSON.parse(issue.json_data)
-- course_project = CourseProject.find_by(id: Group.find_by(id: issue.group.id).course_projects_id)
-- course_module = CourseModule.find_by(id: course_project.course_module_id)
+.hidden-partial-container{ id: "hidden-partial-container-#{issue.id}"}
+  - unique_id = "collapseIssue_#{issue.id}" # Generate a unique ID using SecureRandom
+  - issue_data = JSON.parse(issue.json_data)
+  - course_project = CourseProject.find_by(id: Group.find_by(id: issue.group.id).course_projects_id)
+  - course_module = CourseModule.find_by(id: course_project.course_module_id)
+  - state ||= "collapse"
+  - show ||= false
 
-.card.issue-card.mb-2.accordion-element
-  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
-   href: "##{unique_id}",
-   role: "button",
-   "data-accordion-toggle" => "",
-   "aria-expanded" => "false",
-   "aria-controls" => unique_id}
-    .d-flex.align-items-center
-      %span.me-3.fs-6.fw-light #{issue.created_at}
-      %h3.m-0.fs-5.fw-medium #{issue_data['title']}
-    %i.bi.bi-caret-right-fill
-  .collapse{id: unique_id}
-    .card-body.pt-1.pb-1
-      .d-flex.align-items-center.justify-content-between.pt-2
-        .fs-6 Posted by: #{issue_data['author']}
-        .fs-6 #{course_module.code} - #{course_project.name}
-      .issue-text.border.p-2.mb-2
-        .fs-6 #{issue_data['content']}
-      - if current_user.isStaff?
-        .d-flex.align-items-center
-          .fs-6 reply via email 
-        %textarea.form-control.pt-2.pb-2.mb-2{placeholder: "Enter your text here"}
-        .d-flex.justify-content-end.mb-2
-          %button.btn.btn-primary.me-2
-            %i.bi.bi-send-fill
-            Send
-          %button.btn.btn-primary
-            %i.bi.bi-check-circle-fill
-            Mark as Resolved
+  .card.issue-card.mb-2.accordion-element{id: "issue-card-#{issue.id}"}
+    %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+      href: "##{unique_id}",
+      role: "button",
+      "data-accordion-toggle" => "",
+      "aria-expanded" => "false",
+      "aria-controls" => unique_id,
+      id: "card-header-#{issue.id}"}
+      .d-flex.align-items-center
+        %span.me-3.fs-6.fw-light #{issue.created_at}
+        %h3.m-0.fs-5.fw-medium #{issue_data['title']}
+      %i.bi.bi-caret-right-fill
+    .collapse{id: unique_id}
+      .card-body.pt-1.pb-1
+        .d-flex.align-items-center.justify-content-between.pt-2
+          .fs-6 Posted by: #{issue_data['author']}
+          .fs-6 #{course_module.code} - #{course_project.name}
+        .issue-text.border.p-2.mb-2
+          .fs-6 #{issue_data['content']}
+        -issue.issue_conversation.each do |response|
+          .d-flex.align-items-center.justify-content-between.pt-2
+            .fs-6 From: #{response['author']}
+            .fs-6 #{response['timestamp']}
+          .issue-text.border.p-2.mb-2
+            .fs-6 #{response['content']}
+        <!- if current_user.isStaff?>
+        - if @user.instance_of?(Staff) && !issue.completed
+          = form_with(url: "/issues/issue-response", method: "post", local: false, id: "response-form-#{issue.id}") do |form|
+            %input{ type: "hidden", name: "issue_id", value: "#{issue.id}"}
+            %input{ type: "hidden", name: "author", value: "#{@current_user.givenname} #{@current_user.sn}"}
+            .form_group
+              = form.label :Response
+              = form.text_area :response, class: "form-control pt-2 pb-2 mb-2", placeholder: "Enter your response here", id: "response-textarea-#{issue.id}", required: true
+            .d-flex.justify-content-end.mb-2
+              %button.btn.btn-primary{type: "submit", class: "btn btn-primary me-2", id: "send-response-#{issue.id}" }
+                %i.bi.bi-send-fill
+                Send
+          .alert.alert-success{style: "display: none;", id: "success-message-#{issue.id}" }
+            Response submitted successfully!
+        <!- if current_user.isStudent?>
+        - if @user.instance_of?(Student) && issue.completed
+          .d-flex.justify-content-end.mb-2
+            %button.btn.btn-primary
+              %i.bi.bi-check-circle-fill
+              Reopen
+
+
+
+  -# %button.btn.btn-primary{id: "mark-resolved-#{issue.id}"}
+  -# %i.bi.bi-check-circle-fill
+  -# Mark as Resolved
