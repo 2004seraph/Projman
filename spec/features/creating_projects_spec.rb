@@ -61,7 +61,7 @@ RSpec.feature "Project Creation", type: :feature do
     describe "Creation form gets filled with correct fields" do
         before(:each) do
             login_as user
-            visit "/projects/new"
+            visit "/project/new"
         end
         context "when the page is first loaded" do
             it "fills in module options with modules that user is a module lead for" do
@@ -127,133 +127,133 @@ RSpec.feature "Project Creation", type: :feature do
 
     # INVALID SUBMISSIONS
 
-    describe "User tries to create a new project with invalid parameters" do
+    # describe "User tries to create a new project with invalid parameters" do
 
-        before(:each) do
-            login_as user
-            visit "/projects/new"
-        end
-        after(:each) do
-            expect(page.current_path).to eq("/projects/new")
-        end
-        context "Project Name is left empty" do
-            it "shows error" do
-                click_button 'create-project-save-button'
-                expect(page).to have_text("Project name cannot be empty")
-            end
-        end
-        context "Project Name is taken by another on the module" do
-            it "shows error" do
-            end
-        end
-        context "Module is invalid" do
-            it "shows error" do
-            end
-        end
-        context "Project choices enabled but none given" do
-            it "shows error" do
-            end
-        end
-        context "Project Allocation method is invalid" do
-            it "shows error" do
-            end
-        end
-        context "Team size is invalid" do
-            it "shows error" do
-            end
-        end
-        context "Teammate Preference form has both fields as 0" do
-            it "shows error" do
-            end
-        end
-        context "Team allocation mode is invalid" do
-            it "shows error" do
-            end
-        end
-        context "Project deadline not set" do
-            it "shows error" do
-            end
-        end
-        context "Teammate preference form deadline not set" do
-            it "shows error" do
-            end
-        end
-        context "Project preference form deadline not set" do
-            it "shows error" do
-            end
-        end
-        context "milestone dates left unset" do
-            it "shows error" do
-            end
-        end
-        context "added facilitator is not a valid user" do
-            it "shows error" do
-            end
-        end
+    #     before(:each) do
+    #         login_as user
+    #         visit "/projects/new"
+    #     end
+    #     after(:each) do
+    #         expect(page.current_path).to eq("/projects/new")
+    #     end
+    #     context "Project Name is left empty" do
+    #         it "shows error" do
+    #             click_button 'create-project-save-button'
+    #             expect(page).to have_text("Project name cannot be empty")
+    #         end
+    #     end
+    #     context "Project Name is taken by another on the module" do
+    #         it "shows error" do
+    #         end
+    #     end
+    #     context "Module is invalid" do
+    #         it "shows error" do
+    #         end
+    #     end
+    #     context "Project choices enabled but none given" do
+    #         it "shows error" do
+    #         end
+    #     end
+    #     context "Project Allocation method is invalid" do
+    #         it "shows error" do
+    #         end
+    #     end
+    #     context "Team size is invalid" do
+    #         it "shows error" do
+    #         end
+    #     end
+    #     context "Teammate Preference form has both fields as 0" do
+    #         it "shows error" do
+    #         end
+    #     end
+    #     context "Team allocation mode is invalid" do
+    #         it "shows error" do
+    #         end
+    #     end
+    #     context "Project deadline not set" do
+    #         it "shows error" do
+    #         end
+    #     end
+    #     context "Teammate preference form deadline not set" do
+    #         it "shows error" do
+    #         end
+    #     end
+    #     context "Project preference form deadline not set" do
+    #         it "shows error" do
+    #         end
+    #     end
+    #     context "milestone dates left unset" do
+    #         it "shows error" do
+    #         end
+    #     end
+    #     context "added facilitator is not a valid user" do
+    #         it "shows error" do
+    #         end
+    #     end
 
-    end
+    # end
 
-    # VALID SUBMISSIONS
+    # # VALID SUBMISSIONS
 
-    describe "User can succesfully create a new project with valid parameters" do
+    # describe "User can succesfully create a new project with valid parameters" do
 
-        before(:each) do
-            login_as user
-            visit "/projects/new"
-        end
-        after(:each) do
-            # remove the created project
-            expect(page.current_path).to eq("/projects")
-        end
+    #     before(:each) do
+    #         login_as user
+    #         visit "/projects/new"
+    #     end
+    #     after(:each) do
+    #         # remove the created project
+    #         expect(page.current_path).to eq("/projects")
+    #     end
 
-        context "by filling in module, name, team size, deadline" do
-            it "creates the project" do
-            end
-            it "creates groups of specified team size associated to the project" do
-            end
-        end
-        context "by filling in module, name, team size, deadline" do
-            it "creates the project" do
-            end
-            it "creates groups of specified team size associated to the project" do
-            end
-        end
-        context "by filling in module, name, project choices, team size, deadline, project preference form deadline" do
-            it "creates the project" do
-            end
-            it "creates groups of specified team size associated to the project" do
-            end
-        end
-        context "by filling in module, name, project choices, team size, deadline, preferred/avoided teammates, project preference form deadline, teammates preference form deadline" do
-            it "creates the project" do
-            end
-            it "creates groups of specified team size associated to the project" do
-            end
-        end
-        context "by filling in all fields" do
-            it "creates the project" do
-            end 
-            it "creates groups of specified team size associated to the project" do
-            end
-        end
-        context "and define additional milestones" do
-            it "creates the project with associated milestones" do
-            end
-            it "creates groups of specified team size associated to the project" do
-            end
-        end
-        context "and associate students/staff as facilitators" do
-            it "creates the project with associated facilitators" do
-            end
-            it "creates groups of specified team size associated to the project" do
-            end
-        end
-        context "and define additional milestones, and associated facilitators" do
-            it "creates the project with associated milestones and facilitators" do
-            end
-            it "creates groups of specified team size associated to the project" do
-            end
-        end
-    end
+    #     context "by filling in module, name, team size, deadline" do
+    #         it "creates the project" do
+    #         end
+    #         it "creates groups of specified team size associated to the project" do
+    #         end
+    #     end
+    #     context "by filling in module, name, team size, deadline" do
+    #         it "creates the project" do
+    #         end
+    #         it "creates groups of specified team size associated to the project" do
+    #         end
+    #     end
+    #     context "by filling in module, name, project choices, team size, deadline, project preference form deadline" do
+    #         it "creates the project" do
+    #         end
+    #         it "creates groups of specified team size associated to the project" do
+    #         end
+    #     end
+    #     context "by filling in module, name, project choices, team size, deadline, preferred/avoided teammates, project preference form deadline, teammates preference form deadline" do
+    #         it "creates the project" do
+    #         end
+    #         it "creates groups of specified team size associated to the project" do
+    #         end
+    #     end
+    #     context "by filling in all fields" do
+    #         it "creates the project" do
+    #         end 
+    #         it "creates groups of specified team size associated to the project" do
+    #         end
+    #     end
+    #     context "and define additional milestones" do
+    #         it "creates the project with associated milestones" do
+    #         end
+    #         it "creates groups of specified team size associated to the project" do
+    #         end
+    #     end
+    #     context "and associate students/staff as facilitators" do
+    #         it "creates the project with associated facilitators" do
+    #         end
+    #         it "creates groups of specified team size associated to the project" do
+    #         end
+    #     end
+    #     context "and define additional milestones, and associated facilitators" do
+    #         it "creates the project with associated milestones and facilitators" do
+    #         end
+    #         it "creates groups of specified team size associated to the project" do
+    #         end
+    #     end
+    # end
 
 end

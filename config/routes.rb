@@ -4,23 +4,23 @@ Rails.application.routes.draw do
   mount EpiCas::Engine, at: "/"
   root "page#index"
 
-  resources :project, only: [:new], controller: :course_project do
-    post 'new_project_add_project_choice', on: :collection
-    post 'new_project_remove_project_choice', on: :collection
-    post 'new_project_add_project_milestone', on: :collection
-    post 'new_project_remove_project_milestone', on: :collection
-    post 'new_project_add_to_facilitator_selection', on: :collection
-    post 'new_project_remove_from_facilitator_selection', on: :collection
-    post 'new_project_add_facilitator_selection', on: :collection
-    post 'new_project_remove_facilitator', on: :collection
-    post 'new_project_clear_facilitator_selection', on: :collection
-    post 'new_project_toggle_project_choices', on: :collection
-    get 'new_project_search_facilitators', on: :collection
-    get 'new_project_get_milestone_data', on: :collection
-    post 'new_project_set_milestone_email_data', on: :collection
-    post 'new_project_set_milestone_comment', on: :collection
-    get 'new_project_search_facilitators_student', on: :collection
-    get 'new_project_search_facilitators_staff', on: :collection
+  resources :projects, controller: :course_project do
+    post 'add_project_choice', on: :collection
+    post 'remove_project_choice', on: :collection
+    post 'add_project_milestone', on: :collection
+    post 'remove_project_milestone', on: :collection
+    post 'add_to_facilitator_selection', on: :collection
+    post 'remove_from_facilitator_selection', on: :collection
+    post 'add_facilitator_selection', on: :collection
+    post 'remove_facilitator', on: :collection
+    post 'clear_facilitator_selection', on: :collection
+    post 'toggle_project_choices', on: :collection
+    get 'search_facilitators', on: :collection
+    get 'get_milestone_data', on: :collection
+    post 'set_milestone_email_data', on: :collection
+    post 'set_milestone_comment', on: :collection
+    get 'search_facilitators_student', on: :collection
+    get 'search_facilitators_staff', on: :collection
 
     # Define a separate POST route for the 'new' action
     post 'new', to: 'course_project#create', on: :collection

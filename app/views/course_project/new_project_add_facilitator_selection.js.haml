@@ -1,3 +1,3 @@
 - @facilitators_added.each do |facilitator_email|
-    var newPartialHTML = "#{j(render(partial: 'components/group-item-simple', locals: { item_text: facilitator_email, deletion_action_url: new_project_remove_facilitator_projects_path }))}";
+    var newPartialHTML = "#{j(render(partial: 'components/group-item-simple', locals: { item_text: facilitator_email, deletion_action_url: remove_facilitator_projects_path }))}";
     $("#project-facilitators-list").append(newPartialHTML);

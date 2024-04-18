@@ -1,2 +1,2 @@
-var newPartialHTML = "#{j(render(partial: 'components/group-item-milestone', locals: { item_text: @project_milestone_name, name: "milestone_"+@project_milestone_name, selected_type: "", deletion_action_url: new_project_remove_project_milestone_projects_path }))}";
+var newPartialHTML = "#{j(render(partial: 'components/group-item-milestone', locals: { item_text: @project_milestone_name, name: "milestone_"+@project_milestone_name, selected_type: "", deletion_action_url: remove_project_milestone_projects_path }))}";
 $("#project-milestones-list").append(newPartialHTML);

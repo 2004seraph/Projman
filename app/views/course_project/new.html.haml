@@ -37,7 +37,7 @@
     .card#project-choices.mb-3
       .card-header.d-flex.align-items-center
         %input.form-check-input.p-2.me-2.mt-0#project-choices-enable{type: "checkbox", value: "",
-        checked: project_data[:project_choices_enabled], name: "project_choices_enable", data: { url: new_project_toggle_project_choices_projects_path }}
+        checked: project_data[:project_choices_enabled], name: "project_choices_enable", data: { url: toggle_project_choices_projects_path }}
         %h2.fs-4.m-0 Project Choices
 
       .card-body.pb-3
@@ -50,7 +50,7 @@
 
         %ul.list-group.list-group-flush.mb-2#project-choices-list
           - project_data[:project_choices].each do |name|
-            = render partial: 'components/group-item-simple', locals: { item_text: name, deletion_action_url:new_project_remove_project_choice_projects_path }
+            = render partial: 'components/group-item-simple', locals: { item_text: name, deletion_action_url:remove_project_choice_projects_path }
 
         %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal", id: "add-project-choice-btn",
           "data-bs-target": "#add-project-choice-modal"}
@@ -174,7 +174,7 @@
             - milestone_name = milestone[:Name]
             - milestone_date = milestone[:Date]
             - selected_type = milestone[:Type]
-            = render partial: 'components/group-item-milestone', locals: { item_text: milestone_name, name: "milestone_"+milestone_name, selected_type: selected_type, deletion_action_url: new_project_remove_project_milestone_projects_path, date_value: milestone_date}
+            = render partial: 'components/group-item-milestone', locals: { item_text: milestone_name, name: "milestone_"+milestone_name, selected_type: selected_type, deletion_action_url: remove_project_milestone_projects_path, date_value: milestone_date}
 
         %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal",
           "data-bs-target": "#add-project-milestone-modal"}
@@ -196,7 +196,7 @@
 
         %ul.list-group.list-group-flush.mb-2#project-facilitators-list
           - project_data[:project_facilitators].each do |facilitator|
-            = render partial: 'components/group-item-simple', locals: { item_text: facilitator, deletion_action_url: new_project_remove_facilitator_projects_path}
+            = render partial: 'components/group-item-simple', locals: { item_text: facilitator, deletion_action_url: remove_facilitator_projects_path}
 
         %button.btn.btn-primary.mb-2{type: "button", id: "open-add-staff-facilitators-modal", "data-bs-toggle": "modal",
           "data-bs-target": "#add-staff-project-facilitators-modal"}
@@ -226,7 +226,7 @@
   modal_id: 'add-project-choice-modal',
   title: 'New Project Choice',
   prompt: 'Input project choice name',
-  submission_url: new_project_add_project_choice_projects_path,
+  submission_url: add_project_choice_projects_path,
   form_input_id: 'new-project-choice-name',
   form_input_name: 'project_choice_name',
   confirm_text: 'Confirm',
@@ -237,7 +237,7 @@
   modal_id: 'add-project-milestone-modal',
   title: 'New Project Milestone',
   prompt: 'Input milestone name',
-  submission_url: new_project_add_project_milestone_projects_path,
+  submission_url: add_project_milestone_projects_path,
   form_input_id: 'new-project-milestone-name',
   form_input_name: 'project_milestone_name',
   confirm_text: 'Confirm',
@@ -246,7 +246,7 @@
 -# ADD FACILITATORS MODAL (STAFF)
 = render 'components/modal-search-multiple',
   modal_id: 'add-staff-project-facilitators-modal',
-  autocomplete_method: new_project_search_facilitators_staff_projects_path,
+  autocomplete_method: search_facilitators_staff_projects_path,
   title: 'Add Project Facilitators',
   prompt: 'Input staff members email',
   form_input_id: 'new-project-facilitator-name-staff',
@@ -255,14 +255,14 @@
   list_group_id: 'facilitator-selection-group-staff',
   confirm_text: 'Confirm',
   confirm_onclick_function: "",
-  add_to_selection_url: new_project_add_to_facilitator_selection_projects_path,
-  submission_url: new_project_add_facilitator_selection_projects_path,
-  on_open_action_url: new_project_clear_facilitator_selection_projects_path
+  add_to_selection_url: add_to_facilitator_selection_projects_path,
+  submission_url: add_facilitator_selection_projects_path,
+  on_open_action_url: clear_facilitator_selection_projects_path
 
 -# ADD FACILITATORS MODAL (STUDENT)
 = render 'components/modal-search-multiple',
   modal_id: 'add-student-project-facilitators-modal',
-  autocomplete_method: new_project_search_facilitators_student_projects_path,
+  autocomplete_method: search_facilitators_student_projects_path,
   title: 'Add Project Facilitators',
   prompt: 'Input students email',
   form_input_id: 'new-project-facilitator-name-student',
@@ -271,9 +271,9 @@
   list_group_id: 'facilitator-selection-group-student',
   confirm_text: 'Confirm',
   confirm_onclick_function: "",
-  add_to_selection_url: new_project_add_to_facilitator_selection_projects_path,
-  submission_url: new_project_add_facilitator_selection_projects_path,
-  on_open_action_url: new_project_clear_facilitator_selection_projects_path
+  add_to_selection_url: add_to_facilitator_selection_projects_path,
+  submission_url: add_facilitator_selection_projects_path,
+  on_open_action_url: clear_facilitator_selection_projects_path
 
 
 -# MILESTONE EMAIL MODAL
@@ -284,7 +284,7 @@
   form_input_id: 'milestone-email-input',
   form_input_name: 'milestone_email_content',
   confirm_text: 'Save',
-  submission_url: new_project_set_milestone_email_data_projects_path,
+  submission_url: set_milestone_email_data_projects_path,
   confirm_onclick_function: "" do
   %input{ type: "hidden", name: "milestone_name", value: "", class: "hidden-modal-value"}
   .row.d-flex.align-items-center
@@ -302,6 +302,6 @@
   form_input_id: 'milestone-comment-input',
   form_input_name: 'milestone_comment',
   confirm_text: 'Save',
-  submission_url: new_project_set_milestone_comment_projects_path,
+  submission_url: set_milestone_comment_projects_path,
   confirm_onclick_function: "" do
   %input{ type: "hidden", name: "milestone_name", value: "", class: "hidden-modal-value"}

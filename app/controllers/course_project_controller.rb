@@ -70,7 +70,7 @@ class CourseProjectController < ApplicationController
     end
 
     # POST
-    def new_project_add_project_choice
+    def add_project_choice
         @project_choice_name = params[:project_choice_name]
         session[:new_project_data][:project_choices] << @project_choice_name
 
@@ -86,7 +86,7 @@ class CourseProjectController < ApplicationController
         end
     end
 
-    def new_project_remove_project_choice
+    def remove_project_choice
         @project_choice_name = params[:item_text].strip
         session[:new_project_data][:project_choices].delete(@project_choice_name)
         if request.xhr?
@@ -95,7 +95,7 @@ class CourseProjectController < ApplicationController
         end
     end
 
-    def new_project_add_project_milestone
+    def add_project_milestone
         @project_milestone_name = params[:project_milestone_name]
         project_milestone_unique = false
         unless session[:new_project_data][:project_milestones].any? { |milestone| milestone[:Name] == @project_milestone_name }
@@ -113,7 +113,7 @@ class CourseProjectController < ApplicationController
         end
     end
 
-    def new_project_remove_project_milestone
+    def remove_project_milestone
         @project_milestone_name = params[:item_text].strip
         filtered_milestones = session[:new_project_data][:project_milestones].reject do |milestone|
             milestone[:Name] == @project_milestone_name
@@ -125,23 +125,23 @@ class CourseProjectController < ApplicationController
         end
     end
 
-    def new_project_clear_facilitator_selection
+    def clear_facilitator_selection
         session[:new_project_data][:facilitator_selection] = []
     end
 
-    def new_project_add_to_facilitator_selection
+    def add_to_facilitator_selection
         @facilitator_email = params[:project_facilitator_name]
         if @facilitator_email.present?
             session[:new_project_data][:facilitator_selection] << @facilitator_email
         end
     end
 
-    def new_project_remove_from_facilitator_selection
+    def remove_from_facilitator_selection
         @facilitator_email = params[:item_text].strip
         session[:new_project_data][:facilitator_selection].delete(@facilitator_email)
     end
 
-    def new_project_add_facilitator_selection
+    def add_facilitator_selection
         @facilitators_added = []
         session[:new_project_data][:facilitator_selection].each do |facilitator|
             unless session[:new_project_data][:project_facilitators].include?(facilitator)
@@ -151,26 +151,26 @@ class CourseProjectController < ApplicationController
         end
     end
 
-    def new_project_remove_facilitator
+    def remove_facilitator
         @facilitator_email = params[:item_text]
         session[:new_project_data][:project_facilitators].delete(@facilitator_email)
         puts "REMOVING: ", @facilitator_email
         puts session[:new_project_data][:project_facilitators]
     end
 
-    def new_project_search_facilitators_student
+    def search_facilitators_student
         query = params[:query]
         @results = Student.where("email LIKE ?", "%#{query}%").limit(8).distinct
         render json: @results.pluck(:email)
     end
 
-    def new_project_search_facilitators_staff
+    def search_facilitators_staff
         query = params[:query]
         @results = Staff.where("email LIKE ?", "%#{query}%").limit(8).distinct
         render json: @results.pluck(:email)
     end
 
-    def new_project_get_milestone_data
+    def get_milestone_data
         milestone_name = params[:milestone_name].split('_').drop(1).join('_')
         milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
         respond_to do |format|
@@ -178,14 +178,14 @@ class CourseProjectController < ApplicationController
         end
     end
 
-    def new_project_set_milestone_email_data
+    def set_milestone_email_data
         milestone_name = params[:milestone_name].split('_').drop(1).join('_')
         milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
         milestone[:Email][:Content] = params[:milestone_email_content]
         milestone[:Email][:Advance] = params[:milestone_email_advance]
     end
 
-    def new_project_set_milestone_comment
+    def set_milestone_comment
         milestone_name = params[:milestone_name].split('_').drop(1).join('_')
         puts milestone_name
         milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
