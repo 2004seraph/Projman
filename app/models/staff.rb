@@ -3,6 +3,7 @@
 # Table name: staffs
 #
 #  id                  :bigint           not null, primary key
+#  admin               :boolean          default(FALSE), not null
 #  current_sign_in_at  :datetime
 #  current_sign_in_ip  :string
 #  email               :citext           not null

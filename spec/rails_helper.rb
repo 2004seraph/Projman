@@ -9,7 +9,7 @@ require_relative '../config/environment'
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
-require 'support/database_cleaner'
+# require 'support/database_cleaner'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -44,7 +44,7 @@ RSpec.configure do |config|
   config.include Rails.application.routes.url_helpers
   config.include Devise::Test::ControllerHelpers, type: :controller
 
-  config.use_transactional_fixtures = false
+  config.use_transactional_fixtures = true
 
   # Ensure our database is definitely empty before running the suite
   # (e.g. if a process got killed and things weren't cleaned up)
@@ -70,7 +70,7 @@ RSpec.configure do |config|
     DatabaseCleaner.strategy = :truncation
   end
 
-  # THIS SHOULD BE PLACED IN YOUR OWN TEST SUITES 
+  # THIS SHOULD BE PLACED IN YOUR OWN TEST SUITES
   # config.before(:each) do
   #   DatabaseCleaner.start
   # end

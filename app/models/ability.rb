@@ -10,6 +10,8 @@ class Ability
     # you must log in to do anything on the entire site.
     return unless user.present?
 
+    can [:read], :page
+
     # Rails.logger.debug "################################"
 
     if user.is_student?
@@ -29,6 +31,7 @@ class Ability
     end
 
     # Facilitator permissions
+    can :read, :facilitator
     if user.is_staff?
       can :read, Group, id: user.staff.assigned_facilitators.pluck(:course_project_id)
       can [:read, :update], Event, group: { assigned_facilitator: { staff_id: user.staff.id } }

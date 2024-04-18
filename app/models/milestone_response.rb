@@ -8,13 +8,13 @@
 #  updated_at   :datetime         not null
 #  milestone_id :bigint           not null
 #  staff_id     :bigint
-#  students_id  :bigint
+#  student_id   :bigint
 #
 # Indexes
 #
 #  index_milestone_responses_on_milestone_id  (milestone_id)
 #  index_milestone_responses_on_staff_id      (staff_id)
-#  index_milestone_responses_on_students_id   (students_id)
+#  index_milestone_responses_on_student_id    (student_id)
 #
 # Foreign Keys
 #
@@ -23,6 +23,7 @@
 class MilestoneResponse < ApplicationRecord
   belongs_to :milestone
   has_one :course_project, through: :milestone
+  has_one :course_module, through: :course_project
 
   belongs_to :staff, optional: true
   belongs_to :student, optional: true

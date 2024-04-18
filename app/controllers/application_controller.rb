@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
-  # check_authorization unless: :devise_controller?
+  check_authorization unless: :devise_controller?
 
   # Disabling caching will prevent sensitive information being stored in the
   # browser cache. If your app does not deal with sensitive information then it
@@ -31,17 +31,11 @@ class ApplicationController < ActionController::Base
 
       if current_user.is_student?
         if Student.exists?(username: username)
-
-          #Uncomment below if you want to act as staff member
-
-          # if Staff.exists?(email: current_user.email)
-          #   @user = Staff.find_by(email: current_user.email)
-          # else
-          #   @user = Student.find_by(username: username)
-          # end
-
           current_user.student = Student.find_by(username: username)
-          # @user = Student.find_by(username: username)
+          # Also populate the staff field if this student has a staff entry
+          if Staff.exists?(email: email)
+            current_user.staff = Staff.find_by(email: email)
+          end
         else
           reset_session
           redirect_to new_user_session_path, alert: "User not found in the database. Please try again."

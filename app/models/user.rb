@@ -36,6 +36,11 @@ class User < ApplicationRecord
   end
 
   def is_staff?
-    account_type.include?("staff")
+    # if the staff field is populated, manually override
+    if staff == nil
+      account_type.include?("staff")
+    else
+      true
+    end
   end
 end
