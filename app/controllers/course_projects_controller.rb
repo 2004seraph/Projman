@@ -381,10 +381,8 @@ class CourseProjectsController < ApplicationController
             end
 
             # Creating groups (currently just puts everyone in groups of X size, no randomness or preference)
-            puts "CREATING TEAMS"
             module_students = CourseModule.find_by(code: project_data[:selected_module]).students.all
             team_size = project_data[:team_size].to_i
-            puts "TEAM SIZE: ", team_size
             groups = []
             current_group = nil
             team_count = 0

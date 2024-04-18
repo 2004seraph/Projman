@@ -2,7 +2,8 @@ require 'rails_helper'
 
 RSpec.feature "Project Creation", type: :feature do
     let!(:user){FactoryBot.create(:standard_student_user)}
-    let!(:student){FactoryBot.create(:standard_student)}
+    let!(:student) { FactoryBot.create(:standard_student) } # without this line, cant log in?
+    let!(:staff) { Staff.find_or_create_by(email: user.email) }
 
     before(:all) do
         DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
@@ -19,7 +20,7 @@ RSpec.feature "Project Creation", type: :feature do
         CourseProject.find_or_create_by({
             course_module: CourseModule.find_by(code: "COM9999"),
             name: "Test Project 1",
-            project_allocation: :individual_preference_project_allocation,
+            project_allocation: :single_preference_project_allocation,
             team_allocation: :random_team_allocation,
             team_size: 8
         })
@@ -28,6 +29,11 @@ RSpec.feature "Project Creation", type: :feature do
     end
     after(:all) do
         # Capybara.current_driver = Capybara.default_driver
+    end
+
+    # Fill in ALL project creation fields, only missing name so it doesnt succesfully submit
+    def fill_in_all_except_name
+
     end
 
     # UX
@@ -53,15 +59,42 @@ RSpec.feature "Project Creation", type: :feature do
     end
 
     describe "Creation form gets filled with correct fields" do
+        before(:each) do
+            login_as user
+            visit "/projects/new"
+        end
         context "when the page is first loaded" do
             it "fills in module options with modules that user is a module lead for" do
+                select_element = find("select[name='module_selection']")
+                options = select_element.all("option")
+                save_and_open_page
+                options.each do |option|
+                    course_module_code = option.value
+                    course_module = CourseModule.find_by(code: course_module_code)
+                    expect(course_module.staff_id).to eq(staff.id)
+                end
             end
             it "fills in correct project allocation methods into selection" do
+                select_element = find("select[name='project_allocation_method']")
+                options = select_element.all("option")
+                project_allocation_methods = CourseProject.project_allocations.keys
+                options.each do |option|
+                    expect(project_allocation_methods).to include(option.value)
+                end
             end
             it "fills in correct team allocation methods into selection" do
+                select_element = find("select[name='team_allocation_method']")
+                options = select_element.all("option")
+                team_allocation_methods = CourseProject.team_allocations.keys
+                options.each do |option|
+                    expect(team_allocation_methods).to include(option.value)
+                end
             end
         end
         context "when the page is reloaded on a failed submission" do
+            before(:each) do
+                fill_in_all_except_name
+            end
             it "fills in module options with modules that user is a module lead for" do
             end
             it "fills in correct project allocation methods into selection" do
@@ -165,13 +198,11 @@ RSpec.feature "Project Creation", type: :feature do
     describe "User can succesfully create a new project with valid parameters" do
 
         before(:each) do
-            DatabaseCleaner.start
             login_as user
             visit "/projects/new"
         end
         after(:each) do
-            Warden.test_reset!
-            DatabaseCleaner.clean
+            # remove the created project
             expect(page.current_path).to eq("/projects")
         end
 
