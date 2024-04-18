@@ -10,6 +10,7 @@ Rails.application.routes.draw do
 
   resources :projects, controller: :course_project do
     get '/teams', to: 'lead#teams', on: :member
+    post '/new', to: 'course_project#create', on: :collection
 
     # AJAX
     post 'add_project_choice', on: :collection

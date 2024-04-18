@@ -313,6 +313,20 @@ class CourseProjectController < ApplicationController
                 puts new_project.id
             end
 
+            # Create sub projects models and associate them to this project
+            subprojects = []
+            if project_data[:project_choices_enabled]
+                project_data[:project_choices].each do |project_choice|
+                    subproject = Subproject.new(
+                        name: project_choice,
+                        json_data: "{}",
+                        course_project_id: new_project.id
+                    )
+                    subprojects << subproject
+                end
+            end
+            subprojects.each(&:save!)
+
             # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
             if project_data[:selected_team_allocation_mode] == "random_team_allocation"
                 if milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == "Teammate Preference Form Deadline"}
@@ -372,6 +386,37 @@ class CourseProjectController < ApplicationController
 
                 facilitator.save!
             end
+
+            # Creating groups (currently just puts everyone in groups of X size, no randomness or preference)
+            module_students = CourseModule.find_by(code: project_data[:selected_module]).students
+            team_size = project_data[:team_size].to_i
+            groups = []
+            current_group = nil
+            team_count = 0
+
+            module_students.each_slice(team_size) do |students_slice|
+
+                # Create a new group for each slice of students
+                current_group = Group.new
+                team_count += 1
+                current_group.name = "Team " + team_count.to_s
+                current_group.course_project_id = new_project.id
+            
+                # Add students to the current group
+                students_slice.each do |student|
+                current_group.students << student
+                end
+            
+                # Add the current group to the list of groups
+                groups << current_group
+            end
+            
+            # Save each group using save!
+            # groups.each(&:save!)
+            groups.each do |group|
+                group.save!
+            end 
+ 
         end
 
         # May need further changes here to accoutn for if any of the database commits (.save!) dont go through
