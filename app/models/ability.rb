@@ -28,6 +28,9 @@ class Ability
       can [:create], EventResponse
       # can read their own responses
       can [:read], EventResponse, student: { id: user.student.id }
+
+      can [:create], MilestoneResponse 
+      can [:read], MilestoneResponse, student: { id: user.student.id }
     end
 
     # Facilitator permissions

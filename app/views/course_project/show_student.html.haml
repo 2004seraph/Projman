@@ -7,7 +7,6 @@
             #{@proj_name}
 
         .flex-end
-            -# LINK TO CREATE ISSUES PAGE OR MODAL????
             %button.btn.btn-primary.btn-m.m-2{type: "button", "data-bs-toggle": "modal",
                "data-bs-target": "#reportIssueModal"}
                 %i.bi.bi-exclamation-circle.orange
@@ -15,7 +14,12 @@
 
     %hr.divider
 
-    = render partial: 'course_project/components/pref-form-box'
+    -if @current_project.status == 'student_preference'
+        = render partial: 'course_project/components/pref-form-box'
+    
+    -if @current_project.status == 'team_preference'
+        = render partial: 'course_project/components/project-choices-box'
+    
     = render partial: 'course_project/components/staff-info-box'
     = render partial: 'course_project/components/team-info-box'
     = render partial: 'course_project/components/deadlines-info-box'

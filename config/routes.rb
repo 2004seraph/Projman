@@ -9,6 +9,9 @@ Rails.application.routes.draw do
   get '/settings', to: 'setting#index'
 
   resources :projects, controller: :course_project do
+
+    resource :milestone_responses, only: [:create], controller: :milestone_response
+
     get '/teams', to: 'lead#teams', on: :member
 
     # AJAX
