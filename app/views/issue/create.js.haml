@@ -1,0 +1,16 @@
+:plain
+  document.getElementById('reportIssueModal').style.display = 'none';
+  document.body.classList.remove('modal-open');
+
+  var modalBackdrops = document.getElementsByClassName('modal-backdrop');
+  for (var i = 0; i < modalBackdrops.length; i++) {
+    modalBackdrops[i].parentNode.removeChild(modalBackdrops[i]);
+  }
+  
+  document.getElementById('title').value = '';
+  document.getElementById('description').value = '';
+
+  $('#success-message').show();
+  setTimeout(function() { 
+    $('#success-message').hide(); 
+  }, 3000);
