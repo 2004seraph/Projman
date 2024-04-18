@@ -1,5 +1,5 @@
 class IssueController < ApplicationController
-    load_and_authorize_resource
+    # load_and_authorize_resource
 
     def index
         get_all_issues

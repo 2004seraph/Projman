@@ -1,5 +1,5 @@
 class FacilitatorController < ApplicationController
-    authorize_resource class: false
+    # authorize_resource class: false
 
     # GET /facilitators
     def index
