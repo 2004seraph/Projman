@@ -2,9 +2,16 @@ Rails.application.routes.draw do
   devise_for :users
 
   mount EpiCas::Engine, at: "/"
+
   root "page#index"
 
+  get '/profile', to: 'profile#index'
+  get '/settings', to: 'setting#index'
+
   resources :projects, controller: :course_project do
+    get '/teams', to: 'lead#teams', on: :member
+
+    # AJAX
     post 'add_project_choice', on: :collection
     post 'remove_project_choice', on: :collection
     post 'add_project_milestone', on: :collection
@@ -21,27 +28,33 @@ Rails.application.routes.draw do
     post 'set_milestone_comment', on: :collection
     get 'search_facilitators_student', on: :collection
     get 'search_facilitators_staff', on: :collection
-
-    # Define a separate POST route for the 'new' action
-
-    get '/teams', to: 'lead#teams', on: :member
   end
 
-  get '/students', to: 'student#index'
+  resources :students, only: [:index], controller: :student do
+  end
 
-  get '/issues', to: 'issue#index'
-  post '/issues/create', to: 'issue#create'
-  post '/issues/project-selected', to: 'issue#update_selection'
+  resources :issues, only: [:index, :create], controller: :issue do
+    # AJAX
+    post 'project-selected', to: 'issue#update_selection', on: :collection
+  end
 
-  get '/profile', to: 'profile#index'
-  get '/settings', to: 'setting#index'
+  resources :facilitators, only: [:index], controller: :facilitator do
+    get '/teams/:id/progress_form/:week',
+      to: 'facilitator#progress_form', as: 'progress_form',
+      on: :collection
+    get '/marking/:id',
+      to: 'facilitator#marking_show', as: 'marking_show',
+      on: :collection
+    get '/teams/:id',
+      to: 'facilitator#team', as: 'team',
+      on: :collection
 
-  # TEMP: Facilitator routes
-  resources :facilitator, only: [:index]
-  get '/facilitator/teams/:team_id/progress_form/:week', to: 'facilitator#progress_form', as: 'facilitator_progress_form'
-  get '/facilitator/marking/:section_id', to: 'facilitator#marking_show', as: 'facilitator_marking_show'
-  get '/facilitator/teams/:team_id', to: 'facilitator#team', as: 'facilitator_team'
-  post '/facilitator/update_teams_list' => 'facilitator#update_teams_list'
+    # AJAX
+    post '/update_teams_list',
+      to: 'facilitator#update_teams_list',
+      on: :collection
+  end
 
-  resources :admin
+  resources :modules, controller: :course_module do
+  end
 end

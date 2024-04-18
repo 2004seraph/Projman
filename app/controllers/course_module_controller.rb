@@ -1,5 +1,5 @@
-class AdminController < ApplicationController
-    # authorize_resource class: false
+class CourseModuleController < ApplicationController
+    authorize_resource
 
     before_action :set_module, only: %i[ show edit update destroy ]
 

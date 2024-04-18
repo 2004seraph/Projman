@@ -5,22 +5,22 @@
   %nav.feature-navbar
     %ul.navbar-nav
       %li.nav-item
-        = link_to '/admin' , class: 'btn btn-light' do
+        = link_to modules_url, class: 'btn btn-light' do
           Modules
     .vertical-divider
     %ul.navbar-nav
       %li.nav-item
-        = link_to '/projects', class: 'btn btn-light' do
+        = link_to projects_url, class: 'btn btn-light' do
           Projects
       %li.nav-item
-        = link_to '/students', class: 'btn btn-light' do
+        = link_to students_url, class: 'btn btn-light' do
           Students
       %li.nav-item
-        = link_to '/issues', class: 'btn btn-light' do
+        = link_to issues_url, class: 'btn btn-light' do
           Issues
     .vertical-divider
     %ul.navbar-nav
       %li.nav-item
-        = link_to '/facilitator', class: 'btn btn-light' do
+        = link_to facilitators_url, class: 'btn btn-light' do
           Facilitator
     .vertical-divider

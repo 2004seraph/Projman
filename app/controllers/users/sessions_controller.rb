@@ -34,5 +34,13 @@ class Users::SessionsController < Devise::SessionsController
     reset_session
     redirect_to root_path, notice: "Logged out successfully"
   end
-  
+
+  protected
+
+  def after_sign_in_path_for(resource)
+    previous_path = session[:previous_url]
+    session[:previous_url] = nil
+    previous_path || root_path
+  end
+
 end

@@ -11,6 +11,7 @@ class Ability
     return unless user.present?
 
     can [:read], :page
+    can [:read, :create], :issue
 
     # Rails.logger.debug "################################"
 
@@ -27,27 +28,26 @@ class Ability
       can [:create], EventResponse
       # can read their own responses
       can [:read], EventResponse, student: { id: user.student.id }
-      return
     end
 
     # Facilitator permissions
-    return unless user.is_facilitator?
+    if user.is_facilitator?
+      can :read, :facilitator
 
-    can :read, :facilitator
+      if user.is_staff?
+        can :read, Group, assigned_facilitator: { staff_id: user.staff.id }
+        can [:read, :update], Event, group: {
+          assigned_facilitator: { staff_id: user.staff.id } }
+        can [:read], EventResponse, event: {
+          group: { assigned_facilitator: { staff_id: user.staff.id } } }
 
-    if user.is_staff?
-      can :read, Group, id: user.staff.assigned_facilitators.pluck(:course_project_id)
-      can [:read, :update], Event, group: {
-        assigned_facilitator: { staff_id: user.staff.id } }
-      can [:read], EventResponse, event: {
-        group: { assigned_facilitator: { staff_id: user.staff.id } } }
-
-    elsif user.is_student?
-      can :read, Group, id: user.student.assigned_facilitators.pluck(:course_project_id)
-      can [:read, :update], Event, group: {
-        assigned_facilitator: { student_id: user.student.id } }
-      can [:read], EventResponse, event: {
-        group: { assigned_facilitator: { student_id: user.student.id } } }
+      elsif user.is_student?
+        can :read, Group, assigned_facilitator: { student_id: user.student.id }
+        can [:read, :update], Event, group: {
+          assigned_facilitator: { student_id: user.student.id } }
+        can [:read], EventResponse, event: {
+          group: { assigned_facilitator: { student_id: user.student.id } } }
+      end
     end
 
     # staff permissions
@@ -57,14 +57,13 @@ class Ability
     can [:read], CourseModule, staff_id: user.staff.id
 
     # a staff can only view and edit projects they lead.
-    # I imagine that when an admin creates a module, they specify the projects,
-    # staff can then edit them and only them as they please.
-    can [:read, :update], CourseProject, course_module: { staff_id: user.staff.id }
+    can [:create, :read, :update], CourseProject, course_module: { staff_id: user.staff.id }
 
     return unless user.staff.admin
 
-    can [:read], :admin
+    # can [:read], :admin
 
+    can [:create, :read, :update, :destroy], Group
     can [:create, :read, :update, :destroy], CourseModule
     can [:create, :read, :update, :destroy], CourseProject
   end

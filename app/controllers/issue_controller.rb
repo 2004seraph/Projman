@@ -1,11 +1,10 @@
 class IssueController < ApplicationController
-    # load_and_authorize_resource
+    authorize_resource class: false, except: :update_selection
 
     def index
         get_all_issues
 
-        @view_as_manager = false
-        if @view_as_manager
+        if current_user.is_staff?
             render 'index_module_leader'
         else
             render 'index_student'
@@ -13,6 +12,8 @@ class IssueController < ApplicationController
     end
 
     def update_selection
+        authorize! :read, :issue
+
         get_all_issues
 
         if !(params[:selected_project] == 'All' || params[:selected_project].nil?)
@@ -20,7 +21,7 @@ class IssueController < ApplicationController
             project = CourseProject.find_by(name: project_selected)
 
 
-            group = @user_groups.find_by(course_projects_id: project.id)
+            group = @user_groups.find_by(course_project_id: project.id)
 
             @open_issues = Event.where(event_type: Event.event_types[:issue], completed: false, group_id: group.id)
             @resolved_issues = Event.where(event_type: Event.event_types[:issue], completed: true, group_id: group.id)
@@ -37,7 +38,7 @@ class IssueController < ApplicationController
         }.to_json
 
         current_project_id = params['project_id']
-        group = current_user.student.groups.find_by(course_projects_id: current_project_id)
+        group = current_user.student.groups.find_by(course_project_id: current_project_id)
 
         @issue = Event.new(completed: false, event_type: :issue, json_data: json_data, group_id: group.id)
 

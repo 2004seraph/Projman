@@ -16,7 +16,7 @@ require 'json'
 #   {"Name": "Peer Review", "Date: "dd/mm/yyyy"}]
 
 class CourseProjectController < ApplicationController
-    # load_and_authorize_resource
+    load_and_authorize_resource
 
     skip_before_action :verify_authenticity_token, only: [:remove_project_choice,
         :clear_facilitator_selection,
@@ -383,33 +383,38 @@ class CourseProjectController < ApplicationController
         end
     end
 
-    def show_student
-        @current_project = CourseProject.find(params[:id])
-        linked_module = @current_project.course_module
-        @proj_name = linked_module.code+' '+linked_module.name+' - '+@current_project.name
-        @lead = linked_module.staff.email
+    def show
+        if current_user.is_staff?
+            # staff version of viewing one project
+        else
+            @current_project = CourseProject.find(params[:id])
+            linked_module = @current_project.course_module
+            @proj_name = linked_module.code+' '+linked_module.name+' - '+@current_project.name
+            @lead = linked_module.staff.email
 
-        #TODO - Change database interactions to only get records
-        #       relevant to the GROUP the student is part of - only one facilitator?
+            #TODO - Change database interactions to only get records
+            #       relevant to the GROUP the student is part of - only one facilitator?
 
-        #Get staff + facilitator information
-        @facilitators = []
-        AssignedFacilitator.where(course_project_id: @current_project.id).each do |facilitator|
-            if facilitator.staff_id == nil
-                @facilitators << Student.find(facilitator.student_id).email
-            else
-                @facilitators << Staff.find(facilitator.staff_id).email
+            #Get staff + facilitator information
+            @facilitators = []
+            AssignedFacilitator.where(course_project_id: @current_project.id).each do |facilitator|
+                if facilitator.staff_id == nil
+                    @facilitators << Student.find(facilitator.student_id).email
+                else
+                    @facilitators << Staff.find(facilitator.staff_id).email
+                end
             end
-        end
 
-        #Get ordered milestones and project deadline
-        @milestones = []
-        @current_project.milestones.order('deadline').each do |milestone|
-            if milestone.json_data['Name'] == 'Project Deadline'
-                @deadline = milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
-            else
-                @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
+            #Get ordered milestones and project deadline
+            @milestones = []
+            @current_project.milestones.order('deadline').each do |milestone|
+                if milestone.json_data['Name'] == 'Project Deadline'
+                    @deadline = milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
+                else
+                    @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
+                end
             end
+            render 'show_student'
         end
     end
 

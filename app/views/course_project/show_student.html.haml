@@ -54,7 +54,7 @@
                 project_id: #{@current_project.id}
             };
 
-            fetch('/issues/create', {
+            fetch('/issues', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

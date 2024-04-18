@@ -9,7 +9,7 @@
     -#NEED EXAMPLES TO CREATE PROJECT BUTTONS
 
     - @projects.each do |project|
-        = link_to "project/student/#{project.id}", class: "project-link" do
+        = link_to project_url(project.id), class: "project-link" do
             .project-button
                 %h3
                     #{project.course_module.code} #{project.course_module.name} - #{project.name}

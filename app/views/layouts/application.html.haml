@@ -24,14 +24,15 @@
         = render 'layouts/top-navbar'
         = render 'layouts/feature-navbar'
 
-    - if flash.present?
-      .container-fluid.flash-messages
-        - flash.each do |message_type, message|
-          - puts message
-          - if message.is_a?(String) && !message.empty?
-            - next unless message_type == 'alert' || message_type == 'notice'
-            .alert{ class: "alert-#{ message_type == 'notice' ? 'success' : 'danger' }" }= message
+
 
     %main
       .content-container
+        - if flash.present?
+          .container-fluid.flash-messages
+            - flash.each do |message_type, message|
+              - puts message
+              - if message.is_a?(String) && !message.empty?
+                - next unless message_type == 'alert' || message_type == 'notice'
+                .alert{ class: "alert-#{ message_type == 'notice' ? 'success' : 'danger' }" }= message
         = yield
