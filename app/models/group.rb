@@ -32,7 +32,7 @@ class Group < ApplicationRecord
 
   belongs_to :subproject, optional: true
   belongs_to :assigned_facilitator, optional: true
-  before_save :facilitators_must_be_enrolled_on_the_same_module
+  before_save :facilitator_must_be_enrolled_on_the_same_module
 
   has_and_belongs_to_many :students, after_add: :students_must_be_enrolled_on_the_same_module
   has_many :events, dependent: :destroy

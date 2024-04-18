@@ -16,15 +16,22 @@ require 'json'
 #   {"Name": "Peer Review", "Date: "dd/mm/yyyy"}]
 
 class CourseProjectController < ApplicationController
-    load_and_authorize_resource
+    load_and_authorize_resource, except: [
+        :add_project_milestone,
+        :remove_project_milestone,
+        :add_project_choice,
+        :remove_project_choice
+    ]
 
-    skip_before_action :verify_authenticity_token, only: [:remove_project_choice,
+    skip_before_action :verify_authenticity_token, only: [
+        :remove_project_choice,
         :clear_facilitator_selection,
         :toggle_project_choices,
         :remove_project_milestone,
         :remove_from_facilitator_selection,
         :remove_facilitator,
-        :create]
+        :create
+    ]
 
     def index
         if current_user.is_staff?
@@ -450,15 +457,29 @@ class CourseProjectController < ApplicationController
                 end
             end
 
-            #Get ordered milestones and project deadline
+            #Get ordered milestones and deadlines
             @milestones = []
             @current_project.milestones.order('deadline').each do |milestone|
                 if milestone.json_data['Name'] == 'Project Deadline'
                     @deadline = milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
+                elsif milestone.json_data['Name'] == 'Teammate Preference Form Deadline'
+                    @pref_form = milestone
+                    @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
                 else
                     @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
                 end
             end
+
+            #Preference Form 
+
+            #Should the preference form be shown
+            @show_pref_form = (@current_project.team_allocation == 'preference_form_based') && (@current_project.status == 'student_preference')
+            @yes_mates = @current_project.preferred_teammates.to_i
+            @no_mates = @current_project.avoided_teammates.to_i
+
+            #Project Choices
+
+            #Render view
             render 'show_student'
         end
     end
