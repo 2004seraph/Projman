@@ -427,11 +427,20 @@ class CourseProjectController < ApplicationController
             end
 
             #Preference Form 
-
-            #Should the preference form be shown
-            @show_pref_form = (@current_project.team_allocation == 'preference_form_based') && (@current_project.status == 'student_preference')
             @yes_mates = @current_project.preferred_teammates.to_i
             @no_mates = @current_project.avoided_teammates.to_i
+
+            #Should the preference form be shown
+            first_response = false
+            if MilestoneResponse.where(milestone_id: @pref_form.id, student_id: current_user.student.id).empty?
+                first_response = true
+            end
+
+            if (@current_project.team_allocation == 'preference_form_based') && (@current_project.status == 'student_preference') && first_response
+                @show_pref_form = true
+            else
+                @show_pref_form = false
+            end
 
             #Project Choices
 

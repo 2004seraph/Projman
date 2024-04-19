@@ -12,6 +12,7 @@
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id}
     .card-body.pt-1.pb-1
+      %h1.fs-6.fw-normal.fst-italic= "Please enter the studen't full forename and surname."
       = form_with(model: @milestone_response,url: "/projects/#{@current_project.id}/milestone_responses", method: "post", local: true, id: "preference-form") do |form|
         .form-group
           %h1.fs-5.fw-semibold Preferred Teammates
@@ -52,9 +53,9 @@
             document.getElementById('success-message').style.display = 'none';
           }, 3000);
 
-          const collapseElement = document.getElementById(#{unique_id});
-          if (collapseElement) {
-            collapseElement.classList.remove('show'); 
+          const issueCardElement = document.querySelector('.issue-card');
+          if (issueCardElement) {
+          issueCardElement.style.display = 'none';
           }
         } else {
           console.error('Error:', response.statusText);
