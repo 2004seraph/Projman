@@ -27,4 +27,5 @@ class Milestone < ApplicationRecord
     staff: 'for_each_staff',
     team: 'for_each_team',
   }
+
 end

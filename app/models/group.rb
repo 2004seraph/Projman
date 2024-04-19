@@ -46,7 +46,7 @@ class Group < ApplicationRecord
     end
   end
 
-  def facilitators_must_be_enrolled_on_the_same_module
+  def facilitator_must_be_enrolled_on_the_same_module
     error_msg = "Facilitators must be part of the same module as this group's project"
     if !assigned_facilitator.blank? && assigned_facilitator.course_project == course_project
       errors.add(:assigned_facilitator, error_msg)

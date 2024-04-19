@@ -28,9 +28,10 @@
 class CourseProject < ApplicationRecord
   has_many :groups, dependent: :destroy
   has_many :milestones, dependent: :destroy
+  has_many :assigned_facilitators, dependent: :destroy
   belongs_to :course_module
 
-  validates :name, presence: true
+  validate :creation_validation
 
   enum :status, {
     draft: 'draft',
@@ -53,5 +54,30 @@ class CourseProject < ApplicationRecord
     random_team_allocation: 'random',
     preference_form_based: 'preference_form_based'
   }
+
+  def creation_validation 
+    errors.add(:main, 'Project name cannot be empty') if name.blank?
+    unless errors[:main].present?
+      if CourseProject.exists?(name: name, course_module_id: course_module_id)
+        errors.add(:main, 'There exists a project on this module with the same name')
+      end
+    end
+
+    if project_allocation.blank? || !project_allocation.in?(CourseProject.project_allocations)
+      errors.add(:project_choices, "Invalid project allocation mode selected")
+    end
+
+    errors.add(:team_config, 'Invalid team size entry') if team_size.nil?
+    if team_allocation.blank? || !team_allocation.in?(CourseProject.team_allocations)
+      errors.add(:team_config, 'Invalid team allocation mode selected')
+    end
+    errors.add(:team_config, 'Team size must be greater than 0') if (team_size.present? && team_size <= 0)
+
+    errors.add(:team_pref, 'Invalid preferred teammates entry') if preferred_teammates.nil?
+    errors.add(:team_pref, 'Invalid avoided teammates entry') if avoided_teammates.nil?
+    if !errors[:team_pref].present? && (preferred_teammates + avoided_teammates == 0)
+      errors.add(:team_pref, 'Preferred and Avoided teammates cannot both be 0')
+    end 
+  end
 
 end
