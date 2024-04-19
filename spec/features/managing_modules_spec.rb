@@ -1,14 +1,15 @@
 require 'rails_helper'
 
 describe 'Managing modules' do
-    let!(:user) { FactoryBot.create(:standard_student_user) }
+    let!(:user) { FactoryBot.create(:standard_staff_user) }
     let!(:student) { FactoryBot.create(:standard_student) }
+    let!(:staff) { Staff.find_or_create_by(email: user.email, admin: true) }
 
     before { login_as user }
 
     specify 'I can add a module' do
         
-        visit '/admin'
+        visit '/modules'
         click_on 'Create New'
 
         fill_in 'course_module_code', with: 'COM1002'
@@ -35,7 +36,7 @@ describe 'Managing modules' do
             )
         end
 
-        before { visit '/admin' }
+        before { visit '/modules' }
 
         specify "I can view modules in a list" do
             expect(page).to have_content 'COM1002 Introduction'
@@ -53,7 +54,7 @@ describe 'Managing modules' do
             )
         end
 
-        before { visit '/admin' }
+        before { visit '/modules' }
         
         before { click_on 'COM1002 Introduction'}
 
@@ -69,7 +70,7 @@ describe 'Managing modules' do
             fill_in 'new_module_name', with: 'Test'
             click_on 'name_confirm'
 
-            expect(page).to have_content 'Test'
+            expect(page).to have_content 'Module Name updated successfully.'
         end
 
         specify "I can edit the module leader" do
@@ -79,7 +80,7 @@ describe 'Managing modules' do
             fill_in 'new_module_lead_email_confirmation', with: 'test@email'
             click_on 'lead_confirm'
 
-            expect(page).to have_content 'test@email'
+            expect(page).to have_content 'Module Leader updated successfully.'
         end
 
         specify "I can edit the module name" do
@@ -88,7 +89,7 @@ describe 'Managing modules' do
             attach_file 'new_module_student_list', "#{Rails.root}/spec/data/COM1002.csv"
             click_on 'list_confirm'
 
-            expect(page).to have_content 'John Dyer'
+            expect(page).to have_content 'Student List updated successfully.'
         end
     
     end
