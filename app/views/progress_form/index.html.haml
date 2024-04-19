@@ -1,0 +1,79 @@
+.row.align-items-center
+  .col
+    %h1 Progress Forms
+
+  .col-auto
+    .dropdown.d-inline-block.flex-2
+      %button.btn.btn-primary{ type: "button", id: "release-date-selection-button", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false"}
+        %span#release-date-selection-label= "Release Date: " + (@progress_form.nil? ? "" : @progress_form.json_data["release_date"])
+        // TODO: Set release date initially to most recent one
+        %i.bi.bi-caret-down-fill
+        
+      .dropdown-menu{ "aria-labelledby": "release-date-selection-label" }
+        - @progress_forms.each do |ms|
+          %a.dropdown-item{ onclick: "updateReleaseDate('#{ms.json_data["release_date"]}')" }= ms.json_data["release_date"]        
+
+    .dropdown.d-inline-block
+      %button.btn.btn-primary{ type: "button", id: "team-selection-button", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false"}
+        %span#team-selection-label Team: None
+        %i.bi.bi-caret-down-fill
+        
+      .dropdown-menu{ "aria-labelledby": "team-selection-button" }
+        %a.dropdown-item{ onclick: "updateTeam('None')" }= "None"
+        %hr.dropdown-divider
+        - @current_project.groups.sort_by{|group| group.name }.each do |group|
+          %a.dropdown-item{ onclick: "updateTeam('#{group.name}')" }= group.name
+
+  .col-auto
+    = link_to new_progress_form_path, class: 'btn btn-outline-primary' do
+      %i.bi.bi-plus-circle-fill
+      Create New
+
+%hr.divider
+
+// TODO: Display the progress form template, maybe this should be a partial that we reuse for the facilitator just not editable by module leader?
+//       should show somewhere if its been released,
+//        -  teams can be populated and when selected just show empty?
+//        -  Or only populate teams when released? Could just hide the dropdown
+
+
+- if @progress_form.nil?
+  %h5 No progress forms found for this project
+
+- else
+  #progress-form-partial-container
+    = render partial: "progress_form", locals: {progress_form: @progress_form.json_data, progress_response: nil, group: "None", facilitator: false}
+
+:javascript
+  const releaseDateLabel = document.getElementById("release-date-selection-label");
+  const teamLabel = document.getElementById("team-selection-label");
+
+  function updateProgressForm() {
+    fetch("progress_form/show_new", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+      },
+      body: JSON.stringify({ 
+        release_date: releaseDateLabel.textContent.replace("Release Date: ", ""),
+        group_name: teamLabel.textContent.replace("Team: ", "")
+      })
+    })
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("progress-form-partial-container").innerHTML = data;
+      document.getElementById("release-date-selection-label").textContent = releaseDateLabel.textContent;
+    })
+    .catch(error => console.error('Error when updating progress form partial:', error));
+  }
+
+  function updateReleaseDate(selection) {
+    releaseDateLabel.textContent = "Release Date: " + selection;
+    updateProgressForm();
+  }
+
+  function updateTeam(selection) {
+    teamLabel.textContent = "Team: " + selection;
+    updateProgressForm();
+  }

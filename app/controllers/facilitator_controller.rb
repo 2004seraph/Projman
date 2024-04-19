@@ -36,6 +36,37 @@ class FacilitatorController < ApplicationController
         authorize! :read, :facilitator
 
         set_group
+                
+        @progress_form = Milestone.select{|m| m.course_project_id == @current_group.course_project_id && m.json_data["release_date"] == params[:release_date]}.first
+        session[:progress_form_id] = @progress_form.id
+
+        # Create initial milestone response if we don't have one
+        
+        # Try find a milestone response
+        @progress_response = @progress_form.milestone_responses.select{
+            |mr| mr.json_data["group_id"] == @current_group.id
+        }.first
+
+        if @progress_response.nil?
+            # TODO: Set these?
+            #  staff_id     :bigint
+            #  student_id   :bigint
+            # TODO: Fill in
+            @progress_response = MilestoneResponse.new(
+                json_data: {
+                    group_id: @current_group.id, 
+                    attendance: [],
+                    question_responses: [],
+                    facilitator_repr: get_facilitator_repr(get_assigned_facilitators.where(course_project_id: @current_group.course_project_id).first)
+                },
+                milestone_id: @progress_form.id
+            )
+
+            # Handle save failure
+            unless @progress_response.save
+                puts "\n! ! ! FAILED TO SAVE\n"
+            end
+        end
     end
 
     def marking_show
@@ -47,10 +78,47 @@ class FacilitatorController < ApplicationController
         authorize! :read, team
 
         set_group
+
+        @progress_forms = Milestone.where(course_project_id: @current_group.course_project_id).sort_by{ |m| Date.strptime(m.json_data["release_date"], "%Y-%m-%d") }
+        @progress_forms_submitted = @progress_forms.select{|pf| pf.milestone_responses.select{|mr| mr.json_data["group_id"] == @current_group.id}.length > 0}
+        @progress_forms_todo = @progress_forms - @progress_forms_submitted
+
     end
 
     def set_assigned_projects
         @assigned_projects = get_assigned_facilitators.map{|x| CourseProject.find(x.course_project_id)}
+    end
+
+    def update_progress_form_response
+        # TODO: SHOULD SAVE LAST UPDATED BY ID...
+
+        @current_group = Group.find(session[:team_id])
+
+        # Update milestone response for progress form
+        @progress_form = Milestone.find(session[:progress_form_id])
+        @progress_response = @progress_form.milestone_responses.select{
+            |mr| mr.json_data["group_id"] == @current_group.id
+        }.first
+
+        if @progress_response.nil?
+            # TODO: Handle error here
+            puts "THIS SHOULD NOT HAPPEN BUT SHOULD PROBABLY HANDLE"
+        else
+            @progress_response.json_data[:attendance] = params[:attendance]
+            @progress_response.json_data[:question_responses] = params[:question_responses]
+
+            # TODO: Show name and email, gotta figure out getting staff name.
+            @progress_response.json_data[:facilitator_repr] = get_facilitator_repr(get_assigned_facilitators.where(course_project_id: @current_group.course_project_id).first)
+        end
+
+        unless @progress_response.save
+            puts "FAILED TO UPDATE MILESTONE RESPONSE, HANDLE"
+            return render json: { status: "error", message: "Failed to save milestone when save_form." }
+        end
+
+        # TODO: Scuffed but works, should make better later on.
+        render json: { status: "success", redirect: facilitator_team_path(team_id: session[:team_id]) }
+        
     end
 
     private
@@ -64,15 +132,17 @@ class FacilitatorController < ApplicationController
         end
     end
 
-    def set_group
-        # TODO: Need to switch everything to group instead of team to match models
-        @current_group = Group.find(params[:id])
-        @current_group_facilitator_repr = get_current_group_facilitator_repr
-    end
+        def set_group
+            # TODO: Need to switch everything to group instead of team to match models
+            # TODO: Stop the symbols and just use session as this is used alot ?
+            session[:team_id] = params[:team_id]
+            @current_group = Group.find(params[:team_id])
+            @current_group_facilitator_repr = get_facilitator_repr(@current_group.assigned_facilitator)
+        end
 
-    def get_current_group_facilitator_repr
-        # NOTE: There isn't a name currently for staff members I beleive
-        facilitator = @current_group.assigned_facilitator
+        def get_facilitator_repr(facilitator)
+            # NOTE: There isn't a name currently for staff members I beleive,
+            # TODO: Use User.rb model?
 
         # TODO: Test student
         if facilitator.student_id

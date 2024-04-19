@@ -1,0 +1,57 @@
+// TODO: This stuff is kinda for the facilitator more, should start doing that side as the the module leader views the response.....
+
+- unique_id = "attendance-card"
+.card.mb-2
+  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+    href: "##{unique_id}",
+    role: "button",
+    "data-accordion-toggle" => "",
+    "aria-expanded" => "true",
+    "aria-controls" => unique_id}
+
+    %h2.fs-4= "Attendance"
+    %i.bi.bi-caret-right-fill
+  
+  .collapse.show{id: unique_id}
+    .card-body
+      - if group != "None"
+        - group.students.each_with_index do |student, i|
+          - student_attendance = attendance.nil? ? [false, ""] : attendance.fetch(i, [false, ""])
+          .form-check{style: ("pointer-events: none;" if !facilitator)}
+            %input.form-check-input.absent-checkbox{ type: "checkbox", id: "absentCheckbox-#{student.id}", checked: student_attendance[0] }
+            %label.form-check-label{ for: "absentCheckbox-#{student.id}" }= "#{student.forename} #{student.surname}"
+
+          %input{type: "text", 
+            id: "reasonTextInput-#{student.id}", 
+            placeholder: "Reason for absence", 
+            value: student_attendance[1], 
+            class: ("form-control mb-3 absent-reason-input" + (" d-none" if student_attendance[0]).to_s),
+            style: ("pointer-events: none;" if !facilitator) }
+
+      - else 
+        - for n in 1..5 do
+          .form-check{style: ("pointer-events: none;" if !facilitator)}
+            %input.form-check-input.absent-checkbox{ type: "checkbox", id: "absentCheckbox-#{n}", checked: false }
+            %label.form-check-label{ for: "absentCheckbox-#{n}" }= "Student #{n}"
+
+          %input.form-control.mb-3.absent-reason-input{type: "text", id: "reasonTextInput-#{n}", placeholder: "Reason for absence", style: ("pointer-events: none;" if !facilitator) }
+          
+      // TODO: Here we should load some obviously temporary data for the preview
+
+  :javascript
+    document.addEventListener('change', function(event) {
+      if (event.target && event.target.matches(".absent-checkbox")) {
+        var checkboxId = event.target.id.split("-")[1];
+        
+        var textInputContainer = document.getElementById(`reasonTextInput-${checkboxId}`);
+        
+        if (event.target.checked) {
+          textInputContainer.classList.add("d-none");
+          textInputContainer.classList.remove("d-inline");
+        }
+        else {
+          textInputContainer.classList.remove("d-none");
+          textInputContainer.classList.add("d-inline");
+        }
+      }
+    });

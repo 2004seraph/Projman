@@ -1,0 +1,33 @@
+- ran_num = "#{SecureRandom.hex(5)}"  # Generate a unique ID
+- unique_id = "accordion-card-" + ran_num
+- unique_id_collapse = "accordion-collapse-card-" + ran_num
+
+.card.mb-2
+  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+    href: "##{unique_id_collapse}",
+    "aria-expanded" => "true"}
+
+    %h2.fs-4= "Progress Meetings"
+    %i.bi.bi-caret-right-fill
+
+  .collapse.show{id: unique_id_collapse}
+    .card-body
+      %h5= "Completed"
+      - @progress_forms_submitted.each do |pf| 
+        .navigation-list-item
+          = link_to facilitator_progress_form_url(release_date: pf.json_data["release_date"]) do
+            %h6.p-1= pf.json_data["release_date"]
+
+
+      //- @progress_forms.each do |pf|
+      //  .navigation-list-item
+      //    = link_to facilitator_progress_form_url(release_date: pf.json_data["release_date"]) do
+      //      %h6.p-1= pf.json_data["release_date"]
+
+      %hr.divider
+      %h5= "To Do"
+      - @progress_forms_todo.each do |pf| 
+        .navigation-list-item
+          = link_to facilitator_progress_form_url(release_date: pf.json_data["release_date"]) do
+            %h6.p-1= pf.json_data["release_date"]
+      

@@ -1,0 +1,15 @@
+- # TODO: Need a better way of doing this really.
+- unless progress_response.nil?
+  %h5= "Last updated by: " + (progress_response["facilitator_repr"] || "")
+
+  %hr.divider 
+
+- if progress_form["attendance"]
+  - attendance = progress_response.nil? ? nil : progress_response["attendance"]
+  = render partial: "progress_form/attendance", locals: {group: group, attendance: attendance, facilitator: facilitator}
+
+- question_responses = progress_response.nil? ? [] : progress_response["question_responses"]
+
+- progress_form["questions"].each_with_index do |question, i|
+  - question_response = question_responses.fetch(i, "")
+  = render partial: "progress_form/question", locals: {question: question, question_count: (i + 1).to_s, facilitator: facilitator, question_response: question_response}

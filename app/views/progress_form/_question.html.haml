@@ -1,0 +1,29 @@
+
+- unique_id = "question_#{question_count}"
+.card.mb-2
+  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+   href: "##{unique_id}",
+   role: "button",
+   "data-accordion-toggle" => "",
+   "aria-expanded" => "true",
+   "aria-controls" => unique_id}
+
+    %h2.fs-4= "#{question_count}) #{question}"
+    %i.bi.bi-caret-right-fill
+
+  // TODO: Not sure if we actually want to show the text area?
+  
+  // TODO: We should have plus buttons like discord questions add answers to add radio buttons etc for the questions.
+  //       then we can store in json like radios = [,,,]
+
+  .collapse.show{id: unique_id}
+    .card-body
+      .form-group
+        %label{:for => "question-textarea-#{question_count}"} Notes
+        %textarea.form-control.question-textarea{
+          id: "question-textarea-#{question_count}", 
+          placeholder: "Answer will go here", 
+          style: ("pointer-events: none;" if !facilitator)}
+          = question_response
+
+        

@@ -2,62 +2,59 @@
 
 %hr
 
-- absence_unique_id = "accordion-card-#{SecureRandom.hex(5)}"
-.accordion-section
-  .card.mb-2.accordion-element
-    %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
-      href: "##{absence_unique_id}",
-      role: "button",
-      "data-accordion-toggle" => "",
-      "aria-expanded" => "false",
-      "aria-controls" => absence_unique_id}
+// TODO: I am aware this is extremely bad and I should not really be pulling in a partial from a different view folder,
+//       unless I name that folder shared or something... maybe need to sort out routes. But if i make the facilitator
+//       progress form stuff under the same route, how do i differentiate between module lead and facilitator views...
 
-      %h2.fs-4= "Absences"
-      %i.bi.bi-caret-right-fill
+#progress-form-partial-container
+  = render partial: "progress_form/progress_form", locals: {progress_form: @progress_form.json_data, progress_response: @progress_response.json_data, group: @current_group, facilitator: true}
 
-    .collapse{id: absence_unique_id}
-      .card-body
-        - for n in 1..5 do
-          .form-check
-            %input.form-check-input.absent-checkbox{ type: "checkbox", id: "absentCheckbox-#{n}", checked: false }
-            %label.form-check-label{ for: "absentCheckbox-#{n}" }= "Oliver Pickford"
-            %input{type: "text", id: "reasonTextInput-#{n}", placeholder: "Reason", style: "display: none"}
+%a.btn.btn-primary.mb-2{onclick: "submitProgressForm()"} Submit
 
-          :javascript
-            // Javascript for showing/hiding reasons for someone being absent
-            var checkboxes = document.querySelectorAll(".absent-checkbox");
+:javascript
+  function submitProgressForm() {
+    // TODO: This should make it less scuffed.....
+    // TODO: https://stackoverflow.com/questions/14047533/create-a-json-object-from-rails-form
 
-            checkboxes.forEach(function(checkbox) {
-              checkbox.addEventListener("change", function() {
-                var checkboxId = checkbox.id.split("-")[1];
-                var textInputContainer = document.getElementById(`reasonTextInput-${checkboxId}`);
+    // Take attendance
+    var attendance = [];
+    document.querySelectorAll(".absent-checkbox").forEach(function(element) {
+      var present = element.checked;
+      var reason = "";
 
-                textInputContainer.style.display = this.checked ? "inline" : "none";
-              });
-            });
+      if (!element.checked) {
+        reason = document.getElementById(element.id.replace("absentCheckbox", "reasonTextInput")).value;
+      }
+      attendance.push([present, reason]);
+    });
 
+    // Get answers
+    var question_responses = [];
+    document.querySelectorAll(".question-textarea").forEach(function(element) {
+      question_responses.push(element.value);
+    });
 
-
-
-
-  - for n in 1..3 do
-    - unique_id = "accordion-question-card-" + "#{SecureRandom.hex(5)}"
-
-    .card.mb-2.accordion-element
-      %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
-        href: "##{unique_id}",
-        role: "button",
-        "data-accordion-toggle" => "",
-        "aria-expanded" => "false",
-        "aria-controls" => unique_id}
-
-        %h2.fs-4= "Question #{n}"
-        %i.bi.bi-caret-right-fill
-
-      .collapse{id: unique_id}
-        .card-body
-          %h5="...."
-
-  %hr
-
-= link_to "Submit", team_facilitators_path(@current_group.id), class: "btn btn-primary"
+    fetch("/facilitator/update_progress_form_response", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+      },
+      body: JSON.stringify({ 
+        "attendance": attendance,
+        "question_responses": question_responses
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data["status"] === "error") {
+        alert("Something went wrong...");
+      }
+      else {
+        alert(data["redirect"]);
+        window.location.href = data["redirect"];
+      }
+    })
+    .catch(error => console.error('Error when updating progress form milestone response:', error));
+    
+  }
