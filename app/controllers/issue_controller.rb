@@ -14,6 +14,8 @@ class IssueController < ApplicationController
     end
 
     def update_selection
+        authorize! :read, :issue
+
         get_all_issues
 
         if current_user.is_student?

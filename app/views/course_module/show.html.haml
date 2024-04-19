@@ -51,7 +51,7 @@
        "data-bs-target": "#changeNameModal"}
       %i.bi.bi-pencil
       Change
-  %p 
+  %p
     #{@current_module.name}
   %h3
     Module Leader
@@ -84,7 +84,7 @@
 
       .modal-body
         %h1.fs-6.fw-normal.fst-italic= "Input a new Module Name only - the Module Code is unique and will not change."
-        = form_tag admin_path, method: :patch, id: 'name_form' do
+        = form_tag module_path, method: :patch, id: 'name_form' do
           .form-group
             %input.form-control.fs-5.fw-semibold{ id: "new_module_name", name: "new_module_name", placeholder: "Name", autocomplete: "off", required: true }
             %h1
@@ -101,7 +101,7 @@
       .modal-body
         %h1.fs-6.fw-normal.fst-italic= "Input the new Module Leader's '@sheffield.ac.uk' e-mail address."
         %h1.fs-6.fw-normal.fst-italic= "If they do not have an account on the system, one will be created for them."
-        = form_tag admin_path, method: :patch, id: 'email_form' do
+        = form_tag module_path, method: :patch, id: 'email_form' do
           .form-group
             %input.form-control.fs-5.fw-semibold{ type: "email", id: "new_module_lead_email", name: "new_module_lead_email",placeholder: "E-mail", autocomplete: "off", required: true}
             %h1
@@ -120,9 +120,9 @@
       .modal-body
         %h1.fs-6.fw-normal.fst-italic= "This will clear the student list and replace it with new students."
         %h1.fs-6.fw-normal.fst-italic= "To add MORE students to a module, use the Students tab."
-        %h1.fs-6.fw-normal.fst-italic= "Upload as a '.csv' file containing data for this Module Code."  
-        = form_tag admin_path,  method: :patch, multipart: true, id: 'student_form' do
-          .form-group 
+        %h1.fs-6.fw-normal.fst-italic= "Upload as a '.csv' file containing data for this Module Code."
+        = form_tag module_path,  method: :patch, multipart: true, id: 'student_form' do
+          .form-group
             %input.form-control.fs-5.fw-semibold{ type: "file", id: "new_module_student_list", name: "new_module_student_list", autocomplete: "off", accept: "text/csv", required: true}
             %h1
           .modal-footer

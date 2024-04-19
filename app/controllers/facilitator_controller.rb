@@ -1,5 +1,5 @@
 class FacilitatorController < ApplicationController
-    # authorize_resource class: false
+    authorize_resource class: false, except: [:update_teams_list, :marking_show, :team, :progress_form]
 
     # GET /facilitators
     def index
@@ -8,6 +8,7 @@ class FacilitatorController < ApplicationController
     end
 
     def update_teams_list
+        authorize! :read, :facilitator
         # Apply filters to the shown teams
         if params[:assigned_only]
             @assigned_facilitators = get_assigned_facilitators
@@ -32,10 +33,19 @@ class FacilitatorController < ApplicationController
 
 
     def progress_form
+        authorize! :read, :facilitator
+
         set_group
     end
 
+    def marking_show
+        authorize! :read, :facilitator
+    end
+
     def team
+        team = Group.find(params[:id])
+        authorize! :read, team
+
         set_group
     end
 
@@ -44,33 +54,33 @@ class FacilitatorController < ApplicationController
     end
 
     private
-        def get_assigned_facilitators
-            # Returns the entries of AssignedFacilitator for the logged in user
-            if current_user.is_staff?
-                return AssignedFacilitator.where(staff_id: current_user.staff.id)
-            elsif current_user.is_student?
-                return AssignedFacilitator.where(student_id: current_user.student.id)
-            end
+
+    def get_assigned_facilitators
+        # Returns the entries of AssignedFacilitator for the logged in user
+        if current_user.is_staff?
+            return AssignedFacilitator.where(staff: current_user.staff)
+        elsif current_user.is_student?
+            return AssignedFacilitator.where(student: current_user.student)
         end
+    end
 
-        def set_group
-            # TODO: Need to switch everything to group instead of team to match models
-            @current_group = Group.find(params[:team_id])
-            @current_group_facilitator_repr = get_current_group_facilitator_repr
+    def set_group
+        # TODO: Need to switch everything to group instead of team to match models
+        @current_group = Group.find(params[:id])
+        @current_group_facilitator_repr = get_current_group_facilitator_repr
+    end
+
+    def get_current_group_facilitator_repr
+        # NOTE: There isn't a name currently for staff members I beleive
+        facilitator = @current_group.assigned_facilitator
+
+        # TODO: Test student
+        if facilitator.student_id
+            student = Student.find(facilitator.student_id)
+            return "#{student.forename} #{student.surname}"
+        elsif facilitator.staff_id
+            return Staff.find(facilitator.staff_id).email
         end
-
-        def get_current_group_facilitator_repr
-            # NOTE: There isn't a name currently for staff members I beleive
-            facilitator = @current_group.assigned_facilitator
-
-            # TODO: Test student
-            if facilitator.student_id
-                student = Student.find_by(id: facilitator.student_id)
-                return "#{student.forename} #{student.surname}"
-
-            elsif facilitator.staff_id
-                return Staff.find_by(id: facilitator.staff_id).email
-            end
-            # TODO: Handle better?
-        end
+        # TODO: Handle better?
+    end
 end

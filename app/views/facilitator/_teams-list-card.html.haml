@@ -18,12 +18,12 @@
         .form-check.form-switch
           %input.form-check-input{ type: "checkbox", id: "filter-checkbox", checked: true, onchange: "update_team_list()" }
           %label.form-check-label{ for: "filter-checkbox" }= "Assigned only"
-          
+
         .dropdown.d-flex.inline-block
           %button.btn.btn-primary{ type: "button", id: "project-selection-button", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false"}
             %span#project-selection-label Projects: All
             %i.bi.bi-caret-down-fill
-            
+
           .dropdown-menu{ "aria-labelledby": "project-selection-button" }
             %a.dropdown-item{ onclick: "update_project_filter('All')" }= "All"
             %hr.dropdown-divider
@@ -38,22 +38,22 @@
         - @assigned_facilitators.each do |facilitator|
           - facilitator.groups.each do |group|
             .navigation-list-item
-              = link_to facilitator_team_path(team_id: group.id) do
+              = link_to team_facilitators_path(id: group.id) do
                 %h6.p-1
                   = "#{group.assigned_facilitator.course_project.name} - #{group.name}"
-                  
-  :javascript 
+
+  :javascript
     function update_team_list() {
       var checkbox = document.getElementById('filter-checkbox');
       var selectionButton = document.getElementById('project-selection-label');
 
-      fetch("facilitator/update_teams_list", {
+      fetch("facilitators/update_teams_list", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           assigned_only: checkbox.checked,
           projects_filter: selectionButton.textContent.replace("Projects: ", "")
         })
@@ -71,4 +71,3 @@
       document.getElementById('project-selection-label').textContent = "Projects: " + selection;
       update_team_list();
     }
-    

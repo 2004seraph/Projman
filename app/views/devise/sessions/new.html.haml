@@ -1,7 +1,7 @@
 - content_for :title, 'Log In'
 
-.row.justify-content-center
-  .col-sm-6.col-lg-4
+.row.justify-content-center{ style: "height: 100%;" }
+  .col-sm-6.col-lg-6
     .card.card-light
       = simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
         .card-header

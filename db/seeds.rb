@@ -21,11 +21,8 @@ sam = Student.find_or_create_by({
   fee_status: :home
 })
 DatabaseHelper.print_validation_errors(sam)
-sam_staff = Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: true })
-DatabaseHelper.print_validation_errors(sam_staff)
-DatabaseHelper.print_validation_errors(sam)
-sam_staff = Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: true })
-DatabaseHelper.print_validation_errors(sam_staff)
+# sam_staff = Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: false })
+# DatabaseHelper.print_validation_errors(sam_staff)
 
 josh = Student.find_or_create_by({
 josh = Student.find_or_create_by({
@@ -226,7 +223,7 @@ DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
 
 DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
   course_project: CourseProject.find_by(name: "AI Project"),
-  staff: Staff.find_by(email: "sgttaseff1@sheffield.ac.uk")
+  student: Student.find_by(email: "sgttaseff1@sheffield.ac.uk")
 }))
 
 DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
@@ -241,7 +238,7 @@ DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
 
 DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
   course_project: CourseProject.find_by(name: "AI Project"),
-  staff: Staff.find_by(email: "sgttaseff1@sheffield.ac.uk")
+  student: Student.find_by(email: "sgttaseff1@sheffield.ac.uk")
 }))
 
 DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
@@ -277,8 +274,8 @@ DatabaseHelper.print_validation_errors(Group.find_or_create_by({
 
 group = Group.find_or_create_by({
   name: "Team 6",
-  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk").id,
-    course_project_id: CourseProject.find_by(name: "AI Project").id),
+  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "sgttaseff1@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "AI Project")),
   course_project: CourseProject.find_by(name: "AI Project")
 })
 group.students << oliver
@@ -287,8 +284,8 @@ group.students << jakub
 
 group2 = Group.find_or_create_by({
   name: "Team 1",
-  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk").id,
-    course_project_id: CourseProject.find_by(name: "TurtleBot Project").id),
+  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "TurtleBot Project")),
   course_project: CourseProject.find_by(name: "TurtleBot Project")
 })
 group2.students << josh
@@ -297,8 +294,8 @@ group2.students << oliver
 
 group3 = Group.find_or_create_by({
   name: "Team 2",
-  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk").id,
-    course_project_id: CourseProject.find_by(name: "TurtleBot Project").id),
+  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "TurtleBot Project")),
   course_project: CourseProject.find_by(name: "TurtleBot Project")
 })
 group3.students << josh

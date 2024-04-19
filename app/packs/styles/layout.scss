@@ -1,5 +1,7 @@
 @import "common";
 
+$wrapper-size: 960px;
+
 html {
   font-size: calc(8px + 1vmin);
   min-height: 100%
@@ -38,12 +40,16 @@ body {
   margin-right: auto;
   margin-left: auto;
 
-  max-width: 960px;
+  max-width: $wrapper-size;
 }
 
 .navbars-container{
+  $container-padding: 28px;
   display: flex;
   flex-direction: column;
+  max-width: $wrapper-size;
+  padding-left: $container-padding;
+  padding-right: $container-padding;
 }
 
 .top-navbar{
@@ -75,6 +81,7 @@ body {
   width:100%;
   display: flex;
   align-items: stretch;
+  flex-wrap: wrap;
 
   .navbar-nav{
     flex-direction: row;

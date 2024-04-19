@@ -8,8 +8,61 @@
    "aria-expanded" => "false",
    "aria-controls" => unique_id}
     .d-flex.align-items-center
-      %h3.m-0.fs-5.fw-medium Preference Form
+      %h3.m-0.fs-5.fw-medium Teammate Preference Form
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id}
     .card-body.pt-1.pb-1
-      PREFERENCE FORM GOES HERE
+      %h1.fs-6.fw-normal.fst-italic= "Please enter the studen't full forename and surname."
+      = form_with(model: @milestone_response,url: "/projects/#{@current_project.id}/milestone_responses", method: "post", local: true, id: "preference-form") do |form|
+        .form-group
+          %h1.fs-5.fw-semibold Preferred Teammates
+          - @yes_mates.times do |i|
+            = form.text_field "preferred_teammate_#{i}".to_sym, class: "form-control", placeholder: "Student's Name", required: true
+            %h1
+          %h1.fs-5.fw-semibold Avoided Teammates
+          - @no_mates.times do |j|
+            = form.text_field "avoided_teammate_#{j}".to_sym, class: "form-control", placeholder: "Student's Name", required: true
+            %h1
+          %button.btn.btn-primary.btn-sm{ type: "submit" } Submit
+          %h1
+
+#success-message.alert.alert-success{style: "display: none;"}
+  Preference Form submitted successfully!
+
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('preference-form').addEventListener('submit', function(event) {
+      event.preventDefault(); 
+      
+      const form = this; 
+      const formData = new FormData(form); 
+      formData.append('milestone_id', #{@pref_form.id})
+  
+      fetch(form.action, { 
+        method: form.method,
+        headers: {
+          'X-CSRF-Token': document.querySelector("meta[name='csrf-token']").getAttribute("content")
+        },
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          form.reset();
+          document.getElementById('success-message').style.display = 'block';
+          setTimeout(function() {
+            document.getElementById('success-message').style.display = 'none';
+          }, 3000);
+
+          const issueCardElement = document.querySelector('.issue-card');
+          if (issueCardElement) {
+          issueCardElement.style.display = 'none';
+          }
+        } else {
+          console.error('Error:', response.statusText);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
+  });

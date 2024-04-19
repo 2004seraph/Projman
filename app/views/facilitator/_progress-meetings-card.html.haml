@@ -15,12 +15,12 @@
       %h5= "Completed"
       - for n in 1..5
         .navigation-list-item
-          = link_to facilitator_progress_form_path(week: n) do
+          = link_to progress_form_facilitators_path(week: n) do
             %h6.p-1= "Week #{n}"
 
       %hr.divider
       %h5= "To Do"
       - for n in 6..8
         .navigation-list-item
-          = link_to facilitator_progress_form_path(week: n) do
+          = link_to progress_form_facilitators_path(week: n) do
             %h6.p-1= "Week #{n}"

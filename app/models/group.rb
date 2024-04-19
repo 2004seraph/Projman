@@ -32,7 +32,7 @@ class Group < ApplicationRecord
 
   belongs_to :subproject, optional: true
   belongs_to :assigned_facilitator, optional: true
-  before_save :facilitators_must_be_enrolled_on_the_same_module
+  before_save :facilitator_must_be_enrolled_on_the_same_module
 
   has_and_belongs_to_many :students, after_add: :students_must_be_enrolled_on_the_same_module
   has_many :events, dependent: :destroy
@@ -47,11 +47,11 @@ class Group < ApplicationRecord
     end
   end
 
-  def facilitators_must_be_enrolled_on_the_same_module
-    error_msg = "Facilitators must be part of the same module as this group's project"
+  def facilitator_must_be_enrolled_on_the_same_module
+    error_msg = "The facilitator must be part of the same module as this group's project"
     unless assigned_facilitator.course_project == course_project
       errors.add(:assigned_facilitator, error_msg)
-      throw(:abort, error_msg)
+      # throw(:abort, error_msg)
     end
   end
 end
