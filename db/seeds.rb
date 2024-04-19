@@ -11,7 +11,6 @@ require 'database_helper'
 require 'csv'
 
 sam = Student.find_or_create_by({
-sam = Student.find_or_create_by({
   username: "aca21sgt",
   preferred_name: "Sam",
   forename: "Sam",
@@ -25,7 +24,6 @@ DatabaseHelper.print_validation_errors(sam)
 # DatabaseHelper.print_validation_errors(sam_staff)
 
 josh = Student.find_or_create_by({
-josh = Student.find_or_create_by({
   username: "aca21jlh",
   preferred_name: "Josh",
   forename: "Joshua",
@@ -36,9 +34,7 @@ josh = Student.find_or_create_by({
   fee_status: :home
 })
 DatabaseHelper.create_staff("jhenson2@sheffield.ac.uk")
-DatabaseHelper.create_staff("jhenson2@sheffield.ac.uk")
 
-jakub = Student.find_or_create_by({
 jakub = Student.find_or_create_by({
   username: "ack21jb",
   preferred_name: "Jakub",
@@ -49,9 +45,7 @@ jakub = Student.find_or_create_by({
   fee_status: :home
 })
 DatabaseHelper.create_staff("jbala1@sheffield.ac.uk")
-DatabaseHelper.create_staff("jbala1@sheffield.ac.uk")
 
-adam = Student.find_or_create_by({
 adam = Student.find_or_create_by({
   username: "acc22aw",
   preferred_name: "Adam",
@@ -89,7 +83,6 @@ DatabaseHelper.create_staff("nkhan10@sheffield.ac.uk")
 
 puts ""
 
-robotics_class = DatabaseHelper.provision_module_class(
 oliver = Student.find_or_create_by({
   username: "aca22op",
   preferred_name: "Oliver",
@@ -214,21 +207,6 @@ puts ""
 DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
   course_project: CourseProject.find_by(name: "TurtleBot Project"),
   staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk")
-}))
-
-DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
-  course_project: CourseProject.find_by(name: "AI Project"),
-  staff: Staff.find_by(email: "opickford1@sheffield.ac.uk")
-}))
-
-DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
-  course_project: CourseProject.find_by(name: "AI Project"),
-  student: Student.find_by(email: "sgttaseff1@sheffield.ac.uk")
-}))
-
-DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
-  course_project: CourseProject.find_by(name: "TurtleBot Project"),
-  staff: Staff.find_by(email: "opickford1@sheffield.ac.uk")
 }))
 
 DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
