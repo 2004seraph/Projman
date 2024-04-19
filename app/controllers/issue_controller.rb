@@ -1,5 +1,5 @@
 class IssueController < ApplicationController
-    # load_and_authorize_resource
+    authorize_resource class: false, except: :update_selection
     
 
     def index
@@ -16,12 +16,12 @@ class IssueController < ApplicationController
     def update_selection
         get_all_issues
 
-        if @user.instance_of? Student
+        if current_user.is_student?
             if !(params[:selected_project] == 'All' || params[:selected_project].nil?)   
                 project_selected = params[:selected_project]
                 project = CourseProject.find_by(name: project_selected)
- 
-                group = @user_groups.find_by(course_projects_id: project.id)
+
+                group = @user_groups.find_by(course_project_id: project.id)
 
                 @open_issues = Event.where(event_type: :issue, completed: false, group_id: group.id)
                 @resolved_issues = Event.where(event_type: :issue, completed: true, group_id: group.id)
@@ -31,7 +31,7 @@ class IssueController < ApplicationController
                 project_selected = params[:selected_project]
                 project = CourseProject.find_by(name: project_selected)
 
-                @project_groups = Group.where(course_projects_id: project.id)
+                @project_groups = Group.where(course_project_id: project.id)
 
                 @open_issues = []
                 @resolved_issues = []
@@ -53,7 +53,7 @@ class IssueController < ApplicationController
         }.to_json
 
         current_project_id = params[:project_id]
-        group = @user.groups.find_by(course_projects_id: current_project_id)
+        group = current_user.student.groups.find_by(course_project_id: current_project_id)
 
         @issue = Event.new(completed: false, event_type: :issue, json_data: json_data, group_id: group.id)
 
@@ -95,8 +95,8 @@ class IssueController < ApplicationController
         @user_projects = []
 
         # if current_user.isStudent?
-        if @user.instance_of? Student
-            @user_groups = @user.groups
+        if current_user.is_student?
+            @user_groups = current_user.student.groups
             @user_groups.each do |user_group|
                 current_issue = Event.where(event_type: :issue, completed: false, group_id: user_group.id)
                 if !current_issue.nil?
@@ -108,17 +108,17 @@ class IssueController < ApplicationController
                     @resolved_issues += current_issue
                 end
 
-                @user_projects += CourseProject.where(id: user_group.course_projects_id)
+                @user_projects += CourseProject.where(id: user_group.course_project_id)
             end
         else
-            @user_modules = CourseModule.where(staff_id: @user.id)
+            @user_modules = CourseModule.where(staff_id: current_user.staff.id)
             @user_modules.each do |user_module|
                 @user_projects += CourseProject.where(course_module_id: user_module.id)
             end
 
             @project_groups = []
             @user_projects.each do |user_project|
-                @project_groups += Group.where(course_projects_id: user_project.id)
+                @project_groups += Group.where(course_project_id: user_project.id)
             end
 
             @project_groups.each do |project_group|

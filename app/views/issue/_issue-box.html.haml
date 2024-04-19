@@ -32,7 +32,7 @@
           .issue-text.border.p-2.mb-2
             .fs-6 #{response['content']}
         <!- if current_user.isStaff?>
-        - if @user.instance_of?(Staff) && !issue.completed
+        - if current_user.is_staff? && !issue.completed
           = form_with(url: "/issues/issue-response", method: "post", local: false, id: "response-form-#{issue.id}") do |form|
             %input{ type: "hidden", name: "issue_id", value: "#{issue.id}"}
             %input{ type: "hidden", name: "author", value: "#{@current_user.givenname} #{@current_user.sn}"}
@@ -46,7 +46,7 @@
           .alert.alert-success{style: "display: none;", id: "success-message-#{issue.id}" }
             Response submitted successfully!
         <!- if current_user.isStudent?>
-        - if @user.instance_of?(Student) && issue.completed
+        - if current_user.is_student? && issue.completed
           .d-flex.justify-content-end.mb-2
             %button.btn.btn-primary
               %i.bi.bi-check-circle-fill
