@@ -304,7 +304,7 @@ class CourseProjectController < ApplicationController
             status: :draft
         )
 
-        if new_project.valid?
+        if new_project.valid? && no_errors
             new_project.save 
         else
             new_project.errors.messages.each do |section, section_errors|
@@ -333,8 +333,12 @@ class CourseProjectController < ApplicationController
                     subproject.save
                 else
                     new_project.destroy
-                    subproject.errors.messages.each do |error|
-                        errors[:main] << error
+                    subproject.errors.messages.each do |attribute, messages|
+                        messages.each do |message|
+                          unless errors[:timings].include?("Subproject error: #{attribute} : #{message}")
+                            errors[:timings] << "Subproject error: #{attribute} : #{message}"
+                          end
+                        end
                     end
                 end
             end
@@ -388,8 +392,12 @@ class CourseProjectController < ApplicationController
                     milestone.save
                 else
                     new_project.destroy
-                    milestone.errors.messages.each do |error|
-                        errors[:main] << error
+                    milestone.errors.messages.each do |attribute, messages|
+                        messages.each do |message|
+                          unless errors[:main].include?("Milestone error: #{attribute} : #{message}")
+                            errors[:main] << "Milestone error: #{attribute} : #{message}"
+                          end
+                        end
                     end
                 end
             end
@@ -416,8 +424,12 @@ class CourseProjectController < ApplicationController
                     facilitator.save
                 else
                     new_project.destroy
-                    facilitator.errors.messages.each do |error|
-                        errors[:main] << error
+                    facilitator.errors.messages.each do |attribute, messages|
+                        messages.each do |message|
+                          unless errors[:main].include?("Facilitator error: #{attribute} : #{message}")
+                            errors[:main] << "Facilitator error: #{attribute} : #{message}"
+                          end
+                        end
                     end
                 end
             end
@@ -455,9 +467,11 @@ class CourseProjectController < ApplicationController
                     group.save
                 else
                     new_project.destroy
-                    group.errors.messages.each do |error|
-                        unless errors[:main].include? error
-                            errors[:main] << "could not create group: " + error
+                    group.errors.messages.each do |attribute, messages|
+                        messages.each do |message|
+                          unless errors[:main].include?("Group error: #{attribute} : #{message}")
+                            errors[:main] << "Group error: #{attribute} : #{message}"
+                          end
                         end
                     end
                 end

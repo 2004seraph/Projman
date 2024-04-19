@@ -22,6 +22,8 @@ class Milestone < ApplicationRecord
   has_many :milestone_responses, dependent: :destroy
   belongs_to :course_project
 
+  validates :deadline,  presence: true
+
   enum :milestone_type, {
     student: 'for_each_student',
     staff: 'for_each_staff',
