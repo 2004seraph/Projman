@@ -331,7 +331,7 @@ class CourseProjectController < ApplicationController
                 status: :draft
             )
             if new_project.save!
-                puts new_project.id
+                # puts new_project.id
             end
 
             # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
@@ -348,8 +348,8 @@ class CourseProjectController < ApplicationController
 
             # Creating associated milestones
             project_data[:project_milestones].each do |milestone_data|
-                puts "Preparing milestone: ", milestone_data
-                puts "course id: ", new_project.id
+                # puts "Preparing milestone: ", milestone_data
+                # puts "course id: ", new_project.id
 
                 # dd/mm/yyyy to yyyy-mm-dd
                 date_string = milestone_data[:Date]
@@ -365,7 +365,7 @@ class CourseProjectController < ApplicationController
                     "Email" => milestone_data[:Email],
                     "Comment" => milestone_data[:Comment]
                 }
-                puts json_data
+                # puts json_data
 
                 milestone = Milestone.new(
                     json_data: json_data,
@@ -375,9 +375,9 @@ class CourseProjectController < ApplicationController
                 )
 
                 if milestone.save!
-                    puts "milestone: ", milestone, "saved succesfully"
+                    # puts "milestone: ", milestone, "saved succesfully"
                 else
-                    puts "milestone: ", milestone, "was not saved"
+                    # puts "milestone: ", milestone, "was not saved"
                 end
             end
 
@@ -398,9 +398,10 @@ class CourseProjectController < ApplicationController
 
         # May need further changes here to accoutn for if any of the database commits (.save!) dont go through
         if no_errors
-            flash[:notice] = "Project has been created successfully"
+            # flash[:notice] = "Project has been created successfully"
             redirect_to action: :index
         else
+            # render :new
             render :new
         end
     end
