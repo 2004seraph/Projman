@@ -41,7 +41,7 @@ class CourseProjectController < ApplicationController
 
     def new
         staff_id = Staff.where(email: current_user.email).first
-        modules_hash = CourseModule.where(staff_id: staff_id).order(:code).pluck(:code, :name).to_h
+        modules_hash = CourseModule.all.pluck(:code, :name).to_h # where(staff_id: staff_id).order(:code).pluck(:code, :name)
         project_allocation_modes_hash = CourseProject.project_allocations
         team_allocation_modes_hash = CourseProject.team_allocations
         milestone_types_hash = Milestone.milestone_types

@@ -36,8 +36,8 @@ RSpec.feature "Project Creation", type: :feature, js: true do
 
     # UX
 
-    describe "User can toggle Project Choices visibility" do
-        context "when clicking the toggle button" do
+    describe "User can toggle Project Choices visibility", js: true do
+        context "when clicking the toggle button", js: true do
             it "hides the Project Choices panel if it is currently visible", js: true do
 
                 # requires JS
