@@ -13,7 +13,6 @@ Rails.application.routes.draw do
     resource :milestone_responses, only: [:create], controller: :milestone_response
 
     get '/teams', to: 'lead#teams', on: :member
-    post '/new', to: 'course_project#create', on: :collection
 
     # AJAX
     post 'add_project_choice', on: :collection

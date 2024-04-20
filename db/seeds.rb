@@ -111,7 +111,8 @@ nahyan.enroll_module "COM3420"
 DatabaseHelper.provision_module_class(
   "COM9999",
   "Systems and Security",
-  DatabaseHelper.create_staff("jbala1@sheffield.ac.uk")
+  DatabaseHelper.create_staff("jbala1@sheffield.ac.uk"),
+  DatabaseHelper.change_class_module(robotics_class, "COM9999")
 )
 sam.enroll_module "COM9999"
 josh.enroll_module "COM9999"

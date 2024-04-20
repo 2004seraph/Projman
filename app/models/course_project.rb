@@ -28,11 +28,14 @@
 class CourseProject < ApplicationRecord
   has_many :groups, dependent: :destroy
   has_many :milestones, dependent: :destroy
+<<<<<<< HEAD
   has_many :assigned_facilitators, dependent: :destroy
   has_many :subprojects, dependent: :destroy
+=======
+>>>>>>> d4898ede584807e1a6fa7fc8cf71880522d533e7
   belongs_to :course_module
 
-  validate :creation_validation
+  validates :name, presence: true
 
   enum :status, {
     draft: 'draft',
@@ -56,6 +59,7 @@ class CourseProject < ApplicationRecord
     preference_form_based: 'preference_form_based'
   }
 
+<<<<<<< HEAD
   def creation_validation 
     errors.add(:main, 'Project name cannot be empty') if name.blank?
     unless errors[:main].present?
@@ -81,4 +85,6 @@ class CourseProject < ApplicationRecord
     end 
   end
 
+=======
+>>>>>>> d4898ede584807e1a6fa7fc8cf71880522d533e7
 end

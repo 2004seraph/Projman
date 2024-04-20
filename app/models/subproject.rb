@@ -20,7 +20,7 @@
 class Subproject < ApplicationRecord
 
   belongs_to :course_project
-  has_one :course_module, through: :course_project
+  belongs_to :course_module, through: :course_project
 
   has_many :groups
 end

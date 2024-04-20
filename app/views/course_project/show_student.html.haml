@@ -14,7 +14,7 @@
 
     %hr.divider
 
-    -if @current_project.status == 'student_preference'
+    -if @show_pref_form
         = render partial: 'course_project/components/pref-form-box'
     
     -if @current_project.status == 'team_preference'
