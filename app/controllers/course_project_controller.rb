@@ -47,7 +47,6 @@ class CourseProjectController < ApplicationController
     def new
         staff_id = Staff.where(email: current_user.email).first
         modules_hash = CourseModule.where(staff_id: staff_id).order(:code).pluck(:code, :name).to_h
-        puts modules_hash
         project_allocation_modes_hash = CourseProject.project_allocations
         team_allocation_modes_hash = CourseProject.team_allocations
         milestone_types_hash = Milestone.milestone_types
@@ -128,6 +127,9 @@ class CourseProjectController < ApplicationController
         end
         session[:new_project_data][:project_milestones] = filtered_milestones
         if request.xhr?
+            respond_to do |format|
+                format.js
+            end
         else
             render :new
         end
@@ -141,6 +143,13 @@ class CourseProjectController < ApplicationController
         @facilitator_email = params[:project_facilitator_name]
         if @facilitator_email.present?
             session[:new_project_data][:facilitator_selection] << @facilitator_email
+        end
+        if request.xhr?
+            respond_to do |format|
+                format.js
+            end
+        else
+            render :new
         end
     end
 
@@ -157,13 +166,18 @@ class CourseProjectController < ApplicationController
               @facilitators_added << facilitator
             end
         end
+        if request.xhr?
+            respond_to do |format|
+                format.js
+            end
+        else
+            render :new
+        end
     end
 
     def remove_facilitator
         @facilitator_email = params[:item_text]
         session[:new_project_data][:project_facilitators].delete(@facilitator_email)
-        puts "REMOVING: ", @facilitator_email
-        puts session[:new_project_data][:project_facilitators]
     end
 
     def search_facilitators_student
@@ -195,7 +209,6 @@ class CourseProjectController < ApplicationController
 
     def set_milestone_comment
         milestone_name = params[:milestone_name].split('_').drop(1).join('_')
-        puts milestone_name
         milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
         milestone[:Comment] = params[:milestone_comment]
     end
@@ -340,10 +353,11 @@ class CourseProjectController < ApplicationController
 
                 # dd/mm/yyyy to yyyy-mm-dd
                 date_string = milestone_data[:Date]
-                puts date_string
+                # This did a funny where sometimes the format was recieved as m/d/y, hasnt happened again since what should have fixed it
+                # puts date_string
                 next if !date_string.present?   #dont push the milestone if its not got a set date
                 parsed_date = Date.strptime(date_string, "%d/%m/%Y").strftime("%Y-%m-%d")
-                puts parsed_date
+                # puts parsed_date
 
                 json_data = {
                     "Name" => milestone_data[:Name],
