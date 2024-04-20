@@ -32,8 +32,6 @@ class CourseProject < ApplicationRecord
   has_many :subprojects, dependent: :destroy
   belongs_to :course_module
 
-  validates :name, presence: true
-
   validate :creation_validation
 
   enum :status, {
@@ -57,6 +55,8 @@ class CourseProject < ApplicationRecord
     random_team_allocation: 'random',
     preference_form_based: 'preference_form_based'
   }
+
+  private
 
   def creation_validation
     errors.add(:main, 'Project name cannot be empty') if name.blank?

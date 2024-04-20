@@ -29,8 +29,8 @@
 
       .container-fluid.d-flex.flex-column.fs-6.text-danger
         - if errors[:main].present?
-          - errors[:main].each do |key, value|
-            %span= value
+          - errors[:main].each do |error|
+            %span= error
 
 
     -# PROJECT CHOICES
@@ -44,8 +44,8 @@
         - if errors[:project_choices].present?
           %div
             .d-flex.flex-column.fs-6.text-danger
-              - errors[:project_choices].each do |key, value|
-                %span= value
+              - errors[:project_choices].each do |error|
+                %span= error
             %hr
 
         %ul.list-group.list-group-flush.mb-2#project-choices-list
@@ -75,8 +75,8 @@
         - if errors[:team_config].present?
           %div
             .d-flex.flex-column.fs-6.text-danger
-              - errors[:team_config].each do |key, value|
-                %span= value
+              - errors[:team_config].each do |error|
+                %span= error
             %hr
         .row.align-items-center
           .col
@@ -104,8 +104,8 @@
         - if errors[:team_pref].present?
           %div
             .d-flex.flex-column.fs-6.text-danger
-              - errors[:team_pref].each do |key, value|
-                %span= value
+              - errors[:team_pref].each do |error|
+                %span= error
             %hr
         .row.align-items-center
           .col
@@ -132,8 +132,8 @@
         - if errors[:timings].present?
           %div
             .d-flex.flex-column.fs-6.text-danger
-              - errors[:timings].each do |key, value|
-                %span= value
+              - errors[:timings].each do |error|
+                %span= error
             %hr
         %h3.fs-5.mb-2 Deadlines
         .mb-3
