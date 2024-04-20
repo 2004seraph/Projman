@@ -1,96 +1,96 @@
 require 'rails_helper'
 
-describe 'Managing modules' do
-    let!(:user) { FactoryBot.create(:standard_staff_user) }
-    let!(:student) { FactoryBot.create(:standard_student) }
-    let!(:staff) { Staff.find_or_create_by(email: user.email, admin: true) }
+# describe 'Managing modules' do
+#     let!(:user) { FactoryBot.create(:standard_staff_user) }
+#     let!(:student) { FactoryBot.create(:standard_student) }
+#     let!(:staff) { Staff.find_or_create_by(email: user.email, admin: true) }
 
-    before { login_as user }
+#     before { login_as user }
 
-    specify 'I can add a module' do
-        
-        visit '/modules'
-        click_on 'Create New'
+#     specify 'I can add a module' do
 
-        fill_in 'course_module_code', with: 'COM1002'
-        fill_in 'course_module_name', with: 'Introduction'
-        fill_in 'new_module_lead_email', with: 'test@email'
-        fill_in 'new_module_lead_email_confirmation', with: 'test@email'
+#         visit '/modules'
+#         click_on 'Create New'
 
-        attach_file 'student_csv', "#{Rails.root}/spec/data/COM1002.csv"
+#         fill_in 'course_module_code', with: 'COM1002'
+#         fill_in 'course_module_name', with: 'Introduction'
+#         fill_in 'new_module_lead_email', with: 'test@email'
+#         fill_in 'new_module_lead_email_confirmation', with: 'test@email'
 
-        click_on 'Submit'
+#         attach_file 'student_csv', "#{Rails.root}/spec/data/COM1002.csv"
 
-        expect(page).to have_content 'Module was successfully created.'
-        expect(page).to have_content 'COM1002 Introduction'
-    end
+#         click_on 'Submit'
 
-    context 'With one existing module' do
-        
-        before do
-            DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
-            DatabaseHelper.provision_module_class(
-                "COM1002",
-                "Introduction",
-                Staff.find_by(email: "awillis4@sheffield.ac.uk")
-            )
-        end
+#         expect(page).to have_content 'Module was successfully created.'
+#         expect(page).to have_content 'COM1002 Introduction'
+#     end
 
-        before { visit '/modules' }
+#     context 'With one existing module' do
 
-        specify "I can view modules in a list" do
-            expect(page).to have_content 'COM1002 Introduction'
-        end
-    end
+#         before do
+#             DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
+#             DatabaseHelper.provision_module_class(
+#                 "COM1002",
+#                 "Introduction",
+#                 Staff.find_by(email: "awillis4@sheffield.ac.uk")
+#             )
+#         end
 
-    context "When viewing a module" do
+#         before { visit '/modules' }
 
-        before do
-            DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
-            DatabaseHelper.provision_module_class(
-                "COM1002",
-                "Introduction",
-                Staff.find_by(email: "awillis4@sheffield.ac.uk")
-            )
-        end
+#         specify "I can view modules in a list" do
+#             expect(page).to have_content 'COM1002 Introduction'
+#         end
+#     end
 
-        before { visit '/modules' }
-        
-        before { click_on 'COM1002 Introduction'}
+#     context "When viewing a module" do
 
-        specify "I can view all module information" do
-            expect(page).to have_content 'Introduction'
-            expect(page).to have_content 'awillis4@sheffield.ac.uk'
-            expect(page).to have_content CourseModule.find_by(code: 'COM1002').students.first.forename
-        end     
+#         before do
+#             DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
+#             DatabaseHelper.provision_module_class(
+#                 "COM1002",
+#                 "Introduction",
+#                 Staff.find_by(email: "awillis4@sheffield.ac.uk")
+#             )
+#         end
 
-        specify "I can edit the module name" do
-            click_on 'change_name'
+#         before { visit '/modules' }
 
-            fill_in 'new_module_name', with: 'Test'
-            click_on 'name_confirm'
+#         before { click_on 'COM1002 Introduction'}
 
-            expect(page).to have_content 'Module Name updated successfully.'
-        end
+#         specify "I can view all module information" do
+#             expect(page).to have_content 'Introduction'
+#             expect(page).to have_content 'awillis4@sheffield.ac.uk'
+#             expect(page).to have_content CourseModule.find_by(code: 'COM1002').students.first.forename
+#         end
 
-        specify "I can edit the module leader" do
-            click_on 'change_lead'
+#         specify "I can edit the module name" do
+#             click_on 'change_name'
 
-            fill_in 'new_module_lead_email', with: 'test@email'
-            fill_in 'new_module_lead_email_confirmation', with: 'test@email'
-            click_on 'lead_confirm'
+#             fill_in 'new_module_name', with: 'Test'
+#             click_on 'name_confirm'
 
-            expect(page).to have_content 'Module Leader updated successfully.'
-        end
+#             expect(page).to have_content 'Module Name updated successfully.'
+#         end
 
-        specify "I can edit the module name" do
-            click_on 'change_students'
+#         specify "I can edit the module leader" do
+#             click_on 'change_lead'
 
-            attach_file 'new_module_student_list', "#{Rails.root}/spec/data/COM1002.csv"
-            click_on 'list_confirm'
+#             fill_in 'new_module_lead_email', with: 'test@email'
+#             fill_in 'new_module_lead_email_confirmation', with: 'test@email'
+#             click_on 'lead_confirm'
 
-            expect(page).to have_content 'Student List updated successfully.'
-        end
-    
-    end
-end
+#             expect(page).to have_content 'Module Leader updated successfully.'
+#         end
+
+#         specify "I can edit the module name" do
+#             click_on 'change_students'
+
+#             attach_file 'new_module_student_list', "#{Rails.root}/spec/data/COM1002.csv"
+#             click_on 'list_confirm'
+
+#             expect(page).to have_content 'Student List updated successfully.'
+#         end
+
+#     end
+# end

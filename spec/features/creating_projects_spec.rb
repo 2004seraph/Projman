@@ -6,6 +6,8 @@ RSpec.feature "Project Creation", type: :feature do
     let!(:staff) { Staff.find_or_create_by(email: user.email) }
 
     before(:all) do
+
+
         DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
         DatabaseHelper.create_staff("jbala1@sheffield.ac.uk")
         DatabaseHelper.provision_module_class(
@@ -34,16 +36,24 @@ RSpec.feature "Project Creation", type: :feature do
 
     # UX
 
-    describe "User can toggle Project Choices visibility" do
+    describe "User can toggle Project Choices visibility", js: true do
         context "when clicking the toggle button" do
-            it "hides the Project Choices panel if it is currently visible", js: true do
+            it "hides the Project Choices panel if it is currently visible" do
 
                 # requires JS
 
-                # login_as user
-                # visit "/projects/new"
-                # find('#project-choices-enable').uncheck
-                # expect(page).to have_css('#project-choices.display-none')
+                #project-choices > div:nth-child(2)
+                # Capybara.ignore_hidden_elements = false
+
+                login_as user
+                visit "/projects/new"
+                # save_and_open_screenshot
+                find('#project-choices-enable').uncheck
+                expect(page).to have_css('#project-choices.display-none')
+                # save_and_open_screenshot
+
+                # Capybara.ignore_hidden_elements = true
+
             end
         end
     end
@@ -152,13 +162,13 @@ RSpec.feature "Project Creation", type: :feature do
                 select('Preference form based', from: 'team_allocation_method')
                 click_button 'create-project-save-button'
                 expect(page).to have_select('team_allocation_method', selected: 'Preference form based')
-            end 
+            end
             it "persists set team size" do
                 fill_in 'team_size', with: 6
                 click_button 'create-project-save-button'
                 expect(page).to have_field('team_size', with: '6')
             end
-            it "persists preferred and avoided teammates" do 
+            it "persists preferred and avoided teammates" do
                 fill_in 'preferred_teammates', with: 1
                 fill_in 'avoided_teammates', with: 3
                 click_button 'create-project-save-button'
@@ -179,7 +189,7 @@ RSpec.feature "Project Creation", type: :feature do
                     fill_in "project_milestone_name", with: "New Milestone 1"
                     find('.btn-primary', visible: :all).click
                     fill_in "project_milestone_name", with: "New Milestone 2"
-                    find('.btn-primary', visible: :all).click 
+                    find('.btn-primary', visible: :all).click
                 end
                 within '#timings' do
                     expect(page).to have_content("New Milestone 1")
@@ -260,12 +270,12 @@ RSpec.feature "Project Creation", type: :feature do
         end
         context "Project Allocation method is invalid" do
             it "shows error" do
-                # Requires JS 
+                # Requires JS
             end
         end
         context "Team size is invalid" do
             it "shows error" do
-                # Requires JS 
+                # Requires JS
             end
         end
         context "Teammate Preference form has both fields as 0" do
@@ -413,7 +423,7 @@ RSpec.feature "Project Creation", type: :feature do
                     fill_in "project_milestone_name", with: "New Milestone 1"
                     find('.btn-primary', visible: :all).click
                     fill_in "project_milestone_name", with: "New Milestone 2"
-                    find('.btn-primary', visible: :all).click 
+                    find('.btn-primary', visible: :all).click
                 end
                 fill_in 'milestone_New Milestone 1_date', with: "28/06/2024"
                 fill_in 'milestone_New Milestone 2_date', with: "28/06/2024"
@@ -462,7 +472,7 @@ RSpec.feature "Project Creation", type: :feature do
                     fill_in "project_milestone_name", with: "New Milestone 1"
                     find('.btn-primary', visible: :all).click
                     fill_in "project_milestone_name", with: "New Milestone 2"
-                    find('.btn-primary', visible: :all).click 
+                    find('.btn-primary', visible: :all).click
                 end
                 within '#add-staff-project-facilitators-modal' do
                     fill_in 'project_facilitator_name', with: 'awillis4@sheffield.ac.uk'

@@ -34,19 +34,29 @@
 #  index_students_on_ucard_number  (ucard_number) UNIQUE
 #  index_students_on_username      (username) UNIQUE
 #
-require 'rails_helper'
+require 'student_data_helper'
 
-# RSpec.describe Student, type: :model do
-#   context "Should accept" do
-#     it "with a valid generated class list" do
-#       new_module = CourseModule.create ({
-#         code: "COM3420",
-#         name: "Software Hut",
-#         staff: Staff.find_by(email: "emma_norling@sheffield.ac.uk")
-#       })
+FactoryBot.define do
+  # Returns a raw CSV string of student dummy data
+  factory :csv_data, class: String do
+    transient do
+      default_module { "COM3420" }
+      num_records { 234 }
+    end
 
-#       csv_data = FactoryBot.build(:csv_data)
-#       Student.bootstrap_class_list csv_data
-#     end
-#   end
-# end
+    initialize_with { StudentDataHelper.generate_dummy_data_csv_string(
+      default_module,
+      num_records)
+    }
+  end
+
+  factory :standard_student, class: Student do
+    username {"acc22aw"}
+    preferred_name {"Adam"}
+    forename {"Adam"}
+    title {"Mr"}
+    ucard_number {"001787692"}
+    email {"awillis4@sheffield.ac.uk"}
+    fee_status {:home}
+  end
+end

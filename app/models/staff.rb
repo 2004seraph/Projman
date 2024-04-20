@@ -23,7 +23,10 @@ class Staff < ApplicationRecord
 
   devise :trackable
   has_many :assigned_facilitators, dependent: :destroy
-  has_many :modules
+
+  has_many :course_modules
+  has_many :course_projects, through: :course_modules
+  has_many :groups, through: :course_projects
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }
 end

@@ -4,51 +4,67 @@
 -#  Students see their projects and any alert markers
 -#  Module Leaders see projects divided by their status
 
+.separating-section
+    %h2
+        Your Projects
+    %hr.divider
+
 .flex-end
     = link_to new_project_path, class: 'btn btn-primary' do
         %i.bi.bi-plus-square-fill
         Create New
 
 .separating-section
-    %h2
-        %i.bi.bi-circle-fill.fill-green
-        Live
+    - @projects.each do |project|
+        = link_to project_url(project.id), class: "project-link" do
+            .project-button
+                %h3
+                    #{project.course_module.code} #{project.course_module.name} - #{project.name}
+                    .sub-status
+                        #{ViewHelper.unparamaterize project.status}
+                        -#Change colour according to deadlines or status????
+                        %i.bi.bi-circle-fill.fill-green
 
-    = render partial:'project-button', locals: { project_id: 0 }
-    = render partial:'project-button', locals: { project_id: 0 }
-    %hr.divider
+-# .separating-section
+-#     %h2
+-#         %i.bi.bi-circle-fill.fill-green
+-#         Live
 
-.separating-section
-    %h2
-        %i.bi.bi-circle-fill.fill-yellow
-        Reviewing Teams / Project Allocation
+-#     = render partial:'project-button', locals: { project_id: 0 }
+-#     = render partial:'project-button', locals: { project_id: 0 }
+-#     %hr.divider
 
-    = render partial:'project-button', locals: { project_id: 0 }
-    = render partial:'project-button', locals: { project_id: 0 }
-    %hr.divider
+-# .separating-section
+-#     %h2
+-#         %i.bi.bi-circle-fill.fill-yellow
+-#         Reviewing Teams / Project Allocation
 
-.separating-section
-    %h2
-        %i.bi.bi-circle-fill.fill-red
-        Awaiting Teams / Project Preference Form
+-#     = render partial:'project-button', locals: { project_id: 0 }
+-#     = render partial:'project-button', locals: { project_id: 0 }
+-#     %hr.divider
 
-    = render partial:'project-button', locals: { project_id: 0 }
-    = render partial:'project-button', locals: { project_id: 0 }
-    %hr.divider
+-# .separating-section
+-#     %h2
+-#         %i.bi.bi-circle-fill.fill-red
+-#         Awaiting Teams / Project Preference Form
 
-.separating-section
-    %h2
-        %i.bi.bi-pencil-fill
-        Drafting
+-#     = render partial:'project-button', locals: { project_id: 0 }
+-#     = render partial:'project-button', locals: { project_id: 0 }
+-#     %hr.divider
 
-    = render partial:'project-button', locals: { project_id: 0 }
-    = render partial:'project-button', locals: { project_id: 0 }
-    %hr.divider
+-# .separating-section
+-#     %h2
+-#         %i.bi.bi-pencil-fill
+-#         Drafting
 
-.separating-section
-    %h2
-        %i.bi.bi-archive-fill
-        Archived
+-#     = render partial:'project-button', locals: { project_id: 0 }
+-#     = render partial:'project-button', locals: { project_id: 0 }
+-#     %hr.divider
 
-    = render partial:'project-button', locals: { project_id: 0 }
-    = render partial:'project-button', locals: { project_id: 0 }
+-# .separating-section
+-#     %h2
+-#         %i.bi.bi-archive-fill
+-#         Archived
+
+-#     = render partial:'project-button', locals: { project_id: 0 }
+-#     = render partial:'project-button', locals: { project_id: 0 }

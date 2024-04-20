@@ -6,8 +6,6 @@
         Projects
     %hr.divider
 
-    -#NEED EXAMPLES TO CREATE PROJECT BUTTONS
-
     - @projects.each do |project|
         = link_to project_url(project.id), class: "project-link" do
             .project-button

@@ -28,14 +28,11 @@
 class CourseProject < ApplicationRecord
   has_many :groups, dependent: :destroy
   has_many :milestones, dependent: :destroy
-<<<<<<< HEAD
   has_many :assigned_facilitators, dependent: :destroy
   has_many :subprojects, dependent: :destroy
-=======
->>>>>>> d4898ede584807e1a6fa7fc8cf71880522d533e7
   belongs_to :course_module
 
-  validates :name, presence: true
+  validate :creation_validation
 
   enum :status, {
     draft: 'draft',
@@ -59,8 +56,9 @@ class CourseProject < ApplicationRecord
     preference_form_based: 'preference_form_based'
   }
 
-<<<<<<< HEAD
-  def creation_validation 
+  private
+
+  def creation_validation
     errors.add(:main, 'Project name cannot be empty') if name.blank?
     unless errors[:main].present?
       if CourseProject.exists?(name: name, course_module_id: course_module_id)
@@ -82,9 +80,6 @@ class CourseProject < ApplicationRecord
     errors.add(:team_pref, 'Invalid avoided teammates entry') if avoided_teammates.nil?
     if !errors[:team_pref].present? && team_allocation == 'preference_form_based' && (preferred_teammates + avoided_teammates == 0)
       errors.add(:team_pref, 'Preferred and Avoided teammates cannot both be 0')
-    end 
+    end
   end
-
-=======
->>>>>>> d4898ede584807e1a6fa7fc8cf71880522d533e7
 end
