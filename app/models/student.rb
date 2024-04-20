@@ -77,11 +77,16 @@ class Student < ApplicationRecord
   # end
 
   def enroll_module(module_code)
-    # puts module_code
-    if CourseModule.find_by(code: module_code).students.find_by(username: username) != nil
-      return nil
+    # if CourseModule.find_by(code: module_code).students.find_by(username: username) != nil
+    #   return nil
+    # end
+    # CourseModule.find_by(code: module_code).students << self
+    c = CourseModule.find_by(code: module_code)
+    if c && !c.students.find_by(username: username)
+      course_modules << c
+      return true
     end
-    CourseModule.find_by(code: module_code).students << self
+    false
   end
 
   # A static method to insert a classlist into the database

@@ -16,13 +16,8 @@ require 'json'
 #   {"Name": "Peer Review", "Date: "dd/mm/yyyy"}]
 
 class CourseProjectController < ApplicationController
+
     load_and_authorize_resource
-    #load_and_authorize_resource, except: [
-    #    :add_project_milestone,
-    #    :remove_project_milestone,
-    #    :add_project_choice,
-    #    :remove_project_choice
-    #]
 
     skip_before_action :verify_authenticity_token, only: [
         :remove_project_choice,
@@ -104,6 +99,7 @@ class CourseProjectController < ApplicationController
 
     def add_project_milestone
         @project_milestone_name = params[:project_milestone_name]
+        @project_milestone_name.gsub('_', ' ')
         project_milestone_unique = false
         unless session[:new_project_data][:project_milestones].any? { |milestone| milestone[:Name] == @project_milestone_name }
             session[:new_project_data][:project_milestones] << {"Name": @project_milestone_name, "Date": "", "Type": "", "isDeadline": false, "Email": {"Content": "", "Advance": ""}, "Comment": ""}
@@ -121,11 +117,12 @@ class CourseProjectController < ApplicationController
     end
 
     def remove_project_milestone
-        @project_milestone_name = params[:item_text].strip
+        @project_milestone_name = params[:item_text].strip.match(/^milestone_([^_]+)/)[1]
         filtered_milestones = session[:new_project_data][:project_milestones].reject do |milestone|
             milestone[:Name] == @project_milestone_name
         end
         session[:new_project_data][:project_milestones] = filtered_milestones
+
         if request.xhr?
             respond_to do |format|
                 format.js
@@ -223,62 +220,45 @@ class CourseProjectController < ApplicationController
         # Main Data
         project_data[:project_name] = params[:project_name]
         project_data[:selected_module] = params[:module_selection]
-        errors[:main] = {}
+        errors[:main] = []
         unless CourseModule.exists?(code: project_data[:selected_module])
-            errors[:main][:module_doesnt_exist] = "The selected module does not exist"
-        end
-        unless project_data[:project_name].present?
-            errors[:main][:project_name_empty] = "Project name cannot be empty"
-        end
-        if !errors[:main].present? && CourseProject.exists?(name: project_data[:project_name], course_module_id: CourseModule.where(code: project_data[:selected_module]).first.id)
-            errors[:main][:project_name_empty] = "There exists a project on this module with the same name"
+            errors[:main] << "The selected module does not exist"
         end
 
         # Project Choices
         project_data[:project_choices_enabled] = params.key?(:project_choices_enable)
         project_data[:selected_project_allocation_mode] = params[:project_allocation_method]
-        errors[:project_choices] = {}
-        unless CourseProject.project_allocations.key?(project_data[:selected_project_allocation_mode])
-            errors[:project_choices][:project_allocation_mode_invalid] = "Invalid project allocation mode selected"
-        end
+        errors[:project_choices] = []
+
         if !project_data[:project_choices].present? && project_data[:project_choices_enabled]
-            errors[:project_choices][:no_project_choices] = "Add some project choices, or disable this section"
+            errors[:project_choices] << "Add some project choices, or disable this section"
         end
 
         # Team Config
         project_data[:team_size] = params[:team_size]
         project_data[:selected_team_allocation_mode] = params[:team_allocation_method]
-        errors[:team_config] = {}
-        unless CourseProject.team_allocations.key?(project_data[:selected_team_allocation_mode])
-            errors[:team_config][:selected_team_allocation_mode] = "Invalid team allocation mode selected"
-        end
+        errors[:team_config] = []
 
         # Team Preference Form
         project_data[:preferred_teammates] = params[:preferred_teammates]
         project_data[:avoided_teammates] = params[:avoided_teammates]
-        errors[:team_pref] = {}
-        unless project_data[:preferred_teammates].present?
-            errors[:team_pref][:invalid_pref_teammates] = "Invalid preferred teammates entry"
-        end
-        unless project_data[:avoided_teammates].present?
-            errors[:team_pref][:invalid_pref_teammates] = "Invalid avoided teammates entry"
-        end
+        errors[:team_pref] = []
 
         # Timings
         project_data[:project_deadline] = params["milestone_Project Deadline_date"]
         project_data[:teammate_preference_form_deadline] = params["milestone_Teammate Preference Form Deadline_date"]
         project_data[:project_preference_form_deadline] = params["milestone_Project Preference Form Deadline_date"]
 
-        errors[:timings] = {}
+        errors[:timings] = []
 
         unless project_data[:project_deadline].present?
-            errors[:timings][:project_deadline_not_set] = "Please set project deadline"
+            errors[:timings] << "Please set project deadline"
         end
         if project_data[:selected_team_allocation_mode] != "random_team_allocation" && !project_data[:teammate_preference_form_deadline].present?
-            errors[:timings][:team_pref_deadline_not_set] = "Please set team preference form deadline"
+            errors[:timings] << "Please set team preference form deadline"
         end
         if (project_data[:project_choices_enabled] && project_data[:selected_project_allocation_mode] != "random_project_allocation") && !project_data[:project_preference_form_deadline].present?
-            errors[:timings][:project_pref_deadline_not_set] = "Please set project preference form deadline"
+            errors[:timings] << "Please set project preference form deadline"
         end
 
         params.each do |key, value|
@@ -291,7 +271,10 @@ class CourseProjectController < ApplicationController
                 if milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
                     milestone[:Date] = value
                     unless (defined?(value) && value.present?) || milestone[:isDeadline]
-                        errors[:timings][:milestone_date_not_set] = "Please make sure all milestones have a date"
+                        err = "Please make sure all milestones have a date"
+                        unless errors[:timings].include? err
+                            errors[:timings] << err
+                        end
                     end
                 end
             end
@@ -305,7 +288,10 @@ class CourseProjectController < ApplicationController
                     next if milestone[:isDeadline]
                     milestone[:Type] = value
                     unless defined?(value) && value.present? && Milestone.milestone_types.key?(value)
-                        errors[:timings][:invalid_milestone_type] = "Please make sure all milestone types are valid"
+                        err = "Please make sure all milestone types are valid"
+                        unless errors[:timings].include? err
+                            errors[:timings] << err
+                        end
                     end
                 end
             end
@@ -317,24 +303,62 @@ class CourseProjectController < ApplicationController
         errors[:facilitators_not_found] = facilitators_not_found
 
         no_errors = errors.all? { |_, v| v.empty? }
-        if no_errors
-            # Creating Project Model
-            new_project = CourseProject.new(
-                course_module_id: CourseModule.where(code: project_data[:selected_module]).first.id,
-                name: project_data[:project_name],
-                project_choices_json: project_data[:project_choices_enabled] ? project_data[:project_choices].to_json : "[]",
-                project_allocation: project_data[:selected_project_allocation_mode].to_sym,
-                team_size: project_data[:team_size],
-                team_allocation: project_data[:selected_team_allocation_mode].to_sym,
-                preferred_teammates:  project_data[:preferred_teammates],
-                avoided_teammates: project_data[:avoided_teammates],
-                status: :draft
-            )
-            if new_project.save!
-                # puts new_project.id
-            end
+        # Creating Project Model
+        new_project = CourseProject.new(
+            course_module: CourseModule.find_by(code: project_data[:selected_module]),
+            name: project_data[:project_name],
+            project_choices_json: project_data[:project_choices_enabled] ? project_data[:project_choices].to_json : "[]",
+            project_allocation: project_data[:selected_project_allocation_mode].to_sym,
+            team_size: project_data[:team_size],
+            team_allocation: project_data[:selected_team_allocation_mode].to_sym,
+            preferred_teammates:  project_data[:preferred_teammates],
+            avoided_teammates: project_data[:avoided_teammates],
+            status: :draft
+        )
 
-            # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
+        if new_project.valid? && no_errors
+            new_project.save
+        else
+            new_project.errors.messages.each do |section, section_errors|
+                section_errors.each do |error|
+                    (errors[section.to_sym] ||= []) << error
+                end
+            end
+        end
+        no_errors = errors.all? { |_, v| v.empty? }
+
+        # Create sub projects models and associate them to this project
+        if no_errors
+            subprojects = []
+            if project_data[:project_choices_enabled]
+                project_data[:project_choices].each do |project_choice|
+                    subproject = Subproject.new(
+                        name: project_choice,
+                        json_data: "{}",
+                        course_project_id: new_project.id
+                    )
+                    subprojects << subproject
+                end
+            end
+            subprojects.each do |subproject|
+                if subproject.valid?
+                    subproject.save
+                else
+                    new_project.destroy
+                    subproject.errors.messages.each do |attribute, messages|
+                        messages.each do |message|
+                          unless errors[:timings].include?("Subproject error: #{attribute} : #{message}")
+                            errors[:timings] << "Subproject error: #{attribute} : #{message}"
+                          end
+                        end
+                    end
+                end
+            end
+        end
+        no_errors = errors.all? { |_, v| v.empty? }
+
+        # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
+        if no_errors
             if project_data[:selected_team_allocation_mode] == "random_team_allocation"
                 if milestone = session[:new_project_data][:project_milestones].find { |m| m[:Name] == "Teammate Preference Form Deadline"}
                     milestone[:Date] = ""
@@ -345,11 +369,12 @@ class CourseProjectController < ApplicationController
                     milestone[:Date] = ""
                 end
             end
+        end
 
-            # Creating associated milestones
+        # Creating associated milestones
+        if no_errors
+            milestones = []
             project_data[:project_milestones].each do |milestone_data|
-                # puts "Preparing milestone: ", milestone_data
-                # puts "course id: ", new_project.id
 
                 # dd/mm/yyyy to yyyy-mm-dd
                 date_string = milestone_data[:Date]
@@ -365,7 +390,6 @@ class CourseProjectController < ApplicationController
                     "Email" => milestone_data[:Email],
                     "Comment" => milestone_data[:Comment]
                 }
-                # puts json_data
 
                 milestone = Milestone.new(
                     json_data: json_data,
@@ -374,14 +398,29 @@ class CourseProjectController < ApplicationController
                     course_project_id: new_project.id
                 )
 
-                if milestone.save!
-                    # puts "milestone: ", milestone, "saved succesfully"
-                else
-                    # puts "milestone: ", milestone, "was not saved"
-                end
+                milestones << milestone
             end
 
-            #Creating assigned facilitators
+            milestones.each do |milestone|
+                if milestone.valid?
+                    milestone.save
+                else
+                    new_project.destroy
+                    milestone.errors.messages.each do |attribute, messages|
+                        messages.each do |message|
+                          unless errors[:main].include?("Milestone error: #{attribute} : #{message}")
+                            errors[:main] << "Milestone error: #{attribute} : #{message}"
+                          end
+                        end
+                    end
+                end
+            end
+        end
+        no_errors = errors.all? { |_, v| v.empty? }
+
+        #Creating assigned facilitators
+        if no_errors
+            facilitators = []
             project_data[:project_facilitators].each do |user_email|
 
                 facilitator = AssignedFacilitator.new(course_project_id: new_project.id);
@@ -392,11 +431,68 @@ class CourseProjectController < ApplicationController
                     facilitator.student_id = Student.where(email: user_email).first.id
                 end
 
-                facilitator.save!
+                facilitators << facilitator
+            end
+            facilitators.each do |facilitator|
+                if facilitator.valid?
+                    facilitator.save
+                else
+                    new_project.destroy
+                    facilitator.errors.messages.each do |attribute, messages|
+                        messages.each do |message|
+                          unless errors[:main].include?("Facilitator error: #{attribute} : #{message}")
+                            errors[:main] << "Facilitator error: #{attribute} : #{message}"
+                          end
+                        end
+                    end
+                end
+            end
+        end
+        no_errors = errors.all? { |_, v| v.empty? }
+
+        # Creating groups (currently just puts everyone in groups of X size, no randomness or preference)
+        if no_errors
+            module_students = CourseModule.find_by(code: project_data[:selected_module]).students
+            team_size = project_data[:team_size].to_i
+            groups = []
+            current_group = nil
+            team_count = 0
+
+            module_students.each_slice(team_size) do |students_slice|
+
+                # Create a new group for each slice of students
+                current_group = Group.new
+                team_count += 1
+                current_group.name = "Team " + team_count.to_s
+                current_group.course_project_id = new_project.id
+
+                # Add students to the current group
+                students_slice.each do |student|
+                current_group.students << student
+                end
+
+                # Add the current group to the list of groups
+                groups << current_group
+            end
+
+            # Save each group using save!
+            groups.each do |group|
+                if group.valid?
+                    group.save
+                else
+                    new_project.destroy
+                    group.errors.messages.each do |attribute, messages|
+                        messages.each do |message|
+                          unless errors[:main].include?("Group error: #{attribute} : #{message}")
+                            errors[:main] << "Group error: #{attribute} : #{message}"
+                          end
+                        end
+                    end
+                end
             end
         end
 
-        # May need further changes here to accoutn for if any of the database commits (.save!) dont go through
+        no_errors = errors.all? { |_, v| v.empty? }
         if no_errors
             # flash[:notice] = "Project has been created successfully"
             redirect_to action: :index
@@ -461,6 +557,7 @@ class CourseProjectController < ApplicationController
 
             #Render view
             render 'show_student'
+
         end
     end
 

@@ -30,7 +30,7 @@ module DatabaseHelper
       end
 
     # begin
-      new_module = CourseModule.create ({
+      new_module = CourseModule.find_or_create_by ({
         code: module_code,
         name: name,
         staff: lead
