@@ -36,10 +36,10 @@ class CourseProjectController < ApplicationController
 
     def index
         if current_user.is_staff?
+            @projects = current_user.staff.course_projects
             render 'index_module_leader'
         else
-            #FILTER FOR PROJECTS THAT ARE AVAILABLE FOR STUDENT ...
-            @projects = CourseProject.all
+            @projects = current_user.student.course_projects
             render 'index_student'
         end
     end
@@ -428,6 +428,7 @@ class CourseProjectController < ApplicationController
             end
 
             #Get ordered milestones and deadlines
+            first_response = false
             @milestones = []
             @current_project.milestones.order('deadline').each do |milestone|
                 if milestone.json_data['Name'] == 'Project Deadline'
@@ -435,20 +436,19 @@ class CourseProjectController < ApplicationController
                 elsif milestone.json_data['Name'] == 'Teammate Preference Form Deadline'
                     @pref_form = milestone
                     @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
+
+                    #Should the preference form be shown
+                    if MilestoneResponse.where(milestone_id: @pref_form.id, student_id: current_user.student.id).empty?
+                        first_response = true
+                    end
                 else
                     @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
                 end
             end
 
-            #Preference Form 
+            #Preference Form
             @yes_mates = @current_project.preferred_teammates.to_i
             @no_mates = @current_project.avoided_teammates.to_i
-
-            #Should the preference form be shown
-            first_response = false
-            if MilestoneResponse.where(milestone_id: @pref_form.id, student_id: current_user.student.id).empty?
-                first_response = true
-            end
 
             if (@current_project.team_allocation == 'preference_form_based') && (@current_project.status == 'student_preference') && first_response
                 @show_pref_form = true

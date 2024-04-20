@@ -20,7 +20,7 @@ sam = Student.find_or_create_by({
   fee_status: :home
 })
 DatabaseHelper.print_validation_errors(sam)
-# sam_staff = Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: false })
+sam_staff = Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: false })
 # DatabaseHelper.print_validation_errors(sam_staff)
 
 josh = Student.find_or_create_by({
@@ -163,6 +163,11 @@ DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
 puts ""
 
 DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
+  course_project: CourseProject.find_by(name: "AI Project"),
+  student: Student.find_by(email: "sgttaseff1@sheffield.ac.uk")
+}))
+
+DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
   course_project: CourseProject.find_by(name: "TurtleBot Project"),
   staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk")
 }))
@@ -170,11 +175,6 @@ DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
 DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
   course_project: CourseProject.find_by(name: "AI Project"),
   staff: Staff.find_by(email: "opickford1@sheffield.ac.uk")
-}))
-
-DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
-  course_project: CourseProject.find_by(name: "AI Project"),
-  student: Student.find_by(email: "sgttaseff1@sheffield.ac.uk")
 }))
 
 DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
@@ -210,7 +210,7 @@ DatabaseHelper.print_validation_errors(Group.find_or_create_by({
 
 group = Group.find_or_create_by({
   name: "Team 6",
-  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "sgttaseff1@sheffield.ac.uk"),
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "sgttaseff1@sheffield.ac.uk"),
     course_project: CourseProject.find_by(name: "AI Project")),
   course_project: CourseProject.find_by(name: "AI Project")
 })

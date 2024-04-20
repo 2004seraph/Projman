@@ -145,7 +145,6 @@ class Student < ApplicationRecord
     header_name
   end
 
-
   def self.translate_csv_value(field_symbol, value_string)
     if StudentDataHelper::CSV_VALUE_TRANSLATIONS.key?(field_symbol)
       return StudentDataHelper::CSV_VALUE_TRANSLATIONS[field_symbol].call(value_string)
