@@ -548,6 +548,7 @@ class CourseProjectController < ApplicationController
                 @team_emails << teammate.email
             end
 
+<<<<<<< HEAD
             #Preference Form 
             @show_pref_form = false
         
