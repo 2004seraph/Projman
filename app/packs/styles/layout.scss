@@ -14,7 +14,7 @@ body {
   overflow-y: hidden; /* Prevent body from scrolling */
   display: flex;
   flex-direction: column;
-  background-color: var(--primary-colour);
+  background-color: var(--background-color);
 
   header{
     background-color: var(--sheffield-purple);

@@ -98,10 +98,10 @@ nahyan.enroll_module "COM2009"
 DatabaseHelper.provision_module_class(
   "COM3420",
   "Software Hut",
-  DatabaseHelper.create_staff("emma_norling@sheffield.ac.uk"),
+  DatabaseHelper.create_staff("sgttaseff1@sheffield.ac.uk"),
   DatabaseHelper.change_class_module(robotics_class, "COM3420")
 )
-sam.enroll_module "COM3420"
+# sam.enroll_module "COM3420"
 josh.enroll_module "COM3420"
 jakub.enroll_module "COM3420"
 adam.enroll_module "COM3420"
