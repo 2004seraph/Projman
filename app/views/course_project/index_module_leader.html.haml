@@ -10,9 +10,12 @@
     %hr.divider
 
 .flex-end
-    = link_to new_project_path, class: 'btn btn-primary' do
-        %i.bi.bi-plus-square-fill
-        Create New
+    - if @course_modules != 0
+        = link_to new_project_path, class: 'btn btn-primary' do
+            %i.bi.bi-plus-square-fill
+            Create New
+    - else
+        %p You are not a part of any modules currently, if you should be, please contact an admin.
 
 .separating-section
     - @projects.each do |project|

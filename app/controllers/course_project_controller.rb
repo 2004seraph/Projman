@@ -31,6 +31,7 @@ class CourseProjectController < ApplicationController
 
     def index
         if current_user.is_staff?
+            @course_modules = current_user.staff.course_modules.length
             @projects = current_user.staff.course_projects
             render 'index_module_leader'
         else
