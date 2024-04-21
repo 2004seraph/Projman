@@ -41,7 +41,14 @@ class CourseProjectController < ApplicationController
 
     def new
         staff_id = Staff.where(email: current_user.email).first
-        modules_hash = CourseModule.all.pluck(:code, :name).to_h # where(staff_id: staff_id).order(:code).pluck(:code, :name)
+        modules_hash = CourseModule.all.where(staff_id: staff_id).order(:code).pluck(:code, :name).to_h
+
+        # if a staff is not a module lead for any module, do not show them the new page
+        if modules_hash.length == 0
+            flash[:alert] = "You are not part of any modules. Please contact an admin if this is in error."
+            redirect_to session[:redirect_url]  # previous page, or `action: :index` if you prefer
+        end
+
         project_allocation_modes_hash = CourseProject.project_allocations
         team_allocation_modes_hash = CourseProject.team_allocations
         milestone_types_hash = Milestone.milestone_types
@@ -506,14 +513,13 @@ class CourseProjectController < ApplicationController
         if current_user.is_staff?
             # staff version of viewing one project
         else
-
-            #Get project + group information 
+            #Get project + group information
             @current_project = CourseProject.find(params[:id])
             linked_module = @current_project.course_module
             @proj_name = linked_module.code+' '+linked_module.name+' - '+@current_project.name
             group = current_user.student.groups.find_by(course_project_id: @current_project.id)
             @group_name = group.name
-            
+
             #Get staff + facilitator information
             @lead_email = linked_module.staff.email
             facilitator = AssignedFacilitator.find(group.assigned_facilitator_id)
@@ -545,7 +551,7 @@ class CourseProjectController < ApplicationController
                 @team_emails << teammate.email
             end
 
-            #Preference Form 
+            #Preference Form
             @yes_mates = @current_project.preferred_teammates.to_i
             @no_mates = @current_project.avoided_teammates.to_i
 
