@@ -18,12 +18,6 @@
           = link_to facilitator_progress_form_url(release_date: pf.json_data["release_date"]) do
             %h6.p-1= pf.json_data["release_date"]
 
-
-      //- @progress_forms.each do |pf|
-      //  .navigation-list-item
-      //    = link_to facilitator_progress_form_url(release_date: pf.json_data["release_date"]) do
-      //      %h6.p-1= pf.json_data["release_date"]
-
       %hr.divider
       %h5= "To Do"
       - @progress_forms_todo.each do |pf| 

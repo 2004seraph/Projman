@@ -1,26 +1,43 @@
 .row.align-items-center
   .col
-    %h1 Progress Forms
+    %h1 Viewing Progress Forms
 
   .col-auto
     .dropdown.d-inline-block.flex-2
-      %button.btn.btn-primary{ type: "button", id: "release-date-selection-button", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false"}
+      %button.btn.btn-primary{ 
+        type: "button", 
+        id: "release-date-selection-button", 
+        "data-bs-toggle": "dropdown", 
+        "aria-haspopup": "true", 
+        "aria-expanded": "false"}
+
         %span#release-date-selection-label= "Release Date: " + (@progress_form.nil? ? "" : @progress_form.json_data["release_date"])
-        // TODO: Set release date initially to most recent one
+
         %i.bi.bi-caret-down-fill
         
       .dropdown-menu{ "aria-labelledby": "release-date-selection-label" }
         - @progress_forms.each do |ms|
-          %a.dropdown-item{ onclick: "updateReleaseDate('#{ms.json_data["release_date"]}')" }= ms.json_data["release_date"]        
+          %a.dropdown-item{ 
+            onclick: "updateReleaseDate('#{ms.json_data["release_date"]}')" }= ms.json_data["release_date"]
 
     .dropdown.d-inline-block
-      %button.btn.btn-primary{ type: "button", id: "team-selection-button", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false"}
+      %button.btn.btn-primary{ 
+        type: "button", 
+        id: "team-selection-button", 
+        "data-bs-toggle": "dropdown", 
+        "aria-haspopup": "true", 
+        "aria-expanded": "false"}
+
         %span#team-selection-label Team: None
         %i.bi.bi-caret-down-fill
         
+      // TODO: Hide teams when form has not been released?
       .dropdown-menu{ "aria-labelledby": "team-selection-button" }
         %a.dropdown-item{ onclick: "updateTeam('None')" }= "None"
+
         %hr.dropdown-divider
+
+        // TODO: Only display the teams that have submitted a response?
         - @current_project.groups.sort_by{|group| group.name }.each do |group|
           %a.dropdown-item{ onclick: "updateTeam('#{group.name}')" }= group.name
 
@@ -31,24 +48,19 @@
 
 %hr.divider
 
-// TODO: Display the progress form template, maybe this should be a partial that we reuse for the facilitator just not editable by module leader?
-//       should show somewhere if its been released,
-//        -  teams can be populated and when selected just show empty?
-//        -  Or only populate teams when released? Could just hide the dropdown
-
-
 - if @progress_form.nil?
   %h5 No progress forms found for this project
 
 - else
   #progress-form-partial-container
-    = render partial: "progress_form", locals: {progress_form: @progress_form.json_data, progress_response: nil, group: "None", facilitator: false}
+    = render partial: "progress_form", locals: {progress_form_id: @progress_form.id, progress_form: @progress_form.json_data, progress_response: nil, group: "None", facilitator: false, editing_form: false}
 
 :javascript
   const releaseDateLabel = document.getElementById("release-date-selection-label");
   const teamLabel = document.getElementById("team-selection-label");
 
   function updateProgressForm() {
+    // Make an ajax request to get a new form partial
     fetch("progress_form/show_new", {
       method: "POST",
       headers: {
@@ -62,12 +74,16 @@
     })
     .then(response => response.text())
     .then(data => {
+      // Update partial container contents
       document.getElementById("progress-form-partial-container").innerHTML = data;
+
+      // Set the release date 
       document.getElementById("release-date-selection-label").textContent = releaseDateLabel.textContent;
     })
-    .catch(error => console.error('Error when updating progress form partial:', error));
+    .catch(error => console.error("Error when updating progress form partial:", error));
   }
 
+  // Functions for updating dropdowns
   function updateReleaseDate(selection) {
     releaseDateLabel.textContent = "Release Date: " + selection;
     updateProgressForm();

@@ -1,29 +1,36 @@
+// Partial for displaying a single question as editable for a facilitator, and not as a module lead
+- unique_id = "question-#{question_index}"
 
-- unique_id = "question_#{question_count}"
+// Define a style to enable/disable inputs for facilitator/module lead
+- responding_style = ("pointer-events: none;" if !facilitator);
+
 .card.mb-2
-  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
-   href: "##{unique_id}",
-   role: "button",
-   "data-accordion-toggle" => "",
-   "aria-expanded" => "true",
-   "aria-controls" => unique_id}
-
-    %h2.fs-4= "#{question_count}) #{question}"
+  %a.card-header.d-flex.justify-content-between.align-items-center{
+    "data-bs-toggle" => "collapse",
+    href: "##{unique_id}",
+    role: "button",
+    "data-accordion-toggle" => "",
+    "aria-expanded" => "true",
+    "aria-controls" => unique_id}
+  
+    %h2.fs-4= "#{question_index}) #{question}"
+      
     %i.bi.bi-caret-right-fill
-
-  // TODO: Not sure if we actually want to show the text area?
+      
   
   // TODO: We should have plus buttons like discord questions add answers to add radio buttons etc for the questions.
   //       then we can store in json like radios = [,,,]
 
   .collapse.show{id: unique_id}
-    .card-body
-      .form-group
-        %label{:for => "question-textarea-#{question_count}"} Notes
-        %textarea.form-control.question-textarea{
-          id: "question-textarea-#{question_count}", 
-          placeholder: "Answer will go here", 
-          style: ("pointer-events: none;" if !facilitator)}
-          = question_response
+    .card-body.form-group
+      %label{for: "question-textarea-#{question_index}"} Notes
+      %textarea.form-control.question-textarea{
+        id: "question-textarea-#{question_index}", 
+        placeholder: "Answer will go here", 
+        style: responding_style}= question_response
 
-        
+      - if !facilitator && editing_form
+        %button.btn.btn-outline-danger.mt-3.delete-question-button{id: "delete-#{unique_id}"} Delete question
+        %button.btn.btn-outline-primary.mt-3 Add radio button
+
+
