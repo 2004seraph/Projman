@@ -4,10 +4,11 @@
     .d-flex.align-items-center.justify-content-between
         %h2
             Modules
-
-        = link_to new_module_path, class: 'btn btn-primary' do
-            %i.bi.bi-plus-square-fill
-            Create New
+            
+        - if @show_create_button
+            = link_to new_module_path, class: 'btn btn-primary' do
+                %i.bi.bi-plus-square-fill
+                Create New
     %hr.divider
 
     - @admin_modules.each do |mod|

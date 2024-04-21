@@ -5,7 +5,13 @@ class CourseModuleController < ApplicationController
 
     #GET /modules
     def index
-        @admin_modules = CourseModule.all
+        if current_user.staff.admin
+            @admin_modules = CourseModule.all
+        else
+            @admin_modules = CourseModule.where(staff_id: current_user.staff)
+        end
+
+        @show_create_button = current_user.staff.admin
     end
 
     #GET /modules/new
@@ -55,6 +61,8 @@ class CourseModuleController < ApplicationController
     def show
         @students = @current_module.students
         @module_lead = @current_module.staff
+
+        @show_edit_buttons = current_user.staff.admin
     end
 
     #PATCH/PUT /modules/{id}
