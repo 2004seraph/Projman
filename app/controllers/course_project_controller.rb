@@ -31,7 +31,6 @@ class CourseProjectController < ApplicationController
 
     def index
         if current_user.is_staff?
-            @course_modules = current_user.staff.course_modules.length
             @projects = current_user.staff.course_projects
             render 'index_module_leader'
         else
@@ -42,14 +41,7 @@ class CourseProjectController < ApplicationController
 
     def new
         staff_id = Staff.where(email: current_user.email).first
-        modules_hash = CourseModule.all.where(staff_id: staff_id).order(:code).pluck(:code, :name).to_h
-
-        # if a staff is not a module lead for any module, do not show them the new page
-        if modules_hash.length == 0
-            flash[:alert] = "You are not part of any modules. Please contact an admin if this is in error."
-            redirect_to session[:redirect_url]  # previous page, or `action: :index` if you prefer
-        end
-
+        modules_hash = CourseModule.all.pluck(:code, :name).to_h # where(staff_id: staff_id).order(:code).pluck(:code, :name)
         project_allocation_modes_hash = CourseProject.project_allocations
         team_allocation_modes_hash = CourseProject.team_allocations
         milestone_types_hash = Milestone.milestone_types
@@ -514,13 +506,14 @@ class CourseProjectController < ApplicationController
         if current_user.is_staff?
             # staff version of viewing one project
         else
-            #Get project + group information
+
+            #Get project + group information 
             @current_project = CourseProject.find(params[:id])
             linked_module = @current_project.course_module
             @proj_name = linked_module.code+' '+linked_module.name+' - '+@current_project.name
             group = current_user.student.groups.find_by(course_project_id: @current_project.id)
             @group_name = group.name
-
+            
             #Get staff + facilitator information
             @lead_email = linked_module.staff.email
             facilitator = AssignedFacilitator.find(group.assigned_facilitator_id)
@@ -538,6 +531,9 @@ class CourseProjectController < ApplicationController
                 elsif milestone.json_data['Name'] == 'Teammate Preference Form Deadline'
                     @pref_form = milestone
                     @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
+                elsif milestone.json_data['Name'] == 'Project Preference Form Deadline'
+                    @proj_choices_form = milestone
+                    @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
                 else
                     @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
                 end
@@ -552,23 +548,47 @@ class CourseProjectController < ApplicationController
                 @team_emails << teammate.email
             end
 
-            #Preference Form
-            @yes_mates = @current_project.preferred_teammates.to_i
-            @no_mates = @current_project.avoided_teammates.to_i
+            #Preference Form 
+            @show_pref_form = false
+        
+            if @current_project.team_allocation == 'preference_form_based'
+                @yes_mates = @current_project.preferred_teammates.to_i
+                @no_mates = @current_project.avoided_teammates.to_i
 
-            #Should the preference form be shown
-            first_response = false
-            if MilestoneResponse.where(milestone_id: @pref_form.id, student_id: current_user.student.id).empty?
-                first_response = true
+                #Should the preference form be shown
+                first_response = false
+                if MilestoneResponse.where(milestone_id: @pref_form.id, student_id: current_user.student.id).empty?
+                    first_response = true
+                end
+
+                if (@current_project.status == 'student_preference') && first_response
+                    @show_pref_form = true
+                end
             end
 
-            if (@current_project.team_allocation == 'preference_form_based') && (@current_project.status == 'student_preference') && first_response
-                @show_pref_form = true
-            else
-                @show_pref_form = false
+            #Project Choices Form
+            @show_proj_form = false
+
+            unless @current_project.project_allocation == 'random'
+                @choices = @current_project.subprojects.pluck('name')
+                
+                #Should the project choice form be shown
+                
+                #When every member has to submit a form: (team_average_preference)
+                first_response = false
+                if MilestoneResponse.where(milestone_id: @proj_choices_form.id, student_id: current_user.student.id).empty?
+                    first_response = true
+                end
+                
+                #When one member has to submit the form: (single_preference_submission)
+                viable_response = true
+                    #group record search ? check through every member ?
+
+                if (@current_project.status == 'team_preference') && first_response && viable_response
+                    @show_proj_form = true
+                end
             end
 
-            #Project Choices
 
             #Render view
             render 'show_student'

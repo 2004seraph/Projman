@@ -6,6 +6,8 @@ RSpec.feature "Project Creation", type: :feature do
     let!(:staff) { Staff.find_or_create_by(email: user.email) }
 
     before(:all) do
+
+
         DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
         DatabaseHelper.create_staff("jbala1@sheffield.ac.uk")
         DatabaseHelper.provision_module_class(
