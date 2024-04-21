@@ -12,4 +12,54 @@
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id}
     .card-body.pt-1.pb-1
-      PROJECT CHOICE FORM GOES HERE
+      = form_with(model: @milestone_response, url: "/projects/#{@current_project.id}/milestone_responses", method: "post", local: true, id: "project-choices-form") do |form|
+        .form-group
+          %h1.fs-5.fw-semibold Rank the Project Choices
+          - @choices.size.times do |i|
+            %h1.fs-5.fw-semibold Choice #{i+1}
+            = form.select "choice_#{i+1}".to_sym, @choices, { class: "form-control", required: true }
+            %h1
+          %button.btn.btn-primary.btn-sm{ type: "submit" } Submit
+          %h1
+
+#success-message.alert.alert-success{style: "display: none;"}
+  Project Choices submitted successfully!
+
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('project-choices-form').addEventListener('submit', function(event) {
+      event.preventDefault(); 
+      
+      const form = this; 
+      const formData = new FormData(form); 
+      formData.append('milestone_id', #{@proj_choices_form.id})
+      formData.append('project_id', #{@current_project.id})
+  
+      fetch(form.action, { 
+        method: form.method,
+        headers: {
+          'X-CSRF-Token': document.querySelector("meta[name='csrf-token']").getAttribute("content")
+        },
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          form.reset();
+          document.getElementById('success-message').style.display = 'block';
+          setTimeout(function() {
+            document.getElementById('success-message').style.display = 'none';
+          }, 3000);
+
+          const issueCardElement = document.querySelector('.issue-card');
+          if (issueCardElement) {
+          issueCardElement.style.display = 'none';
+          }
+        } else {
+          console.error('Error:', response.statusText);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
+  });

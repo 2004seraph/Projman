@@ -531,6 +531,9 @@ class CourseProjectController < ApplicationController
                 elsif milestone.json_data['Name'] == 'Teammate Preference Form Deadline'
                     @pref_form = milestone
                     @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
+                elsif milestone.json_data['Name'] == 'Project Preference Form Deadline'
+                    @proj_choices_form = milestone
+                    @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
                 else
                     @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
                 end
@@ -546,22 +549,46 @@ class CourseProjectController < ApplicationController
             end
 
             #Preference Form 
-            @yes_mates = @current_project.preferred_teammates.to_i
-            @no_mates = @current_project.avoided_teammates.to_i
+            @show_pref_form = false
+        
+            if @current_project.team_allocation == 'preference_form_based'
+                @yes_mates = @current_project.preferred_teammates.to_i
+                @no_mates = @current_project.avoided_teammates.to_i
 
-            #Should the preference form be shown
-            first_response = false
-            if MilestoneResponse.where(milestone_id: @pref_form.id, student_id: current_user.student.id).empty?
-                first_response = true
+                #Should the preference form be shown
+                first_response = false
+                if MilestoneResponse.where(milestone_id: @pref_form.id, student_id: current_user.student.id).empty?
+                    first_response = true
+                end
+
+                if (@current_project.status == 'student_preference') && first_response
+                    @show_pref_form = true
+                end
             end
 
-            if (@current_project.team_allocation == 'preference_form_based') && (@current_project.status == 'student_preference') && first_response
-                @show_pref_form = true
-            else
-                @show_pref_form = false
+            #Project Choices Form
+            @show_proj_form = false
+
+            unless @current_project.project_allocation == 'random'
+                @choices = @current_project.subprojects.pluck('name')
+                
+                #Should the project choice form be shown
+                
+                #When every member has to submit a form: (team_average_preference)
+                first_response = false
+                if MilestoneResponse.where(milestone_id: @proj_choices_form.id, student_id: current_user.student.id).empty?
+                    first_response = true
+                end
+                
+                #When one member has to submit the form: (single_preference_submission)
+                viable_response = true
+                    #group record search ? check through every member ?
+
+                if (@current_project.status == 'team_preference') && first_response && viable_response
+                    @show_proj_form = true
+                end
             end
 
-            #Project Choices
 
             #Render view
             render 'show_student'
