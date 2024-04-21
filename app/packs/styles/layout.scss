@@ -99,6 +99,38 @@ body {
   }
 }
 
+.flash-messages {
+  position: absolute;
+  right: 10px;
+  bottom: 0;
+
+  min-width: 20%;
+  animation: fadeInOut 5s forwards;
+}
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  5% { opacity: 1; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@media (max-width: $wrapper-size) {
+  .flash-messages {
+    width: calc(100% - 20px);
+    height: 20%;
+  }
+  .flash-messages * {
+    height: calc(100% - 10px);
+  }
+  .flash-messages .alert {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size:xx-large;
+
+    display: flex;
+  }
+}
+
 
 .navigation-list-item {
   // For displaying a div that will act as a link
