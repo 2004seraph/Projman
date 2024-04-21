@@ -506,25 +506,24 @@ class CourseProjectController < ApplicationController
         if current_user.is_staff?
             # staff version of viewing one project
         else
+
+            #Get project + group information 
             @current_project = CourseProject.find(params[:id])
             linked_module = @current_project.course_module
             @proj_name = linked_module.code+' '+linked_module.name+' - '+@current_project.name
-            @lead = linked_module.staff.email
-
-            #TODO - Change database interactions to only get records
-            #       relevant to the GROUP the student is part of - only one facilitator?
-
+            group = current_user.student.groups.find_by(course_project_id: @current_project.id)
+            @group_name = group.name
+            
             #Get staff + facilitator information
-            @facilitators = []
-            AssignedFacilitator.where(course_project_id: @current_project.id).each do |facilitator|
-                if facilitator.staff_id == nil
-                    @facilitators << Student.find(facilitator.student_id).email
-                else
-                    @facilitators << Staff.find(facilitator.staff_id).email
-                end
+            @lead_email = linked_module.staff.email
+            facilitator = AssignedFacilitator.find(group.assigned_facilitator_id)
+            if facilitator.staff_id == nil
+                @facilitator_email = Student.find(facilitator.student_id).email
+            else
+                @facilitator_email = Staff.find(facilitator.staff_id).email
             end
 
-            #Get ordered milestones and deadlines
+            #Get ordered milestones + deadlines
             @milestones = []
             @current_project.milestones.order('deadline').each do |milestone|
                 if milestone.json_data['Name'] == 'Project Deadline'
@@ -535,6 +534,15 @@ class CourseProjectController < ApplicationController
                 else
                     @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
                 end
+            end
+
+            #Get team information
+            @team_size = group.students.size
+            @team_names = []
+            @team_emails = []
+            group.students.each do |teammate|
+                @team_names << teammate.preferred_name+' '+teammate.surname
+                @team_emails << teammate.email
             end
 
             #Preference Form 
