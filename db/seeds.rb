@@ -125,10 +125,10 @@ nahyan.enroll_module "COM2009"
 students_COM3420 = DatabaseHelper.provision_module_class(
   "COM3420",
   "Software Hut",
-  DatabaseHelper.create_staff("emma_norling@sheffield.ac.uk")
+  DatabaseHelper.create_staff("sgttaseff1@sheffield.ac.uk"),
+  DatabaseHelper.change_class_module(robotics_class, "COM3420")
 )
-
-sam.enroll_module "COM3420"
+# sam.enroll_module "COM3420"
 josh.enroll_module "COM3420"
 jakub.enroll_module "COM3420"
 adam.enroll_module "COM3420"
@@ -183,7 +183,7 @@ DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
   # dont specify it to leave it as the default {}
   # markscheme_json: {test: "test"}.to_json,
   name: "Miro",
-  project_allocation: :individual_preference_project_allocation,
+  project_allocation: :single_preference_project_allocation,
   # dont specify it to leave it as the default {}
   # project_choices_json: {test: "test"}.to_json,
   team_allocation: :random_team_allocation,
@@ -228,26 +228,30 @@ puts ""
 
 DatabaseHelper.print_validation_errors(Group.find_or_create_by({
   name: "Team 28",
-  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "jhenson2@sheffield.ac.uk").id),
+  assigned_facilitator:AssignedFacilitator.find_by(staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "TurtleBot Project")),
   course_project: CourseProject.find_by(name: "TurtleBot Project")
 }))
 
 DatabaseHelper.print_validation_errors(Group.find_or_create_by({
   name: "Team 29",
-  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "jhenson2@sheffield.ac.uk").id),
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "TurtleBot Project")),
   course_project: CourseProject.find_by(name: "TurtleBot Project")
 }))
 
 DatabaseHelper.print_validation_errors(Group.find_or_create_by({
   name: "Team 5",
-  assigned_facilitator_id: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "jhenson2@sheffield.ac.uk").id).id,
-  course_projects_id: CourseProject.find_by(name: "AI Project").id
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "sgttaseff1@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "AI Project")),
+  course_project: CourseProject.find_by(name: "AI Project")
 }))
 
 DatabaseHelper.print_validation_errors(Group.find_or_create_by({
   name: "Team 2",
-  assigned_facilitator_id: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "jhenson2@sheffield.ac.uk").id).id,
-  course_projects_id: CourseProject.find_by(name: "Miro").id
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "sgttaseff1@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "Miro")),
+  course_project: CourseProject.find_by(name: "Miro")
 }))
 
 group = Group.find_or_create_by({
@@ -259,10 +263,11 @@ group = Group.find_or_create_by({
 group.students << oliver
 group.students << adam
 group.students << jakub
+group.students << josh
 
 group2 = Group.find_or_create_by({
   name: "Team 1",
-  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk"),
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk"),
     course_project: CourseProject.find_by(name: "TurtleBot Project")),
   course_project: CourseProject.find_by(name: "TurtleBot Project")
 })
@@ -272,11 +277,10 @@ group2.students << oliver
 
 group3 = Group.find_or_create_by({
   name: "Team 2",
-  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk"),
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "opickford1@sheffield.ac.uk"),
     course_project: CourseProject.find_by(name: "TurtleBot Project")),
   course_project: CourseProject.find_by(name: "TurtleBot Project")
 })
-group3.students << josh
 group3.students << sam
 group3.students << oliver
 group3.students << jakub

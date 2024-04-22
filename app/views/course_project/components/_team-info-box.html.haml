@@ -12,8 +12,8 @@
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id}
     .card-body.pt-1.pb-1
-      - 5.times do
-        %h1.fs-5.fw-semibold Firstname Lastname
-        %h1.fs-5.fw-normal.fst-italic firstname_lastname@email
+      - @team_names.size.times do |i|
+        %h1.fs-5.fw-semibold #{@team_names[i]}
+        %h1.fs-5.fw-normal.fst-italic #{@team_emails[i]}
         %hr.divider
         

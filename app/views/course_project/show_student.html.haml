@@ -20,7 +20,7 @@
     -if @show_pref_form
         = render partial: 'course_project/components/pref-form-box'
     
-    -if @current_project.status == 'team_preference'
+    -if @show_proj_form
         = render partial: 'course_project/components/project-choices-box'
     
     = render partial: 'course_project/components/staff-info-box'

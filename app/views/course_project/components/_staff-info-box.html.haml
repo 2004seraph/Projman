@@ -13,8 +13,7 @@
   .collapse{id: unique_id}
     .card-body.pt-1.pb-1
       %h1.fs-5.fw-semibold Module Leader
-      %h1.fs-5.fw-normal.fst-italic #{@lead}
+      %h1.fs-5.fw-normal.fst-italic #{@lead_email}
       %hr.divider
-      %h1.fs-5.fw-semibold Facilitator(s)
-      - @facilitators.each do |facilitator|
-        %h1.fs-5.fw-normal.fst-italic #{facilitator}
+      %h1.fs-5.fw-semibold Facilitator
+      %h1.fs-5.fw-normal.fst-italic #{@facilitator_email}
