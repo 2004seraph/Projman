@@ -5,8 +5,9 @@ class IssueController < ApplicationController
     def index
         get_all_issues
 
-        @view_as_manager = true
-        if @view_as_manager            
+        puts @open_issues
+
+        if current_user.is_staff?           
             render 'index_module_leader'
         else
             render 'index_student'
@@ -18,28 +19,26 @@ class IssueController < ApplicationController
 
         get_all_issues
 
-        if current_user.is_student?
-            if !(params[:selected_project] == 'All' || params[:selected_project].nil?)   
-                project_selected = params[:selected_project]
-                project = CourseProject.find_by(name: project_selected)
-
-                group = @user_groups.find_by(course_project_id: project.id)
-
-                @open_issues = Event.where(event_type: :issue, completed: false, group_id: group.id)
-                @resolved_issues = Event.where(event_type: :issue, completed: true, group_id: group.id)
-            end
-        else
-            if !(params[:selected_project] == 'All' || params[:selected_project].nil?)   
-                project_selected = params[:selected_project]
-                project = CourseProject.find_by(name: project_selected)
-
+        if !(params[:selected_project] == 'All' || params[:selected_project].nil?) 
+            @open_issues = []
+            @resolved_issues = []
+            
+            project_selected = params[:selected_project]
+            project = CourseProject.find_by(name: project_selected)
+            
+            if current_user.is_staff?
                 @project_groups = Group.where(course_project_id: project.id)
 
-                @open_issues = []
-                @resolved_issues = []
                 @project_groups.each do |project_group|
-                    @open_issues += Event.where(event_type: :issue, completed: false, group_id: project_group.id)
-                    @resolved_issues += Event.where(event_type: :issue, completed: true, group_id: project_group.id)
+                    @open_issues += project_group.events.where(event_type: :issue, completed: false)
+                    @resolved_issues += project_group.events.where(event_type: :issue, completed: true)
+                end
+            else
+                group = @user_groups.find_by(course_project_id: project.id)
+
+                if !(group.nil?)
+                    @open_issues += current_user.student.events.where(event_type: :issue, completed: false, group_id: group.id)
+                    @resolved_issues += current_user.student.events.where(event_type: :issue, completed: true, group_id: group.id)
                 end
             end
         end
@@ -57,7 +56,7 @@ class IssueController < ApplicationController
         current_project_id = params[:project_id]
         group = current_user.student.groups.find_by(course_project_id: current_project_id)
 
-        @issue = Event.new(completed: false, event_type: :issue, json_data: json_data, group_id: group.id)
+        @issue = Event.new(completed: false, event_type: :issue, json_data: json_data, group_id: group.id, student_id: current_user.student.id)
 
         if @issue.save
             if request.xhr?
@@ -71,9 +70,19 @@ class IssueController < ApplicationController
     end
 
     def issue_response
-        @issue = Event.find_by(id: params[:issue_id])
+        json_data = {
+            content: params[:response],
+            author: params[:author],
+            timestamp: Time.now
+        }.to_json
 
-        @issue.add_response(params[:author], params[:response])
+        if current_user.is_staff?
+            @issue_response = EventResponse.new(json_data: json_data, event_id: params[:issue_id], staff_id: current_user.staff.id)
+        else
+            @issue_response = EventResponse.new(json_data: json_data, event_id: params[:issue_id], student_id: current_user.student.id)
+        end
+
+        @issue_response.save
 
         if request.xhr?
             respond_to do |format|
@@ -94,41 +103,32 @@ class IssueController < ApplicationController
     def get_all_issues
         @open_issues = []
         @resolved_issues = []
-        @user_projects = []
+        
 
         # if current_user.isStudent?
-        if current_user.is_student?
-            @user_groups = current_user.student.groups
-            @user_groups.each do |user_group|
-                current_issue = Event.where(event_type: :issue, completed: false, group_id: user_group.id)
-                if !current_issue.nil?
-                    @open_issues += current_issue
-                end
-                
-                current_issue = Event.where(event_type: :issue, completed: true, group_id: user_group.id)
-                if !current_issue.nil?    
-                    @resolved_issues += current_issue
-                end
+        if current_user.is_staff?
+            @user_modules = current_user.staff.course_modules
 
-                @user_projects += CourseProject.where(id: user_group.course_project_id)
-            end
-        else
-            @user_modules = CourseModule.where(staff_id: current_user.staff.id)
+            @user_projects = []
             @user_modules.each do |user_module|
-                @user_projects += CourseProject.where(course_module_id: user_module.id)
+                @user_projects += user_module.course_projects
             end
 
             @project_groups = []
             @user_projects.each do |user_project|
-                @project_groups += Group.where(course_project_id: user_project.id)
+                @project_groups += user_project.groups
             end
 
             @project_groups.each do |project_group|
-                @open_issues += Event.where(event_type: :issue, completed: false, group_id: project_group.id)
-                @resolved_issues += Event.where(event_type: :issue, completed: true, group_id: project_group.id)
+                @open_issues += project_group.events.where(event_type: :issue, completed: false)
+                @resolved_issues += project_group.events.where(event_type: :issue, completed: true)
             end
+        else
+            @user_projects = current_user.student.course_projects
+            @user_groups = current_user.student.groups
 
-            
+            @open_issues += current_user.student.events.where(event_type: :issue, completed: false)
+            @resolved_issues += current_user.student.events.where(event_type: :issue, completed: true)
         end
     end
 

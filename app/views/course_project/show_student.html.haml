@@ -12,6 +12,9 @@
                 %i.bi.bi-exclamation-circle.orange
                 Report Issue
 
+    %h2
+        #{@group_name}
+
     %hr.divider
 
     -if @show_pref_form
@@ -29,7 +32,7 @@
 .modal.fade{ id: "reportIssueModal", tabindex: "-1", "aria-labelledby": "reportIssueModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
     .modal-dialog.modal-dialog-centered.modal-dialog-scrollable#reportIssueModalDialog
         .modal-content{id: "modalContent"}
-            = form_with(url: "/issues/create", method: "post", local: false, id: "issue-form") do |form|       
+            = form_with(url: "/issues", method: "post", local: false, id: "issue-form") do |form|       
                 .modal-header
                     %h1.modal-title.fs-5= "Report Issue"
                     %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }

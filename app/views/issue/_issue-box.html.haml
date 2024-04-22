@@ -1,10 +1,9 @@
 .hidden-partial-container{ id: "hidden-partial-container-#{issue.id}"}
   - unique_id = "collapseIssue_#{issue.id}" # Generate a unique ID using SecureRandom
   - issue_data = JSON.parse(issue.json_data)
-  - course_project = CourseProject.find_by(id: Group.find_by(id: issue.group.id).course_projects_id)
+  - course_project = CourseProject.find_by(id: Group.find_by(id: issue.group.id).course_project_id)
   - course_module = CourseModule.find_by(id: course_project.course_module_id)
-  - state ||= "collapse"
-  - show ||= false
+  - issue_responses = issue.event_responses
 
   .card.issue-card.mb-2.accordion-element{id: "issue-card-#{issue.id}"}
     %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
@@ -13,7 +12,7 @@
       "data-accordion-toggle" => "",
       "aria-expanded" => "false",
       "aria-controls" => unique_id,
-      id: "card-header-#{issue.id}"}
+      id: "card-header-#{issue.id}"} 
       .d-flex.align-items-center
         %span.me-3.fs-6.fw-light #{issue.created_at}
         %h3.m-0.fs-5.fw-medium #{issue_data['title']}
@@ -25,12 +24,13 @@
           .fs-6 #{course_module.code} - #{course_project.name}
         .issue-text.border.p-2.mb-2
           .fs-6 #{issue_data['content']}
-        -issue.issue_conversation.each do |response|
+        -issue_responses.each do |response|
+          - response_data =  JSON.parse(response.json_data)
           .d-flex.align-items-center.justify-content-between.pt-2
-            .fs-6 From: #{response['author']}
-            .fs-6 #{response['timestamp']}
+            .fs-6 From: #{response_data['author']}
+            .fs-6 #{response_data['timestamp']}
           .issue-text.border.p-2.mb-2
-            .fs-6 #{response['content']}
+            .fs-6 #{response_data['content']}
         <!- if current_user.isStaff?>
         - if current_user.is_staff? && !issue.completed
           = form_with(url: "/issues/issue-response", method: "post", local: false, id: "response-form-#{issue.id}") do |form|
