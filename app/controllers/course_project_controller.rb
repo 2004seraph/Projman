@@ -548,7 +548,6 @@ class CourseProjectController < ApplicationController
             end
 
             #Get team information
-            @team_size = group.students.size
             @team_names = []
             @team_emails = []
             group.students.each do |teammate|
@@ -564,14 +563,8 @@ class CourseProjectController < ApplicationController
                 @no_mates = @current_project.avoided_teammates.to_i
 
                 #Should the preference form be shown
-                first_response = false
-                if MilestoneResponse.where(milestone_id: @pref_form.id, student_id: current_user.student.id).empty?
-                    first_response = true
-                end
-
-                if (@current_project.status == 'student_preference') && first_response
-                    @show_pref_form = true
-                end
+                first_response = MilestoneResponse.where(milestone_id: @pref_form.id, student_id: current_user.student.id).empty?
+                @show_pref_form = (@current_project.status == 'student_preference') && first_response
             end
 
             #Project Choices Form
@@ -581,22 +574,20 @@ class CourseProjectController < ApplicationController
                 @choices = @current_project.subprojects.pluck('name')
 
                 #Should the project choice form be shown
+                personal_response = MilestoneResponse.where(milestone_id: @proj_choices_form.id, student_id: current_user.student.id).empty?
 
-                #When every member has to submit a form: (team_average_preference)
-                first_response = false
-                if MilestoneResponse.where(milestone_id: @proj_choices_form.id, student_id: current_user.student.id).empty?
-                    first_response = true
+                group_response = true
+                if @current_project.project_allocation == 'single_preference_project_allocation'
+                    group.students.each do |teammate|
+                        unless MilestoneResponse.where(milestone_id: @proj_choices_form.id, student_id: teammate.id).empty?
+                            group_response = false
+                        end
+                    end
                 end
-
-                #When one member has to submit the form: (single_preference_submission)
-                viable_response = true
-                    #group record search ? check through every member ?
-
-                if (@current_project.status == 'team_preference') && first_response && viable_response
-                    @show_proj_form = true
-                end
+                
+                @show_proj_form = (@current_project.status == 'team_preference') && personal_response && group_response
+                
             end
-
 
             #Render view
             render 'show_student'
