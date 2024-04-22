@@ -2,32 +2,35 @@
 
 .separating-section
     .d-flex.align-items-center.justify-content-between
-
         %h2
             #{@proj_name}
-
-        .flex-end
-            %button.btn.btn-primary.btn-m.m-2{type: "button", "data-bs-toggle": "modal",
-               "data-bs-target": "#reportIssueModal"}
-                %i.bi.bi-exclamation-circle.orange
-                Report Issue
-
+        -if @show_group_information
+            .flex-end
+                %button.btn.btn-primary.btn-m.m-2{type: "button", "data-bs-toggle": "modal",
+                   "data-bs-target": "#reportIssueModal"}
+                    %i.bi.bi-exclamation-circle.orange
+                    Report Issue
     %h2
-        #{@group_name}
-
+        -if @show_group_information
+            #{@group_name}
     %hr.divider
 
     -if @show_pref_form
         = render partial: 'course_project/components/pref-form-box'
     
-    -if @show_proj_form
+    -if @show_group_information && @show_proj_form
         = render partial: 'course_project/components/project-choices-box'
     
     = render partial: 'course_project/components/staff-info-box'
-    = render partial: 'course_project/components/team-info-box'
+
+    -if @show_group_information
+        = render partial: 'course_project/components/team-info-box'
+
     = render partial: 'course_project/components/deadlines-info-box'
     = render partial: 'course_project/components/mark-scheme-box'
-    = render partial: 'course_project/components/team-chat-box'
+
+    -if @show_group_information
+        = render partial: 'course_project/components/team-chat-box'
 
 .modal.fade{ id: "reportIssueModal", tabindex: "-1", "aria-labelledby": "reportIssueModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
     .modal-dialog.modal-dialog-centered.modal-dialog-scrollable#reportIssueModalDialog
