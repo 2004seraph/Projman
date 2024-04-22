@@ -44,21 +44,31 @@ Rails.application.routes.draw do
   end
 
   resources :facilitators, only: [:index], controller: :facilitator do
-    get '/teams/:id/progress_form/:week',
-      to: 'facilitator#progress_form', as: 'progress_form',
-      on: :collection
-    get '/marking/:id',
-      to: 'facilitator#marking_show', as: 'marking_show',
-      on: :collection
-    get '/teams/:id',
-      to: 'facilitator#team', as: 'team',
-      on: :collection
-
+    # TODO: DO these need / before
+    # TODO: These probably don't need controller in to: 
+    get 'teams/:team_id', to: 'facilitator#team', as: 'facilitator_team', on: :collection
+    get 'teams/:team_id/progress_form/:release_date', to: 'facilitator#progress_form', as: 'progress_form', 
+      on: :collection 
+      
+    get 'marking/:section_id', to: 'facilitator#marking_show', as: 'marking_show', on: :collection
+    
     # AJAX
-    post '/update_teams_list',
-      to: 'facilitator#update_teams_list',
-      on: :collection
+    post '/update_teams_list' => 'facilitator#update_teams_list', on: :collection
+    post '/update_progress_form_response' => 'facilitator#update_progress_form_response', on: :collection
   end
+
+  resources :progress_form, controller: :progress_form do
+     # Ajax, TODO: Refactor...?
+    post '/add_question' => 'progress_form#add_question', on: :collection
+    post '/delete_question' => 'progress_form#delete_question', on: :collection
+    post '/save_form' => 'progress_form#save_form', on: :collection
+    post '/delete_form' => 'progress_form#delete_form', on: :collection
+    post '/show_new' => 'progress_form#show_new', on: :collection
+  end
+
+
+
+
 
   resources :modules, controller: :course_module do
   end

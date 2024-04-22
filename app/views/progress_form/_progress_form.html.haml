@@ -1,0 +1,53 @@
+// Display 
+- unless progress_response.nil?
+  %h5= "Last updated by: " + (progress_response["facilitator_repr"] || "")
+
+  %hr.divider 
+
+// Only show edit button if not editing and not facilitator and not released
+- unless editing_form || facilitator || Date.today >= Date.parse(progress_form["release_date"])
+  = link_to edit_progress_form_path(id: progress_form_id), class: 'btn btn-outline-primary' do
+    %i.bi.bi-pencil
+    Edit
+  %hr.divider
+
+// Display attendance if required
+- if progress_form["attendance"] && !editing_form
+  - attendance = progress_response.nil? ? nil : progress_response["attendance"]
+  = render partial: "progress_form/attendance", locals: {group: group, attendance: attendance, facilitator: facilitator}
+
+// Display questions and their responses
+- question_responses = progress_response.nil? ? [] : progress_response["question_responses"]
+
+- unless progress_form["questions"].nil?
+  - progress_form["questions"].each_with_index do |question, i|
+    - question_response = question_responses.fetch(i, "")
+    = render partial: "progress_form/question", locals: {question: question, question_index: (i + 1).to_s, facilitator: facilitator, question_response: question_response, editing_form: editing_form}
+
+:javascript
+  document.addEventListener("DOMContentLoaded", function() {
+    // Listen for all clicks as the questions are loaded dynamically 
+    document.addEventListener("click", function(e) {
+      if (event.target.matches('.delete-question-button')) {
+        var question_index = event.target.id.replace("delete-question-", "");
+        
+        // Ajax to delete question
+        fetch("/progress_form/delete_question", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+          },
+          body: JSON.stringify({ 
+            question_index: parseInt(question_index - 1)
+          })
+        })
+        .then(response => response.text())
+        .then(data => {
+          console.log(data);
+          document.getElementById("progress-form-partial-container").innerHTML = data;
+        })
+        .catch(error => console.error("Error when deleting progress form question:", error));
+      }
+    });
+  });
