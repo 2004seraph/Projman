@@ -15,13 +15,13 @@
       %h5= "Completed"
       - @progress_forms_submitted.each do |pf| 
         .navigation-list-item
-          = link_to facilitator_progress_form_url(release_date: pf.json_data["release_date"]) do
+          = link_to progress_form_facilitators_url(release_date: pf.json_data["release_date"]) do
             %h6.p-1= pf.json_data["release_date"]
 
       %hr.divider
       %h5= "To Do"
       - @progress_forms_todo.each do |pf| 
         .navigation-list-item
-          = link_to facilitator_progress_form_url(release_date: pf.json_data["release_date"]) do
+          = link_to progress_form_facilitators_url(release_date: pf.json_data["release_date"]) do
             %h6.p-1= pf.json_data["release_date"]
       

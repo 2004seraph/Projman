@@ -1,5 +1,6 @@
 class FacilitatorController < ApplicationController
-    authorize_resource class: false, except: [:update_teams_list, :marking_show, :team, :progress_form]
+    #authorize_resource class: false, except: [:update_teams_list, :marking_show, :team, :progress_form]
+    authorize_resource :milestone_response
 
     # GET /facilitators
     def index
@@ -9,6 +10,7 @@ class FacilitatorController < ApplicationController
 
     def update_teams_list
         authorize! :read, :facilitator
+
         # Apply filters to the shown teams
         if params[:assigned_only]
             @assigned_facilitators = get_assigned_facilitators
@@ -77,11 +79,9 @@ class FacilitatorController < ApplicationController
 
     def team
         # Display team/group area
-        team = Group.find(params[:id])
-        authorize! :read, team
-
         set_current_group
-        
+        authorize! :read, :facilitator
+
         # Get progress forms and sort by release date
         @progress_forms = get_progress_forms_for_group.sort_by{ 
             |m| Date.strptime(m.json_data["release_date"], "%Y-%m-%d") 
@@ -108,6 +108,7 @@ class FacilitatorController < ApplicationController
             |mr| mr.json_data["group_id"] == @current_group.id
         }.first
 
+        
         if @progress_response.nil?
             # TODO: Handle error here
             puts "[ERROR] Progress response was nil when tried to update, should handle this properly."
@@ -129,7 +130,7 @@ class FacilitatorController < ApplicationController
         end
 
         # TODO: Scuffed but works, should make better later on.
-        render json: { status: "success", redirect: facilitator_team_path(team_id: session[:team_id]) } 
+        render json: { status: "success", redirect: facilitators_path(team_id: session[:team_id]) } 
     end
 
     private

@@ -1,8 +1,12 @@
 class ProgressFormController < ApplicationController
+  authorize_resource :milestone_response
+
   def index
     # TODO: Get the actual current project
     @current_project = CourseProject.find_by(name: "TurtleBot Project")
     session[:current_project_id] = @current_project.id
+
+    authorize! :read, @current_project
 
     # Get each progress form
     @progress_forms = get_progress_forms_for_project.sort_by{ 
@@ -153,14 +157,6 @@ class ProgressFormController < ApplicationController
     else
       milestone.destroy
     end
-
-    # Handle save failure
-    #unless milestone.save
-    #  return render json: { 
-    #    status: "error", 
-    #    message: "Failed to save milestone when save_form." 
-    #  }
-    #end
   
     # TODO: Scuffed but works, should make better later on.
     # TODO: I think i can just redirect_to here maybe
