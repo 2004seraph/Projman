@@ -1,4 +1,3 @@
-
 .d-inline-flex.pb-2
   %i.bi.bi-funnel-fill
   Filter By: 
@@ -10,12 +9,9 @@
       %i.bi.bi-caret-down-fill
     .dropdown-menu{ "aria-labelledby": "dropdownMenuButton" }
       %a.dropdown-item{ href: "#", onclick: "updateSelection('All')" } All
-      %a.dropdown-item{ href: "#", onclick: "updateSelection('Live')" } Live
-      %a.dropdown-item{ href: "#", onclick: "updateSelection('In Review')" } In Review
-      %a.dropdown-item{ href: "#", onclick: "updateSelection('Awaiting Preference')" } Awaiting Preference
       %hr.dropdown-divider
-      %a.dropdown-item{ href: "#", onclick: "updateSelection('Project 1')" } Project 1
-      %a.dropdown-item{ href: "#", onclick: "updateSelection('Project 2')" } Project 2
+      - @user_projects.each do |user_project|
+        %a.dropdown-item{onclick: "updateSelection('#{user_project.name}')" } #{user_project.name}
 
   .form-check.form-switch.form-check-reverse.me-3
     %input.form-check-input{ type: "checkbox", role: "switch",
@@ -28,6 +24,12 @@
     %label.form-check-label{ for: "flexSwitchCheckResolved" }
       Show Resolved
 
+%hr.divider
+
+
+.accordion-section#issues-section{style: "display: none;"}
+  render partial: 'issues-section'
+
 :javascript
   document.addEventListener("DOMContentLoaded", function() {
     updateSelection('All'); // Set initial selection to the first option
@@ -37,6 +39,22 @@
     var currentSelection = document.getElementById("dropdownMenuButton").querySelector(".current-selection");
     if (currentSelection) {
       currentSelection.innerText = selection;
+      fetch("issues/project-selected", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+        },
+        body: JSON.stringify({ selected_project: selection })
+      })
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("issues-section").innerHTML = data;
+        document.getElementById("issues-section").style.display = "block";
+        document.getElementById("flexSwitchCheckOpen").checked = true;
+        document.getElementById("flexSwitchCheckResolved").checked = true;
+      })
+      .catch(error => console.error('Error:', error));
     }
   }
 
@@ -48,24 +66,3 @@
       section.classList.add('display-none');
     }
   }
-
-%hr.divider
-
-.accordion-section
-  .separating-section#open-issues-section
-    %h2
-      %i.bi.bi-chat-left-dots-fill.fill-yellow
-      Open
-
-    = render partial:'issue-box'  
-    = render partial:'issue-box' 
-    %hr.divider
-
-  .separating-section#resolved-issues-section
-    %h2
-      %i.bi.bi-check-circle-fill.fill-green
-      Resolved
-
-    = render partial:'issue-box'  
-    = render partial:'issue-box' 
-    %hr.divider

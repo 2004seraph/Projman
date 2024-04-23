@@ -1,0 +1,4 @@
+:plain
+  var divider = $('#issues-section');
+  var updatedPartialHTML = "#{j(render(partial: 'issues-section', locals: { issue: Event.find(params["issue_id"]) }))}";
+  $(divider).html(updatedPartialHTML);

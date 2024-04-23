@@ -83,11 +83,38 @@ DatabaseHelper.create_staff("nkhan10@sheffield.ac.uk")
 
 puts ""
 
+oliver = Student.find_or_create_by({
+  username: "aca22op",
+  preferred_name: "Oliver",
+  forename: "Oliver",
+  surname: "Pickford",
+  title: "Mr",
+  ucard_number: "001796094",
+  email: "opickford1@sheffield.ac.uk",
+  fee_status: :home
+})
+DatabaseHelper.create_staff("opickford1@sheffield.ac.uk")
+
+nahyan = Student.find_or_create_by({
+  username: "acb21nk",
+  preferred_name: "Nahyan",
+  forename: "Nahyan",
+  surname: "Khan",
+  title: "Mr",
+  ucard_number: "001790710",
+  email: "nkhan10@sheffield.ac.uk",
+  fee_status: :home
+})
+DatabaseHelper.create_staff("nkhan10@sheffield.ac.uk")
+
+puts ""
+
 robotics_class = DatabaseHelper.provision_module_class(
   "COM2009",
   "Robotics",
   Staff.find_by(email: "jhenson2@sheffield.ac.uk")
 )
+
 sam.enroll_module "COM2009"
 josh.enroll_module "COM2009"
 jakub.enroll_module "COM2009"
@@ -95,7 +122,7 @@ adam.enroll_module "COM2009"
 oliver.enroll_module "COM2009"
 nahyan.enroll_module "COM2009"
 
-DatabaseHelper.provision_module_class(
+students_COM3420 = DatabaseHelper.provision_module_class(
   "COM3420",
   "Software Hut",
   DatabaseHelper.create_staff("sgttaseff1@sheffield.ac.uk"),
@@ -121,6 +148,8 @@ adam.enroll_module "COM9999"
 oliver.enroll_module "COM9999"
 nahyan.enroll_module "COM9999"
 
+
+# take the entire COM3420 class and enroll them in another module
 DatabaseHelper.provision_module_class(
   "COM2004",
   "Introduction to Software Engineering",
@@ -134,6 +163,7 @@ adam.enroll_module "COM2004"
 oliver.enroll_module "COM2004"
 nahyan.enroll_module "COM2004"
 
+
 puts ""
 
 DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
@@ -146,6 +176,18 @@ DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
   # project_choices_json: {test: "test"}.to_json,
   team_allocation: :random_team_allocation,
   team_size: 8
+}))
+
+DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
+  course_module: CourseModule.find_by(code: "COM2009"),
+  # dont specify it to leave it as the default {}
+  # markscheme_json: {test: "test"}.to_json,
+  name: "Miro",
+  project_allocation: :single_preference_project_allocation,
+  # dont specify it to leave it as the default {}
+  # project_choices_json: {test: "test"}.to_json,
+  team_allocation: :random_team_allocation,
+  team_size: 4
 }))
 
 DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
@@ -186,27 +228,31 @@ puts ""
 
 DatabaseHelper.print_validation_errors(Group.find_or_create_by({
   name: "Team 28",
-  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "jhenson2@sheffield.ac.uk").id),
+  assigned_facilitator:AssignedFacilitator.find_by(staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "TurtleBot Project")),
   course_project: CourseProject.find_by(name: "TurtleBot Project")
 }))
 
 DatabaseHelper.print_validation_errors(Group.find_or_create_by({
   name: "Team 29",
-  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "jhenson2@sheffield.ac.uk").id),
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "TurtleBot Project")),
   course_project: CourseProject.find_by(name: "TurtleBot Project")
 }))
 
 DatabaseHelper.print_validation_errors(Group.find_or_create_by({
   name: "Team 5",
-  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "jhenson2@sheffield.ac.uk").id),
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "sgttaseff1@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "AI Project")),
   course_project: CourseProject.find_by(name: "AI Project")
 }))
 
-#DatabaseHelper.print_validation_errors(Group.find_or_create_by({
-#  name: "Team 6",
-#  assigned_facilitator_id: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk").id).id,
-#  course_projects_id: CourseProject.find_by(name: "AI Project").id
-#}))
+DatabaseHelper.print_validation_errors(Group.find_or_create_by({
+  name: "Team 2",
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "sgttaseff1@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "Miro")),
+  course_project: CourseProject.find_by(name: "Miro")
+}))
 
 group = Group.find_or_create_by({
   name: "Team 6",
@@ -217,10 +263,11 @@ group = Group.find_or_create_by({
 group.students << oliver
 group.students << adam
 group.students << jakub
+group.students << josh
 
 group2 = Group.find_or_create_by({
   name: "Team 1",
-  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk"),
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk"),
     course_project: CourseProject.find_by(name: "TurtleBot Project")),
   course_project: CourseProject.find_by(name: "TurtleBot Project")
 })
@@ -230,13 +277,10 @@ group2.students << oliver
 
 group3 = Group.find_or_create_by({
   name: "Team 2",
-  assigned_facilitator: AssignedFacilitator.find_by(staff_id: Staff.find_by(email: "opickford1@sheffield.ac.uk"),
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "opickford1@sheffield.ac.uk"),
     course_project: CourseProject.find_by(name: "TurtleBot Project")),
   course_project: CourseProject.find_by(name: "TurtleBot Project")
 })
-group3.students << josh
 group3.students << sam
 group3.students << oliver
 group3.students << jakub
-
-

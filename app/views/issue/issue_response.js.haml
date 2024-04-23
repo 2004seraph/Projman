@@ -1,0 +1,37 @@
+:plain
+  $('#success-message-#{params["issue_id"]}').show();
+  setTimeout(function() { 
+    $('#success-message-#{params["issue_id"]}').hide(); 
+  }, 3000);
+
+  var currentIssue = $('#hidden-partial-container-#{params["issue_id"]}');
+  var previousIssue = currentIssue.prev();
+  console.log(previousIssue);
+  currentIssue.remove();
+  var newPartialHTML = "#{j(render(partial: 'issue-box', locals: { issue: Event.find(params["issue_id"]) }))}";
+  $(previousIssue).after(newPartialHTML);
+
+  var collapseElement = $('#issue-card-#{params["issue_id"]} .collapse');
+  collapseElement.addClass('show');   
+  $('#card-header-#{params["issue_id"]}').attr('aria-expanded', 'true');
+
+-# var currentIssueCard = $('#card-header-#{params["issue_id"]}');
+-# currentIssueCard.collapse('show');
+  
+
+-# var partialUrl = 'issues/#{params["issue_id"]}/issue-box';
+
+-# $.ajax({
+-#   url: partialUrl,
+-#   type: 'GET',
+-#   dataType: 'html',
+-#   success: function(response) {
+-#     -# $('#card-header-#{params["issue_id"]}').attr('aria-expanded', 'true');
+-#     $('#hidden-partial-container-#{params["issue_id"]}').html(response);
+-#   },
+-#   error: function(xhr, status, error) {
+-#     console.error('Error reloading partial:', error);
+-#   }
+-# });
+
+  
