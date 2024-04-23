@@ -7,6 +7,11 @@
 -# form_input_id
 -# form_input_name
 -# data_search_autocomplete_method
-
+-# hidden_fields   hash like {"field_name" => "field_value"}
 %input.form-control.mr-sm-2.search-collection.dropdown-toggle{id: form_input_id, name: form_input_name, placeholder: "Search", aria: {label: "Search"}, autocomplete: "off", "data-search-autocomplete-method" => data_search_autocomplete_method, "data-bs-toggle" => "dropdown", "aria-expanded" => "false", type: "search"}
 %ul.dropdown-menu
+-# room for hidden inputs to add to search query
+.hidden-inputs-container
+- if defined?(hidden_fields)
+  - hidden_fields.each do |field_name, field_value|
+    %input{ type: "hidden", name: field_name, value: field_value}
