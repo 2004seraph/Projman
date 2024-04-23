@@ -12,6 +12,6 @@
 %ul.dropdown-menu
 -# room for hidden inputs to add to search query
 .hidden-inputs-container
-- if defined?(hidden_fields)
-  - hidden_fields.each do |field_name, field_value|
-    %input{ type: "hidden", name: field_name, value: field_value}
+  - if defined?(hidden_fields)
+    - hidden_fields.each do |field_name, field_value|
+      %input{ type: "hidden", name: field_name, value: field_value}
