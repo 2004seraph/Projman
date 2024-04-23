@@ -21,7 +21,7 @@ class MilestoneResponseController < ApplicationController
       #Project Choices Form Milestone Response
       elsif milestone.json_data['Name'] == "Project Preference Form Deadline" 
 
-        project = CourseProject.find(params[:project_id])
+        project = CourseProject.find(milestone.course_project_id)
         choices = extract_choices(params, project)
 
         json_data = {}

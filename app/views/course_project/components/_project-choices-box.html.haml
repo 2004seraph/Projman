@@ -62,7 +62,6 @@
       const form = this; 
       const formData = new FormData(form); 
       formData.append('milestone_id', #{@proj_choices_form.id})
-      formData.append('project_id', #{@current_project.id})
   
       fetch(form.action, { 
         method: form.method,
