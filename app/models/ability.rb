@@ -11,6 +11,7 @@ class Ability
     return unless user.present?
 
     can [:read], :page
+    can [:read], :profile
     can [:read, :create, :issue_response, :update_selection, :update_status], :issue
 
     # Rails.logger.debug "################################"
