@@ -1,0 +1,16 @@
+- issue_data = JSON.parse(@issue.json_data)
+!!!
+%html
+  %head
+    %title Issue has been #{@status}
+  %body
+    %p Issue has been #{@status}:
+    %p Module: #{@course_module.code}
+    %p Project: #{@course_project.name}
+    %p Group: #{@group.name}
+    %p Reported by: #{issue_data['author']}
+
+    %hr
+
+    %p Title: #{issue_data['title']}
+    %p Issue: #{issue_data['content']}

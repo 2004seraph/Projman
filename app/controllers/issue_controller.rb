@@ -2,6 +2,8 @@ class IssueController < ApplicationController
     authorize_resource class: false
 
     def index
+        @selected_project = "All"
+
         get_issues
 
         if current_user.is_staff?
@@ -12,7 +14,10 @@ class IssueController < ApplicationController
     end
 
     def update_selection
-        get_issues(params[:selected_project])
+
+        @selected_project = params[:selected_project]
+
+        get_issues(@selected_project)
 
         # if !(params[:selected_project] == 'All' || params[:selected_project].nil?)
         #     @open_issues = []
@@ -38,7 +43,12 @@ class IssueController < ApplicationController
         #     end
         # end
 
-        render partial: 'issues-section'
+        # render partial: 'issues-section'
+        if request.xhr?
+            respond_to do |format|
+                format.js
+            end
+        end
     end
 
     def create
