@@ -37,6 +37,8 @@
 yarn-debug.log*
 .yarn-integrity
 
+package-lock.json
+
 /coverage
 /coverage/assets
 /coverage/index.html
