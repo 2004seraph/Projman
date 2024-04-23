@@ -60,6 +60,7 @@ gem 'bootstrap-datepicker-rails', '~> 1.6', '>= 1.6.1.1'
 gem 'jquery-rails'
 
 gem 'simple_form'
+gem  "foreman"
 
 gem 'draper'
 
