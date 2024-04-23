@@ -1,36 +1,32 @@
-document.addEventListener('DOMContentLoaded', function () {
+import $ from 'jquery'
 
+$(function(){
     const rowClick = new CustomEvent('row-selection-change');
 
-
-    document.querySelectorAll('.selectable-row-container').forEach((selectableRowContainer) => {
-
-        selectableRowContainer.getSelectedRows = function () {
-            var selectedRows = []
-            var selectableRows = selectableRowContainer.querySelectorAll('tr.selectable-row');
-            selectableRows.forEach(row => {
-                // Check if the row contains a .form-check-input:checked element
-                var isChecked = row.querySelector('.form-check-input:checked');
-                
-                // If checked element exists, add the row to selectedRows
-                if (isChecked) {
-                    selectedRows.push(row);
-                }
-            });
-            return selectedRows
+    $.fn.getSelectedRows = function() { 
+        if (!$(this).hasClass('selectable-row-container')) {
+            console.error('getSelectedRows can only be called on a selectable-row-container');
+            return [];
         }
-
-        rows = selectableRowContainer.querySelectorAll('tr.selectable-row')
-        rows.forEach((row) => {
-            row.addEventListener('click', (event) => {
-                // Check if the clicked element is not an input
-                if (event.target.tagName !== 'INPUT') {
-                    var checkbox = row.querySelector('.form-check-input');
-                    // Toggle checkbox state
-                    checkbox.checked = !checkbox.checked;
-                }
-                selectableRowContainer.dispatchEvent(rowClick);
-            });
+        var selectedRows = [];
+        $(this).find('tr.selectable-row').each(function() {
+            var checkbox = $(this).find('.form-check-input');
+            if (checkbox.prop('checked')) {
+                selectedRows.push(this);
+            }
         });
-    })
+        return selectedRows;
+    };
+
+    $('.selectable-row-container').each(function() {
+        var selectableRowContainer = $(this);
+
+        selectableRowContainer.on('click', 'tr.selectable-row', function(event) {
+            if ($(event.target).prop('tagName') !== 'INPUT') {
+                var checkbox = $(this).find('.form-check-input');
+                checkbox.prop('checked', !checkbox.prop('checked'));
+            }
+            selectableRowContainer[0].dispatchEvent(rowClick);
+        });
+    });
 });

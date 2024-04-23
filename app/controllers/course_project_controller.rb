@@ -187,6 +187,7 @@ class CourseProjectController < ApplicationController
 
     def search_facilitators_student
         query = params[:query]
+        puts params
         @results = Student.where("email LIKE ?", "%#{query}%").limit(8).distinct
         render json: @results.pluck(:email)
     end

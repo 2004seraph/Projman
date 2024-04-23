@@ -57,6 +57,9 @@ class Ability
     # staff permissions
     return unless user.is_staff?
 
+    # A staff can view students view
+    can [:read], Student
+
     # a staff can only view the modules they lead, not change them.
     can [:read], CourseModule, staff_id: user.staff.id
 
