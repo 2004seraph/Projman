@@ -191,6 +191,7 @@ GEM
       railties (>= 5.0.0)
     faker (3.2.3)
       i18n (>= 1.8.11, < 2)
+    foreman (0.88.1)
     git (1.19.1)
       addressable (~> 2.8)
       rchardet (~> 1.8)
@@ -416,6 +417,7 @@ DEPENDENCIES
   epi_deploy!
   factory_bot_rails
   faker
+  foreman
   hamlit
   hamlit-rails
   jquery-rails

@@ -89,6 +89,28 @@ class Student < ApplicationRecord
     false
   end
 
+  def unenroll_module(module_code)
+    c = CourseModule.find_by(code: module_code)
+    if c
+      c.students.delete(self)
+
+      # remove all their facilitator positions for every project on that module
+      # c.course_projects.each do |p|
+      #   p.assigned_facilitators.where(student: self).delete_all
+      # end
+
+      # remove them from all groups on this module
+      # groups.where(course_module: c).each do |g|
+      #   g.students.delete(self)
+      # end
+
+      puts groups.where(course_module: c)
+
+      return true
+    end
+    false
+  end
+
   # A static method to insert a classlist into the database
   def self.bootstrap_class_list(csv)
     invalid_models = []

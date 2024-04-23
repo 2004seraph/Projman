@@ -24,7 +24,7 @@
 #  fk_rails_...  (subproject_id => subprojects.id)
 #
 
-require 'set'
+# require 'set'
 
 class Group < ApplicationRecord
   belongs_to :course_project
