@@ -6,8 +6,8 @@ $(function() {
     var searchCollections = $('.search-collection');
     searchCollections.each(function(){
         var searchCollection = $(this)
-        var dropdownElement = $(this).next('.dropdown-menu')
-        var hiddenInputsContainer = $(this).next('.hidden-inputs-container')
+        var dropdownElement = $(this).nextAll('.dropdown-menu:first')
+        var hiddenInputsContainer = $(this).nextAll('.hidden-inputs-container:first')
         searchCollection.on('click', function() {
             dropdownElement.removeClass('show');
         });
@@ -20,8 +20,8 @@ $(function() {
                 return;
             }
             var requestData = {};
-            // Loop through hidden inputs
-            hiddenInputsContainer.find('input[type="hidden"').each(function() {
+            // Find and iterate over hidden input elements
+            hiddenInputsContainer.find('input[type="hidden"]').each(function() {
                 var fieldName = $(this).attr('name');
                 var value = $(this).val();
                 requestData[fieldName] = value;
