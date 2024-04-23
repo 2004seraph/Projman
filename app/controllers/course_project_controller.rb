@@ -561,7 +561,7 @@ class CourseProjectController < ApplicationController
                 #Project Choices Form
                 @show_proj_form = false
 
-                unless @current_project.project_allocation == 'random'
+                unless @current_project.project_allocation == 'random_project_allocation'
                     @choices = @current_project.subprojects.pluck('name')
     
                     #Should the project choice form be shown
@@ -579,16 +579,7 @@ class CourseProjectController < ApplicationController
                     @show_proj_form = (@current_project.status == 'team_preference') && personal_response && group_response
                     
                 end
-    
-                #Get facilitator information
-                facilitator = AssignedFacilitator.find(group.assigned_facilitator_id)
-                if facilitator.staff_id == nil
-                    @facilitator_email = Student.find(facilitator.student_id).email
-                else
-                    @facilitator_email = Staff.find(facilitator.staff_id).email
-                end
                 
-    
                 #Get team information
                 @team_names = []
                 @team_emails = []
@@ -596,12 +587,37 @@ class CourseProjectController < ApplicationController
                     @team_names << teammate.preferred_name+' '+teammate.surname
                     @team_emails << teammate.email
                 end
-            
+                
+                #Get facilitator information
+                unless group.assigned_facilitator_id == nil
+                    facilitator = AssignedFacilitator.find(group.assigned_facilitator_id)
+                    if facilitator.staff_id == nil
+                        @facilitator_email = Student.find(facilitator.student_id).email
+                    else
+                        @facilitator_email = Staff.find(facilitator.staff_id).email
+                    end
+                else
+                    @facilitator_email = "Facilitators have not been assigned yet"
+                end
+                
             end
 
             #Render view
             render 'show_student'
         end
+    end
+
+    def search_student_name 
+        query = params[:query]
+        project = CourseProject.find(params[:project_id])
+
+        query_parts = query.split(" ")
+        preferred_name = query_parts[0]
+        surname = query_parts[1]
+
+        @results = project.course_module.students.where("(preferred_name LIKE :preferred_name AND surname LIKE :surname) OR (preferred_name LIKE :surname AND surname LIKE :preferred_name)", preferred_name: "%#{preferred_name}%", surname: "%#{surname}%").limit(8).distinct
+        render json: @results.map { |student| "#{student.preferred_name} #{student.surname}" }
+
     end
 
     def teams

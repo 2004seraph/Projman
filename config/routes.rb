@@ -32,6 +32,7 @@ Rails.application.routes.draw do
     post 'set_milestone_comment', on: :collection
     get 'search_facilitators_student', on: :collection
     get 'search_facilitators_staff', on: :collection
+    get 'search_student_name', on: :collection
   end
 
   resources :students, only: [:index], controller: :student do
