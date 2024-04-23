@@ -1,0 +1,23 @@
+- issue_data = JSON.parse(@issue.json_data)
+- issue_response_data = JSON.parse(@issue_response.json_data)
+!!!
+%html
+  %head
+    %title New Issue Response
+  %body
+    %p A new issue response has been sent:
+    %p Module: #{@course_module.code}
+    %p Project: #{@course_project.name}
+    %p Group: #{@group.name}
+    %p Reported by: #{issue_response_data['author']}
+
+    %hr
+
+    -# Do we want all the previous issue/ response?
+    %p Original Issue: 
+    %p Title: #{issue_data['title']}
+    %p Issue: #{issue_data['content']}
+
+    %hr
+
+    %p New Response: #{issue_response_data['content']}
