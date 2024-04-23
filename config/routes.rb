@@ -41,6 +41,7 @@ Rails.application.routes.draw do
     # AJAX
     post 'project-selected', to: 'issue#update_selection', on: :collection
     post 'issue-response', to: 'issue#issue_response', on: :collection
+    post 'update-status', to: 'issue#update_status', on: :collection
   end
 
   resources :facilitators, only: [:index], controller: :facilitator do

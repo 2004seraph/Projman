@@ -40,17 +40,28 @@
               = form.label :Response
               = form.text_area :response, class: "form-control pt-2 pb-2 mb-2", placeholder: "Enter your response here", id: "response-textarea-#{issue.id}", required: true
             .d-flex.justify-content-end.mb-2
-              %button.btn.btn-primary{type: "submit", class: "btn btn-primary me-2", id: "send-response-#{issue.id}" }
+              %button.btn.btn-primary{type: "submit", class: "btn btn-primary me-2", id: "send-response-#{issue.id}", remote: true }
                 %i.bi.bi-send-fill
                 Send
+          -# = link_to "#", onclick: "markIssueResolved()", class: "btn btn-primary", id: "mark-resolved-#{issue.id}" do
+          -#   %i.bi.bi-check-circle-fill
+          -#   Mark as Resolved
+          = form_with(url: update_status_issues_path(issue_id: issue.id, status: "closed"), method: :post, local: false, remote: true) do |form|
+            %button.btn.btn-primary{type: "submit", class: "btn btn-primary", id: "mark-resolved-#{issue.id}" }
+              %i.bi.bi-check-circle-fill
+              Mark as Resolved
+          -# = link_to mark_resolved_issues_path(issue_id: issue.id), method: :post, local: false, class: "btn btn-primary", id: "mark-resolved-#{issue.id}" do
+          -#   %i.bi.bi-check-circle-fill
+          -#   Mark as Resolved
           .alert.alert-success{style: "display: none;", id: "success-message-#{issue.id}" }
             Response submitted successfully!
         <!- if current_user.isStudent?>
-        - if current_user.is_student? && issue.completed
-          .d-flex.justify-content-end.mb-2
-            %button.btn.btn-primary
-              %i.bi.bi-check-circle-fill
-              Reopen
+        - if issue.completed
+          .d-flex.justify-content-end.mb-2   
+            = form_with(url: update_status_issues_path(issue_id: issue.id, status: "open"), method: :post, local: false, remote: true) do |form|
+              %button.btn.btn-primary{type: "submit", class: "btn btn-primary", id: "reopen-#{issue.id}" }
+                %i.bi.bi-check-circle-fill
+                Reopen
 
 
 
