@@ -1,0 +1,11 @@
+:plain
+  var currentSelection = $("#dropdownMenuButton .current-selection");
+  currentSelection.text("#{@selected_project}");
+
+  var divider = $('#issues-section');
+  var updatedPartialHTML = "#{j(render(partial: 'issues-section'))}";
+  $(divider).empty().append(updatedPartialHTML);
+  $(divider).show();
+
+  $("#flexSwitchCheckOpen").prop("checked", true);
+  $("#flexSwitchCheckResolved").prop("checked", true);

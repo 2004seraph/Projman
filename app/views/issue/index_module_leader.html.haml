@@ -7,11 +7,14 @@
       Projects:
       %span.current-selection
       %i.bi.bi-caret-down-fill
-    .dropdown-menu{ "aria-labelledby": "dropdownMenuButton" }
-      %a.dropdown-item{ href: "#", onclick: "updateSelection('All')" } All
-      %hr.dropdown-divider
-      - @user_projects.each do |user_project|
-        %a.dropdown-item{onclick: "updateSelection('#{user_project.name}')" } #{user_project.name}
+    = form_with(url: "/issues/update-selection", method: :post, local: false) do |form|
+      .dropdown-menu{ "aria-labelledby": "dropdownMenuButton" }
+        %button.dropdown-item{ type: "submit", name: "selected_project", value: "All", selected: (@selected_project.nil? || @selected_project == "All") }
+          All
+        %hr.dropdown-divider
+        - @user_projects.each do |user_project|
+          %button.dropdown-item{ type: "submit", name: "selected_project", value: user_project.name, selected: (user_project.name == @selected_project)}
+            = user_project.name
 
   .form-check.form-switch.form-check-reverse.me-3
     %input.form-check-input{ type: "checkbox", role: "switch",
@@ -28,35 +31,20 @@
 
 
 .accordion-section#issues-section{style: "display: none;"}
-  render partial: 'issues-section'
 
 :javascript
   document.addEventListener("DOMContentLoaded", function() {
-    updateSelection('All'); // Set initial selection to the first option
-  });
+    var currentSelection = $("#dropdownMenuButton .current-selection");
+    currentSelection.text("#{@selected_project}");
 
-  function updateSelection(selection) {
-    var currentSelection = document.getElementById("dropdownMenuButton").querySelector(".current-selection");
-    if (currentSelection) {
-      currentSelection.innerText = selection;
-      fetch("issues/project-selected", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
-        },
-        body: JSON.stringify({ selected_project: selection })
-      })
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById("issues-section").innerHTML = data;
-        document.getElementById("issues-section").style.display = "block";
-        document.getElementById("flexSwitchCheckOpen").checked = true;
-        document.getElementById("flexSwitchCheckResolved").checked = true;
-      })
-      .catch(error => console.error('Error:', error));
-    }
-  }
+    var divider = $('#issues-section');
+    var updatedPartialHTML = "#{j(render(partial: 'issues-section'))}";
+    $(divider).empty().append(updatedPartialHTML);
+    $(divider).show();
+
+    $("#flexSwitchCheckOpen").prop("checked", true);
+    $("#flexSwitchCheckResolved").prop("checked", true);
+  });
 
   function toggleSection(sectionId) {
     var section = document.getElementById(sectionId);

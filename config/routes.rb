@@ -39,7 +39,7 @@ Rails.application.routes.draw do
 
   resources :issues, only: [:index, :create], controller: :issue do
     # AJAX
-    post 'project-selected', to: 'issue#update_selection', on: :collection
+    post 'update-selection', to: 'issue#update_selection', on: :collection
     post 'issue-response', to: 'issue#issue_response', on: :collection
     post 'update-status', to: 'issue#update_status', on: :collection
   end
