@@ -22,7 +22,7 @@ class Ability
 
       # students will only be able to view their own enrollments.
       # can :read, CourseModule, id: user.student.course_modules.pluck(:id)
-      can :read, CourseProject, id: user.student.course_projects.pluck(:id)
+      can [:read, :search_student_name], CourseProject, id: user.student.course_projects.pluck(:id)
       can :read, Group, id: user.student.groups.pluck(:id)
       can :read, Event, group: { id: user.student.groups.pluck(:id) }
 
@@ -56,6 +56,9 @@ class Ability
 
     # staff permissions
     return unless user.is_staff?
+
+    # A staff can view students view
+    can [:read], Student
 
     # a staff can only view the modules they lead, not change them.
     can [:read], CourseModule, staff_id: user.staff.id

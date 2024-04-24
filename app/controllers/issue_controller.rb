@@ -1,13 +1,12 @@
 class IssueController < ApplicationController
-    authorize_resource class: false, except: :update_selection
-    
+    authorize_resource class: false
 
     def index
         @selected_project = "All"
-        
+
         get_issues
 
-        if current_user.is_staff?           
+        if current_user.is_staff?
             render 'index_module_leader'
         else
             render 'index_student'
@@ -15,19 +14,18 @@ class IssueController < ApplicationController
     end
 
     def update_selection
-        authorize! :read, :issue
 
         @selected_project = params[:selected_project]
 
         get_issues(@selected_project)
 
-        # if !(params[:selected_project] == 'All' || params[:selected_project].nil?) 
+        # if !(params[:selected_project] == 'All' || params[:selected_project].nil?)
         #     @open_issues = []
         #     @resolved_issues = []
-            
+
         #     project_selected = params[:selected_project]
         #     project = CourseProject.find_by(name: project_selected)
-            
+
         #     if current_user.is_staff?
         #         @project_groups = Group.where(course_project_id: project.id)
 
@@ -54,7 +52,7 @@ class IssueController < ApplicationController
     end
 
     def create
-        json_data = { 
+        json_data = {
             title: params[:title],
             content: params[:description],
             author: params[:author]
@@ -128,7 +126,7 @@ class IssueController < ApplicationController
     def get_issues(selected_project = 'All')
         @open_issues = []
         @resolved_issues = []
-        
+
         # if current_user.isStudent?
         if current_user.is_staff?
             @user_modules = current_user.staff.course_modules
@@ -150,7 +148,7 @@ class IssueController < ApplicationController
                 end
             else
                 project = CourseProject.find_by(name: selected_project)
-            
+
                 @project_groups = Group.where(course_project_id: project.id)
 
                 @project_groups.each do |project_group|

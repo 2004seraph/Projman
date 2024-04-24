@@ -1,5 +1,6 @@
 import Rails from "@rails/ujs";
 import $ from 'jquery';
+import 'jquery'
 import 'bootstrap';
 import 'bootstrap-datepicker';
 
@@ -13,6 +14,7 @@ import '../scripts/selectable_row_control';
 import '../scripts/custom-functions';
 
 import '../scripts/project/project_creation_control';
+import '../scripts/student/module_students_control';
 
 window.$ = $
 

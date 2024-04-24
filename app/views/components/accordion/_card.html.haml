@@ -2,7 +2,7 @@
 - unique_id = "accordion-card-" + ran_num
 - unique_id_collapse = "accordion-collapse-card-" + ran_num
 
-.card.mb-2.accordion-element
+%div{ class: "card mb-2 accordion-element #{additional_classes if defined?(additional_classes)}", id: "#{id}"}
   %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
    href: "##{unique_id_collapse}",
    role: "button",

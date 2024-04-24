@@ -11,10 +11,9 @@ class MilestoneResponseController < ApplicationController
         preferred_teammates = extract_teammates(params, :preferred_teammate)
         avoided_teammates = extract_teammates(params, :avoided_teammate)
 
-        json_data = {
-          preferred: preferred_teammates,
-          avoided: avoided_teammates
-        }.to_json
+        json_data = {}
+        json_data["preferred"] = preferred_teammates
+        json_data["avoided"] = avoided_teammates
 
         MilestoneResponse.create(json_data: json_data, milestone_id: milestone.id, student_id: current_user.student.id)
       
@@ -41,7 +40,9 @@ class MilestoneResponseController < ApplicationController
       teammates = []
       params.each do |param_key, value|
         if param_key.to_s.start_with?(key.to_s)
-          teammates << value.strip
+          f_name = value.strip.split(" ")[0]
+          l_name = value.strip.split(" ")[1]
+          teammates << Student.where(preferred_name: f_name, surname: l_name).first.id
         end
       end
       teammates
