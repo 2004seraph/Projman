@@ -15,23 +15,7 @@
   collapseElement.addClass('show');   
   $('#card-header-#{params["issue_id"]}').attr('aria-expanded', 'true');
 
--# var currentIssueCard = $('#card-header-#{params["issue_id"]}');
--# currentIssueCard.collapse('show');
-  
-
--# var partialUrl = 'issues/#{params["issue_id"]}/issue-box';
-
--# $.ajax({
--#   url: partialUrl,
--#   type: 'GET',
--#   dataType: 'html',
--#   success: function(response) {
--#     -# $('#card-header-#{params["issue_id"]}').attr('aria-expanded', 'true');
--#     $('#hidden-partial-container-#{params["issue_id"]}').html(response);
--#   },
--#   error: function(xhr, status, error) {
--#     console.error('Error reloading partial:', error);
--#   }
--# });
+  $("#flexSwitchCheckOpen").prop("checked", true);
+  $("#flexSwitchCheckResolved").prop("checked", true);
 
   

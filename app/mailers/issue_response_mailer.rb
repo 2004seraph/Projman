@@ -6,6 +6,8 @@ class IssueResponseMailer < ApplicationMailer
     @group = group
     @course_project = course_project
     @course_module = course_module
+    @issue_url = "issues#issue-#{issue.id}"
+    @url = "#{root_url}#{@issue_url}"
     mail(to: @recipient_email, subject: "[Issue ID - #{@issue.id}] New Issue Response")
   end
 end

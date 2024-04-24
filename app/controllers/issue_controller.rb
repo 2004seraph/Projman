@@ -6,44 +6,15 @@ class IssueController < ApplicationController
 
         get_issues
 
-        if current_user.is_staff?
-            render 'index_module_leader'
-        else
-            render 'index_student'
-        end
+        
+        render 'index'
     end
 
     def update_selection
-
         @selected_project = params[:selected_project]
 
         get_issues(@selected_project)
 
-        # if !(params[:selected_project] == 'All' || params[:selected_project].nil?)
-        #     @open_issues = []
-        #     @resolved_issues = []
-
-        #     project_selected = params[:selected_project]
-        #     project = CourseProject.find_by(name: project_selected)
-
-        #     if current_user.is_staff?
-        #         @project_groups = Group.where(course_project_id: project.id)
-
-        #         @project_groups.each do |project_group|
-        #             @open_issues += project_group.events.where(event_type: :issue, completed: false)
-        #             @resolved_issues += project_group.events.where(event_type: :issue, completed: true)
-        #         end
-        #     else
-        #         group = @user_groups.find_by(course_project_id: project.id)
-
-        #         if !(group.nil?)
-        #             @open_issues += current_user.student.events.where(event_type: :issue, completed: false, group_id: group.id)
-        #             @resolved_issues += current_user.student.events.where(event_type: :issue, completed: true, group_id: group.id)
-        #         end
-        #     end
-        # end
-
-        # render partial: 'issues-section'
         if request.xhr?
             respond_to do |format|
                 format.js
@@ -127,7 +98,6 @@ class IssueController < ApplicationController
         @open_issues = []
         @resolved_issues = []
 
-        # if current_user.isStudent?
         if current_user.is_staff?
             @user_modules = current_user.staff.course_modules
 

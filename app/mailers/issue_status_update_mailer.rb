@@ -6,6 +6,8 @@ class IssueStatusUpdateMailer < ApplicationMailer
     @course_project = course_project
     @course_module = course_module
     @status = status
+    @issue_url = "issues#issue-#{issue.id}"
+    @url = "#{root_url}#{@issue_url}"
     mail(to: @recipient_email, subject: "[Issue ID - #{@issue.id}] Issue has been #{status}")
   end
 end

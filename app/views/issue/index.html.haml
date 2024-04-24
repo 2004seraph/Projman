@@ -43,6 +43,20 @@
 
     $("#flexSwitchCheckOpen").prop("checked", true);
     $("#flexSwitchCheckResolved").prop("checked", true);
+
+    var anchor = window.location.hash;
+
+    if (anchor) {
+      var issueId = anchor.substring(anchor.indexOf('-') + 1);
+
+      var collapseElement = $('#issue-card-' + issueId + ' .collapse');
+      collapseElement.addClass('show');   
+      $('#card-header-#' + issueId).attr('aria-expanded', 'true');
+      var elementToScrollTo = document.getElementById('hidden-partial-container-' + issueId);
+      elementToScrollTo.scrollIntoView();
+    };
+
+    window.location.hash = "";
   });
 
   function toggleSection(sectionId) {

@@ -2,3 +2,6 @@
   var divider = $('#issues-section');
   var updatedPartialHTML = "#{j(render(partial: 'issues-section', locals: { issue: Event.find(params["issue_id"]) }))}";
   $(divider).html(updatedPartialHTML);
+
+  $("#flexSwitchCheckOpen").prop("checked", true);
+  $("#flexSwitchCheckResolved").prop("checked", true);
