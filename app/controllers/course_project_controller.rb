@@ -594,6 +594,12 @@ class CourseProjectController < ApplicationController
         end
     end
 
+    def update
+        puts session[:project_data]
+        puts params[:id]
+        render :edit
+    end
+
     def show
         if current_user.is_staff?
             # staff version of viewing one project
