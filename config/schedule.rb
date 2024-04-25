@@ -10,3 +10,14 @@ if ENV['MY_RUBY_HOME'] && ENV['MY_RUBY_HOME'].include?('rvm')
 end
 #
 #####
+
+# update project statuses and send events to groups
+every 1.minute do
+  # the following tasks are run in parallel (not in sequence)
+  runner "CourseProject.lifecycle_job", environment: ENV['RAILS_ENV']
+end
+
+# every six, hours, sync to sheffield's database
+every 1.day, at: ['12:30 am', '12:30 pm']  do
+  runner "Student.ldap_sync", environment: ENV['RAILS_ENV']
+end

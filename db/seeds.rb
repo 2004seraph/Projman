@@ -88,7 +88,6 @@ robotics_class = DatabaseHelper.provision_module_class(
   "Robotics",
   Staff.find_by(email: "jhenson2@sheffield.ac.uk")
 )
-
 sam.enroll_module "COM2009"
 josh.enroll_module "COM2009"
 jakub.enroll_module "COM2009"

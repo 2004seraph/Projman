@@ -57,26 +57,26 @@ module StudentDataHelper
     email: lambda { |s, _|
       s.downcase
     },
-    preferred_name: lambda { |s, username|
-      lookup = DatabaseHelper.get_student_first_name(username)
-      if lookup == username
-        s
-      else
-        lookup
-      end
-    },
-    forename: lambda { |s, username|
-      lookup = DatabaseHelper.get_student_last_name(username)
-      if lookup == username
-        s
-      else
-        lookup
-      end
-    }
+    # surname: lambda { |s, username|
+    #   lookup = DatabaseHelper.get_student_first_name(username)
+    #   if lookup == username
+    #     s
+    #   else
+    #     lookup
+    #   end
+    # },
+    # forename: lambda { |s, username|
+    #   lookup = DatabaseHelper.get_student_last_name(username)
+    #   if lookup == username
+    #     s
+    #   else
+    #     lookup
+    #   end
+    # }
   }
 
 
-  def generate_dummy_data_csv_string(class_module_code = "COM3420", num_records = 234)
+  def generate_dummy_data_csv_string(class_module_code = "COM3420", num_records = 100)
     data = generate_dummy_data(num_records, class_module_code)
     convert_csv_to_text(data, csv_headers)
   end
