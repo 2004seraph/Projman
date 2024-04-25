@@ -14,6 +14,7 @@ Rails.application.routes.draw do
 
     get '/teams', to: 'lead#teams', on: :member
     post '/new', to: 'course_project#create', on: :collection
+    post '/edit', to: 'course_project#update', on: :member
 
     # AJAX
     post 'add_project_choice', on: :collection

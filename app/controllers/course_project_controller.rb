@@ -97,7 +97,7 @@ class CourseProjectController < ApplicationController
         milestone_types_hash = Milestone.milestone_types
 
         project_choices = project.subprojects.pluck(:name)
-        project_milestones = project.milestones
+        project_milestones = project.milestones.where(user_generated: true)
         project_assigned_facilitators = project.assigned_facilitators
         project_facilitators = []
         project_assigned_facilitators.each do |facilitator|
@@ -476,6 +476,16 @@ class CourseProjectController < ApplicationController
                 parsed_date = Date.strptime(date_string, "%d/%m/%Y").strftime("%Y-%m-%d")
                 # puts parsed_date
 
+                # check which system type of milestone this is, if it is supposed to be
+                system_type = nil
+                if milestone_data[:Name] == "Project Deadline"
+                    system_type = "project_deadline"
+                elsif milestone_data[:Name] == "Project Preference Form Deadline"
+                    system_type = "project_preference_deadline"
+                elsif milestone_data[:Name] == "Teammate Preference Form Deadline"
+                    system_type = "teammate_preference_deadline"
+                end
+
                 json_data = {
                     "Name" => milestone_data[:Name],
                     "isDeadline" => milestone_data[:isDeadline],
@@ -486,6 +496,8 @@ class CourseProjectController < ApplicationController
                 milestone = Milestone.new(
                     json_data: json_data,
                     deadline: parsed_date,
+                    system_type: system_type,
+                    user_generated: true,
                     milestone_type: milestone_data[:Type],
                     course_project_id: new_project.id
                 )
@@ -592,6 +604,12 @@ class CourseProjectController < ApplicationController
             # render :new
             render :new
         end
+    end
+
+    def update
+        puts session[:project_data]
+        puts params[:id]
+        render :edit
     end
 
     def show

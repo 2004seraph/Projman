@@ -4,7 +4,7 @@
   - project_data = session[:project_data]
   - errors = project_data[:errors]
 
-= render 'project_form', project_data: project_data, errors: errors, form_url: "/projects/edit", form_id: "edit-project-form" do
+= render 'project_form', project_data: project_data, errors: errors, form_url: edit_project_path(params[:id]), form_id: "edit-project-form" do
   %div
     .d-flex.justify-content-end
       %button.btn.btn-primary.mb-2.me-2#create-project-save-button{type: "submit"}

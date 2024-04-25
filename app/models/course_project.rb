@@ -121,7 +121,7 @@ class CourseProject < ApplicationRecord
   def creation_validation
     errors.add(:main, 'Project name cannot be empty') if name.blank?
     unless errors[:main].present?
-      if CourseProject.exists?(name: name, course_module_id: course_module_id)
+      if CourseProject.where(name: name, course_module_id: course_module_id).where.not(id: self.id).exists?
         errors.add(:main, 'There exists a project on this module with the same name')
       end
     end
