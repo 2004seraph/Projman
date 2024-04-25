@@ -1,0 +1,206 @@
+= form_tag "#{form_url}", method: :post, id: "#{form_id}" do
+  = yield
+
+  -# MAIN CONTENT
+  .mb-3
+    .input-group
+      %h2.input-group-text.fs-4.fw-bold.mb-0 Module
+      %select.form-select.form-select-sm.fs-5{id: "module-selection", name:"module_selection", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
+        - project_data[:modules_hash].each do |code, name|
+          %option{value: code, selected: (project_data[:selected_module].present? ? project_data[:selected_module] == code : code == project_data[:modules_hash].keys.first)}
+            = "#{code} #{name}"
+
+    .input-group
+      %h2.input-group-text.fs-4.fw-bold.mb-0 Project Name
+      %input.form-control.fs-5.fw-semibold{type: "text", id: "project-name", name: "project_name", placeholder: "Name", autocomplete:"off",
+        value: project_data[:project_name].present? ? project_data[:project_name] : nil}
+
+    .container-fluid.d-flex.flex-column.fs-6.text-danger
+      - if errors[:main].present?
+        - errors[:main].each do |error|
+          %span= error
+
+
+  -# PROJECT CHOICES
+  .card#project-choices.mb-3
+    .card-header.d-flex.align-items-center
+      %input.form-check-input.p-2.me-2.mt-0#project-choices-enable{type: "checkbox", value: "",
+      checked: project_data[:project_choices_enabled], name: "project_choices_enable", data: { url: toggle_project_choices_projects_path }}
+      %h2.fs-4.m-0 Project Choices
+
+    .card-body.pb-3
+      - if errors[:project_choices].present?
+        %div
+          .d-flex.flex-column.fs-6.text-danger
+            - errors[:project_choices].each do |error|
+              %span= error
+          %hr
+
+      %ul.list-group.list-group-flush.mb-2#project-choices-list
+        - project_data[:project_choices].each do |name|
+          = render partial: 'components/group-item-simple', locals: { item_text: name, deletion_action_url:remove_project_choice_projects_path }
+
+      %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal", id: "add-project-choice-btn",
+        "data-bs-target": "#add-project-choice-modal"}
+        %i.bi.bi-plus
+        Add
+
+      .row.align-items-center
+        .col
+          %label.col-form-label.fs-6.me-3{for: "project-allocation-method"} Project Allocation
+        .col-8
+          %select.form-select.form-select-sm{id: "project-allocation-method", name: "project_allocation_method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
+            - project_data[:project_allocation_modes_hash].each do |value, string|
+              %option{value: value, selected: (project_data[:selected_project_allocation_mode].present? ? project_data[:selected_project_allocation_mode] == value : value == project_data[:project_allocation_modes_hash].keys.first)}
+                = "#{ViewHelper.unparamaterize(string)}"
+
+  -# TEAM CONFIGURATION
+  .card#team-configuration.mb-3
+    .card-header
+      %h2.fs-4.m-0 Team Configuration
+
+    .card-body.pb-3
+      - if errors[:team_config].present?
+        %div
+          .d-flex.flex-column.fs-6.text-danger
+            - errors[:team_config].each do |error|
+              %span= error
+          %hr
+      .row.align-items-center
+        .col
+          %label.col-form-label.fs-6.me-3{for: "team-size"} Team Size
+        .col-8
+          .input-group.mb-2{style: "width:fit-content"}
+            %input.form-control.form-control-sm{ type: "number", id: "team-size", name:"team_size", min: "1", value: project_data[:team_size]}
+
+      .row.align-items-center
+        .col
+          %label.col-form-label.fs-6.me-3{for: "team-allocation-method"} Team Allocation Mode
+        .col-8
+          %select.form-select.form-select-sm{id: "team-allocation-method", name: "team_allocation_method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
+            - project_data[:team_allocation_modes_hash].each do |value, string|
+              %option{value: value, selected: (project_data[:selected_team_allocation_mode].present? ? project_data[:selected_team_allocation_mode] == value : value == project_data[:team_allocation_modes_hash].keys.first)}
+                = "#{ViewHelper.unparamaterize(string)}"
+
+
+  -# TEAM PREFERENCE FORM SETTINGS
+  .card#team-preference-form-settings.mb-3
+    .card-header
+      %h2.fs-4.m-0 Team Preference Form Settings
+
+    .card-body.pb-3
+      - if errors[:team_pref].present?
+        %div
+          .d-flex.flex-column.fs-6.text-danger
+            - errors[:team_pref].each do |error|
+              %span= error
+          %hr
+      .row.align-items-center
+        .col
+          %label.col-form-label.fs-6.me-3{for: "preferred-teammates"} Preferred Teammates
+        .col-8
+          .input-group{style: "width:fit-content"}
+            %input.form-control.form-control-sm{ type: "number", name: "preferred_teammates", id: "preferred-teammates", min: "0",
+              value: project_data[:preferred_teammates].present? ? project_data[:preferred_teammates] : 2}
+
+      .row.align-items-center
+        .col
+          %label.col-form-label.fs-6{for: "avoided-teammates"} Avoided Teammates
+        .col-8
+          .input-group{style: "width:fit-content"}
+            %input.form-control.form-control-sm{ type: "number", id: "avoided-teammates", name:"avoided_teammates", min: "0",
+              value: project_data[:avoided_teammates].present? ? project_data[:avoided_teammates] : 2}
+
+  -# DEADLINES AND MILESTONES
+  .card#timings.mb-3
+    .card-header
+      %h2.fs-4.m-0 Timings
+
+    .card-body.pb-3
+      - if errors[:timings].present?
+        %div
+          .d-flex.flex-column.fs-6.text-danger
+            - errors[:timings].each do |error|
+              %span= error
+          %hr
+      %h3.fs-5.mb-2 Deadlines
+      .mb-3
+        .row.align-items-center#project-deadline-row.milestone-row.mb-2
+          .col
+            %label.col-form-label.fs-6.me-3{for: "project-deadline"} Project Deadline
+            %input{ type: "hidden", name: "milestone_Project Deadline", value: "milestone_Project Deadline", class: "hidden-row-value"}
+          .col-8.d-flex.fs-6
+            .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
+              = render partial: 'components/datepicker_input', locals: { id: 'project-deadline', name:"milestone_Project Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:project_deadline] }
+            %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
+            %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
+
+        .row.align-items-center#teammate-preference-form-deadline-row.milestone-row.mb-2
+          .col
+            %label.col-form-label.fs-6.me-3{for: "teammate-preference-form-deadline"} Teammate Preference Form
+            %input{ type: "hidden", name: "milestone_Teammate Preference Form Deadline", value: "milestone_Teammate Preference Form Deadline", class: "hidden-row-value"}
+          .col-8.d-flex.fs-6
+            .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
+              = render partial: 'components/datepicker_input', locals: { id: 'teammate-preference-form-deadline',name:"milestone_Teammate Preference Form Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:teammate_preference_form_deadline] }
+            %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
+            %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
+
+        .row.align-items-center#project-preference-form-deadline-row.milestone-row.mb-2
+          .col
+            %label.col-form-label.fs-6.me-3{for: "project-preference-form-deadline"} Project Preference Form
+            %input{ type: "hidden", name: "milestone_Project Preference Form Deadline", value: "milestone_Project Preference Form Deadline", class: "hidden-row-value"}
+          .col-8.d-flex.fs-6
+            .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
+              = render partial: 'components/datepicker_input', locals: { id: 'project-preference-form-deadline',name:"milestone_Project Preference Form Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:project_preference_form_deadline]}
+            %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
+            %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
+
+      %h3.fs-5.mb-2 Milestones
+      %ul.list-group.list-group-flush.mb-2.overflow-hidden#project-milestones-list
+        - project_data[:project_milestones].each do |milestone|
+          - next if milestone[:isDeadline]
+          - milestone_name = milestone[:Name]
+          - milestone_date = milestone[:Date]
+          - selected_type = milestone[:Type]
+          = render partial: 'components/group-item-milestone', locals: { item_text: milestone_name, name: "milestone_"+milestone_name, selected_type: selected_type, deletion_action_url: remove_project_milestone_projects_path, date_value: milestone_date}
+
+      %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal",
+        "data-bs-target": "#add-project-milestone-modal"}
+        %i.bi.bi-plus
+        Add
+
+  -# PROJECT FACILITATORS
+  .card#project-facilitators.mb-3
+    .card-header.d-flex.align-items-center
+      %h2.fs-4.m-0 Project Facilitators
+
+    .card-body.pb-3
+      - if errors[:facilitators_not_found].present?
+        %div
+          .d-flex.flex-column.fs-6.text-danger
+            - errors[:facilitators_not_found].each do |value|
+              %span= "\"" + value + "\"" + " is not a valid user email"
+          %hr
+
+      %ul.list-group.list-group-flush.mb-2#project-facilitators-list
+        - project_data[:project_facilitators].each do |facilitator|
+          = render partial: 'components/group-item-simple', locals: { item_text: facilitator, deletion_action_url: remove_facilitator_projects_path}
+
+      %button.btn.btn-primary.mb-2{type: "button", id: "open-add-staff-facilitators-modal", "data-bs-toggle": "modal",
+        "data-bs-target": "#add-staff-project-facilitators-modal"}
+        %i.bi.bi-plus
+        Add Staff
+      %button.btn.btn-primary.mb-2{type: "button", id: "open-add-student-facilitators-modal", "data-bs-toggle": "modal",
+        "data-bs-target": "#add-student-project-facilitators-modal"}
+        %i.bi.bi-plus
+        Add Student
+
+  .card#mark-scheme.mb-3
+    .card-header.d-flex.align-items-center
+      %h2.fs-4.m-0 Mark Scheme
+
+    .card-body.pb-3.d-flex.justify-content-center.align-items-center
+      %label.btn.btn-primary.btn-lg{for: "mark-scheme"}
+        %i.bi.bi-upload
+        Upload
+        %input{type: "file", id: "mark-scheme", accept: ".csv", style: "display: none;"}
