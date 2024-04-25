@@ -5,8 +5,8 @@ Rails.application.routes.draw do
 
   root "page#index"
 
-  get '/profile', to: 'profile#index'
-  get '/settings', to: 'setting#index'
+  get '/profile', to: 'page#profile'
+  get '/mailing', to: 'page#mailing'
 
   resources :projects, controller: :course_project do
 
@@ -47,13 +47,13 @@ Rails.application.routes.draw do
 
   resources :facilitators, only: [:index], controller: :facilitator do
     # TODO: DO these need / before
-    # TODO: These probably don't need controller in to: 
+    # TODO: These probably don't need controller in to:
     get 'teams/:team_id', to: 'facilitator#team', as: 'facilitator_team', on: :collection
-    get 'teams/:team_id/progress_form/:release_date', to: 'facilitator#progress_form', as: 'progress_form', 
-      on: :collection 
-      
+    get 'teams/:team_id/progress_form/:release_date', to: 'facilitator#progress_form', as: 'progress_form',
+      on: :collection
+
     get 'marking/:section_id', to: 'facilitator#marking_show', as: 'marking_show', on: :collection
-    
+
     # AJAX
     post '/update_teams_list' => 'facilitator#update_teams_list', on: :collection
     post '/update_progress_form_response' => 'facilitator#update_progress_form_response', on: :collection
@@ -67,10 +67,6 @@ Rails.application.routes.draw do
     post '/delete_form' => 'progress_form#delete_form', on: :collection
     post '/show_new' => 'progress_form#show_new', on: :collection
   end
-
-
-
-
 
   resources :modules, controller: :course_module do
   end

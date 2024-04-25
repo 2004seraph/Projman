@@ -6,6 +6,7 @@
 #  deadline          :date             not null
 #  json_data         :json             not null
 #  milestone_type    :enum             not null
+#  system_generated  :boolean          default(FALSE), not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  course_project_id :bigint           not null

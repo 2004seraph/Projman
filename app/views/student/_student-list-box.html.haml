@@ -4,7 +4,7 @@
       #{ button_tag ' Email Class', type: 'button', class: "btn btn-secondary fs-8 bi-envelope-at mr-4", style: "height: auto;" }
       #{ button_tag ' Email Selected Students', type: 'button', class: "btn btn-primary disabled fs-8 bi-envelope-at mr-4", style: "height: auto;" }
     .d-flex.justify-content-end{ style: "flex: 1;" }
-      %button.btn.btn-secondary.me-2{type: "button", class: "remove-students-btn", "data-bs-toggle": "modal", 
+      %button.btn.btn-secondary.me-2{type: "button", class: "remove-students-btn", "data-bs-toggle": "modal",
         "data-bs-target": "#removeStudentsModal"}
         %i.bi.bi-trash-fill
         Remove
@@ -25,10 +25,10 @@
             %tr.selectable-row
               %td
                 %input.form-check-input{type: "checkbox", value: "", checked: false}
-              %td 
+              %td
                 = x[i].preferred_name
                 = x[i].surname
-              %td 
+              %td
                 = x[i].email
-              %td 
+              %td
                 = x[i].ucard_number

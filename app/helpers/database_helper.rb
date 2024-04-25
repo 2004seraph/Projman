@@ -65,8 +65,39 @@ module DatabaseHelper
   end
 
   def get_student_by_module(module_code)
-    puts CourseModule.find_by(code: module_code).students[0]
-    return CourseModule.find_by(code: module_code).students.all
+    # puts CourseModule.find_by(code: module_code).students[0]
+    CourseModule.find_by(code: module_code).students.all
+  end
+
+  def get_student_first_name(student)
+    # WARNING, LDAP IS INCREDIBLY SLOW TO QUERY
+    un, lookup = ldap_lookup student
+    if lookup.all_results.length == 0
+      return un
+    end
+    return lookup.lookup[:givenName][0]
+  end
+
+  def get_student_last_name(student)
+    # WARNING, LDAP IS INCREDIBLY SLOW TO QUERY
+    un, lookup = ldap_lookup student
+    if lookup.all_results.length == 0
+      return un
+    end
+    return lookup.lookup[:sn][0]
+  end
+
+  private
+
+  def ldap_lookup(student)
+    # WARNING, LDAP IS INCREDIBLY SLOW TO QUERY
+    un =
+      if student.kind_of?(String)
+        student
+      elsif student.kind_of?(Student)
+        student.username
+      end
+    return un, SheffieldLdapLookup::LdapFinder.new(un)
   end
 
 end

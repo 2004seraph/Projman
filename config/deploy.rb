@@ -1,3 +1,7 @@
+
+set :whenever_command, "bundle exec whenever"
+require "whenever/capistrano"
+
 ## Application configuration
 set :application,             'Project'
 set :branch,                  -> { fetch(:stage) }

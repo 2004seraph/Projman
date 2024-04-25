@@ -83,38 +83,11 @@ DatabaseHelper.create_staff("nkhan10@sheffield.ac.uk")
 
 puts ""
 
-oliver = Student.find_or_create_by({
-  username: "aca22op",
-  preferred_name: "Oliver",
-  forename: "Oliver",
-  surname: "Pickford",
-  title: "Mr",
-  ucard_number: "001796094",
-  email: "opickford1@sheffield.ac.uk",
-  fee_status: :home
-})
-DatabaseHelper.create_staff("opickford1@sheffield.ac.uk")
-
-nahyan = Student.find_or_create_by({
-  username: "acb21nk",
-  preferred_name: "Nahyan",
-  forename: "Nahyan",
-  surname: "Khan",
-  title: "Mr",
-  ucard_number: "001790710",
-  email: "nkhan10@sheffield.ac.uk",
-  fee_status: :home
-})
-DatabaseHelper.create_staff("nkhan10@sheffield.ac.uk")
-
-puts ""
-
 robotics_class = DatabaseHelper.provision_module_class(
   "COM2009",
   "Robotics",
   Staff.find_by(email: "jhenson2@sheffield.ac.uk")
 )
-
 sam.enroll_module "COM2009"
 josh.enroll_module "COM2009"
 jakub.enroll_module "COM2009"

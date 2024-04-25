@@ -60,21 +60,42 @@ class Student < ApplicationRecord
   # required fields
   validates :preferred_name,  presence: true, length: { in: 2..24 },  format: { with: @text_validation_regex }
   validates :forename,        presence: true, length: { in: 2..24 },  format: { with: @text_validation_regex }
+  validates :middle_names,    length: { maximum: 64 },  format: { with: @text_validation_regex }
+  validates :surname,         length: { maximum: 24 },  format: { with: @text_validation_regex }
   validates :username,        presence: true, length: { in: 5..16 },  format: { with: @text_validation_regex }, uniqueness: { case_sensitive: false }
   validates :title,           presence: true, length: { in: 2..4 },   format: { with: @text_validation_regex }
   validates :ucard_number,    presence: true, length: { is: 9 },      numericality: { only_integer: true },     uniqueness: true
   validates :email,           presence: true, length: { in: 8..254 },format: { with: @email_validation_regex }, uniqueness: { case_sensitive: false } # 16 = @sheffield.ac.uk
   validates :fee_status,      presence: true
 
-  validates :middle_names,    length: { maximum: 64 },  format: { with: @text_validation_regex }
-  validates :surname,         length: { maximum: 24 },  format: { with: @text_validation_regex }
   validates :personal_tutor,  length: { maximum: 64 },  format: { with: @text_validation_regex }
 
-  # custom validation for presence on at least one module
 
-  # def password_required?
-  #   false
-  # end
+  before_destroy :remove_all_enrollments, prepend: true
+
+
+  def self.ldap_sync
+    Student.all.each do |s|
+      first_name_lookup = DatabaseHelper.get_student_first_name s
+      if first_name_lookup == s.username
+        s.destroy
+      elsif first_name_lookup != s.forename
+        if s.forename == s.preferred_name
+          s.preferred_name = first_name_lookup
+        end
+        s.forename = first_name_lookup
+        s.save
+      end
+
+      last_name_lookup = DatabaseHelper.get_student_last_name s
+      if last_name_lookup == s.username
+        s.destroy
+      elsif last_name_lookup != s.surname
+        s.surname = last_name_lookup
+        s.save
+      end
+    end
+  end
 
   def enroll_module(module_code)
     # if CourseModule.find_by(code: module_code).students.find_by(username: username) != nil
@@ -90,9 +111,16 @@ class Student < ApplicationRecord
   end
 
   def unenroll_module(module_code)
-    c = CourseModule.find_by(code: module_code)
+    c =
+      if module_code.kind_of? String
+        CourseModule.find_by(code: module_code)
+      elsif module_code.kind_of? CourseModule
+        module_code
+      else
+        nil
+      end
     if c
-      c.students.delete(self)
+      c.students.delete self
 
       # remove all their facilitator positions for every project on that module
       # c.course_projects.each do |p|
@@ -104,7 +132,10 @@ class Student < ApplicationRecord
       #   g.students.delete(self)
       # end
 
-      puts groups.where(course_module: c)
+      # puts groups.where(course_module: c)
+
+      save
+      reload
 
       return true
     end
@@ -142,7 +173,7 @@ class Student < ApplicationRecord
           if column_names.include? header_database_name
             new_student_hash.store(
               header_database_name.to_sym,
-              translate_csv_value(header_database_name.to_sym, csv_row[headers[index]])
+              translate_csv_value(header_database_name.to_sym, csv_row[headers[index]], username)
             )
           end
         }
@@ -159,6 +190,13 @@ class Student < ApplicationRecord
 
   private
 
+  def remove_all_enrollments
+    course_modules.each do |c|
+      unenroll_module(c)
+    end
+  end
+
+
   # a static method to convert CSV header names to the correct database field name
   def self.csv_header_to_field(header_name_string)
     explicit_header_mappings = StudentDataHelper::EXPLICIT_CSV_TO_FIELD_LINK
@@ -172,9 +210,9 @@ class Student < ApplicationRecord
     header_name
   end
 
-  def self.translate_csv_value(field_symbol, value_string)
+  def self.translate_csv_value(field_symbol, value_string, username)
     if StudentDataHelper::CSV_VALUE_TRANSLATIONS.key?(field_symbol)
-      return StudentDataHelper::CSV_VALUE_TRANSLATIONS[field_symbol].call(value_string)
+      return StudentDataHelper::CSV_VALUE_TRANSLATIONS[field_symbol].call(value_string, username)
     end
     value_string
   end
