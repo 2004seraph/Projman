@@ -2,6 +2,9 @@
   var currentSelection = $("#dropdownMenuButton .current-selection");
   currentSelection.text("#{@selected_project}");
 
+  var currentOrderSelection = $("#dropdownOrderMenuButton .current-selection");
+  currentOrderSelection.text("#{@selected_order}");
+
   var divider = $('#issues-section');
   var updatedPartialHTML = "#{j(render(partial: 'issues-section'))}";
   $(divider).empty().append(updatedPartialHTML);

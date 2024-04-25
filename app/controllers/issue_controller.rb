@@ -2,18 +2,28 @@ class IssueController < ApplicationController
     authorize_resource class: false
 
     def index
-        @selected_project = "All"
+        if params[:selected_project].nil?
+            @selected_project = "All"
+        else
+            @selected_project = params[:selected_project]
+        end
+
+        if params[:selected_order].nil?
+            @selected_order = "Created At"
+        else
+            @selected_order = params[:selected_order]
+        end
 
         get_issues
-
         
         render 'index'
     end
 
     def update_selection
         @selected_project = params[:selected_project]
+        @selected_order = params[:selected_order]
 
-        get_issues(@selected_project)
+        get_issues(@selected_project, @selected_order)
 
         if request.xhr?
             respond_to do |format|
@@ -26,7 +36,8 @@ class IssueController < ApplicationController
         json_data = {
             title: params[:title],
             content: params[:description],
-            author: params[:author]
+            author: params[:author],
+            reopened: false
         }.to_json
 
         current_project_id = params[:project_id]
@@ -46,6 +57,9 @@ class IssueController < ApplicationController
     end
 
     def issue_response
+        @issue = Event.find(params[:issue_id])
+        issue_data = JSON.parse(@issue.json_data)
+
         json_data = {
             content: params[:response],
             author: params[:author],
@@ -54,6 +68,11 @@ class IssueController < ApplicationController
 
         if current_user.is_staff?
             @issue_response = EventResponse.new(json_data: json_data, event_id: params[:issue_id], staff_id: current_user.staff.id)
+
+            issue_data['reopened'] = false
+            json_data = issue_data.to_json
+
+            @issue.update(json_data: json_data)
         else
             @issue_response = EventResponse.new(json_data: json_data, event_id: params[:issue_id], student_id: current_user.student.id)
         end
@@ -69,14 +88,24 @@ class IssueController < ApplicationController
 
     def update_status
         @issue = Event.find(params[:issue_id])
+        issue_data = JSON.parse(@issue.json_data)
+
+        @selected_project = params[:selected_project]
+        @selected_order = params[:selected_order]
 
         if params[:status] == "closed"
-            @issue.update(completed: true)
+            issue_data['reopened'] = false
+            json_data = issue_data.to_json
+
+            @issue.update(json_data: json_data, completed: true)
         else
-            @issue.update(completed: false)
+            issue_data['reopened'] = true
+            json_data = issue_data.to_json
+
+            @issue.update(json_data: json_data, completed: false)
         end
 
-        get_issues
+        get_issues(@selected_project, @selected_order)
 
         if request.xhr?
             respond_to do |format|
@@ -85,16 +114,9 @@ class IssueController < ApplicationController
         end
     end
 
-    def issue_box
-        @issue = Event.find(params[:id])
-        respond_to do |format|
-            format.html { render partial: 'issue-box', locals: { issue: @issue } }
-        end
-    end
-
     private
 
-    def get_issues(selected_project = 'All')
+    def get_issues(selected_project = 'All', selected_order = "Created At")
         @open_issues = []
         @resolved_issues = []
 
@@ -111,36 +133,88 @@ class IssueController < ApplicationController
                 @project_groups += user_project.groups
             end
 
-            if selected_project == "All"
-                @project_groups.each do |project_group|
-                    @open_issues += project_group.events.where(event_type: :issue, completed: false)
-                    @resolved_issues += project_group.events.where(event_type: :issue, completed: true)
-                end
-            else
+            if selected_project != "All"
                 project = CourseProject.find_by(name: selected_project)
 
                 @project_groups = Group.where(course_project_id: project.id)
+            end
 
-                @project_groups.each do |project_group|
-                    @open_issues += project_group.events.where(event_type: :issue, completed: false)
-                    @resolved_issues += project_group.events.where(event_type: :issue, completed: true)
-                end
+            if selected_order == "Created At"
+                group_ids = @project_groups.map(&:id).uniq
+
+                @open_issues = Event.joins(:group)
+                                    .where(groups: { id: group_ids })
+                                    .where(event_type: :issue)
+                                    .where(completed: false)
+                                    .order(created_at: :asc)
+
+                @resolved_issues = Event.joins(:group)
+                                        .where(groups: { id: group_ids })
+                                        .where(event_type: :issue)
+                                        .where(completed: true)
+                                        .order(created_at: :asc)
+            else
+                group_ids = @project_groups.map(&:id).uniq
+
+                @open_issues = Event.joins(:group)
+                                    .where(groups: { id: group_ids })
+                                    .where(event_type: :issue)
+                                    .where(completed: false)
+                                    .sorted_by_latest_activity()
+
+                @resolved_issues = Event.joins(:group)
+                                        .where(groups: { id: group_ids })
+                                        .where(event_type: :issue)
+                                        .where(completed: true)
+                                        .sorted_by_latest_activity()
             end
         else
             @user_projects = current_user.student.course_projects
             @user_groups = current_user.student.groups
+            group_ids = @user_groups.map(&:id).uniq
 
-            if selected_project == "All"
-                @open_issues += current_user.student.events.where(event_type: :issue, completed: false)
-                @resolved_issues += current_user.student.events.where(event_type: :issue, completed: true)
-            else
+            if selected_project != "All"
                 project = CourseProject.find_by(name: selected_project)
 
-                group = @user_groups.find_by(course_project_id: project.id)
+                group = current_user.student.groups.find_by(course_project_id: project.id)
 
-                if !(group.nil?)
-                    @open_issues += current_user.student.events.where(event_type: :issue, completed: false, group_id: group.id)
-                    @resolved_issues += current_user.student.events.where(event_type: :issue, completed: true, group_id: group.id)
+                if !group.nil?
+                    group_id = group.id
+                    group_ids = [group.id].flatten
+                else
+                    group_ids = []
+                end
+            end
+
+            if !(group_ids.empty?)
+                if selected_order == "Created At"
+                    @open_issues = Event.joins(:group)
+                                        .where(groups: { id: group_ids })
+                                        .where(event_type: :issue)
+                                        .where(completed: false)
+                                        .where(student_id: current_user.student.id)
+                                        .order(created_at: :asc)
+
+                    @resolved_issues = Event.joins(:group)
+                                            .where(groups: { id: group_ids })
+                                            .where(event_type: :issue)
+                                            .where(completed: true)
+                                            .where(student_id: current_user.student.id)
+                                            .order(created_at: :asc)
+                else
+                    @open_issues = Event.joins(:group)
+                                        .where(groups: { id: group_ids })
+                                        .where(event_type: :issue)
+                                        .where(completed: false)
+                                        .where(student_id: current_user.student.id)
+                                        .sorted_by_latest_activity()
+
+                    @resolved_issues = Event.joins(:group)
+                                            .where(groups: { id: group_ids })
+                                            .where(event_type: :issue)
+                                            .where(completed: true)
+                                            .where(student_id: current_user.student.id)
+                                            .sorted_by_latest_activity()
                 end
             end
         end

@@ -16,6 +16,18 @@
       .d-flex.align-items-center
         %span.me-3.fs-6.fw-light #{issue.created_at}
         %h3.m-0.fs-5.fw-medium #{issue_data['title']}
+        %span
+          - if !issue.completed?
+            - if current_user.is_staff? && issue.event_responses.empty?
+              %i.bi.bi-exclamation-diamond-fill.icon-pad
+            - elsif current_user.is_staff? && issue.event_responses.last.student_id.present?
+              %i.bi.bi-exclamation-diamond-fill.icon-pad
+            - elsif current_user.is_staff? && issue_data['reopend'] == true
+              %i.bi.bi-exclamation-diamond-fill.icon-pad
+            - elsif !current_user.is_staff? && !issue.event_responses.empty? && issue.event_responses.last.staff_id.present? && issue_data['reopend'] == false
+              %i.bi.bi-exclamation-diamond-fill.icon-pad
+            //when deployed this to change above elsif to commented line
+            //- elsif !current_user.is_student? && !issue.event_responses.empty? && issue.event_responses.last.staff_id.present?
       %i.bi.bi-caret-right-fill
     .collapse{id: unique_id}
       .card-body.pt-1.pb-1
@@ -43,28 +55,21 @@
               %button.btn.btn-primary{type: "submit", class: "btn btn-primary me-2", id: "send-response-#{issue.id}", remote: true }
                 %i.bi.bi-send-fill
                 Send
-          -# = link_to "#", onclick: "markIssueResolved()", class: "btn btn-primary", id: "mark-resolved-#{issue.id}" do
-          -#   %i.bi.bi-check-circle-fill
-          -#   Mark as Resolved
           - if current_user.is_staff?
             = form_with(url: update_status_issues_path(issue_id: issue.id, status: "closed"), method: :post, local: false, remote: true) do |form|
+              %input{ type: "hidden", name: "selected_project", value: "#{@selected_project}"}
+              %input{ type: "hidden", name: "selected_order", value: "#{@selected_order}"}
               %button.btn.btn-primary{type: "submit", class: "btn btn-primary", id: "mark-resolved-#{issue.id}" }
                 %i.bi.bi-check-circle-fill
                 Mark as Resolved
-          -# = link_to mark_resolved_issues_path(issue_id: issue.id), method: :post, local: false, class: "btn btn-primary", id: "mark-resolved-#{issue.id}" do
-          -#   %i.bi.bi-check-circle-fill
-          -#   Mark as Resolved
           .alert.alert-success{style: "display: none;", id: "success-message-#{issue.id}" }
             Response submitted successfully!
         <!- if current_user.isStudent?>
         - if issue.completed
           .d-flex.justify-content-end.mb-2   
             = form_with(url: update_status_issues_path(issue_id: issue.id, status: "open"), method: :post, local: false, remote: true) do |form|
+              %input{ type: "hidden", name: "selected_project", value: "#{@selected_project}"}
+              %input{ type: "hidden", name: "selected_order", value: "#{@selected_order}"}
               %button.btn.btn-primary{type: "submit", class: "btn btn-primary", id: "reopen-#{issue.id}" }
-                %i.bi.bi-check-circle-fill
+                %i.bi.bi-reply
                 Reopen
-
-
--# %button.btn.btn-primary{id: "mark-resolved-#{issue.id}"}
--# %i.bi.bi-check-circle-fill
--# Mark as Resolved

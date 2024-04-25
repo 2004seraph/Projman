@@ -5,7 +5,7 @@
 
   - @open_issues.each do |issue|
     - issue_url = issues_path() + "#issue-#{issue.id}"
-    = render partial:'issue-box', locals: { issue: issue, issue_url: issue_url }
+    = render partial:'issue-box', locals: { issue: issue, issue_url: issue_url, selected_project: @selected_project, selected_order: @selected_order }
   %hr.divider
 
 .separating-section#resolved-issues-section
@@ -15,5 +15,5 @@
 
   - @resolved_issues.each do |issue|
     - issue_url = issues_path(issue) + "#issue-#{issue.id}"
-    = render partial:'issue-box', locals: { issue: issue, issue_url: issue_url } 
+    = render partial:'issue-box', locals: { issue: issue, issue_url: issue_url, selected_project: @selected_project, selected_order: @selected_order } 
   %hr.divider

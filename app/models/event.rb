@@ -37,6 +37,17 @@ class Event < ApplicationRecord
 
   enum :event_type, { generic: 'generic', milestone: 'milestone', chat: 'chat', issue: 'issue' }
 
+  def self.sorted_by_latest_activity(*conditions)
+    query = joins("LEFT OUTER JOIN event_responses ON event_responses.event_id = events.id")
+            .select("events.*, COALESCE(MAX(event_responses.created_at), events.updated_at) AS latest_activity")
+            .group("events.id")
+            .order("latest_activity DESC")
+
+    query = query.where(*conditions) if conditions.present?
+
+    query
+  end
+
   private
 
   def send_issue_created_email

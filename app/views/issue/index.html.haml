@@ -2,19 +2,34 @@
   %i.bi.bi-funnel-fill
   Filter By: 
 .d-flex.align-items-center
-  .dropdown.me-3
-    %button.btn.btn-primary{ type: "button", id: "dropdownMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
-      Projects:
-      %span.current-selection
-      %i.bi.bi-caret-down-fill
-    = form_with(url: "/issues/update-selection", method: :post, local: false) do |form|
-      .dropdown-menu{ "aria-labelledby": "dropdownMenuButton" }
-        %button.dropdown-item{ type: "submit", name: "selected_project", value: "All", selected: (@selected_project.nil? || @selected_project == "All") }
+  = form_with(url: "/issues/update-selection", method: :post, local: false) do |form|
+    .dropdown.me-3
+      %button.btn.btn-primary{ type: "button", id: "dropdownMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
+        Projects:
+        %span.current-selection
+        %i.bi.bi-caret-down-fill
+      .dropdown-menu{ "aria-labelledby": "dropdownMenuButton", id: "project_menu" }
+        %button.dropdown-item{ type: "submit", value: "All" }
           All
         %hr.dropdown-divider
         - @user_projects.each do |user_project|
-          %button.dropdown-item{ type: "submit", name: "selected_project", value: user_project.name, selected: (user_project.name == @selected_project)}
+          %button.dropdown-item{ type: "submit", value: user_project.name }
             = user_project.name
+    %i.bi.bi-sort-down
+    Order By: 
+    .dropdown.me-3
+      %button.btn.btn-primary{ type: "button", id: "dropdownOrderMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
+        Order:
+        %span.current-selection
+        %i.bi.bi-caret-down-fill
+      .dropdown-menu{ "aria-labelledby": "dropdownOrderMenuButton", id: "order_menu" }
+        %button.dropdown-item{ type: "submit", value: "Created At" }
+          Created At
+        %button.dropdown-item{ type: "submit", value: "Recent Activity"}
+          Recent Activity
+    
+    = hidden_field_tag 'selected_project', nil, id: 'selectedProjectField'
+    = hidden_field_tag 'selected_order', nil, id: 'selectedOrderField'
 
   .form-check.form-switch.form-check-reverse.me-3
     %input.form-check-input{ type: "checkbox", role: "switch",
@@ -27,6 +42,7 @@
     %label.form-check-label{ for: "flexSwitchCheckResolved" }
       Show Resolved
 
+
 %hr.divider
 
 .accordion-section#issues-section{style: "display: none;"}
@@ -36,8 +52,36 @@
     var currentSelection = $("#dropdownMenuButton .current-selection");
     currentSelection.text("#{@selected_project}");
 
+    var currentOrderSelection = $("#dropdownOrderMenuButton .current-selection");
+    currentOrderSelection.text("#{@selected_order}");
+
+    const projectButtons = document.querySelectorAll('#project_menu .dropdown-item');
+    const orderButtons = document.querySelectorAll('#order_menu .dropdown-item');
+    const projectField = document.getElementById('selectedProjectField');
+    const orderField = document.getElementById('selectedOrderField');
+
+    projectButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const value = this.value;
+        const order = document.querySelector('#dropdownOrderMenuButton .current-selection').textContent.trim();
+        console.log(order)
+        projectField.value = value;
+        orderField.value = order;
+        });
+    });
+
+  orderButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const value = this.value;
+      const project = document.querySelector('#dropdownMenuButton .current-selection').textContent.trim();
+      console.log(project)
+      orderField.value = value;
+      projectField.value = project;
+    });
+  });
+
     var divider = $('#issues-section');
-    var updatedPartialHTML = "#{j(render(partial: 'issues-section'))}";
+    var updatedPartialHTML = "#{j(render(partial: 'issues-section', locals: { selected_project: @selected_project, selected_order: @selected_order }))}";
     $(divider).empty().append(updatedPartialHTML);
     $(divider).show();
 
