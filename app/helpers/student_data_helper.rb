@@ -48,11 +48,30 @@ module StudentDataHelper
   # if any CSV cells require transforming the data
   # to the correct format for the database
   CSV_VALUE_TRANSLATIONS = {
-    fee_status: lambda { |s|
+    fee_status: lambda { |s, _|
       s.force_encoding('UTF-8').parameterize.to_sym
     },
-    username: lambda { |s|
+    username: lambda { |s, _|
       s.upcase
+    },
+    email: lambda { |s, _|
+      s.downcase
+    },
+    preferred_name: lambda { |s, username|
+      lookup = DatabaseHelper.get_student_first_name(username)
+      if lookup == username
+        s
+      else
+        lookup
+      end
+    },
+    forename: lambda { |s, username|
+      lookup = DatabaseHelper.get_student_last_name(username)
+      if lookup == username
+        s
+      else
+        lookup
+      end
     }
   }
 

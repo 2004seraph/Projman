@@ -145,6 +145,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
   create_table "milestones", force: :cascade do |t|
     t.bigint "course_project_id", null: false
     t.enum "milestone_type", null: false, enum_type: "milestone_type"
+    t.boolean "system_generated", default: false, null: false
     t.date "deadline", null: false
     t.json "json_data", default: "{}", null: false
     t.datetime "created_at", null: false

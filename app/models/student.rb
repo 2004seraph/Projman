@@ -60,21 +60,29 @@ class Student < ApplicationRecord
   # required fields
   validates :preferred_name,  presence: true, length: { in: 2..24 },  format: { with: @text_validation_regex }
   validates :forename,        presence: true, length: { in: 2..24 },  format: { with: @text_validation_regex }
+  validates :middle_names,    length: { maximum: 64 },  format: { with: @text_validation_regex }
+  validates :surname,         length: { maximum: 24 },  format: { with: @text_validation_regex }
   validates :username,        presence: true, length: { in: 5..16 },  format: { with: @text_validation_regex }, uniqueness: { case_sensitive: false }
   validates :title,           presence: true, length: { in: 2..4 },   format: { with: @text_validation_regex }
   validates :ucard_number,    presence: true, length: { is: 9 },      numericality: { only_integer: true },     uniqueness: true
   validates :email,           presence: true, length: { in: 8..254 },format: { with: @email_validation_regex }, uniqueness: { case_sensitive: false } # 16 = @sheffield.ac.uk
   validates :fee_status,      presence: true
 
-  validates :middle_names,    length: { maximum: 64 },  format: { with: @text_validation_regex }
-  validates :surname,         length: { maximum: 24 },  format: { with: @text_validation_regex }
   validates :personal_tutor,  length: { maximum: 64 },  format: { with: @text_validation_regex }
 
-  # custom validation for presence on at least one module
+  def self.ldap_sync
+    # def handle_name_change(name, student)
+    #   if name_lookup == s.username
+    #     # what the fuck
+    #   elsif name_lookup != s.
+    #   end
+    # end
 
-  # def password_required?
-  #   false
-  # end
+    # Student.all.each do |s|
+    #   handle_name_change DatabaseHelper.get_student_first_name s, s
+    #   handle_name_change DatabaseHelper.get_student_last_name s, s
+    # end
+  end
 
   def enroll_module(module_code)
     # if CourseModule.find_by(code: module_code).students.find_by(username: username) != nil
@@ -104,7 +112,7 @@ class Student < ApplicationRecord
       #   g.students.delete(self)
       # end
 
-      puts groups.where(course_module: c)
+      # puts groups.where(course_module: c)
 
       return true
     end
@@ -142,7 +150,7 @@ class Student < ApplicationRecord
           if column_names.include? header_database_name
             new_student_hash.store(
               header_database_name.to_sym,
-              translate_csv_value(header_database_name.to_sym, csv_row[headers[index]])
+              translate_csv_value(header_database_name.to_sym, csv_row[headers[index]], username)
             )
           end
         }
@@ -172,9 +180,9 @@ class Student < ApplicationRecord
     header_name
   end
 
-  def self.translate_csv_value(field_symbol, value_string)
+  def self.translate_csv_value(field_symbol, value_string, username)
     if StudentDataHelper::CSV_VALUE_TRANSLATIONS.key?(field_symbol)
-      return StudentDataHelper::CSV_VALUE_TRANSLATIONS[field_symbol].call(value_string)
+      return StudentDataHelper::CSV_VALUE_TRANSLATIONS[field_symbol].call(value_string, username)
     end
     value_string
   end

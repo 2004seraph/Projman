@@ -9,7 +9,7 @@
   %h3.m-0.fs-5.fw-medium Email: #{current_user.email}
   %p
   - if current_user.is_student?
-    %h3.m-0.fs-5.fw-medium Preferred Name: #{current_user.student.preferred_name}
+    %h3.m-0.fs-5.fw-medium Preferred Name: #{current_user.givenname}
     %p
     %h3.m-0.fs-5.fw-medium Title: #{current_user.student.title}
 

@@ -31,6 +31,9 @@ module Project
     config.load_defaults 7.0
 
     config.active_job.queue_adapter = :delayed_job
+    # config.after_initialize do
+    #   # CourseProjectLifecycleJob.perform_in 5.minutes
+    # end
 
     # Handle invalid MIME types and URIs
     config.action_dispatch.rescue_responses['ActionDispatch::Http::MimeNegotiation::InvalidType'] = :bad_request

@@ -56,6 +56,38 @@ class CourseProject < ApplicationRecord
     preference_form_based: 'preference_form_based'
   }
 
+
+  def completion_deadline
+    completion_milestone.deadline
+  end
+  def completion_milestone
+    milestones.each do |m|
+      if m.json_data["isDeadline"]
+        return m
+      end
+    end
+  end
+
+
+  def self.lifecycle_job
+    # DO NOT RUN THIS IN ANY APP CODE
+    # THIS IS A CRON JOB, IT IS RAN BY THE OS
+
+    logger = Logger.new(Rails.root.join('log', 'course_project.lifecycle_job.log'))
+    logger.debug("LIFECYCLE PASS")
+
+    # get all
+    CourseProject.all.each do |c|
+      if c.status != :draft
+
+
+        if c.completion_deadline < DateTime.now
+          c.status = :completed
+        end
+      end
+    end
+  end
+
   private
 
   def creation_validation
