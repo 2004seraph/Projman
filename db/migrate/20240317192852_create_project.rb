@@ -37,7 +37,8 @@ class CreateProject < ActiveRecord::Migration[7.0]
       t.integer :avoided_teammates, default: 0
 
       t.column :project_allocation, :project_choice_allocation, null: false
-      t.json :project_choices_json, default: "{}"
+      # removed in favour of the subprojects relation
+      # t.json :project_choices_json, default: "{}"
 
       t.json :markscheme_json, default: "{}"
 
