@@ -70,18 +70,18 @@
         console.log(order)
         projectField.value = value;
         orderField.value = order;
-        });
+      });
     });
 
-  orderButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      const value = this.value;
-      const project = document.querySelector('#dropdownMenuButton .current-selection').textContent.trim();
-      console.log(project)
-      orderField.value = value;
-      projectField.value = project;
+    orderButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const value = this.value;
+        const project = document.querySelector('#dropdownMenuButton .current-selection').textContent.trim();
+        console.log(project)
+        orderField.value = value;
+        projectField.value = project;
+      });
     });
-  });
 
     var divider = $('#issues-section');
     var updatedPartialHTML = "#{j(render(partial: 'issues-section', locals: { selected_project: @selected_project, selected_order: @selected_order }))}";
@@ -114,4 +114,25 @@
       section.classList.add('display-none');
     }
   }
+
+-# const collapsibleElements = document.querySelectorAll('.collapse');
+
+-# collapsibleElements.forEach(function(element) {
+-#   element.addEventListener('show.bs.collapse', function() {
+-#     const mainElement = document.querySelector('main');
+-#     const scrollbarWidth = window.innerWidth - document.body.clientWidth;
+-#     mainElement.style.paddingRight = scrollbarWidth + 'px';
+    
+-#     // Prevent scrolling of the main content while the collapsible is shown
+-#     mainElement.style.overflow = 'hidden';
+-#   });
+
+-#   element.addEventListener('hide.bs.collapse', function() {
+-#     setTimeout(function() {
+-#         const mainElement = document.querySelector('main');
+-#         mainElement.style.paddingRight = '';
+-#         mainElement.style.overflow = '';
+-#     }, 200);
+-#   });
+-# });
 
