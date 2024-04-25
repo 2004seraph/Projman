@@ -2,19 +2,18 @@
 #
 # Table name: course_projects
 #
-#  id                   :bigint           not null, primary key
-#  avoided_teammates    :integer          default(0)
-#  markscheme_json      :json
-#  name                 :string           default("Unnamed Project"), not null
-#  preferred_teammates  :integer          default(0)
-#  project_allocation   :enum             not null
-#  project_choices_json :json
-#  status               :enum             default("draft"), not null
-#  team_allocation      :enum             not null
-#  team_size            :integer          not null
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  course_module_id     :bigint           not null
+#  id                  :bigint           not null, primary key
+#  avoided_teammates   :integer          default(0)
+#  markscheme_json     :json
+#  name                :string           default("Unnamed Project"), not null
+#  preferred_teammates :integer          default(0)
+#  project_allocation  :enum             not null
+#  status              :enum             default("draft"), not null
+#  team_allocation     :enum             not null
+#  team_size           :integer          not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  course_module_id    :bigint           not null
 #
 # Indexes
 #
@@ -93,7 +92,7 @@ class CourseProject < ApplicationRecord
   def creation_validation
     errors.add(:main, 'Project name cannot be empty') if name.blank?
     unless errors[:main].present?
-      if CourseProject.exists?(name: name, course_module_id: course_module_id)
+      if CourseProject.where(name: name, course_module_id: course_module_id).where.not(id: self.id).exists?
         errors.add(:main, 'There exists a project on this module with the same name')
       end
     end
