@@ -14,7 +14,7 @@
       = render partial: 'components/datepicker_input', locals: { placeholder_text: "Select Date", name: (name + "_date"), date_value: defined?(date_value) ? date_value : "" }
 
     %select.form-select.fs-6.me-3{ "aria-label": "selection box", "style": "width: fit-content", name: name+"_type" }
-      - milestone_types = session[:new_project_data][:milestone_types_hash]
+      - milestone_types = session[:project_data][:milestone_types_hash]
       - milestone_types.each do |value, string|
         %option{value: value, selected: (selected_type.present? ? selected_type == value : value == milestone_types.keys.first)}
           = "#{ViewHelper.unparamaterize(string)}"
