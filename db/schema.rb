@@ -18,7 +18,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "group_event_type", ["generic", "milestone", "chat", "issue"]
-  create_enum "milestone_type", ["for_each_student", "for_each_staff", "for_each_team"]
+  create_enum "milestone_milestone_type", ["for_each_student", "for_each_staff", "for_each_team"]
+  create_enum "milestone_system_type", ["teammate_preference_deadline", "project_preference_deadline", "progress_form", "project_deadline", "mark_scheme"]
   create_enum "project_choice_allocation", ["random", "single_preference_submission", "team_average_preference"]
   create_enum "project_status", ["draft", "student_preference", "student_preference_review", "team_preference", "team_preference_review", "live", "completed", "archived"]
   create_enum "project_team_allocation", ["random", "preference_form_based"]
@@ -63,7 +64,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
     t.integer "preferred_teammates", default: 0
     t.integer "avoided_teammates", default: 0
     t.enum "project_allocation", null: false, enum_type: "project_choice_allocation"
-    t.json "project_choices_json", default: "{}"
     t.json "markscheme_json", default: "{}"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -144,8 +144,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
 
   create_table "milestones", force: :cascade do |t|
     t.bigint "course_project_id", null: false
-    t.enum "milestone_type", null: false, enum_type: "milestone_type"
-    t.boolean "system_generated", default: false, null: false
+    t.enum "milestone_type", null: false, enum_type: "milestone_milestone_type"
+    t.boolean "user_generated", default: false, null: false
+    t.enum "system_type", enum_type: "milestone_system_type"
     t.date "deadline", null: false
     t.json "json_data", default: "{}", null: false
     t.datetime "created_at", null: false

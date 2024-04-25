@@ -160,7 +160,7 @@ class CourseProjectController < ApplicationController
             facilitator_selection: [],
             project_choices_enabled: project_choices.length > 0
         }
-    end 
+    end
 
     # POST
     def add_project_choice
@@ -399,7 +399,7 @@ class CourseProjectController < ApplicationController
         new_project = CourseProject.new(
             course_module: CourseModule.find_by(code: project_data[:selected_module]),
             name: project_data[:project_name],
-            project_choices_json: project_data[:project_choices_enabled] ? project_data[:project_choices].to_json : "[]",
+            # project_choices_json: project_data[:project_choices_enabled] ? project_data[:project_choices].to_json : "[]",
             project_allocation: project_data[:selected_project_allocation_mode].to_sym,
             team_size: project_data[:team_size],
             team_allocation: project_data[:selected_team_allocation_mode].to_sym,
@@ -610,7 +610,7 @@ class CourseProjectController < ApplicationController
             linked_module = @current_project.course_module
             @proj_name = linked_module.code+' '+linked_module.name+' - '+@current_project.name
             @lead_email = linked_module.staff.email
-            
+
             #Get ordered milestones + deadlines
             @milestones = []
             @current_project.milestones.order('deadline').each do |milestone|
@@ -638,7 +638,7 @@ class CourseProjectController < ApplicationController
                 first_response = MilestoneResponse.where(milestone_id: @pref_form.id, student_id: current_user.student.id).empty?
                 @show_pref_form = (@current_project.status == 'student_preference') && first_response
             end
-            
+
             #Get group-dependent project information
             if current_user.student.groups.find_by(course_project_id: @current_project.id).nil?
                 @show_group_information = false
@@ -646,16 +646,16 @@ class CourseProjectController < ApplicationController
                 @show_group_information = true
                 group = current_user.student.groups.find_by(course_project_id: @current_project.id)
                 @group_name = group.name
-                
+
                 #Project Choices Form
                 @show_proj_form = false
 
                 unless @current_project.project_allocation == 'random_project_allocation'
                     @choices = @current_project.subprojects.pluck('name')
-    
+
                     #Should the project choice form be shown
                     personal_response = MilestoneResponse.where(milestone_id: @proj_choices_form.id, student_id: current_user.student.id).empty?
-    
+
                     group_response = true
                     if @current_project.project_allocation == 'single_preference_project_allocation'
                         group.students.each do |teammate|
@@ -664,11 +664,11 @@ class CourseProjectController < ApplicationController
                             end
                         end
                     end
-                    
+
                     @show_proj_form = (@current_project.status == 'team_preference') && personal_response && group_response
-                    
+
                 end
-                
+
                 #Get team information
                 @team_names = []
                 @team_emails = []
@@ -676,7 +676,7 @@ class CourseProjectController < ApplicationController
                     @team_names << teammate.preferred_name+' '+teammate.surname
                     @team_emails << teammate.email
                 end
-                
+
                 #Get facilitator information
                 unless group.assigned_facilitator_id == nil
                     facilitator = AssignedFacilitator.find(group.assigned_facilitator_id)
@@ -688,7 +688,7 @@ class CourseProjectController < ApplicationController
                 else
                     @facilitator_email = "Facilitators have not been assigned yet"
                 end
-                
+
             end
 
             #Render view
@@ -696,7 +696,7 @@ class CourseProjectController < ApplicationController
         end
     end
 
-    def search_student_name 
+    def search_student_name
         query = params[:query]
         project = CourseProject.find(params[:project_id])
 
