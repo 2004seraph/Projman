@@ -82,7 +82,7 @@ class Ability
       :get_milestone_data,
       :set_milestone_email_data,
       :set_milestone_comment], CourseProject
-    can [:read, :update], CourseProject, course_module: { staff_id: user.staff.id }
+    can [:read, :edit, :update], CourseProject, course_module: { staff_id: user.staff.id }
 
     return unless user.staff.admin
 

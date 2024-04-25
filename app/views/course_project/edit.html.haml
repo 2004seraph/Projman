@@ -1,0 +1,32 @@
+- project_data = {}
+- errors = {}
+- if session[:project_data].present?
+  - project_data = session[:project_data]
+  - errors = project_data[:errors]
+
+
+%div
+  .d-flex.justify-content-end
+    %button.btn.btn-primary.mb-2.me-2#create-project-save-button{type: "submit"}
+      Save Changes
+    %button.btn.btn-secondary.mb-2{type: "button", onclick: "window.location='/projects'; return false;"}
+      Discard
+
+  -# MAIN CONTENT
+  .mb-3
+    .input-group
+      %h2.input-group-text.fs-4.fw-bold.mb-0 Module
+      %select.form-select.form-select-sm.fs-5{id: "module-selection", name:"module_selection", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
+        - project_data[:modules_hash].each do |code, name|
+          %option{value: code, selected: (project_data[:selected_module].present? ? project_data[:selected_module] == code : code == project_data[:modules_hash].keys.first)}
+            = "#{code} #{name}"
+
+    .input-group
+      %h2.input-group-text.fs-4.fw-bold.mb-0 Project Name
+      %input.form-control.fs-5.fw-semibold{type: "text", id: "project-name", name: "project_name", placeholder: "Name", autocomplete:"off",
+        value: project_data[:project_name].present? ? project_data[:project_name] : nil}
+
+    .container-fluid.d-flex.flex-column.fs-6.text-danger
+      - if errors[:main].present?
+        - errors[:main].each do |error|
+          %span= error

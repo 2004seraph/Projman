@@ -79,6 +79,65 @@ class CourseProjectController < ApplicationController
         }
     end
 
+
+    def edit
+        project_id = params[:id]
+        project = CourseProject.find(project_id)
+        staff_id = Staff.where(email: current_user.email).first
+
+        modules_hash = CourseModule.all.where(staff_id: staff_id).order(:code).pluck(:code, :name).to_h
+        # if a staff is not a module lead for any module, do not show them the new page
+        if modules_hash.length == 0
+            flash[:alert] = "You are not part of any modules. Please contact an admin if this is in error."
+            redirect_to session[:redirect_url]  # previous page, or `action: :index` if you prefer
+        end
+
+        puts modules_hash
+
+        project_allocation_modes_hash = CourseProject.project_allocations
+        team_allocation_modes_hash = CourseProject.team_allocations
+        milestone_types_hash = Milestone.milestone_types
+
+        project_choices = project.subprojects.pluck(:name)
+        project_milestones = project.milestones.pluck(:json_data)
+        project_assigned_facilitators = project.assigned_facilitators
+        project_facilitators = []
+        project_assigned_facilitators.each do |facilitator|
+            if facilitator[:staff_id].present?
+                project_facilitators << Staff.find(facilitator[:staff_id])[:email]
+            end
+            if facilitator[:student_id].present?
+                project_facilitators << Student.find(facilitator[:student_id])[:email]
+            end
+        end
+        puts project_milestones
+        puts project_facilitators
+        # Need to convert project milestones to jsons, then also create Pref Form deadline milestones if they are missing
+        # Also, ignore any milestones on the project that arent created by a user
+
+        session[:project_data] = {
+            errors: {},
+            modules_hash: modules_hash,
+            project_allocation_modes_hash: project_allocation_modes_hash,
+            team_allocation_modes_hash: team_allocation_modes_hash,
+            milestone_types_hash: milestone_types_hash,
+
+            selected_module: CourseModule.find(project[:course_module_id])[:code],
+            project_name: project[:name],
+            selected_project_allocation_mode: project[:project_allocation],
+            project_choices: project_choices,
+            team_size: project[:team_size],
+            selected_team_allocation_mode: project[:team_allocation],
+            preferred_teammates: project[:preferred_teammates],
+            avoided_teammates: project[:avoided_teammates],
+            # project_milestones:
+            project_facilitators: project_facilitators,
+
+            facilitator_selection: [],
+            project_choices_enabled: true
+        }
+    end 
+
     # POST
     def add_project_choice
         @project_choice_name = params[:project_choice_name]
