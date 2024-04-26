@@ -23,6 +23,7 @@
 class Milestone < ApplicationRecord
   has_many :milestone_responses, dependent: :destroy
   belongs_to :course_project
+  has_one :course_module, through: :course_project
 
   validates :milestone_type,  presence: true
   validates :deadline,        presence: true

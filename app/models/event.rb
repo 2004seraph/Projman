@@ -43,9 +43,7 @@ class Event < ApplicationRecord
             .group("events.id")
             .order("latest_activity DESC")
 
-    query = query.where(*conditions) if conditions.present?
-
-    query
+    query.where(*conditions) if conditions.present?
   end
 
   private

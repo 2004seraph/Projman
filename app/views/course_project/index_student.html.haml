@@ -7,32 +7,26 @@
     %hr.divider
 
     .container
-    .row
-        .col-md-8
-        %h3 Activities
-        .scrollable
-            - @projects.each do |project|
-                - project.milestones.each do |milestone|
-                    .card
-                        .card-body
-                            %h5.card-title= milestone["Name"]
-                            %p.card-text
-                            %strong Date:
-                            = milestone["Date"]
-                            %br
-                            %strong Type:
-                            = milestone["Type"]
-                            %br
-                            %strong Email:
-                            = milestone["Email"]["Content"]
-                            %br
-                            %strong Advance:
-                            = milestone["Email"]["Advance"]
-                            %br
-                            %strong Comment:
-                            = milestone["Comment"]
+        .row
+            .scrollable
+                - @projects.each do |project|
+                    - project.milestones.each do |milestone|
+                        .card
+                            .card-body
+                                %h5.card-title= "#{milestone.course_module.code} #{milestone.course_project.name} - #{milestone.json_data["Name"]}"
+                                %p.card-text
+                                %strong Deadline:
+                                = milestone.deadline
+                                %br
+                                %strong Type:
+                                = milestone.milestone_type
+                                %br
+                                - if milestone.json_data["Comment"].length > 0
+                                    %strong Comment:
+                                    = milestone.json_data["Comment"]
 
 
+    %br
     %h2
         Projects
     %hr.divider
