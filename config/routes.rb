@@ -62,13 +62,22 @@ Rails.application.routes.draw do
   end
 
   resources :progress_form, controller: :progress_form do
-     # Ajax, TODO: Refactor...?
+    # Ajax, TODO: Refactor...?
     post '/add_question' => 'progress_form#add_question', on: :collection
     post '/delete_question' => 'progress_form#delete_question', on: :collection
     post '/save_form' => 'progress_form#save_form', on: :collection
     post '/delete_form' => 'progress_form#delete_form', on: :collection
     post '/show_new' => 'progress_form#show_new', on: :collection
   end
+
+  resources :mark_scheme, controller: :mark_scheme do
+    # Ajax, TODO: Refactor...?
+    post '/add_section' => 'mark_scheme#add_section', on: :collection
+    post '/delete_section' => 'mark_scheme#delete_section', on: :collection
+    post '/save' => 'mark_scheme#save', on: :collection
+  end
+
+
 
   resources :modules, controller: :course_module do
   end

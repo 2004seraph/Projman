@@ -156,12 +156,10 @@
       .then(json => {
         // Handle response
         if (json["status"] == "success") {
-          alert("success");
-
           window.location.href = json["redirect"];
         }
         else {
-          alert("failed");
+          alert("Failed to save progress form, if this error persists, please contact an admin.");
         }
       })
       .catch(error => console.error("Error when trying to save form:", error));
@@ -184,12 +182,10 @@
       .then(json => {
         // Handle response
         if (json["status"] == "success") {
-          alert("success");
-
           window.location.href = json["redirect"];
         }
         else {
-          alert("failed");
+          alert("Failed to delete progress form, if this error persists, please contact an admin.");
         }
       })
       .catch(error => console.error("Error when trying to delete form:", error));

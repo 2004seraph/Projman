@@ -5,13 +5,13 @@
    href: "##{unique_id}",
    role: "button",
    "data-accordion-toggle" => "",
-   "aria-expanded" => "false",
+   "aria-expanded" => "true",
    "aria-controls" => unique_id}
 
     %h2.fs-4.ml-2= "My Marking"
     %i.bi.bi-caret-right-fill
 
-  .collapse{id: unique_id}
+  .collapse.show{id: unique_id}
     .card-body
       .navigation-list-item
         = link_to marking_show_facilitators_path(section_id: 0) do

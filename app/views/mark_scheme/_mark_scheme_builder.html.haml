@@ -1,0 +1,146 @@
+%h1= title
+
+%hr.divider
+
+#sections-container
+    = render partial: "mark_scheme", locals: {sections: session[:mark_scheme]["sections"]}
+
+.modal.fade{ id: "add-section-modal", tabindex: "-1", "aria-labelledby": "add-section-modal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
+    .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+        .modal-content
+            .modal-header
+                %h1.modal-title.fs-5= "Add new section"
+                %button.btn-close#add-section-close-button{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+
+            .modal-body
+                .form-group
+                    %textarea.form-control#section-title-text-area{placeholder: "Section title", required: true}
+                    %small.text-danger.d-none#section-title-text-area-error
+
+            .modal-footer
+                %button.btn.btn-primary{ type: "submit", id: "add-section-button"}= "Add"
+
+%button.btn.btn-outline-primary.w-100{type: "button", id: "create-section-button", "data-bs-toggle": "modal", "data-bs-target": "#add-section-modal"}
+    %i.bi.bi-plus-circle-fill
+    Add new section 
+
+.mb-2
+    %button.btn.btn-success.mt-2#save-button{type: "button"}
+        %i.bi.bi-floppy
+        Save
+
+    %button.btn.btn-danger.mt-2#delete-button{type: "button"}
+        %i.bi.bi-trash
+        Delete
+
+:javascript
+    document.addEventListener("DOMContentLoaded", function() {
+        // Add section events
+        const addSectionBtn = document.getElementById("add-section-button");
+        const sectionsContainer = document.getElementById("sections-container");
+
+        addSectionBtn.addEventListener("click", function(e) {
+            let titleTextArea = document.getElementById("section-title-text-area");
+            let titleTextAreaError = document.getElementById("section-title-text-area-error");
+
+            // TODO: Must handle duplicate section titles as this could cause some issues...
+
+            if (titleTextArea.value.trim() === "") {
+                titleTextArea.classList.add("is-invalid");
+                titleTextAreaError.innerHTML = "Section title cannot be empty";
+                titleTextAreaError.classList.remove("d-none");
+
+                return; 
+            }
+            titleTextArea.classList.remove("is-invalid");
+            titleTextAreaError.classList.add("d-none");
+
+            fetch("/mark_scheme/add_section", {
+                method: "POST",
+                headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+                },
+                body: JSON.stringify({ 
+                    section_title: titleTextArea.value.trim(),
+                })
+            })
+            .then(response => response.text())
+            .then(html => {
+                const temp = document.createElement ("div");
+                temp.innerHTML = html.trim();
+                sectionsContainer.appendChild(temp);
+                
+                document.getElementById("section-title-text-area").value = "";
+            })
+            .catch(error => console.error("Error when trying to add section:", error));
+
+            // This is the only way I could figure out how to close the modal and play the animation
+            document.getElementById("add-section-close-button").click();
+        });
+
+        
+        // Save form events
+        const saveBtn = document.getElementById("save-button");
+        saveBtn.addEventListener("click", function(e) {      
+            // Get all sections
+            sections = [];
+            document.querySelectorAll(".max-marks-input").forEach(function(element) {
+                section_index = element.id.replace("maximum-marks-input-", "");
+                max_marks = element.value;
+
+                title = document.getElementById(`section-title-${section_index}`).innerHTML.trim()
+                description = document.getElementById(`description-textarea-${section_index}`).value.trim();
+                sections.push({"title": title, "description": description, "max_marks": max_marks});
+            });
+
+            fetch("/mark_scheme/save", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+                    },
+                body: JSON.stringify({ 
+                    sections: sections
+                })
+            })
+            .then(response => response.json())
+            .then(json => {
+                // Handle response
+                if (json["status"] == "success") {
+                    window.location.href = json["redirect"];
+                }
+                else {
+                    alert("Failed to save mark scheme, if this error persists, please contact an admin.");
+                }
+            })
+            .catch(error => console.error("Error when trying to save mark scheme:", error));
+        });
+        /*
+        // Delete form events
+        const deleteBtn = document.getElementById("delete-button");
+        deleteBtn.addEventListener("click", function(e) {
+        fetch("/progress_form/delete_form", {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+            },
+            body: JSON.stringify({ 
+            "release_date": releaseDateInput.value,
+            })
+        })
+        .then(response => response.json())
+        .then(json => {
+            // Handle response
+            if (json["status"] == "success") {
+            window.location.href = json["redirect"];
+            }
+            else {
+            alert("Failed to delete progress form, if this error persists, please contact an admin.");
+            }
+        })
+        .catch(error => console.error("Error when trying to delete form:", error));
+        });
+       */ 
+    });

@@ -17,10 +17,6 @@
       
     %i.bi.bi-caret-right-fill
       
-  
-  // TODO: We should have plus buttons like discord questions add answers to add radio buttons etc for the questions.
-  //       then we can store in json like radios = [,,,]
-
   .collapse.show{id: unique_id}
     .card-body.form-group
       %label{for: "question-textarea-#{question_index}"} Notes
@@ -31,6 +27,5 @@
 
       - if !facilitator && editing_form
         %button.btn.btn-outline-danger.mt-3.delete-question-button{id: "delete-#{unique_id}"} Delete question
-        %button.btn.btn-outline-primary.mt-3 Add radio button
 
 
