@@ -37,7 +37,7 @@ class IssueController < ApplicationController
             title: params[:title],
             content: params[:description],
             author: params[:author],
-            reopened: false,
+            reopened_by: "",
             updated: false
         }.to_json
 
@@ -73,7 +73,10 @@ class IssueController < ApplicationController
         if current_user.is_staff?
             @issue_response = EventResponse.new(json_data: json_data, event_id: params[:issue_id], staff_id: current_user.staff.id)
 
-            issue_data['reopened'] = false
+            if issue_data['reopened_by'] != current_user.staff.email
+                issue_data['reopened_by'] = ""
+            end
+
             issue_data['update'] = !issue_data['update']
             json_data = issue_data.to_json
 
@@ -81,6 +84,10 @@ class IssueController < ApplicationController
         else
             @issue_response = EventResponse.new(json_data: json_data, event_id: params[:issue_id], student_id: current_user.student.id)
 
+            if issue_data['reopened_by'] != current_user.student.username
+                issue_data['reopened_by'] = ""
+            end
+            
             issue_data['update'] = !issue_data['update']
             json_data = issue_data.to_json
 
@@ -106,12 +113,17 @@ class IssueController < ApplicationController
         @selected_order = params[:selected_order]
 
         if params[:status] == "closed"
-            issue_data['reopened'] = false
+            issue_data['reopened_by'] = ""
             json_data = issue_data.to_json
 
             @issue.update(json_data: json_data, completed: true)
         else
-            issue_data['reopened'] = true
+            if current_user.is_staff?
+                issue_data['reopened_by'] = current_user.staff.email
+            else
+                issue_data['reopened_by'] = current_user.student.username
+            end
+
             json_data = issue_data.to_json
 
             @issue.update(json_data: json_data, completed: false)

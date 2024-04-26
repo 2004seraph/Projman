@@ -14,7 +14,7 @@
       "aria-controls" => unique_id,
       id: "card-header-#{issue.id}"} 
       .d-flex.align-items-center
-        %span.me-3.fs-6.fw-light #{issue.created_at}
+        %span.me-3.fs-6.fw-light #{issue.created_at.strftime("%d/%m/%Y %H:%M")}
         %h3.m-0.fs-5.fw-medium #{issue_data['title']}
         %span
           - if !issue.completed?
@@ -22,29 +22,34 @@
               %i.bi.bi-exclamation-diamond-fill.icon-pad
             - elsif current_user.is_staff? && issue.event_responses.last.student_id.present?
               %i.bi.bi-exclamation-diamond-fill.icon-pad
-            - elsif current_user.is_staff? && issue_data['reopend'] == true
+            - elsif current_user.is_staff? && (issue_data['reopened_by'] != "" && issue_data['reopened_by'] != current_user.staff.email)
               %i.bi.bi-exclamation-diamond-fill.icon-pad
-            - elsif !current_user.is_staff? && !issue.event_responses.empty? && issue.event_responses.last.staff_id.present? && issue_data['reopend'] == false
+            - elsif !current_user.is_staff? && !issue.event_responses.empty? && issue.event_responses.last.staff_id.present? && issue_data['reopened_by'] == ""
+              %i.bi.bi-exclamation-diamond-fill.icon-pad
+            -elsif !current_user.is_staff? && (issue_data['reopened_by'] != "" && issue_data['reopened_by'] != current_user.student.username)
               %i.bi.bi-exclamation-diamond-fill.icon-pad
             //when deployed this to change above elsif to commented line
             //- elsif !current_user.is_student? && !issue.event_responses.empty? && issue.event_responses.last.staff_id.present?
       %i.bi.bi-caret-right-fill
     .collapse{id: unique_id}
       .card-body.pt-1.pb-1
-        .d-flex.align-items-center.justify-content-between.pt-2
+        .d-flex.align-items-center.justify-content-between.pt-2.pb-2
           .fs-6 Posted by: #{issue_data['author']}
           .fs-6 #{course_module.code} - #{course_project.name}
+        .fs-6 Issue:
         .issue-text.border.p-2.mb-2
           .fs-6 #{issue_data['content']}
+        %hr.divider
         -issue_responses.each do |response|
           - response_data =  JSON.parse(response.json_data)
-          .d-flex.align-items-center.justify-content-between.pt-2
-            .fs-6 From: #{response_data['author']}
-            .fs-6 #{response_data['timestamp']}
-          .issue-text.border.p-2.mb-2
+          .issue-text.border.p-2.mt-2
             .fs-6 #{response_data['content']}
+          .d-flex.align-items-center.justify-content-between.pb-2
+            .fw-light{ style: "font-size: 14px;" } From: #{response_data['author']}
+            .fw-light{ style: "font-size: 14px;" } #{DateTime.parse(response_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
         <!- if current_user.isStaff?>
         - if !issue.completed
+          %hr.divider
           = form_with(url: "/issues/issue-response", method: "post", local: false, id: "response-form-#{issue.id}") do |form|
             %input{ type: "hidden", name: "issue_id", value: "#{issue.id}"}
             %input{ type: "hidden", name: "author", value: "#{@current_user.givenname} #{@current_user.sn}"}
@@ -58,11 +63,9 @@
                 %i.bi.bi-send-fill
                 Send
           - if current_user.is_staff?
-            %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#resolveIssueModal-#{issue.id}", id: "mark-resolved-#{issue.id}"}
-              Mark as resolved
-          .alert.alert-success{style: "display: none;", id: "success-message-#{issue.id}" }
-            Response submitted successfully!
-        <!- if current_user.isStudent?>
+            .d-flex.mb-2
+              %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#resolveIssueModal-#{issue.id}", id: "mark-resolved-#{issue.id}"}
+                Mark as resolved
         - if issue.completed
           .d-flex.justify-content-end.mb-2
             %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#reopenIssueModal-#{issue.id}", id: "reopen-#{issue.id}"}
