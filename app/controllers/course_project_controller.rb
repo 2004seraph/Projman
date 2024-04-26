@@ -38,6 +38,7 @@ class CourseProjectController < ApplicationController
             @projects = current_user.student.course_projects
             render 'index_student'
         end
+        @project_milestones = session[:project_data][:project_milestones]
     end
 
     def new
