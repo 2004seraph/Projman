@@ -12,26 +12,26 @@
         %h3 Activities
         .scrollable
             - @projects.each do |project|
-                - @project.project_milestones.each do |milestone|
-                .card
-                    .card-body
-                        %h5.card-title= milestone["Name"]
-                        %p.card-text
-                        %strong Date: 
-                        = milestone["Date"]
-                        %br
-                        %strong Type: 
-                        = milestone["Type"]
-                        %br
-                        %strong Email: 
-                        = milestone["Email"]["Content"]
-                        %br
-                        %strong Advance: 
-                        = milestone["Email"]["Advance"]
-                        %br
-                        %strong Comment: 
-                        = milestone["Comment"]
-                    
+                - project.milestones.each do |milestone|
+                    .card
+                        .card-body
+                            %h5.card-title= milestone["Name"]
+                            %p.card-text
+                            %strong Date:
+                            = milestone["Date"]
+                            %br
+                            %strong Type:
+                            = milestone["Type"]
+                            %br
+                            %strong Email:
+                            = milestone["Email"]["Content"]
+                            %br
+                            %strong Advance:
+                            = milestone["Email"]["Advance"]
+                            %br
+                            %strong Comment:
+                            = milestone["Comment"]
+
 
     %h2
         Projects
