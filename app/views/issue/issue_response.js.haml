@@ -1,9 +1,4 @@
 :plain
-  $('#success-message-#{params["issue_id"]}').show();
-  setTimeout(function() { 
-    $('#success-message-#{params["issue_id"]}').hide(); 
-  }, 3000);
-
   var currentIssue = $('#hidden-partial-container-#{params["issue_id"]}');
   var previousIssue = currentIssue.prev();
   console.log(previousIssue);
@@ -11,9 +6,21 @@
   var newPartialHTML = "#{j(render(partial: 'issue-box', locals: { issue: Event.find(params["issue_id"]) }))}";
   $(previousIssue).after(newPartialHTML);
 
-  var collapseElement = $('#issue-card-#{params["issue_id"]} .collapse');
-  collapseElement.addClass('show');   
-  $('#card-header-#{params["issue_id"]}').attr('aria-expanded', 'true');
+  var divider = $('#issues-section');
+  var updatedPartialHTML = "#{j(render(partial: 'issues-section', locals: { issue: Event.find(params["issue_id"]) }))}";
+  $(divider).html(updatedPartialHTML);
+
+  if ("#{params[:selected_order]}" == "Created At") {
+    var collapseElement = $('#issue-card-#{params["issue_id"]} .collapse');
+    collapseElement.addClass('show');   
+    $('#card-header-#{params["issue_id"]}').attr('aria-expanded', 'true');
+  } else {
+    var collapseElement = $('#issue-card-#{params["issue_id"]} .collapse');
+    collapseElement.addClass('show');   
+    $('#card-header-#{params["issue_id"]}').attr('aria-expanded', 'true');
+    var elementToScrollTo = document.getElementById('hidden-partial-container-#{params["issue_id"]}');
+    elementToScrollTo.scrollIntoView();
+  }
 
   $("#flexSwitchCheckOpen").prop("checked", true);
   $("#flexSwitchCheckResolved").prop("checked", true);

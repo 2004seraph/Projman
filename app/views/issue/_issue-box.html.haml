@@ -48,6 +48,8 @@
           = form_with(url: "/issues/issue-response", method: "post", local: false, id: "response-form-#{issue.id}") do |form|
             %input{ type: "hidden", name: "issue_id", value: "#{issue.id}"}
             %input{ type: "hidden", name: "author", value: "#{@current_user.givenname} #{@current_user.sn}"}
+            %input{ type: "hidden", name: "selected_project", value: "#{@selected_project}"}
+            %input{ type: "hidden", name: "selected_order", value: "#{@selected_order}"}
             .form_group
               = form.label :Response
               = form.text_area :response, class: "form-control pt-2 pb-2 mb-2", placeholder: "Enter your response here", id: "response-textarea-#{issue.id}", required: true
@@ -56,7 +58,6 @@
                 %i.bi.bi-send-fill
                 Send
           - if current_user.is_staff?
-            -# = button_tag("Mark as resolved", type: "button", class: "btn btn-danger", data: {bsToggle: "modal", bsTarget: "#closeIssueModal"})
             %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#resolveIssueModal-#{issue.id}", id: "mark-resolved-#{issue.id}"}
               Mark as resolved
           .alert.alert-success{style: "display: none;", id: "success-message-#{issue.id}" }

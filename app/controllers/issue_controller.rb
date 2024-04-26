@@ -37,7 +37,8 @@ class IssueController < ApplicationController
             title: params[:title],
             content: params[:description],
             author: params[:author],
-            reopened: false
+            reopened: false,
+            updated: false
         }.to_json
 
         current_project_id = params[:project_id]
@@ -60,6 +61,9 @@ class IssueController < ApplicationController
         @issue = Event.find(params[:issue_id])
         issue_data = JSON.parse(@issue.json_data)
 
+        @selected_project = params[:selected_project]
+        @selected_order = params[:selected_order]
+
         json_data = {
             content: params[:response],
             author: params[:author],
@@ -70,14 +74,22 @@ class IssueController < ApplicationController
             @issue_response = EventResponse.new(json_data: json_data, event_id: params[:issue_id], staff_id: current_user.staff.id)
 
             issue_data['reopened'] = false
+            issue_data['update'] = !issue_data['update']
             json_data = issue_data.to_json
 
             @issue.update(json_data: json_data)
         else
             @issue_response = EventResponse.new(json_data: json_data, event_id: params[:issue_id], student_id: current_user.student.id)
+
+            issue_data['update'] = !issue_data['update']
+            json_data = issue_data.to_json
+
+            @issue.update(json_data: json_data)
         end
 
         @issue_response.save
+
+        get_issues(@selected_project, @selected_order)
 
         if request.xhr?
             respond_to do |format|
@@ -160,13 +172,12 @@ class IssueController < ApplicationController
                                     .where(groups: { id: group_ids })
                                     .where(event_type: :issue)
                                     .where(completed: false)
-                                    .sorted_by_latest_activity()
-
+                                    .order(updated_at: :desc)
                 @resolved_issues = Event.joins(:group)
                                         .where(groups: { id: group_ids })
                                         .where(event_type: :issue)
                                         .where(completed: true)
-                                        .sorted_by_latest_activity()
+                                        .order(updated_at: :desc)
             end
         else
             @user_projects = current_user.student.course_projects
@@ -207,14 +218,14 @@ class IssueController < ApplicationController
                                         .where(event_type: :issue)
                                         .where(completed: false)
                                         .where(student_id: current_user.student.id)
-                                        .sorted_by_latest_activity()
+                                        .order(updated_at: :desc)
 
                     @resolved_issues = Event.joins(:group)
                                             .where(groups: { id: group_ids })
                                             .where(event_type: :issue)
                                             .where(completed: true)
                                             .where(student_id: current_user.student.id)
-                                            .sorted_by_latest_activity()
+                                            .order(updated_at: :desc)
                 end
             end
         end
