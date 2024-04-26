@@ -30,6 +30,7 @@ class CourseProject < ApplicationRecord
   has_many :assigned_facilitators, dependent: :destroy
   has_many :subprojects, dependent: :destroy
   belongs_to :course_module
+  has_one :staff, through: :course_module
 
   validate :creation_validation
 
@@ -84,8 +85,33 @@ class CourseProject < ApplicationRecord
     logger = Logger.new(Rails.root.join('log', 'course_project.lifecycle_job.log'))
     logger.debug("LIFECYCLE PASS")
 
+    def str_to_int(string)
+      Integer(string || '')
+    rescue ArgumentError
+      1
+    end
+
+    def push_milestone_to_teams?(milestone, reminder=false)
+      if milestone.milestone_type == :team
+        # create events
+
+        milestone.course_project.groups.each do |g|
+          json =
+            if reminder
+              "{}"
+            else
+              "{}"
+            end
+          g.events << Event.create({ event_type: :milestone, json_data: json })
+        end
+
+        return true
+      end
+      false
+    end
+
     CourseProject.all.each do |c|
-      if c.status != :draft
+      if ![:draft, :completed, :archived].include? c.status
         c.milestones.all.each do |m|
           # check its email field
           #   check if pre-reminder deadline is passed
@@ -94,6 +120,20 @@ class CourseProject < ApplicationRecord
           # check if its deadline is passed
           #   send email to relevent recipients
           #   [for_each_team] push deadline passed to event feed
+          if m.json_data["Email"]["Content"].length > 0
+            if !m.json_data["Email"]["Sent"]
+              if m.deadline - str_to_int(m.json_data["Email"]["Advance"]) <= DateTime.now
+                m.json_data["Email"]["Sent"] = true
+
+                # send reminder email with json_data["Name"] and json_data["Comment"], as well as the number of days left
+                MilestoneMailer.reminder_email(self).deliver_later
+                push_milestone_to_teams? m, reminder: true
+              end
+            end
+          end
+          if m.deadline < DateTime.now
+            push_milestone_to_teams? m
+          end
 
           # if progress form deadline passed
           #   ???
