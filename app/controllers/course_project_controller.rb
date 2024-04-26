@@ -598,18 +598,346 @@ class CourseProjectController < ApplicationController
 
         no_errors = errors.all? { |_, v| v.empty? }
         if no_errors
-            # flash[:notice] = "Project has been created successfully"
+            flash[:notice] = "Project has been created successfully"
             redirect_to action: :index
         else
-            # render :new
             render :new
         end
     end
 
     def update
-        puts session[:project_data]
-        puts params[:id]
-        render :edit
+        session[:project_data][:errors] = {}
+        errors = session[:project_data][:errors]
+
+        project_data = session[:project_data]
+
+        # Main Data
+        project_data[:project_name] = params[:project_name]
+        project_data[:selected_module] = params[:module_selection]
+        errors[:main] = []
+        unless CourseModule.exists?(code: project_data[:selected_module])
+            errors[:main] << "The selected module does not exist"
+        end
+
+        # Project Choices
+        project_data[:project_choices_enabled] = params.key?(:project_choices_enable)
+        project_data[:selected_project_allocation_mode] = params[:project_allocation_method]
+        errors[:project_choices] = []
+
+        if !project_data[:project_choices].present? && project_data[:project_choices_enabled]
+            errors[:project_choices] << "Add some project choices, or disable this section"
+        end
+
+        # Team Config
+        project_data[:team_size] = params[:team_size]
+        project_data[:selected_team_allocation_mode] = params[:team_allocation_method]
+        errors[:team_config] = []
+
+        # Team Preference Form
+        project_data[:preferred_teammates] = params[:preferred_teammates]
+        project_data[:avoided_teammates] = params[:avoided_teammates]
+        errors[:team_pref] = []
+
+        # Timings
+        project_data[:project_deadline] = params["milestone_Project Deadline_date"]
+        project_data[:teammate_preference_form_deadline] = params["milestone_Teammate Preference Form Deadline_date"]
+        project_data[:project_preference_form_deadline] = params["milestone_Project Preference Form Deadline_date"]
+
+        errors[:timings] = []
+
+        unless project_data[:project_deadline].present?
+            errors[:timings] << "Please set project deadline"
+        end
+        if project_data[:selected_team_allocation_mode] != "random_team_allocation" && !project_data[:teammate_preference_form_deadline].present?
+            errors[:timings] << "Please set team preference form deadline"
+        end
+        if (project_data[:project_choices_enabled] && project_data[:selected_project_allocation_mode] != "random_project_allocation") && !project_data[:project_preference_form_deadline].present?
+            errors[:timings] << "Please set project preference form deadline"
+        end
+
+        params.each do |key, value|
+            # Check if the key starts with "milestone_"
+            if key.match?(/^milestone_[^_]+_date$/)
+                # Extract the milestone name from the key
+                milestone_name = key.match(/^milestone_([^_]+)_date$/)[1]
+
+                # Find the corresponding milestone in the milestones hash and update its "Date" value
+                if milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
+                    milestone[:Date] = value
+                    unless (defined?(value) && value.present?) || milestone[:isDeadline]
+                        err = "Please make sure all milestones have a date"
+                        unless errors[:timings].include? err
+                            errors[:timings] << err
+                        end
+                    end
+                end
+            end
+
+            if key.match?(/^milestone_[^_]+_type$/)
+                # Extract the milestone name from the key
+                milestone_name = key.match(/^milestone_([^_]+)_type$/)[1]
+
+                # Find the corresponding milestone in the milestones hash and update its "Type" value
+                if milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
+                    next if milestone[:isDeadline]
+                    milestone[:Type] = value
+                    unless defined?(value) && value.present? && Milestone.milestone_types.key?(value)
+                        err = "Please make sure all milestone types are valid"
+                        unless errors[:timings].include? err
+                            errors[:timings] << err
+                        end
+                    end
+                end
+            end
+        end
+
+        facilitators_not_found = project_data[:project_facilitators].reject do |email|
+            Student.exists?(email: email) || Staff.exists?(email: email)
+        end
+        errors[:facilitators_not_found] = facilitators_not_found
+
+        no_errors = errors.all? { |_, v| v.empty? }
+
+        project = CourseProject.find(params[:id])
+        # Update Project Details
+        if project.update(
+            course_module: CourseModule.find_by(code: project_data[:selected_module]),
+            name: project_data[:project_name],
+            project_allocation: project_data[:selected_project_allocation_mode].to_sym,
+            team_size: project_data[:team_size],
+            team_allocation: project_data[:selected_team_allocation_mode].to_sym,
+            preferred_teammates:  project_data[:preferred_teammates],
+            avoided_teammates: project_data[:avoided_teammates],
+            status: :draft)
+        else
+            project.errors.messages.each do |section, section_errors|
+                section_errors.each do |error|
+                    (errors[section.to_sym] ||= []) << error
+                end
+            end
+        end
+        
+        no_errors = errors.all? { |_, v| v.empty? }
+
+        # destroy all subprojects if project choices disabled,
+        # otherwise, destroy all subprojects that have been removed
+        # , create any subprojects that have been added
+        if no_errors
+            existing_subprojects = project.subprojects
+            unless project_data[:project_choices_enabled]
+                project.subprojects.destroy_all
+            else
+                subprojects_to_delete = existing_subprojects.where.not(name: project_data[:project_choices])
+                subprojects_to_add = project_data[:project_choices].reject do |choice|
+                    project.subprojects.pluck(:name).include?(choice)
+                end
+                subprojects_to_delete.destroy_all
+
+                subprojects = []
+                subprojects_to_add.each do |project_choice|
+                    subproject = Subproject.new(
+                        name: project_choice,
+                        json_data: "{}",
+                        course_project_id: project.id
+                    )
+                    subprojects << subproject
+                end
+                subprojects.each do |subproject|
+                    if subproject.valid?
+                        subproject.save
+                    else
+                        subproject.errors.messages.each do |attribute, messages|
+                            messages.each do |message|
+                            unless errors[:timings].include?("Subproject error: #{attribute} : #{message}")
+                                errors[:timings] << "Subproject error: #{attribute} : #{message}"
+                            end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        no_errors = errors.all? { |_, v| v.empty? }
+
+        # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
+        if no_errors
+            if project_data[:selected_team_allocation_mode] == "random_team_allocation"
+                if milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == "Teammate Preference Form Deadline"}
+                    milestone[:Date] = ""
+                end
+            end
+            if !project_data[:project_choices_enabled] || project_data[:selected_project_allocation_mode] == "random_project_allocation"
+                if milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == "Project Preference Form Deadline"}
+                    milestone[:Date] = ""
+                end
+            end
+        end
+
+        
+        # create any system milestones if they are needed and missing
+        # Update existing system milestones
+        # destroy any milestones that have been removed
+        # create any milestones that have been added
+        # update any milestones that have remained
+        if no_errors
+
+            existing_milestones = project.milestones.where(user_generated: true)
+            # find milestones to destroy: they exist in the db but not in the edit session
+            session_milestone_names = project_data[:project_milestones].map { |milestone| milestone[:Name] }
+            milestones_to_delete = existing_milestones.reject do |milestone|
+                session_milestone_names.include?(milestone.json_data["Name"])
+            end
+
+            # find milestones to create: they exist in the edit session but not the db
+            milestones_to_create = project_data[:project_milestones].reject do |milestone|
+                existing_milestones.pluck(:json_data).map{|json_data| json_data["Name"]}.include?(milestone[:Name])
+            end
+
+            # find milestones to update: they exist in the edit session and in the db
+            milestones_to_update = existing_milestones.select do |milestone|
+                session_milestone_names.include?(milestone.json_data["Name"])
+            end
+
+            milestones_to_delete.each(&:destroy)
+
+            # Update existing milestones
+            milestones_to_update.each do |milestone|
+                # get corresponding milestone data
+                milestone_name = milestone[:json_data]["Name"]
+                milestone_data = project_data[:project_milestones].find { |m| m[:Name] == milestone_name}
+                milestone.json_data = {
+                    "Name" => milestone_name,
+                    "isDeadline" => milestone_data[:isDeadline],
+                    "Email" => milestone_data[:Email],
+                    "Comment" => milestone_data[:Comment]
+                }
+                date_string = milestone_data[:Date]
+                parsed_date = Date.strptime(date_string, "%d/%m/%Y").strftime("%Y-%m-%d")
+                milestone.deadline = parsed_date
+                milestone.milestone_type = milestone_data[:Type]
+            end
+
+            milestones_to_update.each do |milestone|
+                if milestone.valid?
+                    milestone.save
+                else
+                    milestone.errors.messages.each do |attribute, messages|
+                        messages.each do |message|
+                          unless errors[:main].include?("Milestone error: #{attribute} : #{message}")
+                            errors[:main] << "Milestone error: #{attribute} : #{message}"
+                          end
+                        end
+                    end
+                end
+            end
+
+            # Create additional milestones
+            create_milestones_models = []
+            milestones_to_create.each do |milestone_data|
+                date_string = milestone_data[:Date]
+                next if !date_string.present?
+                parsed_date = Date.strptime(date_string, "%d/%m/%Y").strftime("%Y-%m-%d")
+
+                # check which system type of milestone this is, if it is supposed to be
+                system_type = nil
+                if milestone_data[:Name] == "Project Deadline"
+                    system_type = "project_deadline"
+                elsif milestone_data[:Name] == "Project Preference Form Deadline"
+                    system_type = "project_preference_deadline"
+                elsif milestone_data[:Name] == "Teammate Preference Form Deadline"
+                    system_type = "teammate_preference_deadline"
+                end
+
+                json_data = {
+                    "Name" => milestone_data[:Name],
+                    "isDeadline" => milestone_data[:isDeadline],
+                    "Email" => milestone_data[:Email],
+                    "Comment" => milestone_data[:Comment]
+                }
+
+                milestone = Milestone.new(
+                    json_data: json_data,
+                    deadline: parsed_date,
+                    system_type: system_type,
+                    user_generated: true,
+                    milestone_type: milestone_data[:Type],
+                    course_project_id: project.id
+                )
+
+                create_milestones_models << milestone
+            end
+
+            milestones = milestones_to_update + create_milestones_models
+
+            milestones.each do |milestone|
+                if milestone.valid?
+                    milestone.save
+                else
+                    milestone.errors.messages.each do |attribute, messages|
+                        messages.each do |message|
+                          unless errors[:main].include?("Milestone error: #{attribute} : #{message}")
+                            errors[:main] << "Milestone error: #{attribute} : #{message}"
+                          end
+                        end
+                    end
+                end
+            end
+        end
+        no_errors = errors.all? { |_, v| v.empty? }
+
+        # Destroy all assigned facilitators that have been removed
+        # Create any assigned facilitators that have been added
+        if no_errors
+            existing_facilitators = project.assigned_facilitators
+            facilitators_to_delete = existing_facilitators.reject do |facilitator|
+                project_data[:project_facilitators].include?(facilitator.get_email)
+            end
+            existing_fac_emails = existing_facilitators.map { |facilitator| facilitator.get_email }.compact
+            facilititators_to_add = project_data[:project_facilitators].reject do |facilitator|
+                existing_fac_emails.include?(facilitator)
+            end
+
+            facilitators_to_delete.each(&:destroy)
+
+            facilitators = []
+            facilititators_to_add.each do |user_email|
+
+                facilitator = AssignedFacilitator.new(course_project_id: project.id);
+
+                if Staff.exists?(email: user_email)
+                    facilitator.staff_id = Staff.where(email: user_email).first.id
+                elsif Student.exists?(email: user_email)
+                    facilitator.student_id = Student.where(email: user_email).first.id
+                end
+
+                facilitators << facilitator
+            end
+            facilitators.each do |facilitator|
+                if facilitator.valid?
+                    facilitator.save
+                else
+                    facilitator.errors.messages.each do |attribute, messages|
+                        messages.each do |message|
+                            unless errors[:main].include?("Facilitator error: #{attribute} : #{message}")
+                            errors[:main] << "Facilitator error: #{attribute} : #{message}"
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        no_errors = errors.all? { |_, v| v.empty? }
+
+        # remake groups if module changes
+        # remake groups if team size changes, and set to random
+        # remake groups if mode is changed from not random to random
+
+        if no_errors
+            flash[:notice] = "Project has been updated successfully"
+            redirect_to action: :edit
+        else
+            render :edit
+        end
     end
 
     def show

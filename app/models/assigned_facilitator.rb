@@ -36,4 +36,13 @@ class AssignedFacilitator < ApplicationRecord
 
     errors.add(:base, 'Specify a staff or a student, not both, for an assigned facilitator entry')
   end
+
+  def get_email
+    if staff_id.present?
+      staff&.email
+    elsif student_id.present?
+      student&.email
+    end
+  end
+  
 end

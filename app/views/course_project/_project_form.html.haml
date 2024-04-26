@@ -3,6 +3,10 @@
 
   -# MAIN CONTENT
   .mb-3
+    - if errors.present?
+      .container-fluid.d-flex.flex-column.fs-6.text-danger.mb-3
+        Please fix all errors
+
     .input-group
       %h2.input-group-text.fs-4.fw-bold.mb-0 Module
       %select.form-select.form-select-sm.fs-5{id: "module-selection", name:"module_selection", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}

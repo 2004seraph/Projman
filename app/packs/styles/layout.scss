@@ -100,6 +100,7 @@ body {
 }
 
 .flash-messages {
+  z-index: 999;
   position: absolute;
   right: 10px;
   bottom: 0;
