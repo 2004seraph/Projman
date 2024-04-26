@@ -954,13 +954,13 @@ class CourseProjectController < ApplicationController
 
             #Get ordered milestones + deadlines
             @milestones = []
-            @current_project.milestones.order('deadline').each do |milestone|
-                if milestone.json_data['Name'] == 'Project Deadline'
+            @current_project.milestones.where(user_generated: true).order('deadline').each do |milestone|
+                if milestone.system_type == 'project_completion_deadline'
                     @deadline = milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
-                elsif milestone.json_data['Name'] == 'Teammate Preference Form Deadline'
+                elsif milestone.system_type == 'teammate_preference_deadline'
                     @pref_form = milestone
                     @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
-                elsif milestone.json_data['Name'] == 'Project Preference Form Deadline'
+                elsif milestone.system_type == 'project_preference_deadline'
                     @proj_choices_form = milestone
                     @milestones << milestone.json_data['Name']+': '+milestone.deadline.strftime('%d/%m/%y')+' - '+milestone.json_data['Comment']
                 else
