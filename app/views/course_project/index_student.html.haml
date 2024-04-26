@@ -15,8 +15,8 @@
                             .card-body
                                 %h5.card-title= "#{milestone.course_module.code} #{milestone.course_project.name} - #{milestone.json_data["Name"]}"
                                 %p.card-text
-                                %strong Deadline:
-                                = milestone.deadline
+                                %strong Due in:
+                                = "#{(milestone.deadline - DateTime.now).to_i} days"
                                 %br
                                 %strong Type:
                                 = milestone.milestone_type
