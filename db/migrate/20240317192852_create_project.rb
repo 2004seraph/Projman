@@ -13,12 +13,13 @@ class CreateProject < ActiveRecord::Migration[7.0]
     create_enum :project_team_allocation,
       %w[
         random
-        preferenced_team_allocation
+        preference_form_based
       ]
 
     create_enum :project_choice_allocation,
       %w[
-        single_project_allocation
+        random
+        single_preference_submission
         team_average_preference
       ]
 

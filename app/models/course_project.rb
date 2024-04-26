@@ -34,44 +34,27 @@ class CourseProject < ApplicationRecord
 
   validate :creation_validation
 
-  # enum :status, {
-  #   draft: 'draft',
-  #   student_preference: 'student_preference',
-  #   student_preference_review: 'student_preference_review',
-  #   team_project_allocation: 'team_project_allocation',
-  #   team_project_allocation_review: 'team_project_allocation_review',
-  #   live: 'live',
-  #   completed: 'completed',
-  #   archived: 'archived'
-  # }
-
   enum :status, {
     draft: 'draft',
-    awaiting_student_preferences: 'awaiting_student_preferences',
-    awaiting_team_preferences: 'awaiting_team_preferences',
+    student_preference: 'student_preference',
+    student_preference_review: 'student_preference_review',
+    team_preference: 'team_preference',
+    team_preference_review: 'team_preference_review',
     live: 'live',
     completed: 'completed',
     archived: 'archived'
   }
 
-  # enum :project_allocation, {
-  #   single_project_allocation: 'single_project_allocation_submission',
-  #   team_project_allocation: 'team_average_preference'
-  # enum :team_allocation, {
-  #   random_team_allocation: 'random',
-  #   preferenced_team_allocation: 'preferenced_team_allocation'
-  # }
-
   enum :project_allocation, {
-    individual: 'individual_preference',
-    team: 'team_average_preference'
-  }, _suffix: true # this means the enum name "project_allocation" is appended to the value names, e.g. single_project_allocation
+    random_project_allocation: 'random',
+    single_preference_project_allocation: 'single_preference_submission',
+    team_preference_project_allocation: 'team_average_preference'
+  }
 
   enum :team_allocation, {
-    random: 'random',
-    preferenced: 'preferenced_team_allocation'
-  }, _suffix: true # this means the enum name "project_allocation" is appended to the value names, e.g. single_project_allocation
-
+    random_team_allocation: 'random',
+    preference_form_based: 'preference_form_based'
+  }
 
   def completion_deadline
     project_completion_deadline.deadline
