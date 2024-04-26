@@ -9,7 +9,7 @@
 #  preferred_teammates :integer          default(0)
 #  project_allocation  :enum             not null
 #  status              :enum             default("draft"), not null
-#  team_allocation     :enum             not null
+#  team_allocation     :enum
 #  team_size           :integer          not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
@@ -34,49 +34,48 @@ class CourseProject < ApplicationRecord
 
   validate :creation_validation
 
+  # enum :status, {
+  #   draft: 'draft',
+  #   student_preference: 'student_preference',
+  #   student_preference_review: 'student_preference_review',
+  #   team_project_allocation: 'team_project_allocation',
+  #   team_project_allocation_review: 'team_project_allocation_review',
+  #   live: 'live',
+  #   completed: 'completed',
+  #   archived: 'archived'
+  # }
+
   enum :status, {
     draft: 'draft',
-    student_preference: 'student_preference',
-    student_preference_review: 'student_preference_review',
-    team_preference: 'team_preference',
-    team_preference_review: 'team_preference_review',
+    awaiting_student_preferences: 'awaiting_student_preferences',
+    awaiting_team_preferences: 'awaiting_team_preferences',
     live: 'live',
     completed: 'completed',
     archived: 'archived'
   }
 
+  # enum :project_allocation, {
+  #   single_project_allocation: 'single_project_allocation_submission',
+  #   team_project_allocation: 'team_average_preference'
+  # enum :team_allocation, {
+  #   random_team_allocation: 'random',
+  #   preferenced_team_allocation: 'preferenced_team_allocation'
+  # }
+
   enum :project_allocation, {
-    random_project_allocation: 'random',
-    single_preference_project_allocation: 'single_preference_submission',
-    team_preference_project_allocation: 'team_average_preference'
-  }
+    individual: 'individual_preference',
+    team: 'team_average_preference'
+  }, _suffix: true # this means the enum name "project_allocation" is appended to the value names, e.g. single_project_allocation
 
   enum :team_allocation, {
-    random_team_allocation: 'random',
-    preference_form_based: 'preference_form_based'
-  }
+    random: 'random',
+    preferenced: 'preferenced_team_allocation'
+  }, _suffix: true # this means the enum name "project_allocation" is appended to the value names, e.g. single_project_allocation
 
 
   def completion_deadline
-    completion_milestone.deadline
+    project_completion_deadline.deadline
   end
-  def completion_milestone
-    milestones.each do |m|
-      if m.json_data["isDeadline"]
-        return m
-      end
-    end
-  end
-
-  def team_preference_submission_milestone
-    milestones.each do |m|
-      if m.json_data["isDeadline"]
-        return m
-      end
-    end
-    nil
-  end
-
 
   def self.lifecycle_job
     # DO NOT RUN THIS IN ANY APP CODE
@@ -110,43 +109,51 @@ class CourseProject < ApplicationRecord
       false
     end
 
+    # teammate_preference_deadline: 'teammate_preference_deadline',
+    # project_preference_deadline: 'project_preference_deadline',
+    # project_completion_deadline: 'project_deadline',
+    # marking_deadline: 'mark_scheme'
+
     CourseProject.all.each do |c|
       if ![:draft, :completed, :archived].include? c.status
+
+        if c.team_size == 1 or c.team_allocation == nil
+          #individual project -> no group assignment
+          if c.project_preference_deadline
+            if c.project_preference_deadline < DateTime.now
+              # assign projects to individuals, if not responded, use least popular project
+            end
+          end
+        else
+          #group project -> group assignment needed, potentially also project assignment
+
+        end
+
         c.milestones.all.each do |m|
           # check its email field
           #   check if pre-reminder deadline is passed
           #     send email to relevent recipients
           #     [for_each_team] push reminder to event feed
           # check if its deadline is passed
-          #   send email to relevent recipients
+          #   send email to relevent recipients, no actually
           #   [for_each_team] push deadline passed to event feed
-          if m.json_data["Email"]["Content"].length > 0
-            if !m.json_data["Email"]["Sent"]
-              if m.deadline - str_to_int(m.json_data["Email"]["Advance"]) <= DateTime.now
-                m.json_data["Email"]["Sent"] = true
+          if !m.executed
+            if m.json_data["Email"]["Content"].length > 0
+              if !m.json_data["Email"]["Sent"]
+                if m.deadline - str_to_int(m.json_data["Email"]["Advance"]) <= DateTime.now
+                  m.json_data["Email"]["Sent"] = true
 
-                # send reminder email with json_data["Name"] and json_data["Comment"], as well as the number of days left
-                MilestoneMailer.reminder_email(self).deliver_later
-                push_milestone_to_teams? m, reminder: true
+                  # send reminder email with json_data["Name"] and json_data["Comment"], as well as the number of days left
+                  MilestoneMailer.reminder_email(self).deliver_later
+                  push_milestone_to_teams? m, reminder: true
+                end
               end
             end
+            if m.deadline < DateTime.now
+              push_milestone_to_teams? m
+              m.executed = true
+            end
           end
-          if m.deadline < DateTime.now
-            push_milestone_to_teams? m
-          end
-
-          # if progress form deadline passed
-          #   ???
-          # if team preference < project preference OR either is nil
-          #   if team preference form passed [if nil, assume the group were generated at project creation]
-          #     allocate groups
-          #   if project preference passed
-          #     assign mode subproject to each group
-          # else [GEC / EYH]
-          #   if project preference passed
-          #     do nothing
-          #   if team preference form passed
-          #     allocate groups with project preference heuristics
         end
 
         if c.completion_deadline < DateTime.now
@@ -178,8 +185,29 @@ class CourseProject < ApplicationRecord
 
     errors.add(:team_pref, 'Invalid preferred teammates entry') if preferred_teammates.nil?
     errors.add(:team_pref, 'Invalid avoided teammates entry') if avoided_teammates.nil?
-    if !errors[:team_pref].present? && team_allocation == 'preference_form_based' && (preferred_teammates + avoided_teammates == 0)
+    if !errors[:team_pref].present? && team_allocation == 'preferenced_team_allocation' && (preferred_teammates + avoided_teammates == 0)
       errors.add(:team_pref, 'Preferred and Avoided teammates cannot both be 0')
     end
   end
+
+  # automatic method generation to get each of the system milestone types by their enum value name on a project model
+  # def method_missing(method_name, *args, &block)
+  #   if method_name.to_s.end_with?("_deadline")
+  #     system_type = method_name
+  #     return find_milestone_by_system_type(system_type)
+  #   else
+  #     super
+  #   end
+  # end
+  # def respond_to_missing?(method_name, include_private = false)
+  #   method_name.to_s.end_with?("_deadline") || super
+  # end
+  # def find_milestone_by_system_type(system_type)
+  #   milestones.each do |m|
+  #     if m.system_type == system_type.to_s
+  #       return m
+  #     end
+  #   end
+  #   nil
+  # end
 end

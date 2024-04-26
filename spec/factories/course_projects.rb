@@ -9,7 +9,7 @@
 #  preferred_teammates :integer          default(0)
 #  project_allocation  :enum             not null
 #  status              :enum             default("draft"), not null
-#  team_allocation     :enum             not null
+#  team_allocation     :enum
 #  team_size           :integer          not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null

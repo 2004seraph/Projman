@@ -8,13 +8,13 @@
    "aria-expanded" => "false",
    "aria-controls" => unique_id}
     .d-flex.align-items-center
-      %h3.m-0.fs-5.fw-medium Deadlines and Milestones
+      %h3.m-0.fs-5.fw-medium Milestones
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id}
     .card-body.pt-1.pb-1
-      %h1.fs-5.fw-semibold Project Deadline
+      %h1.fs-5.fw-semibold Deadline
       %h1.fs-5.fw-normal.fst-italic #{@deadline}
       %hr.divider
-      %h1.fs-5.fw-semibold Project Milestones
+      %h1.fs-5.fw-semibold Other Milestones
       - @milestones.each do |milestone|
         %h1.fs-5.fw-normal.fst-italic #{milestone}

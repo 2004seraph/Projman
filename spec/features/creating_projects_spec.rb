@@ -23,7 +23,7 @@ RSpec.feature "Project Creation", type: :feature do
         CourseProject.find_or_create_by({
             course_module: CourseModule.find_by(code: "COM8888"),
             name: "Test Project 1",
-            project_allocation: :single_preference_project_allocation,
+            project_allocation: :individual_project_allocation,
             team_allocation: :random_team_allocation,
             team_size: 8
         })

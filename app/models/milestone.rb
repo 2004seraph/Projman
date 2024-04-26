@@ -4,6 +4,7 @@
 #
 #  id                :bigint           not null, primary key
 #  deadline          :date             not null
+#  executed          :boolean          default(FALSE), not null
 #  json_data         :json             not null
 #  milestone_type    :enum             not null
 #  system_type       :enum
@@ -37,7 +38,6 @@ class Milestone < ApplicationRecord
   enum :system_type, {
     teammate_preference_deadline: 'teammate_preference_deadline',
     project_preference_deadline: 'project_preference_deadline',
-    progress_form_deadline: 'progress_form',
     project_completion_deadline: 'project_deadline',
     marking_deadline: 'mark_scheme'
   }
