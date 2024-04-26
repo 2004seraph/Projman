@@ -3,5 +3,13 @@
   var updatedPartialHTML = "#{j(render(partial: 'issues-section', locals: { issue: Event.find(params["issue_id"]) }))}";
   $(divider).html(updatedPartialHTML);
 
+  if (#{params["status"]} == open) {
+    var collapseElement = $('#issue-card-#{params["issue_id"]} .collapse');
+    collapseElement.addClass('show');   
+    $('#card-header-#{params["issue_id"]}').attr('aria-expanded', 'true');
+    var elementToScrollTo = document.getElementById('hidden-partial-container-#{params["issue_id"]}');
+    elementToScrollTo.scrollIntoView();
+  }
+
   $("#flexSwitchCheckOpen").prop("checked", true);
   $("#flexSwitchCheckResolved").prop("checked", true);

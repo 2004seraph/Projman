@@ -75,6 +75,9 @@ class Student < ApplicationRecord
 
 
   def self.ldap_sync
+    # DO NOT RUN THIS IN ANY APP CODE
+    # THIS IS A CRON JOB, IT IS RAN BY THE OS
+
     Student.all.each do |s|
       first_name_lookup = DatabaseHelper.get_student_first_name s
       if first_name_lookup == s.username
@@ -98,10 +101,6 @@ class Student < ApplicationRecord
   end
 
   def enroll_module(module_code)
-    # if CourseModule.find_by(code: module_code).students.find_by(username: username) != nil
-    #   return nil
-    # end
-    # CourseModule.find_by(code: module_code).students << self
     c = CourseModule.find_by(code: module_code)
     if c && !c.students.find_by(username: username)
       course_modules << c

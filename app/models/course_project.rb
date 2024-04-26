@@ -67,6 +67,15 @@ class CourseProject < ApplicationRecord
     end
   end
 
+  def team_preference_submission_milestone
+    milestones.each do |m|
+      if m.json_data["isDeadline"]
+        return m
+      end
+    end
+    nil
+  end
+
 
   def self.lifecycle_job
     # DO NOT RUN THIS IN ANY APP CODE
@@ -75,10 +84,30 @@ class CourseProject < ApplicationRecord
     logger = Logger.new(Rails.root.join('log', 'course_project.lifecycle_job.log'))
     logger.debug("LIFECYCLE PASS")
 
-    # get all
     CourseProject.all.each do |c|
       if c.status != :draft
+        c.milestones.all.each do |m|
+          # check its email field
+          #   check if pre-reminder deadline is passed
+          #     send email to relevent recipients
+          #     [for_each_team] push reminder to event feed
+          # check if its deadline is passed
+          #   send email to relevent recipients
+          #   [for_each_team] push deadline passed to event feed
 
+          # if progress form deadline passed
+          #   ???
+          # if team preference < project preference OR either is nil
+          #   if team preference form passed [if nil, assume the group were generated at project creation]
+          #     allocate groups
+          #   if project preference passed
+          #     assign mode subproject to each group
+          # else [GEC / EYH]
+          #   if project preference passed
+          #     do nothing
+          #   if team preference form passed
+          #     allocate groups with project preference heuristics
+        end
 
         if c.completion_deadline < DateTime.now
           c.status = :completed
