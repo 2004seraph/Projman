@@ -138,6 +138,11 @@
     }
 }
 
+.scrollable {
+    height: 400px;
+    overflow-y: scroll;
+  }
+
 .icon-pad {
     padding-left: 10px;
     color: var(--sheffield-purple);
