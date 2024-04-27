@@ -54,11 +54,12 @@ Rails.application.routes.draw do
     get 'teams/:team_id/progress_form/:release_date', to: 'facilitator#progress_form', as: 'progress_form',
       on: :collection
 
-    get 'marking/:section_id', to: 'facilitator#marking_show', as: 'marking_show', on: :collection
+    get 'marking/:milestone_id/section/:section_index', to: 'facilitator#marking_show', as: 'marking_show', on: :collection
 
     # AJAX
     post '/update_teams_list' => 'facilitator#update_teams_list', on: :collection
     post '/update_progress_form_response' => 'facilitator#update_progress_form_response', on: :collection
+    post '/update_marking' => 'facilitator#update_marking', on: :collection
   end
 
   resources :progress_form, controller: :progress_form do
@@ -75,6 +76,11 @@ Rails.application.routes.draw do
     post '/add_section' => 'mark_scheme#add_section', on: :collection
     post '/delete_section' => 'mark_scheme#delete_section', on: :collection
     post '/save' => 'mark_scheme#save', on: :collection
+
+
+    post 'add_to_facilitators_selection', on: :collection
+    post 'clear_facilitators_selection', on: :collection
+    get 'search_facilitators', on: :collection
   end
 
 

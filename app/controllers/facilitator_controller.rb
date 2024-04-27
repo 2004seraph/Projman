@@ -6,6 +6,10 @@ class FacilitatorController < ApplicationController
     def index
         @assigned_facilitators = get_assigned_facilitators
         set_assigned_projects
+
+        
+        # TODO: For now, just displaying all sections of all mark schemes
+        @mark_schemes = Milestone.select{|m| m.system_type == "marking_deadline"}
     end
 
     def update_teams_list
@@ -75,6 +79,15 @@ class FacilitatorController < ApplicationController
 
     def marking_show
         authorize! :read, :facilitator
+
+        mark_scheme = Milestone.find(params[:milestone_id].to_i)  
+        
+        
+        @section = mark_scheme.json_data["sections"][params[:section_index].to_i]
+        @mark_scheme_project = CourseProject.find(mark_scheme.course_project_id) 
+
+        session[:mark_scheme_id] = mark_scheme.id
+        session[:mark_scheme_section_index] = params[:section_index].to_i
     end
 
     def team
@@ -133,6 +146,53 @@ class FacilitatorController < ApplicationController
         render json: { status: "success", redirect: facilitators_path(team_id: session[:team_id]) } 
     end
 
+    def update_marking
+        # TODO: 
+        # 1) Get section we're marking
+        # 2) For each team
+        # 3) try find milestone response for mark scheme marks
+        # 4) Create if not found
+        # 5) Overwite section marks for that team 
+        
+        section = Milestone.find(session[:mark_scheme_id]).json_data["sections"][session[:mark_scheme_section_index]]
+        
+        group_ids = section["facilitators"][current_user.email]
+
+        group_ids.each do |group_id|
+            group = Group.find(group_id)
+            
+            # Look for pre-existing marking for the group
+            response = section.milestone_response.select{|ms| ms.json_data["group_id"] == group.id}.first
+
+            if response.nil?
+                # TODO: Create new milestone response
+                #response = MilestoneResponse.new(
+                    #json_data: {
+                    #    "sections": 0
+                    #},
+                    #milestone_id: section.id
+                #)
+            else
+                # TODO: Update stuff
+                # TODO: We should look for the exisintg section by title as primary key maybe would be better....
+                #response.json_data["sections"][session[:mark_scheme_section_index]]["marks_given"] = 0
+                #response.json_data["sections"][session[:mark_scheme_section_index]]["reason"] = "reason"
+
+            # TODO: ... milestone response stuff...
+            end
+
+            if !response.save
+                puts "TODO: Handle save failure for response...."
+            end
+
+
+        end
+
+
+        #render json: {status: "error", message: section["title"]}
+        #render json: {status: "success", redirect: facilitators_path}
+    end
+
     private
 
     def get_assigned_facilitators
@@ -167,7 +227,7 @@ class FacilitatorController < ApplicationController
 
         def get_progress_forms_for_group
             Milestone.select{
-                |m| m.json_data["name"] == "progress_form" && 
+                |m| m.system_type == "progress_form_deadline" && 
                 Date.parse(m.json_data["release_date"]) <= Date.today && # Only get released forms 
                 m.course_project_id == @current_group.course_project_id
             }

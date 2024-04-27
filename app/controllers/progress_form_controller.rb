@@ -117,16 +117,13 @@ class ProgressFormController < ApplicationController
         json_data: session[:new_progress_form],
         deadline: Date.current.strftime("%Y-%m-%d"),
         milestone_type: :team,
-        course_project_id: session[:current_project_id]
+        course_project_id: session[:current_project_id],
+        system_type: :progress_form_deadline
       )
     else
       milestone.json_data = session[:new_progress_form]
       milestone.deadline = Date.current.strftime("%Y-%m-%d") # TODO: What is this deadline?
     end
-    
-    # This is how we differentiate between the different things milestones are used for
-    # TODO: This should be done with a constant somewhere maybe or an enum?
-    milestone.json_data["name"] = "progress_form"
 
     # Handle save failure
     unless milestone.save
@@ -208,7 +205,7 @@ class ProgressFormController < ApplicationController
     def get_progress_forms_for_project
       # Helper for returning the correct milestones
       Milestone.select{
-        |m| m.json_data["name"] == "progress_form" && 
+        |m| m.system_type == "progress_form_deadline" && 
         m.course_project_id == session[:current_project_id]
       }
     end

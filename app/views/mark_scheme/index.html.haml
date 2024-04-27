@@ -1,7 +1,40 @@
-%h1 Mark Scheme Builder
+%h1 Mark Scheme for TODO:Current Project
 
-= link_to "New", "/mark_scheme/new"
-= link_to "Edit", "/mark_scheme/edit"
+
+
+// TODO: Style like moqup.
+%a.btn.btn-primary{type: "button", href: "/mark_scheme/new"}
+    %i.bi.bi-box-arrow-up-right
+    View/Edit Marking Document
+
+%hr.divider
+
+%h2 Assign facilitators to sections
+
+- unless @mark_scheme.nil?
+    - @mark_scheme["sections"].each_with_index do |section, i|
+        %h4= "Section #{i + 1}: #{section['title']}"
+
+        %table.table.table-bordered
+            %thead
+                %tr
+                    %th.bg-light Assessors
+                    %th.bg-light Teams
+            %tbody
+                %tr
+                    %td Oliver Pickford
+                    %td 1,2,3,4,5
+                %tr
+                    %td Oliver Pickford
+                    %td 1,2,3,4,5
+
+        %hr.divider
+
+        // TODO: If the search is not ready, could just use the search thing without multiple select actually..
+        // TODO: Table for: https://app.moqups.com/srCDKGHkIVEKabrYabQBYyOdCP69e3ax/edit/page/a9d9a3ee1 
+
+//= link_to "New", "/mark_scheme/new"
+//= link_to "Edit", "/mark_scheme/39/edit"
 
 // TODO: Need to be able to assign facilitators to the marking 
 //       Have it so the module lead uses the modal person search, adds a number of facilitators for a section, then the teams divided evenly between

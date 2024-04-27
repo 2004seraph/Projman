@@ -19,6 +19,7 @@
 
             .modal-footer
                 %button.btn.btn-primary{ type: "submit", id: "add-section-button"}= "Add"
+                
 
 %button.btn.btn-outline-primary.w-100{type: "button", id: "create-section-button", "data-bs-toggle": "modal", "data-bs-target": "#add-section-modal"}
     %i.bi.bi-plus-circle-fill
@@ -90,7 +91,7 @@
                 max_marks = element.value;
 
                 title = document.getElementById(`section-title-${section_index}`).innerHTML.trim()
-                description = document.getElementById(`description-textarea-${section_index}`).value.trim();
+                description = document.getElementById(`description-textarea-${section_index}`).textContent.trim();
                 sections.push({"title": title, "description": description, "max_marks": max_marks});
             });
 
@@ -116,6 +117,7 @@
             })
             .catch(error => console.error("Error when trying to save mark scheme:", error));
         });
+
         /*
         // Delete form events
         const deleteBtn = document.getElementById("delete-button");
