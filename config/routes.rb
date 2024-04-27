@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   mount EpiCas::Engine, at: "/"
 
-  root "page#index"
+  root "course_project#index"
 
   get '/profile', to: 'page#profile'
   get '/mailing', to: 'page#mailing'

@@ -3,27 +3,27 @@
 
 - if user_signed_in?
   %nav.feature-navbar
-    %ul.navbar-nav
-      %li.nav-item
-        = link_to modules_url, class: 'btn btn-light' do
-          Modules
     .vertical-divider
     %ul.navbar-nav
+      - if current_user.is_staff?
+        %li.nav-item
+          = link_to modules_url, class: 'btn btn-light' do
+            Modules
+      - if current_user.is_staff?      
+        %li.nav-item
+          = link_to students_url, class: 'btn btn-light' do
+            Students
       %li.nav-item
         = link_to projects_url, class: 'btn btn-light' do
           Projects
       %li.nav-item
-        = link_to students_url, class: 'btn btn-light' do
-          Students
-      %li.nav-item
         = link_to issues_url, class: 'btn btn-light' do
           Issues
-    .vertical-divider
-    %ul.navbar-nav
-      %li.nav-item
-        = link_to facilitators_url, class: 'btn btn-light' do
-          Facilitator
-      
+      - if current_user.is_facilitator?
+        %li.nav-item
+          = link_to facilitators_url, class: 'btn btn-light' do
+            Facilitator
+    
       %li.nav-item
         = link_to '/progress_form', class: 'btn btn-light' do
           Temp progress form
