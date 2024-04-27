@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     post 'toggle_project_choices', on: :collection
     get 'search_facilitators', on: :collection
     get 'get_milestone_data', on: :collection
+    get 'remove_milestone_email', on: :collection
     post 'set_milestone_email_data', on: :collection
     post 'set_milestone_comment', on: :collection
     get 'search_facilitators_student', on: :collection

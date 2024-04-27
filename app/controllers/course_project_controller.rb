@@ -69,9 +69,9 @@ class CourseProjectController < ApplicationController
             selected_team_allocation_mode: "",
             preferred_teammates: 2,
             avoided_teammates: 2,
-            project_milestones: [{"Name": "Project Deadline", "Date": "", "Type": "team", "isDeadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""},
-                                {"Name": "Teammate Preference Form Deadline", "Date": "", "Type": "student", "isDeadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""},
-                                {"Name": "Project Preference Form Deadline", "Date": "", "Type": "team", "isDeadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""}],
+            project_milestones: [{"Name": "Project Deadline", "Date": "", "Type": "team", "isDeadline": true, "Comment": ""},
+                                {"Name": "Teammate Preference Form Deadline", "Date": "", "Type": "student", "isDeadline": true, "Comment": ""},
+                                {"Name": "Project Preference Form Deadline", "Date": "", "Type": "team", "isDeadline": true, "Comment": ""}],
             project_facilitators: [],
 
             facilitator_selection: [],
@@ -117,7 +117,12 @@ class CourseProjectController < ApplicationController
             parsed_date = Date.strptime(date_string, "%Y-%m-%d").strftime("%d/%m/%Y")
             milestone_type = milestone_data[:milestone_type]
             json_data = milestone_data[:json_data]
-            milestone = {"Name": json_data["Name"], "Date": parsed_date, "Type": milestone_type, "isDeadline": json_data["isDeadline"], "Email": json_data["Email"], "Comment": json_data["Comment"]}
+            milestone = {
+                "Name": json_data["Name"],
+                "Date": parsed_date,"Type": milestone_type,
+                "isDeadline": json_data["isDeadline"],
+                "Comment": json_data["Comment"]}
+            milestone["Email"] = json_data["Email"] if json_data.key?("Email")
             project_milestones_parsed << milestone
         end
         # add preference form milestones, if missing. (they arent pushed if they dont apply at the time)
@@ -127,12 +132,12 @@ class CourseProjectController < ApplicationController
         if milestone = project_milestones_parsed.find { |m| m[:Name] == "Teammate Preference Form Deadline" }
             team_pref_deadline = milestone[:Date]
         else
-            project_milestones_parsed << {"Name": "Teammate Preference Form Deadline", "Date": "", "Type": "student", "isDeadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""}
+            project_milestones_parsed << {"Name": "Teammate Preference Form Deadline", "Date": "", "Type": "student", "isDeadline": true, "Comment": ""}
         end
         if milestone = project_milestones_parsed.find { |m| m[:Name] == "Project Preference Form Deadline" }
             proj_pref_deadline = milestone[:Date]
         else
-            project_milestones_parsed << {"Name": "Project Preference Form Deadline", "Date": "", "Type": "team", "isDeadline": true, "Email": {"Content": "", "Advance": ""}, "Comment": ""}
+            project_milestones_parsed << {"Name": "Project Preference Form Deadline", "Date": "", "Type": "team", "isDeadline": true, "Comment": ""}
         end
 
         session[:project_data] = {
@@ -193,7 +198,7 @@ class CourseProjectController < ApplicationController
         @project_milestone_name.gsub('_', ' ')
         project_milestone_unique = false
         unless session[:project_data][:project_milestones].any? { |milestone| milestone[:Name] == @project_milestone_name }
-            session[:project_data][:project_milestones] << {"Name": @project_milestone_name, "Date": "", "Type": "", "isDeadline": false, "Email": {"Content": "", "Advance": ""}, "Comment": ""}
+            session[:project_data][:project_milestones] << {"Name": @project_milestone_name, "Date": "", "Type": "", "isDeadline": false, "Comment": ""}
             project_milestone_unique = true
         end
         if request.xhr?
@@ -289,11 +294,27 @@ class CourseProjectController < ApplicationController
         end
     end
 
+    def remove_milestone_email
+        puts "called to removed milestone emial"
+        milestone_name = params[:milestone_name].split('_').drop(1).join('_')
+        milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
+        if milestone.key?("Email")
+            puts "remvoing.."
+            milestone.delete("Email")
+        end
+    end
+
     def set_milestone_email_data
         milestone_name = params[:milestone_name].split('_').drop(1).join('_')
         milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
-        milestone[:Email][:Content] = params[:milestone_email_content]
-        milestone[:Email][:Advance] = params[:milestone_email_advance]
+
+        # Does it have an email field in the json?
+        if milestone.key?(:Email)
+            milestone[:Email][:Content] = params[:milestone_email_content]
+            milestone[:Email][:Advance] = params[:milestone_email_advance]
+        else
+            milestone[:Email] = {"Content": params[:milestone_email_content], "Advance": params[:milestone_email_advance]}
+        end
     end
 
     def set_milestone_comment
@@ -489,9 +510,9 @@ class CourseProjectController < ApplicationController
                 json_data = {
                     "Name" => milestone_data[:Name],
                     "isDeadline" => milestone_data[:isDeadline],
-                    "Email" => milestone_data[:Email],
                     "Comment" => milestone_data[:Comment]
                 }
+                json_data["Email"] = milestone_data[:Email] if milestone_data.key?(:Email)
 
                 milestone = Milestone.new(
                     json_data: json_data,
@@ -808,9 +829,9 @@ class CourseProjectController < ApplicationController
                 milestone.json_data = {
                     "Name" => milestone_name,
                     "isDeadline" => milestone_data[:isDeadline],
-                    "Email" => milestone_data[:Email],
                     "Comment" => milestone_data[:Comment]
                 }
+                milestone.json_data["Email"] = milestone_data[:Email] if milestone_data.key?(:Email)
                 date_string = milestone_data[:Date]
                 parsed_date = Date.strptime(date_string, "%d/%m/%Y").strftime("%Y-%m-%d")
                 milestone.deadline = parsed_date
@@ -851,9 +872,9 @@ class CourseProjectController < ApplicationController
                 json_data = {
                     "Name" => milestone_data[:Name],
                     "isDeadline" => milestone_data[:isDeadline],
-                    "Email" => milestone_data[:Email],
                     "Comment" => milestone_data[:Comment]
                 }
+                json_data["Email"] = milestone_data[:Email] if milestone_data.key?(:Email)
 
                 milestone = Milestone.new(
                     json_data: json_data,
