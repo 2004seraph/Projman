@@ -33,11 +33,8 @@ class MarkSchemeController < ApplicationController
   end
 
     def add_section
-        # TODO: Section title's can be primary keys?
-
-
         # Facilitators would be a list of the facilitator emails and then the marking is split evenly. 
-        section = {title: params[:section_title], description: "", max_marks: 0, facilitators: {}}
+        section = {title: params[:section_title], description: "", max_marks: 0}
         session[:mark_scheme]["sections"] << hash_to_json(section)
         
         # Render a new section, if i re-rendered the whole mark scheme, it would reset the textareas and inputs.
@@ -45,26 +42,27 @@ class MarkSchemeController < ApplicationController
             section_index: session[:mark_scheme]["sections"].length - 1, 
             section_title: params[:section_title], 
             section_description: "",
-            section_facilitators: {},
             max_marks: 0}
     end
 
-  def delete_section
-      # TODO: Can we just provide the section index from the js?
-      target_index = -1 
-      session[:mark_scheme]["sections"].each_with_index do |section, i|
-          if section["title"] == params[:section_title]
-              target_index = i
-              next
-          end
-      end
+    def delete_section
+        # Find the section with the matching title and remove it
+        target_index = -1
+        session[:mark_scheme]["sections"].each_with_index do |section, i|
+            if params["section_title"] == section["title"]
+                target_index = i
+                next
+            end
+        end
 
-      unless target_index == -1
-          return render json: {status: "success"}
-      end
+        if target_index == -1
+            return render json: {status: "error", message: "Failed to find matching section to remove."}
+        end
 
-      render json: {status: "error", message: "Failed to find matching section to remove."}
-  end
+        session[:mark_scheme]["sections"].delete_at(target_index)
+
+        return render json: {status: "success"}
+    end
 
   def save
     # NOTE: Everything is taken from the inputs, the session is only used for rendering stuff.
@@ -93,13 +91,12 @@ class MarkSchemeController < ApplicationController
 
     milestone = get_mark_scheme
 
-    # TEMP: Facilitator id as just me, i MUST figure out how to do the assigning
-    #facilitators = AssignedFacilitator.select{|af| af.course_project_id == session[:current_project_id]}.map{|af| af.get_email}.uniq
-
-    #params[:sections][0]["facilitators"] = facilitators
-
-    # TODO: Facilitators should actually be facilitator_id/email : teams see: https://app.moqups.com/srCDKGHkIVEKabrYabQBYyOdCP69e3ax/edit/page/a9d9a3ee1
-    session[:mark_scheme]["sections"] = hash_to_json(params[:sections])
+    # We must write the data like this, so we don't override facilitators.
+    params[:sections].each_with_index do |section, i|
+        session[:mark_scheme]["sections"][i]["title"] = section["title"]
+        session[:mark_scheme]["sections"][i]["description"] = section["description"]
+        session[:mark_scheme]["sections"][i]["max_marks"] = section["max_marks"]
+    end
 
     # Create or update milestone to represent the form
     if milestone.nil?
@@ -143,30 +140,154 @@ class MarkSchemeController < ApplicationController
     end
   
     def add_to_facilitators_selection
-        # TODO: How do i get the section here.....
-        puts "\n\n"
-        puts params + " yoyooyoyoyo"      
-        puts "\n\n"
+        # Section index is not a param in the confirm ajax, so set it here to use there.
+        session[:current_section_index] = params[:section_index]
+        
+        # Handle invalid email by just not adding to selected
+        if AssignedFacilitator.select{|f| f.course_project_id == session[:current_project_id] && 
+            f.get_email == params[:section_facilitator_email]}.first.nil?
+            return
+        end 
+
+        @facilitator_email = params[:section_facilitator_email]
+
+        if @facilitator_email.present?
+            if session[:facilitator_selection].nil?
+                session[:facilitator_selection] = [@facilitator_email]
+            else
+                session[:facilitator_selection] << @facilitator_email
+            end
+        end
+
+        if request.xhr?
+            respond_to do |format|
+                format.js
+            end
+        else
+            render :new
+        end
+    end
+
+    def add_facilitators_selection
+        section_index = session[:current_section_index].to_i
+
+        milestone = get_mark_scheme
+        mark_scheme = milestone.json_data
+
+        # Initialise facilitators if necessary
+        if mark_scheme["sections"][section_index]["facilitators"].nil?
+            mark_scheme["sections"][section_index]["facilitators"] = {}
+        end
+        
+        # Populate new facilitator emails into mark scheme milestone json data
+        session[:facilitator_selection].each do |facilitator|
+            unless mark_scheme["sections"][section_index]["facilitators"].include?(facilitator)
+                mark_scheme["sections"][section_index]["facilitators"][facilitator] = []
+            end
+        end
+
+        # Update the mark scheme
+        milestone.json_data = mark_scheme
+        unless milestone.save
+            puts "TODO: Failed to save mark scheme after add facilitators, must handle..."
+        end
+
+        # Re-render the view for assessors
+        @mark_scheme = milestone.json_data
+
+        if request.xhr?
+            respond_to do |format|
+                format.js
+            end
+        else
+            render :new
+        end
+    end
+
+    def remove_from_facilitator_selection
+        @facilitator_email = params[:item_text].strip
+        session[:facilitator_selection].delete(@facilitator_email)
     end
 
     def clear_facilitators_selection
-        # TODO: How do i get the section here.....
-        session[:mark_scheme][:sections][] = []
+        # This is called on first open of modal, would be nice to populate current selection and use this to edit only
+        # but for some reason, hidden fields are not included as params here.
+
+        # Reset facilitator selection
+        session[:facilitator_selection] = []
     end
 
-  
-  private
-      def hash_to_json(h)
-          # Helper to convert a hash to a json, useful so accessing the data is consistently by strings,
-          # like if it was loaded from the database. 
-          JSON.parse(h.to_json)
-      end
+    def remove_facilitator_from_section
+        mark_scheme = get_mark_scheme
+        mark_scheme.json_data["sections"][params[:section_index]]["facilitators"].delete(params[:email])
+        
+        unless mark_scheme.save
+            puts "TODO: Must handle mark scheme save error in remove_facilitator_from_section."
+        end
+        
+        render partial: "section_facilitators", locals: {mark_scheme: mark_scheme.json_data}
+    end
 
-      def get_mark_scheme
-          # Only one mark scheme per project 
-          # TODO: The enum doesn't seem to work, only works when used as string to compare.
-          Milestone.select{|m| m.system_type == "marking_deadline" &&
-              m.course_project_id == session[:current_project_id]}.first
-      end
+    def get_assignable_teams
+        groups = CourseProject.find(session[:current_project_id]).groups
+
+        mark_scheme = get_mark_scheme
+
+        section = mark_scheme.json_data["sections"][params[:section_index]]
+
+        # Save params for submit modal
+        session[:current_section_index] = params[:section_index]
+        session[:current_facilitator_email] = params[:email]
+
+        groups_to_show = {}
+        groups.each do |group|
+            groups_to_show[group.name] = {id: group.id, already_assigned: false}
+        end
+
+        section["facilitators"].each do |facilitator, team_ids|
+            team_ids.each do |team_id|
+                team = Group.find(team_id)
+                if facilitator == params[:email] 
+                    groups_to_show[team.name][:already_assigned] = true
+                else
+                    groups_to_show.delete(team.name)
+                end
+            end
+        end
+        
+        render json: {groups_to_show: groups_to_show.values}
+    end
+
+    def assign_teams
+        # Here we actually assign the selected teams from the modal to the chosen facilitator
+        section_index = session[:current_section_index].to_i
+
+        milestone = get_mark_scheme 
+        mark_scheme = milestone.json_data
+        mark_scheme["sections"][section_index]["facilitators"][session[:current_facilitator_email]] = params[:team_ids]
+
+        milestone.json_data = mark_scheme
+
+        unless milestone.save
+            puts "TODO: Handle not saving assign teams."
+        end
+        
+        # Rerender the section to update table row
+        render partial: "section_facilitators", locals: {mark_scheme: milestone.json_data}
+    end
+
+  private
+    def hash_to_json(h)
+        # Helper to convert a hash to a json, useful so accessing the data is consistently by strings,
+        # like if it was loaded from the database. 
+        JSON.parse(h.to_json)
+    end
+
+    def get_mark_scheme
+        # Only one mark scheme per project 
+        # TODO: The enum doesn't seem to work, only works when used as string to compare.
+        Milestone.select{|m| m.system_type == "marking_deadline" &&
+            m.course_project_id == session[:current_project_id]}.first
+    end
 
 end

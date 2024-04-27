@@ -14,14 +14,18 @@
       %th= "Marks Given (" + @section["max_marks"].to_s + " Available)"
       %th Reasoning and Feedback
   %tbody
-    %tr
-      %td A
-      %td.editable.onlynumeric{contenteditable: "true"} 5
-      %td.editable{contenteditable: "true"} Because you're amazing just the way you are.
-    %tr
-      %td B
-      %td.editable.onlynumeric{contenteditable: "true"} 4
-      %td.editable{contenteditable: "true"} Not quite so amazing.
+    - @assigned_teams.each do |team|
+      %tr
+        - response = @team_marks.select{|tm| tm.json_data["group_id"] == team.id}.first
+        - unless response.nil?
+          - data = response.json_data["sections"][@section["title"]]
+          - unless data.nil?
+            - marks = data["marks_given"]
+            - reason = data["reason"]
+
+        %td= team.name
+        %td.editable.onlynumeric.marks-input{id: "marks-input-#{team.id}", contenteditable: "true"}= marks
+        %td.editable{id: "reason-input-#{team.id}", contenteditable: "true"}= reason
 
 .modal.fade#markErrorModal{role: "dialog"}
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
@@ -92,6 +96,18 @@
         return;
       }
 
+      // Read marking from inputs
+      marking = {}
+      document.querySelectorAll(".marks-input").forEach(function(element) { 
+        id = element.id.replace("marks-input-", "");
+        
+        marks = element.innerHTML;
+        
+        reason = document.getElementById(`reason-input-${id}`).innerHTML;
+
+        marking[id] = [marks, reason];
+      });
+
       fetch("/facilitators/update_marking", {
         method: "POST",
         headers: {
@@ -99,7 +115,7 @@
           "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
         },
         body: JSON.stringify({ 
-          // TODO: FIll in stuff
+          marking: marking
         })
       })
       .then(response => response.json())
@@ -113,8 +129,6 @@
         }
       })
       .catch(error => console.error('Error when updating marking:', error));
-
-
 
     };
 

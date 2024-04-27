@@ -30,9 +30,9 @@
         %i.bi.bi-floppy
         Save
 
-    %button.btn.btn-danger.mt-2#delete-button{type: "button"}
+    %button.btn.btn-danger.mt-2#discard-button{type: "button"}
         %i.bi.bi-trash
-        Delete
+        Discard Changes
 
 :javascript
     document.addEventListener("DOMContentLoaded", function() {
@@ -68,7 +68,7 @@
             })
             .then(response => response.text())
             .then(html => {
-                const temp = document.createElement ("div");
+                const temp = document.createElement("div");
                 temp.innerHTML = html.trim();
                 sectionsContainer.appendChild(temp);
                 
@@ -91,7 +91,7 @@
                 max_marks = element.value;
 
                 title = document.getElementById(`section-title-${section_index}`).innerHTML.trim()
-                description = document.getElementById(`description-textarea-${section_index}`).textContent.trim();
+                description = document.getElementById(`description-textarea-${section_index}`).value.trim();
                 sections.push({"title": title, "description": description, "max_marks": max_marks});
             });
 
@@ -118,31 +118,10 @@
             .catch(error => console.error("Error when trying to save mark scheme:", error));
         });
 
-        /*
+        
         // Delete form events
-        const deleteBtn = document.getElementById("delete-button");
-        deleteBtn.addEventListener("click", function(e) {
-        fetch("/progress_form/delete_form", {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
-            },
-            body: JSON.stringify({ 
-            "release_date": releaseDateInput.value,
-            })
-        })
-        .then(response => response.json())
-        .then(json => {
-            // Handle response
-            if (json["status"] == "success") {
-            window.location.href = json["redirect"];
-            }
-            else {
-            alert("Failed to delete progress form, if this error persists, please contact an admin.");
-            }
-        })
-        .catch(error => console.error("Error when trying to delete form:", error));
+        $("#discard-button").on("click", function() {
+            // Simple redirect
+            window.location.href = "#{mark_scheme_index_path}";
         });
-       */ 
     });
