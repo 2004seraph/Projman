@@ -990,7 +990,7 @@ class CourseProjectController < ApplicationController
                 #Project Choices Form
                 @show_proj_form = false
 
-                unless @current_project.project_allocation == 'random_project_allocation'
+                unless @current_project.project_allocation == 'random_project_allocation' || @current_project.project_allocation == nil 
                     @choices = @current_project.subprojects.pluck('name')
 
                     #Should the project choice form be shown
