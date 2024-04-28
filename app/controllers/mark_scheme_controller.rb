@@ -8,8 +8,10 @@ class MarkSchemeController < ApplicationController
 
     authorize! :read, @current_project
 
-    @mark_scheme = get_mark_scheme.json_data
-    
+    milestone = get_mark_scheme
+    unless milestone.nil?
+        @mark_scheme = milestone.json_data
+    end
   end
 
   def new

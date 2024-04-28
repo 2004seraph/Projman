@@ -67,7 +67,7 @@ oliver = Student.find_or_create_by({
   email: "opickford1@sheffield.ac.uk",
   fee_status: :home
 })
-DatabaseHelper.create_staff("opickford1@sheffield.ac.uk")
+#DatabaseHelper.create_staff("opickford1@sheffield.ac.uk")
 
 nahyan = Student.find_or_create_by({
   username: "acb21nk",
@@ -135,21 +135,6 @@ jakub.enroll_module "COM2004"
 adam.enroll_module "COM2004"
 oliver.enroll_module "COM2004"
 nahyan.enroll_module "COM2004"
-
-# Testing module for oliver
-DatabaseHelper.provision_module_class(
-  "COMOLIVER",
-  "Oliver's Project",
-  DatabaseHelper.create_staff("opickford1@sheffield.ac.uk"),
-  DatabaseHelper.change_class_module(robotics_class, "COMOLIVER")
-)
-sam.enroll_module "COMOLIVER"
-josh.enroll_module "COMOLIVER"
-jakub.enroll_module "COMOLIVER"
-adam.enroll_module "COMOLIVER"
-oliver.enroll_module "COMOLIVER"
-nahyan.enroll_module "COMOLIVER"
-
 
 puts ""
 

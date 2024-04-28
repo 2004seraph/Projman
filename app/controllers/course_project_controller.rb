@@ -1118,6 +1118,10 @@ class CourseProjectController < ApplicationController
 
             end
 
+            # Get mark scheme if created
+            @mark_scheme = Milestone.select{|m| m.system_type == "marking_deadline" &&
+                m.course_project_id == @current_project.id}.first            
+                
             #Render view
             render 'show_student'
         end
