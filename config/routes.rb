@@ -87,6 +87,7 @@ Rails.application.routes.draw do
     post "get_assignable_teams", on: :collection
     post "assign_teams", on: :collection
     get 'search_facilitators', on: :collection
+    post "show_new", on: :collection
 
   end
 

@@ -118,12 +118,14 @@ class ProgressFormController < ApplicationController
         deadline: Date.current.strftime("%Y-%m-%d"),
         milestone_type: :team,
         course_project_id: session[:current_project_id],
-        system_type: :progress_form_deadline
+        #system_type: :progress_form_deadline TODO: This was removed for some reason?
       )
     else
       milestone.json_data = session[:new_progress_form]
       milestone.deadline = Date.current.strftime("%Y-%m-%d") # TODO: What is this deadline?
     end
+
+    milestone.json_data["name"] = "progress_form" # TODO: Temp, determining what is a progress form.
 
     # Handle save failure
     unless milestone.save
@@ -204,8 +206,13 @@ class ProgressFormController < ApplicationController
   private
     def get_progress_forms_for_project
       # Helper for returning the correct milestones
+      #Milestone.select{
+      #  |m| m.system_type == "progress_form_deadline" && 
+      #  m.course_project_id == session[:current_project_id]
+      #}
+
       Milestone.select{
-        |m| m.system_type == "progress_form_deadline" && 
+        |m| m.json_data["name"] == "progress_form" && 
         m.course_project_id == session[:current_project_id]
       }
     end

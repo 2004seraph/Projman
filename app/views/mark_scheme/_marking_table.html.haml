@@ -1,0 +1,30 @@
+%table.table.table-bordered#markingTable
+    %thead
+        %tr
+            %th Section
+            %th Marks Given
+            %th Maximum Marks
+            %th Reasoning
+
+    %tbody
+        - marks_given_sum = 0
+        - max_marks_sum = 0
+        - unless @mark_scheme.nil?
+            - @mark_scheme.json_data["sections"].each do |section|
+                %tr
+                    - unless @marks.nil?
+                        - results = @marks.json_data["sections"][section["title"]]
+                        - unless results.nil?
+                            - marks_given = results["marks_given"]
+                            - reason = results["reason"]
+                            - marks_given_sum += marks_given.to_i
+
+                    - max_marks = section["max_marks"]
+                    - max_marks_sum += max_marks.to_i
+
+                    %td= section["title"]
+                    %td= marks_given
+                    %td= max_marks
+                    %td= reason
+
+%h5= "Total Marks: #{marks_given_sum}/#{max_marks_sum}"

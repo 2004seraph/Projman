@@ -276,6 +276,24 @@ class MarkSchemeController < ApplicationController
         render partial: "section_facilitators", locals: {mark_scheme: milestone.json_data}
     end
 
+    def show
+        @current_project = CourseProject.find(session[:current_project_id])
+        @mark_scheme = get_mark_scheme
+    end
+
+    def show_new 
+        @current_project = CourseProject.find(session[:current_project_id])
+        
+        group = @current_project.groups.find_by(name: params[:group_name])
+        @mark_scheme = get_mark_scheme
+        
+        unless group.nil?    
+            @marks = @mark_scheme.milestone_responses.select{|ms| ms.json_data["group_id"] == group.id}.first
+        end
+        
+        render partial: "marking_table"
+    end
+
   private
     def hash_to_json(h)
         # Helper to convert a hash to a json, useful so accessing the data is consistently by strings,

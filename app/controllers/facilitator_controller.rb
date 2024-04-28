@@ -81,7 +81,6 @@ class FacilitatorController < ApplicationController
 
         mark_scheme = Milestone.find(params[:milestone_id].to_i)
         
-        
         @section = mark_scheme.json_data["sections"][params[:section_index].to_i]
         @mark_scheme_project = CourseProject.find(mark_scheme.course_project_id) 
 
@@ -240,8 +239,14 @@ class FacilitatorController < ApplicationController
         end
 
         def get_progress_forms_for_group
+            #Milestone.select{
+            #    |m| m.system_type == "progress_form_deadline" && 
+            #    Date.parse(m.json_data["release_date"]) <= Date.today && # Only get released forms 
+            #    m.course_project_id == @current_group.course_project_id
+            #}
+
             Milestone.select{
-                |m| m.system_type == "progress_form_deadline" && 
+                |m| m.json_data["name"] == "progress_form" && 
                 Date.parse(m.json_data["release_date"]) <= Date.today && # Only get released forms 
                 m.course_project_id == @current_group.course_project_id
             }
