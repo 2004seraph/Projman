@@ -343,8 +343,8 @@ class CourseProjectController < ApplicationController
         project_data[:selected_project_allocation_mode] = params[:project_allocation_method]
         errors[:project_choices] = []
 
-        if !project_data[:project_choices].present? && project_data[:project_choices_enabled]
-            errors[:project_choices] << "Add some project choices, or disable this section"
+        if !(project_data[:project_choices].size > 1) && project_data[:project_choices_enabled]
+            errors[:project_choices] << "Add at least 2 project choices, or disable this section"
         end
 
         # Team Config
@@ -588,8 +588,6 @@ class CourseProjectController < ApplicationController
 
             if project_data[:selected_team_allocation_mode] == "random_team_allocation"
                 students_grouped = DatabaseHelper.random_group_allocation(team_size, module_students)
-            elsif project_data[:selected_team_allocation_mode] == "preference_form_based"
-                pass 
             end
 
             students_grouped.each do |student_subarray|
@@ -654,8 +652,8 @@ class CourseProjectController < ApplicationController
         project_data[:selected_project_allocation_mode] = params[:project_allocation_method]
         errors[:project_choices] = []
 
-        if !project_data[:project_choices].present? && project_data[:project_choices_enabled]
-            errors[:project_choices] << "Add some project choices, or disable this section"
+        if !(project_data[:project_choices].size > 1) && project_data[:project_choices_enabled]
+            errors[:project_choices] << "Add at least 2 project choices, or disable this section"
         end
 
         # Team Config
@@ -981,13 +979,7 @@ class CourseProjectController < ApplicationController
                 team_count = 0
 
                 # Run sorting algorithm for student groups
-                students_grouped = []
-
-                if project_data[:selected_team_allocation_mode] == "random_team_allocation"
-                    students_grouped = DatabaseHelper.random_group_allocation(team_size, module_students)
-                elsif project_data[:selected_team_allocation_mode] == "preference_form_based"
-                    pass 
-                end
+                students_grouped = DatabaseHelper.random_group_allocation(team_size, module_students)
 
                 students_grouped.each do |student_subarray|
 

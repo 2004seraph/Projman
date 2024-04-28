@@ -168,7 +168,7 @@ class CourseProject < ApplicationRecord
 
     errors.add(:team_pref, 'Invalid preferred teammates entry') if preferred_teammates.nil?
     errors.add(:team_pref, 'Invalid avoided teammates entry') if avoided_teammates.nil?
-    if !errors[:team_pref].present? && team_allocation == 'preferenced_team_allocation' && (preferred_teammates + avoided_teammates == 0)
+    if !errors[:team_pref].present? && team_allocation == 'preference_form_based' && (preferred_teammates + avoided_teammates == 0)
       errors.add(:team_pref, 'Preferred and Avoided teammates cannot both be 0')
     end
   end
