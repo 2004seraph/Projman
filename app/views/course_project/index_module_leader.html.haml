@@ -4,6 +4,30 @@
 -#  Students see their projects and any alert markers
 -#  Module Leaders see projects divided by their status
 
+.seperating-section
+    %h2
+        Activity Feed
+    %hr.divider
+
+    .container
+        .row
+            .scrollable
+                - @projects.each do |project|
+                    - project.milestones.each do |milestone|
+                        .card
+                            .card-body
+                                %h5.card-title= "#{milestone.course_module.code} #{milestone.course_project.name} - #{milestone.json_data["Name"]}"
+                                %p.card-text
+                                %strong Due in:
+                                = "#{(milestone.deadline - DateTime.now).to_i} days"
+                                %br
+                                %strong Type:
+                                = milestone.milestone_type
+                                %br
+                                - if milestone.json_data["Comment"].length > 0
+                                    %strong Comment:
+                                    = milestone.json_data["Comment"]
+
 .separating-section
     %h2
         Your Projects
