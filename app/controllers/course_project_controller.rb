@@ -575,7 +575,7 @@ class CourseProjectController < ApplicationController
         end
         no_errors = errors.all? { |_, v| v.empty? }
 
-        # Creating groups (currently just puts everyone in groups of X size, no randomness or preference)
+        # Creating groups
         if no_errors
             module_students = CourseModule.find_by(code: project_data[:selected_module]).students
             team_size = project_data[:team_size].to_i
@@ -583,7 +583,16 @@ class CourseProjectController < ApplicationController
             current_group = nil
             team_count = 0
 
-            module_students.each_slice(team_size) do |students_slice|
+            # Run sorting algorithm for student groups
+            students_grouped = []
+
+            if project_data[:selected_team_allocation_mode] == "random_team_allocation"
+                students_grouped = DatabaseHelper.random_group_allocation(team_size, module_students)
+            elsif project_data[:selected_team_allocation_mode] == "preference_form_based"
+                pass 
+            end
+
+            students_grouped.each do |student_subarray|
 
                 # Create a new group for each slice of students
                 current_group = Group.new
@@ -592,8 +601,8 @@ class CourseProjectController < ApplicationController
                 current_group.course_project_id = new_project.id
 
                 # Add students to the current group
-                students_slice.each do |student|
-                current_group.students << student
+                student_subarray.each do |student|
+                    current_group.students << student
                 end
 
                 # Add the current group to the list of groups
@@ -720,6 +729,11 @@ class CourseProjectController < ApplicationController
         no_errors = errors.all? { |_, v| v.empty? }
 
         project = CourseProject.find(params[:id])
+
+        initial_module = project.course_module_id
+        initial_team_size = project.team_size
+        initial_team_allocation = project.team_allocation
+
         # Update Project Details
         if project.update(
             course_module: CourseModule.find_by(code: project_data[:selected_module]),
@@ -816,7 +830,9 @@ class CourseProjectController < ApplicationController
 
             # find milestones to update: they exist in the edit session and in the db
             milestones_to_update = existing_milestones.select do |milestone|
-                session_milestone_names.include?(milestone.json_data["Name"])
+                # this additional check is done because to not include system milestones where their date is unset to mark that they shouldnt be pushed
+                session_milestone = project_data[:project_milestones].find { |m| m[:Name] == milestone.json_data["Name"] }
+                session_milestone && session_milestone[:Date].present?
             end
 
             milestones_to_delete.each(&:destroy)
@@ -949,9 +965,65 @@ class CourseProjectController < ApplicationController
         end
         no_errors = errors.all? { |_, v| v.empty? }
 
-        # remake groups if module changes
-        # remake groups if team size changes, and set to random
-        # remake groups if mode is changed from not random to random
+        # remake groups if:
+        # mode changed to random
+        # or if mode is random, and team size or module changes
+        if no_errors
+            if (project.team_allocation != initial_team_allocation && project.team_allocation == "random_team_allocation") || 
+                ( project.team_allocation == "random_team_allocation" && (project.team_size != initial_team_size || project.course_module_id != initial_module))
+
+                project.groups.destroy_all
+
+                module_students = CourseModule.find_by(code: project_data[:selected_module]).students
+                team_size = project_data[:team_size].to_i
+                groups = []
+                current_group = nil
+                team_count = 0
+
+                # Run sorting algorithm for student groups
+                students_grouped = []
+
+                if project_data[:selected_team_allocation_mode] == "random_team_allocation"
+                    students_grouped = DatabaseHelper.random_group_allocation(team_size, module_students)
+                elsif project_data[:selected_team_allocation_mode] == "preference_form_based"
+                    pass 
+                end
+
+                students_grouped.each do |student_subarray|
+
+                    # Create a new group for each slice of students
+                    current_group = Group.new
+                    team_count += 1
+                    current_group.name = "Team " + team_count.to_s
+                    current_group.course_project_id = project.id
+
+                    # Add students to the current group
+                    student_subarray.each do |student|
+                        current_group.students << student
+                    end
+
+                    # Add the current group to the list of groups
+                    groups << current_group
+                end
+
+                # Save each group using save!
+                groups.each do |group|
+                    if group.valid?
+                        group.save
+                    else
+                        new_project.destroy
+                        group.errors.messages.each do |attribute, messages|
+                            messages.each do |message|
+                            unless errors[:main].include?("Group error: #{attribute} : #{message}")
+                                errors[:main] << "Group error: #{attribute} : #{message}"
+                            end
+                            end
+                        end
+                    end
+                end
+
+            end
+        end
 
         if no_errors
             flash[:notice] = "Project has been updated successfully"

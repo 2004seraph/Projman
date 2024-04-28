@@ -87,19 +87,6 @@ module DatabaseHelper
     end
     return lookup.lookup[:sn][0]
   end
-
-  private
-
-  def ldap_lookup(student)
-    # WARNING, LDAP IS INCREDIBLY SLOW TO QUERY
-    un =
-      if student.kind_of?(String)
-        student
-      elsif student.kind_of?(Student)
-        student.username
-      end
-    return un, SheffieldLdapLookup::LdapFinder.new(un)
-  end
   
   ##
   # Takes a list of students, splits them into the given group size randomly 
@@ -199,6 +186,19 @@ module DatabaseHelper
   # and returns the 2-D array of groups.
   def preference_form_group_allocation(team_size, student_list, pref_form_milestone)
   
+  end
+
+  private
+
+  def ldap_lookup(student)
+    # WARNING, LDAP IS INCREDIBLY SLOW TO QUERY
+    un =
+      if student.kind_of?(String)
+        student
+      elsif student.kind_of?(Student)
+        student.username
+      end
+    return un, SheffieldLdapLookup::LdapFinder.new(un)
   end
 
 end
