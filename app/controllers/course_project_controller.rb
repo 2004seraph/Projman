@@ -156,7 +156,7 @@ class CourseProjectController < ApplicationController
             preferred_teammates: project[:preferred_teammates],
             avoided_teammates: project[:avoided_teammates],
             project_milestones: project_milestones_parsed,
-            project_deadline: project_deadline, 
+            project_deadline: project_deadline,
             teammate_preference_form_deadline: team_pref_deadline,
             project_preference_form_deadline: proj_pref_deadline,
 
@@ -749,7 +749,7 @@ class CourseProjectController < ApplicationController
                 end
             end
         end
-        
+
         no_errors = errors.all? { |_, v| v.empty? }
 
         # destroy all subprojects if project choices disabled,
@@ -806,7 +806,7 @@ class CourseProjectController < ApplicationController
             end
         end
 
-        
+
         # create any system milestones if they are needed and missing
         # Update existing system milestones
         # destroy any milestones that have been removed
@@ -967,7 +967,7 @@ class CourseProjectController < ApplicationController
         # mode changed to random
         # or if mode is random, and team size or module changes
         if no_errors
-            if (project.team_allocation != initial_team_allocation && project.team_allocation == "random_team_allocation") || 
+            if (project.team_allocation != initial_team_allocation && project.team_allocation == "random_team_allocation") ||
                 ( project.team_allocation == "random_team_allocation" && (project.team_size != initial_team_size || project.course_module_id != initial_module))
 
                 project.groups.destroy_all
@@ -1065,26 +1065,28 @@ class CourseProjectController < ApplicationController
             end
 
             #Get group-dependent project information
-            if current_user.student.groups.find_by(course_project_id: @current_project.id).nil?
+            if current_user.student.groups.find_by(course_project: @current_project).nil?
                 @show_group_information = false
             else
                 @show_group_information = true
-                group = current_user.student.groups.find_by(course_project_id: @current_project.id)
+                group = current_user.student.groups.find_by(course_project: @current_project)
                 @group_name = group.name
 
                 #Project Choices Form
                 @show_proj_form = false
 
-                unless @current_project.project_allocation == 'random_project_allocation' || @current_project.project_allocation == nil 
+                unless @current_project.project_allocation == 'random_project_allocation' || @current_project.project_allocation == nil
                     @choices = @current_project.subprojects.pluck('name')
 
                     #Should the project choice form be shown
-                    personal_response = MilestoneResponse.where(milestone_id: @proj_choices_form.id, student_id: current_user.student.id).empty?
+                    personal_response = MilestoneResponse.where(
+                        milestone: @proj_choices_form,
+                        student: current_user.student).empty?
 
                     group_response = true
                     if @current_project.project_allocation == 'single_preference_project_allocation'
                         group.students.each do |teammate|
-                            unless MilestoneResponse.where(milestone_id: @proj_choices_form.id, student_id: teammate.id).empty?
+                            unless MilestoneResponse.where(milestone: @proj_choices_form, student: teammate).empty?
                                 group_response = false
                             end
                         end
