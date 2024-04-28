@@ -20,7 +20,7 @@ describe 'Preference Form Submission' do
             CourseProject.find_or_create_by({
                 course_module: CourseModule.find_by(code: "COM9999"),
                 name: "Test Project 1",
-                project_allocation: :random_project_allocation,
+                project_allocation: :single_preference_project_allocation,
                 status: :awaiting_student_preferences,
                 team_allocation: :random_team_allocation,
                 team_size: 8

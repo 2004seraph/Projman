@@ -1,0 +1,10 @@
+%p You have an upcoming event for #{@project.name}
+%p Module: #{@project.course_module.code}
+%p Due on: #{@date}
+
+%hr
+
+%p #{@milestone_name} in #{@time_remaining}
+%p #{@milestone_comment}
+
+%a{ href: @url } Go to project

@@ -37,16 +37,14 @@ class CourseProject < ApplicationRecord
   enum :status, {
     draft: 'draft',
     student_preference: 'student_preference',
-    student_preference_review: 'student_preference_review',
     team_preference: 'team_preference',
-    team_preference_review: 'team_preference_review',
     live: 'live',
     completed: 'completed',
     archived: 'archived'
   }
 
   enum :project_allocation, {
-    random_project_allocation: 'random',
+    # random_project_allocation: 'random',
     single_preference_project_allocation: 'single_preference_submission',
     team_preference_project_allocation: 'team_average_preference'
   }
@@ -99,7 +97,6 @@ class CourseProject < ApplicationRecord
 
     CourseProject.all.each do |c|
       if ![:draft, :completed, :archived].include? c.status
-
         if c.team_size == 1 or c.team_allocation == nil
           #individual project -> no group assignment
           if c.project_preference_deadline
@@ -109,7 +106,16 @@ class CourseProject < ApplicationRecord
           end
         else
           #group project -> group assignment needed, potentially also project assignment
-
+          if c.teammate_preference_deadline
+            if c.teammate_preference_deadline < DateTime.now
+              # make groups
+            end
+          end
+          if c.project_preference_deadline
+            if c.project_preference_deadline < DateTime.now
+              # assign projects to individuals, if not responded, use least popular project
+            end
+          end
         end
 
         c.milestones.all.each do |m|
@@ -121,7 +127,7 @@ class CourseProject < ApplicationRecord
           #   send email to relevent recipients, no actually
           #   [for_each_team] push deadline passed to event feed
           if !m.executed
-            if m.json_data["Email"]["Content"].length > 0
+            if m.json_data["Email"]#["Content"].length > 0
               if !m.json_data["Email"]["Sent"]
                 if m.deadline - str_to_int(m.json_data["Email"]["Advance"]) <= DateTime.now
                   m.json_data["Email"]["Sent"] = true
@@ -174,23 +180,23 @@ class CourseProject < ApplicationRecord
   end
 
   # automatic method generation to get each of the system milestone types by their enum value name on a project model
-  # def method_missing(method_name, *args, &block)
-  #   if method_name.to_s.end_with?("_deadline")
-  #     system_type = method_name
-  #     return find_milestone_by_system_type(system_type)
-  #   else
-  #     super
-  #   end
-  # end
-  # def respond_to_missing?(method_name, include_private = false)
-  #   method_name.to_s.end_with?("_deadline") || super
-  # end
-  # def find_milestone_by_system_type(system_type)
-  #   milestones.each do |m|
-  #     if m.system_type == system_type.to_s
-  #       return m
-  #     end
-  #   end
-  #   nil
-  # end
+  def method_missing(method_name, *args, &block)
+    if method_name.to_s.end_with?("_deadline")
+      system_type = method_name
+      return find_milestone_by_system_type(system_type)
+    else
+      super
+    end
+  end
+  def respond_to_missing?(method_name, include_private = false)
+    method_name.to_s.end_with?("_deadline") || super
+  end
+  def find_milestone_by_system_type(system_type)
+    milestones.each do |m|
+      if m.system_type == system_type.to_s
+        return m
+      end
+    end
+    nil
+  end
 end
