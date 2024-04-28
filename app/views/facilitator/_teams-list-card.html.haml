@@ -35,12 +35,11 @@
       %hr.divider
 
       %div#teams-display
-        - @assigned_facilitators.each do |facilitator|
-          - facilitator.groups.each do |group|
-            .navigation-list-item
-              = link_to facilitator_team_facilitators_path(team_id: group.id) do
-                %h6.p-1
-                  = "#{group.assigned_facilitator.course_project.name} - #{group.name}"
+        - @assigned_facilitators.flat_map(&:groups).sort_by(&:name).each do |group|
+          .navigation-list-item
+            = link_to facilitator_team_facilitators_path(team_id: group.id) do
+              %h6.p-1
+                = "#{group.assigned_facilitator.course_project.name} - #{group.name}"
 
   :javascript
     function update_team_list() {

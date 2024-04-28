@@ -1,24 +1,34 @@
-%h1 Section - Testing
-%h3 Description - There should be clear and strong evidence of comprehensive unit and system testing.
+%h1= @mark_scheme_project.name + " - " + @section["title"]
+%hr.divider
+%h3= "Description"
+%pre{style: "font-family: inherit;"}= @section["description"]
+
+
+%hr.divider
+- max_marks = @section["max_marks"]
 
 %table.table.table-bordered#markingTable
   %thead
     %tr
       %th Team
-      %th Marks Given (5 Available)
-      %th Reasoning and Feedback
+      %th= "Marks Given (" + @section["max_marks"].to_s + " Available)"
+      %th Reasoning
   %tbody
-    %tr
-      %td A
-      %td.editable.onlynumeric{contenteditable: "true"} 5
-      %td.editable{contenteditable: "true"} Because you're amazing just the way you are.
-    %tr
-      %td B
-      %td.editable.onlynumeric{contenteditable: "true"} 4
-      %td.editable{contenteditable: "true"} Not quite so amazing.
+    - @assigned_teams.each do |team|
+      %tr
+        - response = @team_marks.select{|tm| tm.json_data["group_id"] == team.id}.first
+        - unless response.nil?
+          - data = response.json_data["sections"][@section["title"]]
+          - unless data.nil?
+            - marks = data["marks_given"]
+            - reason = data["reason"]
+
+        %td= team.name
+        %td.editable.onlynumeric.marks-input{id: "marks-input-#{team.id}", contenteditable: "true"}= marks
+        %td.editable{id: "reason-input-#{team.id}", contenteditable: "true"}= reason
 
 .modal.fade#markErrorModal{role: "dialog"}
-  .modal-dialog
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
     .modal-content
       .modal-header
         %h4.modal-title Invalid Marks Given
@@ -29,27 +39,12 @@
       .modal-footer
         %button.btn.btn-default.close{type: "close", "aria-label" => "Close", "data-bs-dismiss" => "modal"} Close
 
-.modal.fade#confirmSaveModal{role: "dialog", tabindex: "-1",}
-  .modal-dialog
-    .modal-content
-      .modal-header
-        %h4.modal-title Are you sure you want to save?
-
-      .modal-body
-        %p Click confirm to save your marks and feedback.
-
-      .modal-footer
-        %button.btn.btn-primary{type: "button", "aria-label" => "Confirm", "data-bs-dismiss" => "modal"} Confirm
-        %button.btn.btn-secondary.close{type: "close", "aria-label" => "Close", "data-bs-dismiss" => "modal"} Close
-
-
-
 :javascript
   document.addEventListener('DOMContentLoaded', function() {
     var cells = document.querySelectorAll('#markingTable .editable.onlynumeric');
     let markErrorModal = document.getElementById("markErrorModal");
     let confirmSaveModal = document.getElementById("confirmSaveModal");
-    let MAX_MARKS_TEMP = 5;
+    let MAX_MARKS_TEMP = #{max_marks};
 
     cells.forEach(function(cell) {
       ["keypress", "keyup"].forEach(function(e) {
@@ -72,8 +67,7 @@
         // Alert the user if the cell exceeds the maximum marks
         if (Number(cell.innerHTML) > MAX_MARKS_TEMP) {
           cell.classList.add("bg-danger");
-          markErrorModal.classList.add('show');
-          markErrorModal.style.display = 'block';
+          $("#markErrorModal").modal("show");
         }
         else {
           cell.classList.remove("bg-danger");
@@ -82,9 +76,7 @@
     });
 
     document.getElementById("saveButton").onclick = function () {
-      // TEMP: Function for validating the max marks set (not sure if this is right or it should be done in ruby)
-      // But doesn't matter so much for now.
-      
+      // Validate marks on the client side as well as server side for better error display.
       let dataInvalid = false;
 
       // TODO: I think we should be submitting a form here, then the controller will validate it all?
@@ -98,28 +90,59 @@
           cell.classList.remove("bg-danger");
         }
       });
-
+  
       if (dataInvalid) {
-        markErrorModal.classList.add('show');
-        markErrorModal.style.display = 'block';
+        $("#markErrorModal").modal("show");
+        return;
       }
-      else {
+
+      // Read marking from inputs
+      marking = {}
+      document.querySelectorAll(".marks-input").forEach(function(element) { 
+        id = element.id.replace("marks-input-", "");
         
-        confirmSaveModal.classList.add('show');
-        confirmSaveModal.style.display = 'block';
-      }
+        marks = element.innerHTML;
+        
+        reason = document.getElementById(`reason-input-${id}`).innerHTML;
+
+        marking[id] = [marks, reason];
+      });
+
+      fetch("/facilitators/update_marking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+        },
+        body: JSON.stringify({ 
+          marking: marking
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data["status"] === "error") {
+          //alert("Something went wrong...");
+          alert(data["message"]);
+        }
+        else {
+          window.location.href = data["redirect"];
+        }
+      })
+      .catch(error => console.error('Error when updating marking:', error));
+
     };
 
-    // Let the close button close the modals (doesn't work without this when modal opened from js...?)
-    markErrorModal.querySelector(".close").addEventListener("click", function() {
-      markErrorModal.classList.remove("show");
-      markErrorModal.style.display = "none";
+
+    $("#markErrorModal").on("click", function(){
+      $("#markErrorModal").modal("hide");
     });
-    confirmSaveModal.querySelector(".close").addEventListener("click", function() {
-      confirmSaveModal.classList.remove("show");
-      confirmSaveModal.style.display = "none";
+
+    $("#cancelButton").on("click", function() {
+      // To cancel the changes, just redirect back.
+      // TODO: This could be done in the controller really...
+      window.location.href = "#{facilitators_path}";
     });
   });
 
-%button.btn.btn-primary#saveButton Save
-%button.btn.btn-primary.btn-sm.m-2{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#confirmSaveModal"} Test
+%button.btn.btn-success#saveButton Save
+%button.btn.btn-danger#cancelButton Cancel

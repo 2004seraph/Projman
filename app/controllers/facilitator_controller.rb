@@ -6,6 +6,11 @@ class FacilitatorController < ApplicationController
     def index
         @assigned_facilitators = get_assigned_facilitators
         set_assigned_projects
+
+        
+        # TODO: For now, just displaying all sections of all mark schemes
+        @mark_schemes = Milestone.select{|m| m.system_type == "marking_deadline"}
+
     end
 
     def update_teams_list
@@ -18,8 +23,6 @@ class FacilitatorController < ApplicationController
         else
             # I am assuming here that a facilitator will only be asked to facilitate for teams in projects
             # that they're already a facilitator for.
-
-            # TODO: Need to test
             facilitator_project_ids = get_assigned_facilitators.map{|x| x.course_project_id}
             @assigned_facilitators = AssignedFacilitator.where(course_project_id: facilitator_project_ids)
         end
@@ -75,6 +78,23 @@ class FacilitatorController < ApplicationController
 
     def marking_show
         authorize! :read, :facilitator
+
+        mark_scheme = Milestone.find(params[:milestone_id].to_i)
+        
+        @section = mark_scheme.json_data["sections"][params[:section_index].to_i]
+        @mark_scheme_project = CourseProject.find(mark_scheme.course_project_id) 
+
+        session[:mark_scheme_id] = mark_scheme.id
+        session[:mark_scheme_section_index] = params[:section_index].to_i
+
+        @assigned_teams = @section["facilitators"][current_user.email].map{|id| Group.find(id)}.sort_by(&:name)
+        
+        @assigned_teams_ids = @assigned_teams.flat_map(&:id)
+
+        # Load marking responses for teams
+        @team_marks = mark_scheme.milestone_responses.select{
+            |mr| @assigned_teams_ids.include?(mr.json_data["group_id"])
+        }
     end
 
     def team
@@ -133,6 +153,59 @@ class FacilitatorController < ApplicationController
         render json: { status: "success", redirect: facilitators_path(team_id: session[:team_id]) } 
     end
 
+    def update_marking
+        marking = params[:marking]
+        
+        mark_scheme = Milestone.find(session[:mark_scheme_id])
+        section = mark_scheme.json_data["sections"][session[:mark_scheme_section_index]]
+        
+        group_ids = section["facilitators"][current_user.email]
+
+        success = true
+        group_ids.each do |group_id|
+            group = Group.find(group_id)
+            
+            marks_given = marking[group_id.to_s][0]
+            reason = marking[group_id.to_s][1]
+
+            # Look for pre-existing marking for the group
+            response = mark_scheme.milestone_responses.select{|ms| ms.json_data["group_id"] == group.id}.first
+
+            if response.nil?
+                response = MilestoneResponse.new(
+                    json_data: {
+                        "sections": {
+                            section["title"] => {
+                                "marks_given" => marks_given,
+                                "reason" => reason
+                            }
+                        },
+                        "group_id": group.id
+                    },
+                    milestone_id: mark_scheme.id
+                )
+            else
+                # Using title as primary key for section as sections can be deleted.
+                if response.json_data["sections"][section["title"]].nil?
+                    response.json_data["sections"][section["title"]] = {}
+                end
+
+                response.json_data["sections"][section["title"]]["marks_given"] = marks_given
+                response.json_data["sections"][section["title"]]["reason"] = reason
+            end
+
+            if !response.save
+                success = false
+            end
+        end
+
+        if success
+            return render json: {status: "success", redirect: facilitators_path}
+        end
+
+        render json: {status: "error", message: "Failed to save marking."}
+    end
+
     private
 
     def get_assigned_facilitators
@@ -166,6 +239,12 @@ class FacilitatorController < ApplicationController
         end
 
         def get_progress_forms_for_group
+            #Milestone.select{
+            #    |m| m.system_type == "progress_form_deadline" && 
+            #    Date.parse(m.json_data["release_date"]) <= Date.today && # Only get released forms 
+            #    m.course_project_id == @current_group.course_project_id
+            #}
+
             Milestone.select{
                 |m| m.json_data["name"] == "progress_form" && 
                 Date.parse(m.json_data["release_date"]) <= Date.today && # Only get released forms 

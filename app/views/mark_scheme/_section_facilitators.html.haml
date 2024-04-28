@@ -1,0 +1,45 @@
+- unless mark_scheme.nil? 
+    - mark_scheme["sections"].each_with_index do |section, i|
+        %h4= "Section #{i + 1}: #{section['title']}"
+
+        %table.table.table-bordered
+            %thead
+                %tr
+                    %th.bg-light.d-flex.justify-content-between.align-items-baseline
+                        Assessors
+                        %i.bi.bi-plus.fs-4{
+                            type: "button", 
+                            id: "add-facilitator-to-section", 
+                            "data-bs-toggle": "modal",
+                            "data-bs-target": "#add-facilitator-to-section-modal", 
+                            onclick: "updateSectionIndex(#{i});"}
+
+                    %th.bg-light
+                        Teams
+            %tbody
+                - unless section["facilitators"].nil?
+                    - section["facilitators"].each do |email, teams|
+                        %tr
+                            %td
+                                .d-flex.justify-content-between.align-items-baseline
+                                    = email
+                                    %i.bi.bi-trash-fill{
+                                        type: "button", 
+                                        id: "remove-facilitator-from-section", 
+                                        onclick: "removeAssessor(#{i}, '#{email}');"}
+
+                            %td
+                                .d-flex.justify-content-between.align-items-baseline
+                                    = teams.nil? ? "" : teams.map{|id| Group.find(id).name}.join(", ")
+                                    %i.bi.bi-pencil-fill{
+                                        type: "button", 
+                                        id: "edit-facilitator-section-teams", 
+                                        "data-bs-toggle": "modal",
+                                        "data-bs-target": "#assign-teams-modal", 
+                                        onclick: "populateAssignTeams(#{i}, '#{email}')"}
+
+
+        %hr.divider
+
+        // TODO: If the search is not ready, could just use the search thing without multiple select actually..
+        // TODO: Table for: https://app.moqups.com/srCDKGHkIVEKabrYabQBYyOdCP69e3ax/edit/page/a9d9a3ee1 

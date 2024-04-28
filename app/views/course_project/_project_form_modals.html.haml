@@ -56,21 +56,31 @@
 
 
 -# MILESTONE EMAIL MODAL
-= render 'components/modal-text-area',
-  modal_id: 'milestone-email-modal',
-  title: 'Set Automatic Email',
-  prompt: 'Enter email content for an automatic email reminder, and set how many days before this deadline it should be sent.',
-  form_input_id: 'milestone-email-input',
-  form_input_name: 'milestone_email_content',
-  confirm_text: 'Save',
-  submission_url: set_milestone_email_data_projects_path,
-  confirm_onclick_function: "" do
-  %input{ type: "hidden", name: "milestone_name", value: "", class: "hidden-modal-value"}
-  .row.d-flex.align-items-center
-    .col-auto.fs-6
-      %label.form-label.mb-1{ for: "milestone-email-modal-advance-day-picker" } Days in advance of deadline to send automatic email:
-    .col-3.fs-6
-      %input.form-control{ id: "milestone-email-modal-advance-day-picker", name: "milestone_email_advance", type: "number", value: "7", min: "1" }
+.modal.fade{ id: "milestone-email-modal", tabindex: "-1", "aria-labelledby": "milestone-email-modal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      = form_with(url: set_milestone_email_data_projects_path, method: :post, local: false) do |form|
+        .modal-header
+          %h1.modal-title.fs-5= "Set Automatic Email"
+          %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+
+        .modal-body
+          .form-group.mb-2
+            = form.label "milestone-email-input", "Enter email content for an automatic email reminder, and set how many days before this deadline it should be sent.", class: "mb-2 fs-6"
+            = form.text_area "milestone_email_content", id: "milestone-email-input", class: "form-control fs-6", rows: "5", autocomplete: "off", required: "true", style: "resize:none"
+          %input{ type: "hidden", name: "milestone_name", value: "", class: "hidden-modal-value"}
+          .row.d-flex.align-items-center
+            .col-auto.fs-6
+              %label.form-label.mb-1{ for: "milestone-email-modal-advance-day-picker" } Days in advance of deadline to send automatic email:
+            .col-3.fs-6
+              %input.form-control{ id: "milestone-email-modal-advance-day-picker", name: "milestone_email_advance", type: "number", value: "7", min: "1" }
+
+        .modal-footer.d-flex.justify-content-between
+          %div
+            %button.btn.btn-outline-danger#milestone-email-remove-btn{ type: "button", "data-bs-dismiss": "modal"} Remove
+          %div
+            %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Close
+            %button.btn.btn-primary{ type: "submit", "data-bs-dismiss": "modal"} Save
 
 
 -# MILESTONE COMMENT MODAL

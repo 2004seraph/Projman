@@ -1,0 +1,4 @@
+- if @facilitator_email.present?
+    var newPartialHTML = "#{j(render(partial: 'components/group-item-simple', locals: { item_text: @facilitator_email, deletion_action_url: remove_from_facilitator_selection_mark_scheme_index_path}))}";
+    $("ul.list-group.list-group-flush", $(".modal.show")).append(newPartialHTML);
+    $("input.form-control.search-collection", $(".modal.show")).val('');

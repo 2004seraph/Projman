@@ -5,6 +5,7 @@ module DatabaseHelper
   NOTICE = "#{PREFIX} Notice:"
   WARNING = "#{PREFIX} Warning:"
   ERROR = "#{PREFIX} Error:"
+  TITLES = [["Mr"], ["Miss", "Ms", "Mrs"], ["Mx", "Dr", "Prof"]]  
 
   extend self
 
@@ -85,6 +86,106 @@ module DatabaseHelper
       return un
     end
     return lookup.lookup[:sn][0]
+  end
+  
+  ##
+  # Takes a list of students, splits them into the given group size randomly 
+  # and returns the 2-D array of groups.
+  def random_group_allocation(team_size, student_list)
+    
+    #Randomise students
+    shuffled_students = student_list.shuffle
+    num_teams = (student_list.size / team_size).floor 
+    
+    #Create correct size groups
+    teams = []
+    num_teams.times do
+      team = []
+      team_size.times do 
+        team << shuffled_students.pop
+      end
+      teams << team
+    end
+    
+    #Allocate remaining students (if any) to random groups
+    i = 0
+    while shuffled_students.any?
+      teams[i] << shuffled_students.pop 
+      i += 1
+    end
+    
+    return teams.shuffle
+    
+  end
+  
+  ##
+  # Takes a list of students, splits them into the given group size according to:
+  # - Gender
+  # - Domicile
+  # and returns the 2-D array of groups.
+  def random_with_heuristics_allocation(team_size, student_list)
+    return random_group_allocation(team_size, student_list) if team_size <= 3
+    
+    #Randomise students
+    shuffled_students = student_list.shuffle
+    num_teams = (student_list.size / team_size).floor 
+    
+    teams = []
+    num_teams.times do
+      team = []
+      while team.size < team_size
+        
+        if team.size.even?
+          #Add a random student
+          team << shuffled_students.pop
+          next
+        end
+        
+        previous_student = team.last
+        titles = TITLES.find { |specific_titles| specific_titles.include?(previous_student.title) }
+
+        #Add a full title and domicile match if found
+        full_matches = shuffled_students.select { |student| titles.include?(student.title) && student.fee_status == previous_student.fee_status }
+        unless full_matches.empty?
+          team << full_matches.first
+          shuffled_students.delete(full_matches.first)
+          next
+        end
+
+        #Add a half title and domicile match if found 
+        half_matches = shuffled_students.select { |student| titles.include?(student.title) || student.fee_status == previous_student.fee_status }
+        unless half_matches.empty?
+          team << half_matches.first
+          shuffled_students.delete(half_matches.first)
+          next
+        end
+
+        #Add another random student
+        team << shuffled_students.pop
+      end
+      teams << team
+    end
+
+    #Allocate remaining students (if any) to random groups
+    i = 0
+    while shuffled_students.any?
+      teams[i] << shuffled_students.pop 
+      i += 1
+    end
+
+    return teams.shuffle
+
+  end
+  
+  ##
+  # Takes a list of students, splits them into the given group size according to:
+  # - Preferred Teammates
+  # - Avoided Teammates
+  # - Gender
+  # - Domicile
+  # and returns the 2-D array of groups.
+  def preference_form_group_allocation(team_size, student_list, pref_form_milestone)
+  
   end
 
   private

@@ -1,0 +1,36 @@
+- if defined?(sections) && !sections.nil?
+    - sections.each_with_index do |section, i|
+        = render partial: "section", locals: {section_index: i, section_title: section["title"], section_description: section["description"], max_marks: section["max_marks"]}
+
+:javascript
+    document.addEventListener("DOMContentLoaded", function() {
+        // Listen for all clicks as the sections are loaded dynamically 
+        document.addEventListener("click", function(e) {
+            if (event.target.matches('.delete-section-button')) {
+                var section_index = event.target.id.replace("delete-section-", "");
+                
+                // Ajax to delete section
+                fetch("/mark_scheme/delete_section", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+                    },
+                    body: JSON.stringify({ 
+                        section_title: document.getElementById(`section-title-${section_index}`).innerHTML
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data["status"] === "success") {
+                        // If successfully removed on server side, remove from client view.
+                        document.getElementById(`mark-scheme-${section_index}`).remove();
+                    }
+                    else {
+                        alert("Failed to delete section from mark scheme!");
+                    }
+                })
+                .catch(error => console.error("Error when deleting progress form question:", error));
+            }
+        });
+    });

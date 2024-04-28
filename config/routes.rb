@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   mount EpiCas::Engine, at: "/"
 
-  root "page#index"
+  root "course_project#index"
 
   get '/profile', to: 'page#profile'
   get '/mailing', to: 'page#mailing'
@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     post 'toggle_project_choices', on: :collection
     get 'search_facilitators', on: :collection
     get 'get_milestone_data', on: :collection
+    get 'remove_milestone_email', on: :collection
     post 'set_milestone_email_data', on: :collection
     post 'set_milestone_comment', on: :collection
     get 'search_facilitators_student', on: :collection
@@ -53,21 +54,44 @@ Rails.application.routes.draw do
     get 'teams/:team_id/progress_form/:release_date', to: 'facilitator#progress_form', as: 'progress_form',
       on: :collection
 
-    get 'marking/:section_id', to: 'facilitator#marking_show', as: 'marking_show', on: :collection
+    get 'marking/:milestone_id/section/:section_index', to: 'facilitator#marking_show', as: 'marking_show', on: :collection
 
     # AJAX
     post '/update_teams_list' => 'facilitator#update_teams_list', on: :collection
     post '/update_progress_form_response' => 'facilitator#update_progress_form_response', on: :collection
+    post '/update_marking' => 'facilitator#update_marking', on: :collection
   end
 
   resources :progress_form, controller: :progress_form do
-     # Ajax, TODO: Refactor...?
+    # Ajax, TODO: Refactor...?
+    # TODO: If i get rid of leading / i think i can remove => action
     post '/add_question' => 'progress_form#add_question', on: :collection
     post '/delete_question' => 'progress_form#delete_question', on: :collection
     post '/save_form' => 'progress_form#save_form', on: :collection
     post '/delete_form' => 'progress_form#delete_form', on: :collection
     post '/show_new' => 'progress_form#show_new', on: :collection
   end
+
+  resources :mark_scheme, controller: :mark_scheme do
+    # Ajax, TODO: Refactor...?
+    post '/add_section' => 'mark_scheme#add_section', on: :collection
+    post '/delete_section' => 'mark_scheme#delete_section', on: :collection
+    post '/save' => 'mark_scheme#save', on: :collection
+
+
+    post 'add_to_facilitators_selection', on: :collection
+    post "add_facilitators_selection", on: :collection
+    post 'clear_facilitators_selection', on: :collection
+    post "remove_from_facilitator_selection", on: :collection
+    post "remove_facilitator_from_section", on: :collection
+    post "get_assignable_teams", on: :collection
+    post "assign_teams", on: :collection
+    get 'search_facilitators', on: :collection
+    post "show_new", on: :collection
+
+  end
+
+
 
   resources :modules, controller: :course_module do
   end

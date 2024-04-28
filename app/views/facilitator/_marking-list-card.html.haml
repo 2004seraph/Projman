@@ -5,18 +5,18 @@
    href: "##{unique_id}",
    role: "button",
    "data-accordion-toggle" => "",
-   "aria-expanded" => "false",
+   "aria-expanded" => "true",
    "aria-controls" => unique_id}
 
     %h2.fs-4.ml-2= "My Marking"
     %i.bi.bi-caret-right-fill
 
-  .collapse{id: unique_id}
+  .collapse.show{id: unique_id}
     .card-body
-      .navigation-list-item
-        = link_to marking_show_facilitators_path(section_id: 0) do
-          %h6.p-1= "Project A - Testing"
-
-      .navigation-list-item
-        = link_to marking_show_facilitators_path(section_id: 1) do
-          %h6.p-1= "Project B - Management"
+      - @mark_schemes.each do |ms|
+        - ms.json_data["sections"].each_with_index do |section, i|
+          - unless section["facilitators"].nil?
+            - if section["facilitators"].keys.include?(current_user.email)
+              .navigation-list-item
+                = link_to marking_show_facilitators_path(milestone_id: ms.id, section_index: i) do
+                  %h6.p-1= CourseProject.find(ms.course_project_id).name + " - " + section["title"]

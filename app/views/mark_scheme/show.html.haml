@@ -1,0 +1,64 @@
+
+
+.row.align-items-center
+    .col
+        %h1 Viewing Marks
+
+    .col-auto
+        .dropdown.d-inline-block
+            %button.btn.btn-primary{ 
+                type: "button", 
+                id: "team-selection-button", 
+                "data-bs-toggle": "dropdown", 
+                "aria-haspopup": "true", 
+                "aria-expanded": "false"}
+
+                %span#team-selection-label Team: None
+                %i.bi.bi-caret-down-fill
+                
+                // TODO: Hide teams when form has not been released?
+            .dropdown-menu{ "aria-labelledby": "team-selection-button" }
+                %a.dropdown-item{ onclick: "updateTeam('None')" }= "None"
+
+                %hr.dropdown-divider
+
+                // TODO: Only display the teams that have submitted a response?
+                - @current_project.groups.sort_by{|group| group.name }.each do |group|
+                    %a.dropdown-item{ onclick: "updateTeam('#{group.name}')" }= group.name
+
+%hr.divider
+
+- if @mark_scheme.nil?
+    %h5 No mark scheme for this project.
+
+- else
+    #marking-table-partial-container
+        = render partial: "marking_table", locals: {}
+
+:javascript
+    const teamLabel = document.getElementById("team-selection-label");
+
+    function updateMarkingTable() {
+        // Make an ajax request to get a new form partial
+        fetch("/mark_scheme/show_new", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+            },
+            body: JSON.stringify({ 
+                group_name: teamLabel.textContent.replace("Team: ", "")
+            })
+        })
+        .then(response => response.text())
+        .then(data => {
+            // Update partial container contents
+            document.getElementById("marking-table-partial-container").innerHTML = data;
+        })
+        .catch(error => console.error("Error when updating marking table partial:", error));
+    }
+
+    function updateTeam(selection) {
+        teamLabel.textContent = "Team: " + selection;
+        updateMarkingTable();
+    }

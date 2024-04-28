@@ -15,6 +15,8 @@
 -# submission_url
 -# on_open_action_url
 
+-# search_hidden_fields   hash like {"field_name" => "field_value"}, to pass to the search with dropdown component
+
 .modal.fade.search-multiple-modal{ id: modal_id, tabindex: "-1", "aria-labelledby": "#{modal_id}", "aria-hidden": "true", "data-allow-confirm-empty-input": "", "data-disallow-confirm-group-empty": "",
 "data-on-open-action": defined?(on_open_action_url) ? on_open_action_url : ''}
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
@@ -31,9 +33,12 @@
               = render 'components/search-with-dropdown',
                 form_input_id: form_input_id, 
                 form_input_name: form_input_name, 
-                data_search_autocomplete_method: defined?(autocomplete_method) ? autocomplete_method : ""
+                data_search_autocomplete_method: defined?(autocomplete_method) ? autocomplete_method : "",
+                hidden_fields: defined?(search_hidden_fields) ? search_hidden_fields : {}
               = form.button(type: "submit", class: "btn btn-outline-secondary") do
                 Add 
+
+              = yield
           %span= current_selection_text
           %ul.list-group.list-group-flush{id: list_group_id}
 

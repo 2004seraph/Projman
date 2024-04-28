@@ -79,6 +79,7 @@ class Ability
       :search_facilitators_student,
       :search_facilitators_staff,
       :get_milestone_data,
+      :remove_milestone_email,
       :set_milestone_email_data,
       :set_milestone_comment], CourseProject
     can [:read, :edit, :update], CourseProject, course_module: { staff_id: user.staff.id }

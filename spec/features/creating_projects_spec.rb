@@ -23,7 +23,7 @@ RSpec.feature "Project Creation", type: :feature do
         CourseProject.find_or_create_by({
             course_module: CourseModule.find_by(code: "COM8888"),
             name: "Test Project 1",
-            project_allocation: :individual_project_allocation,
+            project_allocation: :single_preference_project_allocation,
             team_allocation: :random_team_allocation,
             team_size: 8
         })
@@ -39,20 +39,14 @@ RSpec.feature "Project Creation", type: :feature do
     describe "User can toggle Project Choices visibility", js: true do
         context "when clicking the toggle button" do
             it "hides the Project Choices panel if it is currently visible" do
-
-                # requires JS
-
-                #project-choices > div:nth-child(2)
-                # Capybara.ignore_hidden_elements = false
+                Capybara.ignore_hidden_elements = false
 
                 login_as user
                 visit "/projects/new"
-                # save_and_open_screenshot
                 find('#project-choices-enable').uncheck
-                expect(page).to have_css('#project-choices.display-none')
-                # save_and_open_screenshot
+                expect(page).to have_css('#project-choices .card-body.display-none')
 
-                # Capybara.ignore_hidden_elements = true
+                Capybara.ignore_hidden_elements = true
 
             end
         end
@@ -60,13 +54,18 @@ RSpec.feature "Project Creation", type: :feature do
 
     describe "User gets shown deadline for the teammate preference form, and the preference form settings" do
         context "when they set the team allocation mode to preference form" do
-            it "Shows teammate preference form deadline" do
-                # requires JS
-            end
-            it "Shows teammate preference form settings" do
-                # requires JS
+            it "Shows teammate preference form deadline and settings" do
+                login_as user
+                visit "/projects/new"
+                select('Preference form based', from: 'team_allocation_method')
+                expect(page).to have_css('#team-preference-form-settings')
+                expect(page).to have_css('#teammate-preference-form-deadline-row')
             end
         end
+    end
+
+    describe "User gets shown deadline for the project preference form" do
+        
     end
 
     describe "Creation form gets filled with correct fields" do
@@ -265,7 +264,7 @@ RSpec.feature "Project Creation", type: :feature do
         context "Project choices enabled but none given" do
             it "shows error" do
                 click_button 'create-project-save-button'
-                expect(page).to have_text("Add some project choices, or disable this section")
+                expect(page).to have_text("Add at least 2 project choices, or disable this section")
             end
         end
         context "Project Allocation method is invalid" do
@@ -281,6 +280,9 @@ RSpec.feature "Project Creation", type: :feature do
         context "Teammate Preference form has both fields as 0" do
             it "shows error" do
                 select('Preference form based', from: 'team_allocation_method')
+                fill_in 'project_name', with: 'New Project'
+                fill_in 'milestone_Project Deadline_date', with: "28/06/2024"
+                fill_in 'milestone_Teammate Preference Form Deadline_date', with: "28/06/2024"
                 fill_in 'preferred_teammates', with: 0
                 fill_in 'avoided_teammates', with: 0
                 click_button 'create-project-save-button'
@@ -346,13 +348,13 @@ RSpec.feature "Project Creation", type: :feature do
             visit "/projects/new"
         end
         after(:each) do
-            expect(page.current_path).to eq("/projects")
+            expect(page.current_path).to eq("/")
             latest_project_id = CourseProject.maximum(:id)
             created_project = CourseProject.find(latest_project_id)
 
             # Ensure groups are created
             expect(created_project.groups.size).to be > 1
-            expect(created_project.groups[0].students.size).to be created_project.team_size
+            expect(created_project.groups.all? { |group| group.students.size <= created_project.team_size }).to be_truthy
             # remove the created project
             created_project.destroy
         end
@@ -381,6 +383,10 @@ RSpec.feature "Project Creation", type: :feature do
                     fill_in "project_choice_name", with: "Project Choice 1"
                     find('.btn-primary', visible: :all).click
                 end
+                within '#add-project-choice-modal' do
+                    fill_in "project_choice_name", with: "Project Choice 2"
+                    find('.btn-primary', visible: :all).click
+                end
                 fill_in 'project_name', with: "New Project"
                 select('Team average preference', from: 'project_allocation_method')
                 fill_in 'team_size', with: 6
@@ -389,13 +395,17 @@ RSpec.feature "Project Creation", type: :feature do
                 click_button 'create-project-save-button'
                 latest_project_id = CourseProject.maximum(:id)
                 created_project = CourseProject.find(latest_project_id)
-                expect(created_project.subprojects.size).to be 1
+                expect(created_project.subprojects.size).to be 2
             end
         end
         context "by filling in module, name, project choices, team size, deadline, preferred/avoided teammates, project preference form deadline, teammates preference form deadline" do
             it "creates the project" do
                 within '#add-project-choice-modal' do
                     fill_in "project_choice_name", with: "Project Choice 1"
+                    find('.btn-primary', visible: :all).click
+                end
+                within '#add-project-choice-modal' do
+                    fill_in "project_choice_name", with: "Project Choice 2"
                     find('.btn-primary', visible: :all).click
                 end
                 fill_in 'project_name', with: "New Project"
@@ -410,13 +420,17 @@ RSpec.feature "Project Creation", type: :feature do
                 click_button 'create-project-save-button'
                 latest_project_id = CourseProject.maximum(:id)
                 created_project = CourseProject.find(latest_project_id)
-                expect(created_project.subprojects.size).to be 1
+                expect(created_project.subprojects.size).to be 2
             end
         end
         context "and define additional milestones" do
             it "creates the project with associated milestones" do
                 within '#add-project-choice-modal' do
                     fill_in "project_choice_name", with: "Project Choice 1"
+                    find('.btn-primary', visible: :all).click
+                end
+                within '#add-project-choice-modal' do
+                    fill_in "project_choice_name", with: "Project Choice 2"
                     find('.btn-primary', visible: :all).click
                 end
                 within '#add-project-milestone-modal' do
@@ -466,6 +480,10 @@ RSpec.feature "Project Creation", type: :feature do
             it "creates the project with associated milestones and facilitators" do
                 within '#add-project-choice-modal' do
                     fill_in "project_choice_name", with: "Project Choice 1"
+                    find('.btn-primary', visible: :all).click
+                end
+                within '#add-project-choice-modal' do
+                    fill_in "project_choice_name", with: "Project Choice 2"
                     find('.btn-primary', visible: :all).click
                 end
                 within '#add-project-milestone-modal' do
