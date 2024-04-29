@@ -264,7 +264,6 @@ class CourseProjectController < ApplicationController
 
     def search_facilitators_student
         query = params[:query]
-        puts params
         @results = Student.where("email LIKE ?", "%#{query}%").limit(8).distinct
         render json: @results.pluck(:email)
     end
@@ -284,11 +283,9 @@ class CourseProjectController < ApplicationController
     end
 
     def remove_milestone_email
-        puts "called to removed milestone emial"
         milestone_name = params[:milestone_name].split('_').drop(1).join('_')
         milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
         if milestone.key?("Email")
-            puts "remvoing.."
             milestone.delete("Email")
         end
     end
@@ -480,7 +477,6 @@ class CourseProjectController < ApplicationController
 
                 # dd/mm/yyyy to yyyy-mm-dd
                 date_time_string = milestone_data[:Date]
-                puts date_time_string
                 # This did a funny where sometimes the format was recieved as m/d/y, hasnt happened again since what should have fixed it
                 # puts date_string
                 next if !date_time_string.present?   #dont push the milestone if its not got a set date
@@ -555,9 +551,9 @@ class CourseProjectController < ApplicationController
                     new_project.destroy
                     facilitator.errors.messages.each do |attribute, messages|
                         messages.each do |message|
-                          unless errors[:main].include?("Facilitator error: #{attribute} : #{message}")
-                            errors[:main] << "Facilitator error: #{attribute} : #{message}"
-                          end
+                            unless errors[:main].include?("Facilitator error: #{attribute} : #{message}")
+                                errors[:main] << "Facilitator error: #{attribute} : #{message}"
+                            end
                         end
                     end
                 end
