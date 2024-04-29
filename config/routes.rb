@@ -12,7 +12,7 @@ Rails.application.routes.draw do
 
     resource :milestone_responses, only: [:create], controller: :milestone_response
 
-    get '/teams', to: 'lead#teams', on: :member
+    get '/teams', to: 'course_project#teams', on: :member
     post '/new', to: 'course_project#create', on: :collection
     post '/edit', to: 'course_project#update', on: :member
 

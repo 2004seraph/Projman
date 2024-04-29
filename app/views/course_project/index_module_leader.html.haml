@@ -17,57 +17,79 @@
     - else
         %p You are not a part of any modules currently, if you should be, please contact an admin.
 
-.separating-section
-    - @projects.each do |project|
-        = link_to project_url(project.id), class: "project-link" do
-            .project-button
-                %h3
-                    #{project.course_module.code} #{project.course_module.name} - #{project.name}
-                    .sub-status
-                        #{ViewHelper.unparamaterize project.status}
-                        -#Change colour according to deadlines or status????
-                        %i.bi.bi-circle-fill.fill-green
+- live_projects = @projects.select { |project| project.status == 'live' }
+- if live_projects.present?
+    .separating-section
+        %h2
+            %i.bi.bi-circle-fill.fill-green
+            Live
+        - live_projects.each do |project|
+            = link_to teams_project_path(project.id), class: "project-link" do
+                .project-button
+                    %h3
+                        #{project.course_module.code} #{project.course_module.name} - #{project.name}
+                        -# .sub-status
+                        -#     #{ViewHelper.unparamaterize project.status}
 
--# .separating-section
--#     %h2
--#         %i.bi.bi-circle-fill.fill-green
--#         Live
+    %hr.divider
 
--#     = render partial:'project-button', locals: { project_id: 0 }
--#     = render partial:'project-button', locals: { project_id: 0 }
--#     %hr.divider
+-# This section holds projects where they are in student/team preference, but responses have been recieved
 
--# .separating-section
--#     %h2
--#         %i.bi.bi-circle-fill.fill-yellow
--#         Reviewing Teams / Project Allocation
+-# - review_projects = @projects.select { |project| project.status == 'student_preference' || project.status == 'team_preference'}
+-# - review_projects.present?
+-#     .separating-section
+-#         %h2
+-#             %i.bi.bi-circle-fill.fill-yellow
+-#             Reviewing Teams / Project Allocation
+-#         - review_projects.each do |project|
+-#         = link_to project_url(project.id), class: "project-link" do
+-#             .project-button
+-#                 %h3
+-#                     #{project.course_module.code} #{project.course_module.name} - #{project.name}
 
--#     = render partial:'project-button', locals: { project_id: 0 }
--#     = render partial:'project-button', locals: { project_id: 0 }
--#     %hr.divider
+-#         %hr.divider
 
--# .separating-section
--#     %h2
--#         %i.bi.bi-circle-fill.fill-red
--#         Awaiting Teams / Project Preference Form
 
--#     = render partial:'project-button', locals: { project_id: 0 }
--#     = render partial:'project-button', locals: { project_id: 0 }
--#     %hr.divider
+-# This section holds projects where they are in student/team preference, but responses 
 
--# .separating-section
--#     %h2
--#         %i.bi.bi-pencil-fill
--#         Drafting
+-# - awaiting_projects = @projects.select { |project| project.status == 'student_preference' || project.status == 'team_preference'}
+-# - awaiting_projects.present?
+-#     .separating-section
+-#         %h2
+-#             %i.bi.bi-circle-fill.fill-red
+-#             Awaiting Teams / Project Preference Form
+-#         - awaiting_projects.each do |project|
+-#         = link_to project_url(project.id), class: "project-link" do
+-#             .project-button
+-#                 %h3
+-#                     #{project.course_module.code} #{project.course_module.name} - #{project.name}
 
--#     = render partial:'project-button', locals: { project_id: 0 }
--#     = render partial:'project-button', locals: { project_id: 0 }
--#     %hr.divider
+-#         %hr.divider
 
--# .separating-section
--#     %h2
--#         %i.bi.bi-archive-fill
--#         Archived
+- draft_projects = @projects.select { |project| project.status == 'draft'}
+- if draft_projects.present?
+    .separating-section
+        %h2
+            %i.bi.bi-pencil-fill
+            Drafting
+        - draft_projects.each do |project|
+            = link_to teams_project_path(project.id), class: "project-link" do
+                .project-button
+                    %h3
+                        #{project.course_module.code} #{project.course_module.name} - #{project.name}
 
--#     = render partial:'project-button', locals: { project_id: 0 }
--#     = render partial:'project-button', locals: { project_id: 0 }
+    %hr.divider
+
+-# - archived_projects = @projects.select { |project| project.status == 'archived'}
+-# - archived_projects.present?
+-#     .separating-section
+-#         %h2
+-#             %i.bi.bi-circle-fill.fill-red
+-#             Archived
+-#         - archived_projects.each do |project|
+-#         = link_to project_url(project.id), class: "project-link" do
+-#             .project-button
+-#                 %h3
+-#                     #{project.course_module.code} #{project.course_module.name} - #{project.name}
+
+-#         %hr.divider

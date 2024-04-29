@@ -1028,6 +1028,7 @@ class CourseProjectController < ApplicationController
     def show
         if current_user.is_staff?
             # staff version of viewing one project
+            redirect_to action: :teams
         else
 
             #Get independent project information (project name, leader, milestones, preference form)
@@ -1137,6 +1138,6 @@ class CourseProjectController < ApplicationController
     end
 
     def teams
-
+        
     end
 end

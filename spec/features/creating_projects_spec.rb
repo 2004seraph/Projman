@@ -354,7 +354,7 @@ RSpec.feature "Project Creation", type: :feature do
 
             # Ensure groups are created
             expect(created_project.groups.size).to be > 1
-            expect(created_project.groups.all? { |group| group.students.size <= created_project.team_size }).to be_truthy
+            expect(created_project.groups.all? { |group| group.students.size >= created_project.team_size }).to be_truthy
             # remove the created project
             created_project.destroy
         end

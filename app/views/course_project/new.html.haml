@@ -8,6 +8,9 @@
 = render 'project_form', project_data: project_data, errors: errors, form_url: "/projects/new", form_id: "create-project-form" do
   %div
     .d-flex.justify-content-end
+    
+      -# %input.form-control{ type: "datetime-local", id: "date_time_input", name: "date_time_input", placeholder: "Select Date"}
+
       %button.btn.btn-primary.mb-2.me-2#create-project-save-button{type: "submit"}
         Save
       %button.btn.btn-secondary.mb-2{type: "button", onclick: "window.location='/projects'; return false;"}

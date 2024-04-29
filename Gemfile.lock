@@ -112,6 +112,8 @@ GEM
       msgpack (~> 1.2)
     bootstrap-datepicker-rails (1.10.0.1)
       railties (>= 3.0)
+    bootstrap3-datetimepicker-rails (4.14.30)
+      momentjs-rails (>= 2.8.1)
     brakeman (6.1.1)
       racc
     builder (3.2.4)
@@ -228,6 +230,8 @@ GEM
     method_source (1.0.0)
     mini_mime (1.1.5)
     minitest (5.21.2)
+    momentjs-rails (2.29.4.1)
+      railties (>= 3.1)
     msgpack (1.7.2)
     multi_json (1.15.0)
     mutex_m (0.2.0)
@@ -395,6 +399,7 @@ DEPENDENCIES
   bcrypt_pbkdf (>= 1.0, < 2.0)
   bootsnap
   bootstrap-datepicker-rails (~> 1.6, >= 1.6.1.1)
+  bootstrap3-datetimepicker-rails (~> 4.14.30)
   brakeman
   bundler-audit
   byebug
@@ -421,6 +426,7 @@ DEPENDENCIES
   jquery-rails
   launchy
   letter_opener
+  momentjs-rails (>= 2.9.0)
   pg (~> 1.1)
   puma (~> 6.0)
   rails (>= 7.0.8, < 7.1)
