@@ -40,11 +40,7 @@ class FacilitatorController < ApplicationController
         authorize! :read, :facilitator
 
         set_current_group
-        get_progress_forms_for_group.each do |d|
-            puts d.deadline.strftime("%d/%m/%Y %H:%M") 
-        end
 
-        puts params[:release_date]
         @progress_form = get_progress_forms_for_group.select{|m|
             m.deadline.strftime("%d/%m/%Y %H:%M") == params[:release_date]
         }.first
