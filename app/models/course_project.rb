@@ -102,29 +102,30 @@ class CourseProject < ApplicationRecord
     # marking_deadline: 'mark_scheme'
 
     CourseProject.all.each do |c|
-      if ![:draft, :completed, :archived].include? c.status
+      logger.debug "### Processing #{c.name}"
+      if ![:completed, :archived].include? c.status
         if c.team_size == 1 or c.team_allocation == nil
           #individual project -> no group assignment
           if c.project_preference_deadline
-            if c.project_preference_deadline.deadline < DateTime.now
+            if c.project_preference_deadline.deadline < DateTime.now && !c.project_preference_deadline.executed
               # assign projects to individuals, if not responded, use least popular project
-              logger.debug "Assigning projects to individuals using project preference"
+              logger.debug "\tAssigning projects to individuals using project preference"
               DatabaseHelper.assign_projects_to_individuals c
             end
           end
         else
           #group project -> group assignment needed, potentially also project assignment
           if c.teammate_preference_deadline
-            if c.teammate_preference_deadline.deadline < DateTime.now
+            if c.teammate_preference_deadline.deadline < DateTime.now && !c.teammate_preference_deadline.executed
               # make groups
               # DatabaseHelper.preference_form_group_allocation
-              logger.debug "Assigning groups using team mate preferences"
+              logger.debug "\tAssigning groups using team mate preferences"
             end
           end
           if c.project_preference_deadline
-            if c.project_preference_deadline.deadline < DateTime.now
+            if c.project_preference_deadline.deadline < DateTime.now && !c.project_preference_deadline.executed
               # assign projects to groups, if not responded, use least popular project
-              logger.debug "Assigning projects to groups using group consensus"
+              logger.debug "\tAssigning projects to groups using group consensus"
               DatabaseHelper.assign_projects_to_groups c
             end
           end
@@ -139,27 +140,34 @@ class CourseProject < ApplicationRecord
           #   send email to relevent recipients, no actually
           #   [for_each_team] push deadline passed to event feed
           if !m.executed
-            if m.json_data["Email"]#["Content"].length > 0
+            logger.debug "\tExecuting milestone: #{m.json_data}"
+            if m.json_data["Email"]["Content"].length > 0
               if !m.json_data["Email"]["Sent"]
+                logger.debug "\t\tSent email"
                 if m.deadline - str_to_int(m.json_data["Email"]["Advance"]) <= DateTime.now
                   m.json_data["Email"]["Sent"] = true
 
                   # send reminder email with json_data["Name"] and json_data["Comment"], as well as the number of days left
                   MilestoneMailer.reminder_email(self).deliver_later
+                  logger.debug "\t\tType: #{m.milestone_type}"
                   push_milestone_to_teams? m, reminder: true
                 end
               end
             end
             if m.deadline < DateTime.now
+              logger.debug "\tMilestone #{m.json_data} complete"
               push_milestone_to_teams? m
-              m.executed = true
+              m.update executed: true
             end
           end
+          m.save
         end
 
         if c.completion_deadline < DateTime.now
-          c.status = :completed
+          logger.debug "\tProject complete"
+          c.update status: :completed
         end
+        c.save
       end
     end
   end

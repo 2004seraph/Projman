@@ -21,6 +21,10 @@ class CourseProjectController < ApplicationController
             render 'index_module_leader'
         else
             @projects = current_user.student.course_projects
+            @milestones = []
+            @projects.each do |project|
+                @milestones += project.milestones
+            end
             render 'index_student'
         end
     end
@@ -264,7 +268,6 @@ class CourseProjectController < ApplicationController
 
     def search_facilitators_student
         query = params[:query]
-        puts params
         @results = Student.where("email LIKE ?", "%#{query}%").limit(8).distinct
         render json: @results.pluck(:email)
     end
@@ -284,11 +287,9 @@ class CourseProjectController < ApplicationController
     end
 
     def remove_milestone_email
-        puts "called to removed milestone emial"
         milestone_name = params[:milestone_name].split('_').drop(1).join('_')
         milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
         if milestone.key?("Email")
-            puts "remvoing.."
             milestone.delete("Email")
         end
     end
@@ -359,7 +360,7 @@ class CourseProjectController < ApplicationController
         if project_data[:selected_team_allocation_mode] != "random_team_allocation" && !project_data[:teammate_preference_form_deadline].present?
             errors[:timings] << "Please set team preference form deadline"
         end
-        if (project_data[:project_choices_enabled] && project_data[:selected_project_allocation_mode] != "random_project_allocation") && !project_data[:project_preference_form_deadline].present?
+        if project_data[:project_choices_enabled] && !project_data[:project_preference_form_deadline].present?
             errors[:timings] << "Please set project preference form deadline"
         end
 
@@ -466,7 +467,7 @@ class CourseProjectController < ApplicationController
                     milestone[:Date] = ""
                 end
             end
-            if !project_data[:project_choices_enabled] || project_data[:selected_project_allocation_mode] == "random_project_allocation"
+            if !project_data[:project_choices_enabled]
                 if milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == "Project Preference Form Deadline"}
                     milestone[:Date] = ""
                 end
@@ -554,9 +555,9 @@ class CourseProjectController < ApplicationController
                     new_project.destroy
                     facilitator.errors.messages.each do |attribute, messages|
                         messages.each do |message|
-                          unless errors[:main].include?("Facilitator error: #{attribute} : #{message}")
-                            errors[:main] << "Facilitator error: #{attribute} : #{message}"
-                          end
+                            unless errors[:main].include?("Facilitator error: #{attribute} : #{message}")
+                                errors[:main] << "Facilitator error: #{attribute} : #{message}"
+                            end
                         end
                     end
                 end
@@ -668,7 +669,7 @@ class CourseProjectController < ApplicationController
         if project_data[:selected_team_allocation_mode] != "random_team_allocation" && !project_data[:teammate_preference_form_deadline].present?
             errors[:timings] << "Please set team preference form deadline"
         end
-        if (project_data[:project_choices_enabled] && project_data[:selected_project_allocation_mode] != "random_project_allocation") && !project_data[:project_preference_form_deadline].present?
+        if project_data[:project_choices_enabled] && !project_data[:project_preference_form_deadline].present?
             errors[:timings] << "Please set project preference form deadline"
         end
 
@@ -788,7 +789,7 @@ class CourseProjectController < ApplicationController
                     milestone[:Date] = ""
                 end
             end
-            if !project_data[:project_choices_enabled] || project_data[:selected_project_allocation_mode] == "random_project_allocation"
+            if !project_data[:project_choices_enabled]
                 if milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == "Project Preference Form Deadline"}
                     milestone[:Date] = ""
                 end
@@ -1027,6 +1028,7 @@ class CourseProjectController < ApplicationController
             linked_module = @current_project.course_module
             @proj_name = linked_module.code+' '+linked_module.name+' - '+@current_project.name
             @lead_email = linked_module.staff.email
+            @current_group = current_user.student.groups.find_by(course_project_id: params[:id])
 
             #Get ordered milestones + deadlines
             @milestones = []
@@ -1133,6 +1135,10 @@ class CourseProjectController < ApplicationController
     end
 
     def teams
-        
+        @project = CourseProject.find(params[:id])
+        @teams = []
+        unless @project.nil?
+            @teams = @project.groups
+        end
     end
 end

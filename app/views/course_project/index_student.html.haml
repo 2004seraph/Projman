@@ -6,25 +6,25 @@
         Activity Feed
     %hr.divider
 
-    .container
-        .row
-            .scrollable
-                - @projects.each do |project|
-                    - project.milestones.each do |milestone|
-                        .card
-                            .card-body
+    - if @milestones.length > 0
+        .container#activity-feed-container
+            .row
+                .scrollable
+                    - @milestones.each do |milestone|
+                        .card.mb-2
+                            .card-body.pb-2.pt-2
                                 %h5.card-title= "#{milestone.course_module.code} #{milestone.course_project.name} - #{milestone.json_data["Name"]}"
-                                %p.card-text
+                                %p.card-text.mb-1
                                 %strong Due in:
                                 = "#{(milestone.deadline - DateTime.now).to_i} days"
-                                %br
-                                %strong Type:
-                                = milestone.milestone_type
                                 %br
                                 - unless milestone.json_data["Comment"].nil?
                                     - if milestone.json_data["Comment"].length > 0
                                         %strong Comment:
                                         = milestone.json_data["Comment"]
+    - else 
+        .d-flex.justify-content-center
+            %i.fs-6.fw-light No Activity
 
     %br
     %h2

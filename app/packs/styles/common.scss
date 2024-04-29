@@ -138,10 +138,14 @@
     }
 }
 
+#activity-feed-container {
+    max-height: 250px; /* Adjust this value as needed */
+    overflow-y: auto;
+}
+
 .scrollable {
-    height: 400px;
-    overflow-y: scroll;
-  }
+    overflow-y: auto;
+}
 
 .icon-pad {
     padding-left: 10px;

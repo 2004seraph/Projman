@@ -67,7 +67,7 @@ oliver = Student.find_or_create_by({
   email: "opickford1@sheffield.ac.uk",
   fee_status: :home
 })
-#DatabaseHelper.create_staff("opickford1@sheffield.ac.uk")
+DatabaseHelper.create_staff("opickford1@sheffield.ac.uk")
 
 nahyan = Student.find_or_create_by({
   username: "acb21nk",
@@ -120,6 +120,31 @@ jakub.enroll_module "COM9999"
 adam.enroll_module "COM9999"
 oliver.enroll_module "COM9999"
 nahyan.enroll_module "COM9999"
+
+DatabaseHelper.provision_module_class(
+  "COMOLIVER",
+  "Oliver's test module",
+  DatabaseHelper.create_staff("opickford1@sheffield.ac.uk"),
+  DatabaseHelper.change_class_module(robotics_class, "COMOLIVER")
+)
+sam.enroll_module "COMOLIVER"
+josh.enroll_module "COMOLIVER"
+jakub.enroll_module "COMOLIVER"
+adam.enroll_module "COMOLIVER"
+oliver.enroll_module "COMOLIVER"
+nahyan.enroll_module "COMOLIVER"
+
+DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
+  course_module: CourseModule.find_by(code: "COMOLIVER"),
+  # dont specify it to leave it as the default {}
+  # markscheme_json: {test: "test"}.to_json,
+  name: "Oliver's Project",
+  project_allocation: :single_preference_project_allocation,
+  # dont specify it to leave it as the default {}
+  # project_choices_json: {test: "test"}.to_json,
+  team_allocation: :random_team_allocation,
+  team_size: 8
+}))
 
 
 # take the entire COM3420 class and enroll them in another module

@@ -11,14 +11,15 @@
         "aria-haspopup": "true", 
         "aria-expanded": "false"}
 
-        %span#release-date-selection-label= "Release Date: " + (@progress_form.nil? ? "" : @progress_form.json_data["release_date"])
+        %span#release-date-selection-label= "Release Date: " + (@progress_form.nil? ? "" : @progress_form.deadline.strftime("%d/%m/%Y %H:%M"))
 
         %i.bi.bi-caret-down-fill
         
       .dropdown-menu{ "aria-labelledby": "release-date-selection-label" }
         - @progress_forms.each do |ms|
+          - formatted_date = ms.deadline.strftime("%d/%m/%Y %H:%M")
           %a.dropdown-item{ 
-            onclick: "updateReleaseDate('#{ms.json_data["release_date"]}')" }= ms.json_data["release_date"]
+            onclick: "updateReleaseDate('#{formatted_date}')" }= formatted_date
 
     .dropdown.d-inline-block
       %button.btn.btn-primary{ 
@@ -53,7 +54,7 @@
 
 - else
   #progress-form-partial-container
-    = render partial: "progress_form", locals: {progress_form_id: @progress_form.id, progress_form: @progress_form.json_data, progress_response: nil, group: "None", facilitator: false, editing_form: false}
+    = render partial: "progress_form", locals: {progress_form_id: @progress_form.id, progress_form: @progress_form.json_data, release_date: @progress_form.deadline, progress_response: nil, group: "None", facilitator: false, editing_form: false}
 
 :javascript
   const releaseDateLabel = document.getElementById("release-date-selection-label");

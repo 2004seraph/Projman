@@ -175,13 +175,13 @@ RSpec.feature "Project Creation", type: :feature do
                 expect(page).to have_field('avoided_teammates', with: '3')
             end
             it "persists all deadline data" do
-                fill_in 'milestone_Project Deadline_date', with: '28/06/2024'
-                fill_in 'milestone_Teammate Preference Form Deadline_date', with: '28/06/2024'
-                fill_in 'milestone_Project Preference Form Deadline_date', with: '28/06/2024'
+                fill_in 'milestone_Project Deadline_date', with: '28/06/2099T00:00'
+                fill_in 'milestone_Teammate Preference Form Deadline_date', with: '28/06/2099T00:00'
+                fill_in 'milestone_Project Preference Form Deadline_date', with: '28/06/2099T00:00'
                 click_button 'create-project-save-button'
-                expect(page).to have_field('milestone_Project Deadline_date', with: '28/06/2024')
-                expect(page).to have_field('milestone_Teammate Preference Form Deadline_date', with: '28/06/2024')
-                expect(page).to have_field('milestone_Project Preference Form Deadline_date', with: '28/06/2024')
+                expect(page).to have_field('milestone_Project Deadline_date', with: '28/06/2099T00:00')
+                expect(page).to have_field('milestone_Teammate Preference Form Deadline_date', with: '28/06/2099T00:00')
+                expect(page).to have_field('milestone_Project Preference Form Deadline_date', with: '28/06/2099T00:00')
             end
             it "persists all added milestones" do
                 within '#add-project-milestone-modal' do
@@ -193,15 +193,15 @@ RSpec.feature "Project Creation", type: :feature do
                 within '#timings' do
                     expect(page).to have_content("New Milestone 1")
                     expect(page).to have_content("New Milestone 2")
-                    fill_in 'milestone_New Milestone 1_date', with: '28/06/2024'
-                    fill_in 'milestone_New Milestone 2_date', with: '28/06/2024'
+                    fill_in 'milestone_New Milestone 1_date', with: '28/06/2099T00:00'
+                    fill_in 'milestone_New Milestone 2_date', with: '28/06/2099T00:00'
                 end
                 click_button 'create-project-save-button'
                 within '#timings' do
                     expect(page).to have_content("New Milestone 1")
                     expect(page).to have_content("New Milestone 2")
-                    expect(page).to have_field('milestone_New Milestone 1_date', with: '28/06/2024')
-                    expect(page).to have_field('milestone_New Milestone 2_date', with: '28/06/2024')
+                    expect(page).to have_field('milestone_New Milestone 1_date', with: '28/06/2099T00:00')
+                    expect(page).to have_field('milestone_New Milestone 2_date', with: '28/06/2099T00:00')
                 end
             end
             it "persists all added facilitators" do
@@ -281,8 +281,8 @@ RSpec.feature "Project Creation", type: :feature do
             it "shows error" do
                 select('Preference form based', from: 'team_allocation_method')
                 fill_in 'project_name', with: 'New Project'
-                fill_in 'milestone_Project Deadline_date', with: "28/06/2024"
-                fill_in 'milestone_Teammate Preference Form Deadline_date', with: "28/06/2024"
+                fill_in 'milestone_Project Deadline_date', with: "28/06/2099T00:00"
+                fill_in 'milestone_Teammate Preference Form Deadline_date', with: "28/06/2099T00:00"
                 fill_in 'preferred_teammates', with: 0
                 fill_in 'avoided_teammates', with: 0
                 click_button 'create-project-save-button'
@@ -351,10 +351,6 @@ RSpec.feature "Project Creation", type: :feature do
             expect(page.current_path).to eq("/")
             latest_project_id = CourseProject.maximum(:id)
             created_project = CourseProject.find(latest_project_id)
-
-            # Ensure groups are created
-            expect(created_project.groups.size).to be > 1
-            expect(created_project.groups.all? { |group| group.students.size >= created_project.team_size }).to be_truthy
             # remove the created project
             created_project.destroy
         end
@@ -363,8 +359,13 @@ RSpec.feature "Project Creation", type: :feature do
             it "creates the project" do
                 fill_in 'project_name', with: "New Project"
                 uncheck('project_choices_enable')
-                fill_in 'milestone_Project Deadline_date', with: "28/06/2024"
+                fill_in 'milestone_Project Deadline_date', with: "28/06/2099T00:00"
                 click_button 'create-project-save-button'
+                latest_project_id = CourseProject.maximum(:id)
+                created_project = CourseProject.find(latest_project_id)
+                 # Ensure groups are created
+                expect(created_project.groups.size).to be > 1
+                expect(created_project.groups.all? { |group| group.students.size >= created_project.team_size }).to be_truthy
             end
         end
         context "by filling in module, name, team size, deadline" do
@@ -372,8 +373,13 @@ RSpec.feature "Project Creation", type: :feature do
                 fill_in 'project_name', with: "New Project"
                 uncheck('project_choices_enable')
                 fill_in 'team_size', with: 6
-                fill_in 'milestone_Project Deadline_date', with: "28/06/2024"
+                fill_in 'milestone_Project Deadline_date', with: "28/06/2099T00:00"
                 click_button 'create-project-save-button'
+                latest_project_id = CourseProject.maximum(:id)
+                created_project = CourseProject.find(latest_project_id)
+                # Ensure groups are created
+                expect(created_project.groups.size).to be > 1
+                expect(created_project.groups.all? { |group| group.students.size >= created_project.team_size }).to be_truthy
             end
         end
         context "by filling in module, name, project choices, team size, deadline, project preference form deadline" do
@@ -390,12 +396,15 @@ RSpec.feature "Project Creation", type: :feature do
                 fill_in 'project_name', with: "New Project"
                 select('Team average preference', from: 'project_allocation_method')
                 fill_in 'team_size', with: 6
-                fill_in 'milestone_Project Deadline_date', with: "28/06/2024"
-                fill_in 'milestone_Project Preference Form Deadline_date', with: "28/06/2024"
+                fill_in 'milestone_Project Deadline_date', with: "28/06/2099T00:00"
+                fill_in 'milestone_Project Preference Form Deadline_date', with: "28/06/2099T00:00"
                 click_button 'create-project-save-button'
                 latest_project_id = CourseProject.maximum(:id)
                 created_project = CourseProject.find(latest_project_id)
                 expect(created_project.subprojects.size).to be 2
+                # Ensure groups are created
+                expect(created_project.groups.size).to be > 1
+                expect(created_project.groups.all? { |group| group.students.size >= created_project.team_size }).to be_truthy
             end
         end
         context "by filling in module, name, project choices, team size, deadline, preferred/avoided teammates, project preference form deadline, teammates preference form deadline" do
@@ -414,13 +423,15 @@ RSpec.feature "Project Creation", type: :feature do
                 select('Preference form based', from: 'team_allocation_method')
                 fill_in 'preferred_teammates', with: 1
                 fill_in 'avoided_teammates', with: 1
-                fill_in 'milestone_Project Deadline_date', with: "28/06/2024"
-                fill_in 'milestone_Project Preference Form Deadline_date', with: "28/06/2024"
-                fill_in 'milestone_Teammate Preference Form Deadline_date', with: "28/06/2024"
+                fill_in 'milestone_Project Deadline_date', with: "28/06/2099T00:00"
+                fill_in 'milestone_Project Preference Form Deadline_date', with: "28/06/2099T00:00"
+                fill_in 'milestone_Teammate Preference Form Deadline_date', with: "28/06/2099T00:00"
                 click_button 'create-project-save-button'
                 latest_project_id = CourseProject.maximum(:id)
                 created_project = CourseProject.find(latest_project_id)
                 expect(created_project.subprojects.size).to be 2
+                # Groups shouldnt be created straight away when team allocation is preference form based
+                expect(created_project.groups.size).to be 0
             end
         end
         context "and define additional milestones" do
@@ -439,17 +450,20 @@ RSpec.feature "Project Creation", type: :feature do
                     fill_in "project_milestone_name", with: "New Milestone 2"
                     find('.btn-primary', visible: :all).click
                 end
-                fill_in 'milestone_New Milestone 1_date', with: "28/06/2024"
-                fill_in 'milestone_New Milestone 2_date', with: "28/06/2024"
+                fill_in 'milestone_New Milestone 1_date', with: "28/06/2099T00:00"
+                fill_in 'milestone_New Milestone 2_date', with: "28/06/2099T00:00"
 
                 fill_in 'project_name', with: "New Project"
                 uncheck('project_choices_enable')
-                fill_in 'milestone_Project Deadline_date', with: "28/06/2024"
+                fill_in 'milestone_Project Deadline_date', with: "28/06/2099T00:00"
                 click_button 'create-project-save-button'
 
                 latest_project_id = CourseProject.maximum(:id)
                 created_project = CourseProject.find(latest_project_id)
                 expect(created_project.milestones.size).to be 3
+                # Ensure groups are created
+                expect(created_project.groups.size).to be > 1
+                expect(created_project.groups.all? { |group| group.students.size >= created_project.team_size }).to be_truthy
                 end
         end
         context "and associate students/staff as facilitators" do
@@ -469,11 +483,14 @@ RSpec.feature "Project Creation", type: :feature do
 
                 fill_in 'project_name', with: "New Project"
                 uncheck('project_choices_enable')
-                fill_in 'milestone_Project Deadline_date', with: "28/06/2024"
+                fill_in 'milestone_Project Deadline_date', with: "28/06/2099T00:00"
                 click_button 'create-project-save-button'
                 latest_project_id = CourseProject.maximum(:id)
                 created_project = CourseProject.find(latest_project_id)
                 expect(created_project.assigned_facilitators.size).to be 2
+                # Ensure groups are created
+                expect(created_project.groups.size).to be > 1
+                expect(created_project.groups.all? { |group| group.students.size >= created_project.team_size }).to be_truthy
             end
         end
         context "and define additional milestones, and associated facilitators" do
@@ -503,12 +520,12 @@ RSpec.feature "Project Creation", type: :feature do
                     end
                     find('.btn-primary', visible: :all).click
                 end
-                fill_in 'milestone_New Milestone 1_date', with: "28/06/2024"
-                fill_in 'milestone_New Milestone 2_date', with: "28/06/2024"
+                fill_in 'milestone_New Milestone 1_date', with: "28/06/2099T00:00"
+                fill_in 'milestone_New Milestone 2_date', with: "28/06/2099T00:00"
 
                 fill_in 'project_name', with: "New Project"
                 uncheck('project_choices_enable')
-                fill_in 'milestone_Project Deadline_date', with: "28/06/2024"
+                fill_in 'milestone_Project Deadline_date', with: "28/06/2099T00:00"
                 click_button 'create-project-save-button'
                 latest_project_id = CourseProject.maximum(:id)
                 created_project = CourseProject.find(latest_project_id)

@@ -9,9 +9,7 @@ class ProgressFormController < ApplicationController
     authorize! :read, @current_project
 
     # Get each progress form
-    @progress_forms = get_progress_forms_for_project.sort_by{ 
-      |m| Date.strptime(m.json_data["release_date"], "%Y-%m-%d") 
-    }
+    @progress_forms = get_progress_forms_for_project.sort_by{ |pf| pf.deadline }
 
     # Auto select the one with the furthest release date
     @progress_form = @progress_forms.last
@@ -27,7 +25,10 @@ class ProgressFormController < ApplicationController
       "attendance": true 
     }.to_json)
 
+    session[:progress_form_deadline] = ""
+
     @progress_form_json = session[:new_progress_form] # TODO: Remove this? Can just use session in view.
+    @progress_form_deadline = ""
   end
 
   def edit
@@ -40,14 +41,17 @@ class ProgressFormController < ApplicationController
     end
 
     # Can't edit released forms
-    if Date.parse(progress_form.json_data["release_date"]) <= Date.today
+    if progress_form.deadline <= Date.today
       # TODO: Show error maybe just as popup modal?
       redirect_to progress_form_index_path
       return
     end
 
     session[:new_progress_form] = progress_form.json_data
+    session[:progress_form_deadline] = progress_form.deadline
+
     @progress_form_json = session[:new_progress_form] # TODO: Remove this? Can just use session in view.
+    @progress_form_deadline = progress_form.deadline
   end
 
   # AJAX Routes
@@ -61,8 +65,9 @@ class ProgressFormController < ApplicationController
     render partial: "progress_form",
       locals: 
         {
-          progress_form_id: -1, # TODO: Bruh.
+          progress_form_id: -1, # TODO: Remove this.
           progress_form: session[:new_progress_form],
+          release_date: session[:progress_form_deadline],
           progress_response: nil, 
           group: "None", 
           facilitator: false,
@@ -85,6 +90,7 @@ class ProgressFormController < ApplicationController
       locals: 
         {
           progress_form: JSON.parse(session[:new_progress_form].to_json),
+          release_date: session[:progress_form_deadline],
           progress_response: nil, 
           group: "None", 
           facilitator: false,
@@ -104,25 +110,28 @@ class ProgressFormController < ApplicationController
 
     # Try find a pre-existing form to update
     milestone = get_progress_forms_for_project.select{
-      |m| m.json_data["release_date"] == session[:new_progress_form]["release_date"]
+      |m| m.deadline == session[:progress_form_deadline]
     }.first
 
     # Update progress form, must be after get milestone incase 'primary key' changes 
-    session[:new_progress_form]["release_date"] = params[:release_date]
     session[:new_progress_form]["attendance"] = params[:attendance]
+
+    # HTML date formatted like this 2024-04-29T17:25    
+
+    formatted_deadline = params[:release_date].gsub("T", " ")
 
     # Create or update milestone to represent the form
     if milestone.nil?
       milestone = Milestone.new(
         json_data: session[:new_progress_form],
-        deadline: Date.current.strftime("%Y-%m-%d"),
+        deadline: formatted_deadline,
         milestone_type: :team,
         course_project_id: session[:current_project_id],
         #system_type: :progress_form_deadline TODO: This was removed for some reason?
       )
     else
       milestone.json_data = session[:new_progress_form]
-      milestone.deadline = Date.current.strftime("%Y-%m-%d") # TODO: What is this deadline?
+      milestone.deadline = formatted_deadline
     end
 
     milestone.json_data["name"] = "progress_form" # TODO: Temp, determining what is a progress form.
@@ -146,9 +155,8 @@ class ProgressFormController < ApplicationController
 
   def delete_form
     # TODO: Need to make composite primary key with release date and name of form?
-
     milestone = get_progress_forms_for_project.select{
-      |m| m.json_data["release_date"] == params[:release_date]
+      |m| m.deadline == session[:progress_form_deadline]
     }.first
 
     if milestone.nil?
@@ -173,8 +181,10 @@ class ProgressFormController < ApplicationController
     end
 
     # Update the current displayed form
+    formatted_release_date = DateTime.parse(params[:release_date].gsub("T", " "))
+    
     @progress_form = get_progress_forms_for_project.select{
-      |m| m.json_data["release_date"] == params[:release_date]
+      |m| date_to_string(m.deadline) == date_to_string(formatted_release_date)
     }.first
     
     session[:progress_form_id] = @progress_form.id
@@ -196,6 +206,7 @@ class ProgressFormController < ApplicationController
       {
         progress_form_id: @progress_form.id, 
         progress_form: @progress_form.json_data,
+        release_date: @progress_form.deadline,
         progress_response: @progress_response.nil? ? nil : @progress_response.json_data,
         group: group,
         facilitator: false,
@@ -217,4 +228,7 @@ class ProgressFormController < ApplicationController
       }
     end
 
+  def date_to_string(date)
+    date.strftime("%d/%m/%Y %H:%M")
+  end
 end
