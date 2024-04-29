@@ -1139,6 +1139,10 @@ class CourseProjectController < ApplicationController
     end
 
     def teams
-        
+        @project = CourseProject.find(params[:id])
+        @teams = []
+        unless @project.nil?
+            @teams = @project.groups
+        end
     end
 end

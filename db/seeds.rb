@@ -67,7 +67,7 @@ oliver = Student.find_or_create_by({
   email: "opickford1@sheffield.ac.uk",
   fee_status: :home
 })
-#DatabaseHelper.create_staff("opickford1@sheffield.ac.uk")
+DatabaseHelper.create_staff("opickford1@sheffield.ac.uk")
 
 nahyan = Student.find_or_create_by({
   username: "acb21nk",
@@ -120,6 +120,31 @@ jakub.enroll_module "COM9999"
 adam.enroll_module "COM9999"
 oliver.enroll_module "COM9999"
 nahyan.enroll_module "COM9999"
+
+DatabaseHelper.provision_module_class(
+  "COMOLIVER",
+  "Oliver's test module",
+  DatabaseHelper.create_staff("opickford1@sheffield.ac.uk"),
+  DatabaseHelper.change_class_module(robotics_class, "COMOLIVER")
+)
+sam.enroll_module "COMOLIVER"
+josh.enroll_module "COMOLIVER"
+jakub.enroll_module "COMOLIVER"
+adam.enroll_module "COMOLIVER"
+oliver.enroll_module "COMOLIVER"
+nahyan.enroll_module "COMOLIVER"
+
+DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
+  course_module: CourseModule.find_by(code: "COMOLIVER"),
+  # dont specify it to leave it as the default {}
+  # markscheme_json: {test: "test"}.to_json,
+  name: "Oliver's Project",
+  project_allocation: :single_preference_project_allocation,
+  # dont specify it to leave it as the default {}
+  # project_choices_json: {test: "test"}.to_json,
+  team_allocation: :random_team_allocation,
+  team_size: 8
+}))
 
 
 # take the entire COM3420 class and enroll them in another module
@@ -226,15 +251,6 @@ DatabaseHelper.print_validation_errors(Group.find_or_create_by({
   course_project: CourseProject.find_by(name: "Miro")
 }))
 
-group69 = Group.find_or_create_by({
-  name: "Team 69",
-  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk"),
-    course_project: CourseProject.find_by(name: "Robot Project")),
-  course_project: CourseProject.find_by(name: "Robot Project")
-})
-
-group69.students << josh
-
 group = Group.find_or_create_by({
   name: "Team 6",
   assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "sgttaseff1@sheffield.ac.uk"),
@@ -265,3 +281,38 @@ group3 = Group.find_or_create_by({
 group3.students << sam
 group3.students << oliver
 group3.students << jakub
+
+
+# temp: OLIVER TESTING
+
+
+DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
+  course_project: CourseProject.find_by(name: "Oliver's Project"),
+  staff: Staff.find_by(email: "opickford1@sheffield.ac.uk")
+}))
+
+DatabaseHelper.print_validation_errors(AssignedFacilitator.find_or_create_by({
+  course_project: CourseProject.find_by(name: "Oliver's Project"),
+  staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk")
+}))
+
+group = Group.find_or_create_by({
+  name: "Team 6",
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "opickford1@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "Oliver's Project")),
+  course_project: CourseProject.find_by(name: "Oliver's Project")
+})
+group.students << oliver
+group.students << adam
+group.students << jakub
+group.students << josh
+
+group2 = Group.find_or_create_by({
+  name: "Team 1",
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "Oliver's Project")),
+  course_project: CourseProject.find_by(name: "Oliver's Project")
+})
+group2.students << josh
+group2.students << sam
+group2.students << oliver
