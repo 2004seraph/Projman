@@ -88,10 +88,10 @@ module DatabaseHelper
     DatabaseHelper.print_validation_errors(project_deadline_milestone)
 
     proj_pref_json_data = {
-      "Name" => "Project Deadline",
+      "Name" => "Project Preference Deadline",
       "isDeadline" => true,
       "Comment" => "",
-      "Email" => {"Content": "Project Deadline upcoming!", "Advance": 0}
+      "Email" => {"Content": "Project preference upcoming!", "Advance": 0}
     }
     proj_pref_milestone = Milestone.create(
       json_data: proj_pref_json_data,
@@ -104,10 +104,10 @@ module DatabaseHelper
     DatabaseHelper.print_validation_errors(proj_pref_milestone)
 
     team_pref_json_data = {
-      "Name" => "Project Deadline",
+      "Name" => "Teammate Preference Deadline",
       "isDeadline" => true,
       "Comment" => "",
-      "Email" => {"Content": "Project Deadline upcoming!", "Advance": 0}
+      "Email" => {"Content": "Teammate preference upcoming!", "Advance": 0}
     }
     team_pref_milestone = Milestone.create(
       json_data: team_pref_json_data,
@@ -464,7 +464,7 @@ module DatabaseHelper
           response.json_data["1"]
         else
           # assign least popular subproject
-          subproject_popularity.sort_by { |key, value| value }.first[0]
+          (subproject_popularity.sort_by { |key, value| value }.first || [course_project.subprojects.first.id])[0]
         end
 
       subproject_popularity[subproject] = (subproject_popularity[subproject] || 0) + 1

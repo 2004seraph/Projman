@@ -134,18 +134,6 @@ adam.enroll_module "COMOLIVER"
 oliver.enroll_module "COMOLIVER"
 nahyan.enroll_module "COMOLIVER"
 
-DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
-  course_module: CourseModule.find_by(code: "COMOLIVER"),
-  # dont specify it to leave it as the default {}
-  # markscheme_json: {test: "test"}.to_json,
-  name: "Oliver's Project",
-  project_allocation: :single_preference_project_allocation,
-  # dont specify it to leave it as the default {}
-  # project_choices_json: {test: "test"}.to_json,
-  team_allocation: :random_team_allocation,
-  team_size: 8
-}))
-
 
 # take the entire COM3420 class and enroll them in another module
 DatabaseHelper.provision_module_class(
@@ -162,6 +150,28 @@ oliver.enroll_module "COM2004"
 nahyan.enroll_module "COM2004"
 
 puts ""
+
+DatabaseHelper.create_course_project(
+  module_code: "COM3420",
+  team_allocation_mode: "random_team_allocation",
+  project_allocation_mode: "team_preference_project_allocation",
+  project_deadline: DateTime.now + 3.minute,
+  project_pref_deadline: DateTime.now + 2.minute,
+  team_pref_deadline: DateTime.now + 1.minute,
+  status: :live
+)
+
+# DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
+#   course_module: CourseModule.find_by(code: "COMOLIVER"),
+#   # dont specify it to leave it as the default {}
+#   # markscheme_json: {test: "test"}.to_json,
+#   name: "Oliver's Project",
+#   project_allocation: :single_preference_project_allocation,
+#   # dont specify it to leave it as the default {}
+#   # project_choices_json: {test: "test"}.to_json,
+#   team_allocation: :random_team_allocation,
+#   team_size: 8
+# }))
 
 # DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
 #   course_module: CourseModule.find_by(code: "COM2009"),
