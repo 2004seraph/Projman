@@ -16,4 +16,7 @@ module ViewHelper
     end
     x
   end
+  def retrieve_courses
+    CourseModule.all
+  end
 end

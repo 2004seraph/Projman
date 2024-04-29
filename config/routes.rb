@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   end
 
   resources :students, only: [:index], controller: :student do
+    post '/update_selection' => 'student#update_selection', on: :collection
   end
 
   resources :issues, only: [:index, :create], controller: :issue do

@@ -1,6 +1,6 @@
 
 = render 'components/accordion/container' do
-  - cm = CourseModule.all
+  - cm = retrieve_courses
   - for i in 0...cm.size
     = render 'student-list-box', title: cm[i].code + " " + cm[i].name, student_list_box_id: cm[i].code
 
@@ -22,8 +22,9 @@
   prompt: 'Input students name',
   form_input_id: 'new-module-student-name',
   form_input_name: 'module_student_name',
-  current_selection_text: 'current selection',
+  current_selection_text: session[:current_selection],
   list_group_id: 'student-selection-group',
   confirm_text: 'Confirm',
-  confirm_onclick_function: ""
+  confirm_onclick_function: "",
+  add_to_selection_url: 'students/update_selection'
 
