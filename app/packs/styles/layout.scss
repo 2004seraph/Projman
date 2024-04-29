@@ -70,6 +70,13 @@ body {
       a{
         color: white;
       }
+
+      .btn {
+        // background: linear-gradient(to right, #ccc, #999);
+        // cursor: pointer;
+        // transition: background 0.3s ease;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      }
     }
   }
 }

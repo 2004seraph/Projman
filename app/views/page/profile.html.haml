@@ -1,24 +1,33 @@
 .separating-section
-  %h2 Personal Information
-
-.separating-section
-  %h3.m-0.fs-5.fw-medium Surname: #{current_user.sn}
-  %p
-  %h3.m-0.fs-5.fw-medium Forename(s): #{current_user.givenname}
-  %p
-  %h3.m-0.fs-5.fw-medium Email: #{current_user.email}
-  %p
-  - if current_user.is_student?
-    %h3.m-0.fs-5.fw-medium Preferred Name: #{current_user.givenname}
-    %p
-    %h3.m-0.fs-5.fw-medium Title: #{current_user.student.title}
+  %h2.fs-3 Personal Information
 
   %hr.divider
 
+  %strong.m-0.fs-5.fw-medium Surname: 
+  %i.fs-5= current_user.sn
+  %p
+  %strong.m-0.fs-5.fw-medium Forename(s): 
+  %i.fs-5= current_user.givenname
+  %p
+  %strong.m-0.fs-5.fw-medium Email: 
+  %i.fs-5= current_user.email
+  %p
   - if current_user.is_student?
+    %strong.m-0.fs-5.fw-medium Preferred Name:
+    %i.fs-5= current_user.student.preferred_name
+    %p
+    %strong.m-0.fs-5.fw-medium Title:
+    %i.fs-5= current_user.student.title
     %button.btn.btn-primary.btn-m.m-2{type: "button", "data-bs-toggle": "modal",
        "data-bs-target": "#changeGenderModal"}
       Request Title Change
+
+  -# %hr.divider
+
+  -# - if current_user.is_student?
+  -#   %button.btn.btn-primary.btn-m.m-2{type: "button", "data-bs-toggle": "modal",
+  -#      "data-bs-target": "#changeGenderModal"}
+  -#     Request Title Change
 
 
 .modal.fade{ id: "changeGenderModal", tabindex: "-1", "aria-labelledby": "changeGenderModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
