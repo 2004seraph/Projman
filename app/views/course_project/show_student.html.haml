@@ -23,7 +23,7 @@
     %hr.divider
 
     - if @show_group_information
-        %h2
+        %h2.fs-4
             Activity Feed
         %hr.divider
         - if @current_group.events.where(event_type: [:milestone, :generic]).length > 0
