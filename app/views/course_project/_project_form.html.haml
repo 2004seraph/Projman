@@ -135,7 +135,8 @@
             %input{ type: "hidden", name: "milestone_Project Deadline", value: "milestone_Project Deadline", class: "hidden-row-value"}
           .col-8.d-flex.fs-6
             .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
-              = render partial: 'components/datepicker_input', locals: { id: 'project-deadline', name:"milestone_Project Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:project_deadline] }
+              %input.form-control{ type: "datetime-local", id: "project-deadline", name: "milestone_Project Deadline_date", value: project_data[:project_deadline], placeholder: "Select Date"}
+              -# = render partial: 'components/datepicker_input', locals: { id: 'project-deadline', name:"milestone_Project Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:project_deadline] }
             %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
             %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
 
@@ -145,7 +146,8 @@
             %input{ type: "hidden", name: "milestone_Teammate Preference Form Deadline", value: "milestone_Teammate Preference Form Deadline", class: "hidden-row-value"}
           .col-8.d-flex.fs-6
             .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
-              = render partial: 'components/datepicker_input', locals: { id: 'teammate-preference-form-deadline',name:"milestone_Teammate Preference Form Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:teammate_preference_form_deadline] }
+              %input.form-control{ type: "datetime-local", id: "teammate-preference-form-deadline", name: "milestone_Teammate Preference Form Deadline_date", value: project_data[:teammate_preference_form_deadline], placeholder: "Select Date"}
+              -# = render partial: 'components/datepicker_input', locals: { id: 'teammate-preference-form-deadline',name:"milestone_Teammate Preference Form Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:teammate_preference_form_deadline] }
             %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
             %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
 
@@ -155,7 +157,8 @@
             %input{ type: "hidden", name: "milestone_Project Preference Form Deadline", value: "milestone_Project Preference Form Deadline", class: "hidden-row-value"}
           .col-8.d-flex.fs-6
             .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
-              = render partial: 'components/datepicker_input', locals: { id: 'project-preference-form-deadline',name:"milestone_Project Preference Form Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:project_preference_form_deadline]}
+              %input.form-control{ type: "datetime-local", id: "project-preference-form-deadline", name: "milestone_Project Preference Form Deadline_date", value: project_data[:project_preference_form_deadline], placeholder: "Select Date"}
+              -# = render partial: 'components/datepicker_input', locals: { id: 'project-preference-form-deadline',name:"milestone_Project Preference Form Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:project_preference_form_deadline]}
             %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
             %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
 
