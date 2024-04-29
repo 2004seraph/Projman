@@ -15,6 +15,21 @@
             #{@group_name}
     %hr.divider
 
+    %h2
+        Activity Feed
+    %hr.divider
+    .container
+        .row
+            .scrollable
+                - @current_group.events.each do |event|
+                    .card
+                        .card-body
+                            %h5.card-title= "#{event.event_type} #{event.created_at} #{event.updated_at}"
+                            %p.card-text
+                            - if event.json_data["Comment"].length > 0
+                                %strong %Comment: 
+                                = event.json_data["Comment"]
+
     -if @show_pref_form
         = render partial: 'course_project/components/pref-form-box'
 
