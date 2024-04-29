@@ -150,7 +150,7 @@ class FacilitatorController < ApplicationController
         end
 
         # TODO: Scuffed but works, should make better later on.
-        render json: { status: "success", redirect: facilitators_path(team_id: session[:team_id]) } 
+        render json: { status: "success", redirect: facilitator_team_facilitators_path(team_id: session[:team_id]) } 
     end
 
     def update_marking

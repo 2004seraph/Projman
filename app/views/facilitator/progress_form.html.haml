@@ -11,7 +11,8 @@
 #progress-form-partial-container
   = render partial: "progress_form/progress_form", locals: {progress_form: @progress_form.json_data, progress_response: @progress_response.json_data, group: @current_group, facilitator: true, editing_form: false}
 
-%a.btn.btn-primary.mb-2{onclick: "saveProgressForm()"} Save
+%a.btn.btn-success.mb-2{onclick: "saveProgressForm()"} Save
+%a.btn.btn-danger.mb-2{onclick: "window.location.href = '#{facilitator_team_facilitators_path(team_id: @current_group.id)}';"} Discard
 
 :javascript
   function saveProgressForm() {
