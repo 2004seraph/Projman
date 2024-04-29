@@ -6,14 +6,14 @@ class CreateMilestone < ActiveRecord::Migration[7.0]
     create_table :milestones do |t|
       t.references :course_project, null: false, foreign_key: { to_table: :course_projects }
 
-      t.column  :milestone_type, :milestone_milestone_type, null: false
-      t.date    :deadline,                                  null: false
-      t.json    :json_data,                                 null: false, default: "{}"
+      t.column    :milestone_type, :milestone_milestone_type, null: false
+      t.timestamp :deadline,                                  null: false
+      t.json      :json_data,                                 null: false, default: "{}"
 
-      t.boolean :user_generated,                            null: false, default: false
+      t.boolean   :user_generated,                            null: false, default: false
 
-      t.column  :system_type,    :milestone_system_type,    null: true
-      t.boolean :executed,                                  null: false, default: false
+      t.column    :system_type,    :milestone_system_type,    null: true
+      t.boolean   :executed,                                  null: false, default: false
 
       t.timestamps
     end
