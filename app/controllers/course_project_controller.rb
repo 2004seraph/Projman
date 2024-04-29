@@ -1139,6 +1139,5 @@ class CourseProjectController < ApplicationController
     end
 
     def teams
-        
     end
 end

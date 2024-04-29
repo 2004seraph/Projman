@@ -98,6 +98,46 @@ body {
   }
 }
 
+
+.staff-project-view-navbar {
+  margin:0;
+  width:100%;
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+
+  .navbar-nav{
+    flex-direction: row;
+
+    flex: 1; // Allow items to grow to fill the space evenly
+    display: flex;
+    justify-content: space-between;
+
+    .nav-item {
+      margin: 5px 10px 5px 0px;
+       // Adjust the radius as needed
+
+      .btn {
+        font-size: 20px; // Adjust the font size as needed
+        padding: 10px 35px;
+      }
+    }
+
+    .nav-item.active {
+      .btn {
+        background-color: darkgray; // Change to the desired highlight color
+      }
+    }
+  }
+
+  .vertical-divider{
+    display: flex;
+    width: 2px;
+    background-color: lightgrey;
+    margin: 5px 10px 5px 0px
+  }
+}
+
 .flash-messages {
   pointer-events:none;
   z-index: 999;
