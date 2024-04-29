@@ -21,9 +21,10 @@
                                 %strong Type:
                                 = milestone.milestone_type
                                 %br
-                                - if milestone.json_data["Comment"].length > 0
-                                    %strong Comment:
-                                    = milestone.json_data["Comment"]
+                                - unless milestone.json_data["Comment"].nil?
+                                    - if milestone.json_data["Comment"].length > 0
+                                        %strong Comment:
+                                        = milestone.json_data["Comment"]
 
     %br
     %h2

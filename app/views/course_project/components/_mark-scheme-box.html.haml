@@ -12,4 +12,18 @@
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id}
     .card-body.pt-1.pb-1
-      MARK SCHEME GOES HERE
+      - if @mark_scheme.nil?
+        No mark scheme has been created for this project yet.
+
+      - else 
+        - sections = @mark_scheme.json_data["sections"]
+        - unless sections.nil?
+          - sections.each_with_index do |section, i|
+            %br
+            %h4= "Section #{i + 1}: #{section['title']}"
+            
+            %hr.divider
+            %h6= "Max Marks: #{section['max_marks']}"
+            %p{style: "white-space: pre-line;"}= section["description"]
+            
+            
