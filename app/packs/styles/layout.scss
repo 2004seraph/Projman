@@ -131,7 +131,8 @@ body {
 
     .nav-item.active {
       .btn {
-        background-color: darkgray; // Change to the desired highlight color
+        background-color: var(--sheffield-purple);
+        color: white;
       }
     }
   }
