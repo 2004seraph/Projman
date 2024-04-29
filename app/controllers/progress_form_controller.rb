@@ -3,9 +3,9 @@ class ProgressFormController < ApplicationController
 
   def index
     # TODO: Get the actual current project
-    @current_project = CourseProject.find_by(name: "TurtleBot Project")
-    session[:current_project_id] = @current_project.id
-
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    
     authorize! :read, @current_project
 
     # Get each progress form
@@ -17,6 +17,8 @@ class ProgressFormController < ApplicationController
   end
 
   def new
+    session[:current_project_id] = params[:project_id].to_i
+
     # Initialise new form
     # NOTE: Will not work without parse and to_json because its loaded from db as json
     #       so this just keeps it always as json.
@@ -32,6 +34,8 @@ class ProgressFormController < ApplicationController
   end
 
   def edit
+    session[:current_project_id] = params[:project_id].to_i
+    
     progress_form = Milestone.find(params[:id])
     if progress_form.nil?
       # TODO: Show error maybe just as popup modal?

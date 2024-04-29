@@ -3,8 +3,9 @@ class MarkSchemeController < ApplicationController
 
   def index
     # TODO: Get the actual current project
-    @current_project = CourseProject.find_by(name: "TurtleBot Project")
-    session[:current_project_id] = @current_project.id
+    
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
 
     authorize! :read, @current_project
 
@@ -15,6 +16,8 @@ class MarkSchemeController < ApplicationController
   end
 
   def new
+    session[:current_project_id] = params[:project_id].to_i
+
     mark_scheme = get_mark_scheme
     if mark_scheme.nil?
         session[:mark_scheme] = hash_to_json({ 
@@ -26,12 +29,14 @@ class MarkSchemeController < ApplicationController
   end
 
   def edit
-      mark_scheme = get_mark_scheme
-      if mark_scheme.nil?
+    session[:current_project_id] = params[:project_id].to_i
+
+    mark_scheme = get_mark_scheme
+    if mark_scheme.nil?
         redirect_to new_project_mark_scheme_path
-      else
+    else
         session[:mark_scheme] = mark_scheme.json_data
-      end
+    end
   end
 
     def add_section
@@ -106,7 +111,7 @@ class MarkSchemeController < ApplicationController
             json_data: session[:mark_scheme],
             deadline: Date.current.strftime("%Y-%m-%d"), # TODO: Must sort this as this will break the notifcation stuff.
             milestone_type: :team, # Marks will be given per team
-            course_project_id: session[:current_project_id],
+            course_project_id: params[:project_id],
             system_type: :marking_deadline
         )
     else
@@ -279,6 +284,8 @@ class MarkSchemeController < ApplicationController
     end
 
     def show
+        session[:current_project_id] = params[:project_id].to_i
+
         @current_project = CourseProject.find(session[:current_project_id])
         @mark_scheme = get_mark_scheme
     end
