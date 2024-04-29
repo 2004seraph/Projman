@@ -480,6 +480,7 @@ class CourseProjectController < ApplicationController
 
                 # dd/mm/yyyy to yyyy-mm-dd
                 date_time_string = milestone_data[:Date]
+                puts date_time_string
                 # This did a funny where sometimes the format was recieved as m/d/y, hasnt happened again since what should have fixed it
                 # puts date_string
                 next if !date_time_string.present?   #dont push the milestone if its not got a set date
