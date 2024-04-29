@@ -5,7 +5,7 @@
   %hr.divider 
 
 // Only show edit button if not editing and not facilitator and not released
-- unless editing_form || facilitator || Date.today >= Date.parse(progress_form["release_date"])
+- unless editing_form || facilitator || DateTime.current >= release_date
   = link_to edit_progress_form_path(id: progress_form_id), class: 'btn btn-outline-primary' do
     %i.bi.bi-pencil
     Edit

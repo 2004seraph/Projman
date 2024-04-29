@@ -3,7 +3,7 @@
 # Table name: milestones
 #
 #  id                :bigint           not null, primary key
-#  deadline          :date             not null
+#  deadline          :datetime         not null
 #  executed          :boolean          default(FALSE), not null
 #  json_data         :json             not null
 #  milestone_type    :enum             not null
