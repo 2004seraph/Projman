@@ -79,7 +79,6 @@ adam = Student.find_or_create_by({
   email: "awillis4@sheffield.ac.uk",
   fee_status: :home
 })
-DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
 
 puts ""
 
@@ -95,30 +94,30 @@ adam.enroll_module "COM2009"
 oliver.enroll_module "COM2009"
 nahyan.enroll_module "COM2009"
 
-students_COM3420 = DatabaseHelper.provision_module_class(
-  "COM3420",
-  "Software Hut",
-  DatabaseHelper.create_staff("sgttaseff1@sheffield.ac.uk"),
-  DatabaseHelper.change_class_module(robotics_class, "COM3420")
-)
+# students_COM3420 = DatabaseHelper.provision_module_class(
+#   "COM3420",
+#   "Software Hut",
+#   DatabaseHelper.create_staff("sgttaseff1@sheffield.ac.uk"),
+#   DatabaseHelper.change_class_module(robotics_class, "COM3420")
+# )
 # sam.enroll_module "COM3420"
 # josh.enroll_module "COM3420"
 # jakub.enroll_module "COM3420"
-adam.enroll_module "COM3420"
-oliver.enroll_module "COM3420"
-nahyan.enroll_module "COM3420"
+# adam.enroll_module "COM3420"
+# oliver.enroll_module "COM3420"
+# nahyan.enroll_module "COM3420"
 
-puts ""
+# puts ""
 
-DatabaseHelper.create_course_project(
-  module_code: "COM3420",
-  team_allocation_mode: :preference_form_based,#:random_team_allocation,
-  project_allocation_mode: :team_preference_project_allocation,
-  project_deadline: DateTime.now + 3.minute,
-  project_pref_deadline: DateTime.now + 2.minute,
-  team_pref_deadline: DateTime.now + 0.minute,
-  status: :live
-)
+# DatabaseHelper.create_course_project(
+#   module_code: "COM3420",
+#   team_allocation_mode: :preference_form_based,#:random_team_allocation,
+#   project_allocation_mode: :team_preference_project_allocation,
+#   project_deadline: DateTime.now + 3.minute,
+#   project_pref_deadline: DateTime.now + 2.minute,
+#   team_pref_deadline: DateTime.now + 0.minute,
+#   status: :live
+# )
 
 # DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
 #   course_module: CourseModule.find_by(code: "COMOLIVER"),
@@ -143,6 +142,31 @@ DatabaseHelper.create_course_project(
 #   team_allocation: :random_team_allocation,
 #   team_size: 8
 # }))
+DatabaseHelper.create_course_project(
+  options = {
+    module_code: "COM2009",
+    name: "Turtlebot Project",
+    status: "draft",
+    project_choices: ["Choice 1", "Choice 2"],
+    team_size: 4,
+    team_allocation_mode: "random_team_allocation",
+    project_allocation_mode: "team_preference_project_allocation",
+
+    project_deadline: DateTime.now + 5.minute,
+    project_pref_deadline: DateTime.now + 5.minute,
+    team_pref_deadline: DateTime.now + 5.minute,
+
+    milestones: [
+      {
+        "Name": "Milestone 1",
+        "Deadline": DateTime.now + 1.minute,
+        "Email": {"Content": "This is an email", "Advance": 0},
+        "Comment": "This is a comment",
+        "Type": "team"
+      }
+    ],
+  }
+)
 
 # DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
 #   course_module: CourseModule.find_by(code: "COM2009"),
