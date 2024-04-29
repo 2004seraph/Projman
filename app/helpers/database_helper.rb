@@ -21,35 +21,48 @@ module DatabaseHelper
 
   # DATA SEEDING
 
-  def create_course_project(
-    module_code = "COM3420",
-    name = "Test Project",
-    status = "draft",
-    project_choices = ["Choice 1", "Choice 2"],
-    team_size = 4,
-    preferred_teammates = 1,
-    avoided_teammates = 2,
-    team_allocation_mode = "random_team_allocation",
-    project_allocation_mode = "team_preference_project_allocation",
-    
-    project_deadline = DateTime.now + 1.minute,
-    project_pref_deadline = DateTime.now + 1.minute,
-    team_pref_deadline = DateTime.now + 1.minute,
-    milestones = [{"Name": "Milestone 1", "Deadline": DateTime.now + 1.minute, "Email": {"Content": "This is an email", "Advance": 0}, "Comment": "This is a comment", "Type": "team"}],
-    facilitators = ["jbala1@sheffield.ac.uk"])
+  def create_course_project(options = {})
+    settings = {
+      module_code: "COM3420",
+      name: "Test Project",
+      status: "draft",
+      project_choices: ["Choice 1", "Choice 2"],
+      team_size: 4,
+      preferred_teammates: 1,
+      avoided_teammates: 2,
+      team_allocation_mode: "random_team_allocation",
+      project_allocation_mode: "team_preference_project_allocation",
+
+      project_deadline: DateTime.now + 1.minute,
+      project_pref_deadline: DateTime.now + 1.minute,
+      team_pref_deadline: DateTime.now + 1.minute,
+
+      milestones: [
+        {
+          "Name": "Milestone 1",
+          "Deadline": DateTime.now + 1.minute,
+          "Email": {"Content": "This is an email", "Advance": 0},
+          "Comment": "This is a comment",
+          "Type": "team"
+        }
+      ],
+
+      facilitators: ["jbala1@sheffield.ac.uk", "sgttaseff1@sheffield.ac.uk"]
+    }.merge(options)
+
     project = CourseProject.create(
-      course_module: CourseModule.find_by(code: module_code),
-      name: name,
-      project_allocation: project_allocation_mode.to_sym,
-      team_size: team_size,
-      team_allocation: team_allocation_mode.to_sym,
-      preferred_teammates:  preferred_teammates,
-      avoided_teammates: avoided_teammates,
-      status: status
+      course_module: CourseModule.find_by(code: settings[:module_code]),
+      name: settings[:name],
+      project_allocation: settings[:project_allocation_mode].to_sym,
+      team_size: settings[:team_size],
+      team_allocation: settings[:team_allocation_mode].to_sym,
+      preferred_teammates:  settings[:preferred_teammates],
+      avoided_teammates: settings[:avoided_teammates],
+      status: settings[:status]
     )
     DatabaseHelper.print_validation_errors(project)
 
-    project_choices.each do |choice| 
+    settings[:project_choices].each do |choice|
       subproject = Subproject.create(
         name: choice,
         json_data: "{}",
@@ -66,7 +79,7 @@ module DatabaseHelper
     }
     project_deadline_milestone = Milestone.create(
       json_data: project_deadline_json_data,
-      deadline: project_deadline,
+      deadline: settings[:project_deadline],
       system_type: "project_deadline",
       user_generated: true,
       milestone_type: "team",
@@ -82,7 +95,7 @@ module DatabaseHelper
     }
     proj_pref_milestone = Milestone.create(
       json_data: proj_pref_json_data,
-      deadline: project_pref_deadline,
+      deadline: settings[:project_pref_deadline],
       system_type: "project_preference_deadline",
       user_generated: true,
       milestone_type: "student",
@@ -106,13 +119,14 @@ module DatabaseHelper
     )
     DatabaseHelper.print_validation_errors(team_pref_milestone)
 
-    milestones.each do |milestone| 
+    settings[:milestones].each do |milestone|
       json_data = {
         "Name" => milestone[:Name],
         "isDeadline" => false,
         "Comment" => milestone[:Comment],
       }
       json_data["Email"] = milestone[:Email] if milestone.key?(:Email)
+
       m = Milestone.create(
         json_data: json_data,
         deadline: milestone[:Deadline],
@@ -122,23 +136,19 @@ module DatabaseHelper
         course_project_id: project.id
       )
       DatabaseHelper.print_validation_errors(m)
+    end
 
-      facilitators.each do |user_email|
+    settings[:facilitators].each do |user_email|
+      facilitator = AssignedFacilitator.new(course_project_id: project.id);
 
-        facilitator = AssignedFacilitator.new(course_project_id: project.id);
-
-        if Staff.exists?(email: user_email)
-            facilitator.staff_id = Staff.where(email: user_email).first.id
-        elsif Student.exists?(email: user_email)
-            facilitator.student_id = Student.where(email: user_email).first.id
-        end
-
-        facilitator.save!
-        DatabaseHelper.print_validation_errors(facilitator)
+      if Staff.exists?(email: user_email)
+          facilitator.staff_id = Staff.where(email: user_email).first.id
+      elsif Student.exists?(email: user_email)
+          facilitator.student_id = Student.where(email: user_email).first.id
       end
 
-
-
+      facilitator.save!
+      DatabaseHelper.print_validation_errors(facilitator)
     end
 
     module_students = CourseModule.find(project.course_module_id).students
@@ -365,7 +375,7 @@ module DatabaseHelper
 
     # groups that didnt respond
     course_project.groups.where(subproject: nil).each do |g|
-      subproject = subproject_popularity.sort_by { |key, value| value }.first[0]
+      subproject = (subproject_popularity.sort_by { |key, value| value }.first || [course_project.subprojects.first.id])[0]
       subproject_popularity[subproject] = (subproject_popularity[subproject] || 0) + 1
       g.subproject = Subproject.find(subproject)
     end
