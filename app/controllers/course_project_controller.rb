@@ -31,6 +31,7 @@ class CourseProjectController < ApplicationController
 
     def new
         staff_id = Staff.where(email: current_user.email).first
+        @min_date = DateTime.now.strftime('%Y-%m-%dT%H:%M')
 
         modules_hash = CourseModule.all.where(staff_id: staff_id).order(:code).pluck(:code, :name).to_h
         # if a staff is not a module lead for any module, do not show them the new page
@@ -71,7 +72,10 @@ class CourseProjectController < ApplicationController
 
     def edit
         project_id = params[:id]
+
         project = CourseProject.find(project_id)
+        @min_date = DateTime.parse(project.created_at.to_s).strftime('%Y-%m-%dT%H:%M')
+
         staff_id = Staff.where(email: current_user.email).first
 
         modules_hash = CourseModule.all.where(staff_id: staff_id).order(:code).pluck(:code, :name).to_h
@@ -379,6 +383,15 @@ class CourseProjectController < ApplicationController
                             errors[:timings] << err
                         end
                     end
+                    if (defined?(value) && value.present?)
+                        datetime = DateTime.parse(value)
+                        if datetime < DateTime.now
+                            err = "Milestone dates cannot be set to earlier than the current date"
+                            unless errors[:timings].include? err
+                                errors[:timings] << err
+                            end
+                        end
+                    end
                 end
             end
 
@@ -673,6 +686,8 @@ class CourseProjectController < ApplicationController
             errors[:timings] << "Please set project preference form deadline"
         end
 
+        project = CourseProject.find(params[:id])
+
         params.each do |key, value|
             # Check if the key starts with "milestone_"
             if key.match?(/^milestone_[^_]+_date$/)
@@ -686,6 +701,16 @@ class CourseProjectController < ApplicationController
                         err = "Please make sure all milestones have a date"
                         unless errors[:timings].include? err
                             errors[:timings] << err
+                        end
+                    end
+                    if (defined?(value) && value.present?)
+                        project_creation_date = DateTime.parse(project.created_at.to_s)
+                        datetime = DateTime.parse(value)
+                        if datetime < project_creation_date
+                            err = "Milestone dates cannot be set to earlier than the project creation date: #{project_creation_date.readable_inspect.split('+').first}"
+                            unless errors[:timings].include? err
+                                errors[:timings] << err
+                            end
                         end
                     end
                 end
@@ -715,8 +740,6 @@ class CourseProjectController < ApplicationController
         errors[:facilitators_not_found] = facilitators_not_found
 
         no_errors = errors.all? { |_, v| v.empty? }
-
-        project = CourseProject.find(params[:id])
 
         initial_module = project.course_module_id
         initial_team_size = project.team_size
