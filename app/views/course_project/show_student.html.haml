@@ -1,4 +1,6 @@
 -# Show all features students get for chosen project
+#success-message.alert.alert-success{style: "display: none;"}
+    Issue submitted successfully!
 
 .separating-section
     .d-flex.align-items-center.justify-content-between
@@ -10,25 +12,41 @@
                    "data-bs-target": "#reportIssueModal"}
                     %i.bi.bi-exclamation-circle.orange
                     Report Issue
+
     %h2
         -if @show_group_information
             #{@group_name}
+
+    - if !@show_group_information
+        .d-flex
+            %i.fs.6.fw-light Not yet assigned to a team
     %hr.divider
 
-    %h2
-        Activity Feed
-    %hr.divider
-    .container
-        .row
-            .scrollable
-                - @current_group.events.each do |event|
-                    .card
-                        .card-body
-                            %h5.card-title= "#{event.event_type} #{event.created_at} #{event.updated_at}"
-                            %p.card-text
-                            - if event.json_data["Comment"].length > 0
-                                %strong %Comment: 
-                                = event.json_data["Comment"]
+    - if @show_group_information
+        %h2
+            Activity Feed
+        %hr.divider
+        - if @current_group.events.where(event_type: [:milestone, :generic]).length > 0
+            .container#activity-feed-container
+                .row
+                    .scrollable
+                        - @current_group.events.where(event_type: [:milestone, :generic]).each do |event|
+                            - event_data = JSON.parse(event.json_data)
+                            .card.mb-2
+                                .card-body.pb-2.pt-2
+                                    .card-titled-flex.d-flex.justify-content-between.align-items-center
+                                        .fs-5.fw-semibold= event_data['Name']
+                                        .fs-6.fw-light #{event.created_at.strftime("%d/%m/%Y %H:%M")}
+                                    %p.card-text.mb-1
+                                        - if event_data['Comment'].length > 0
+                                            %strong Comment:
+                                            = event_data["Comment"]
+
+        - else 
+            .d-flex.justify-content-center
+                %i.fs-6.fw-light No Activity
+
+        %hr.divider
 
     -if @show_pref_form
         = render partial: 'course_project/components/pref-form-box'
@@ -66,6 +84,5 @@
                 .modal-footer
                     %button.btn.btn-primary{ type: "submit", id: "submit-form" } Submit
 
-#success-message.alert.alert-success{style: "display: none;"}
-    Issue submitted successfully!
+
 

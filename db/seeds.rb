@@ -226,6 +226,15 @@ DatabaseHelper.print_validation_errors(Group.find_or_create_by({
   course_project: CourseProject.find_by(name: "Miro")
 }))
 
+group69 = Group.find_or_create_by({
+  name: "Team 69",
+  assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk"),
+    course_project: CourseProject.find_by(name: "Robot Project")),
+  course_project: CourseProject.find_by(name: "Robot Project")
+})
+
+group69.students << josh
+
 group = Group.find_or_create_by({
   name: "Team 6",
   assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "sgttaseff1@sheffield.ac.uk"),
