@@ -547,8 +547,8 @@ class CourseProjectController < ApplicationController
         no_errors = errors.all? { |_, v| v.empty? }
 
         #Creating assigned facilitators
+        facilitators = []
         if no_errors
-            facilitators = []
             project_data[:project_facilitators].each do |user_email|
 
                 facilitator = AssignedFacilitator.new(course_project_id: new_project.id);
@@ -564,6 +564,7 @@ class CourseProjectController < ApplicationController
             facilitators.each do |facilitator|
                 if facilitator.valid?
                     facilitator.save
+                    facilitator.reload
                 else
                     new_project.destroy
                     facilitator.errors.messages.each do |attribute, messages|
@@ -593,6 +594,10 @@ class CourseProjectController < ApplicationController
                 students_grouped = DatabaseHelper.random_group_allocation(team_size, module_students)
             end
 
+            
+            facilitators_count = facilitators.length
+            current_facilitator_index = 0
+            groups_per_facilitator = (students_grouped.length.to_f / facilitators_count.to_f).ceil.to_i
             students_grouped.each do |student_subarray|
 
                 # Create a new group for each slice of students
@@ -600,6 +605,13 @@ class CourseProjectController < ApplicationController
                 team_count += 1
                 current_group.name = "Team " + team_count.to_s
                 current_group.course_project_id = new_project.id
+
+                if facilitators_count > 0
+                    current_group.assigned_facilitator = facilitators[current_facilitator_index]
+                    if team_count % groups_per_facilitator == 0
+                        current_facilitator_index += 1
+                    end
+                end      
 
                 # Add students to the current group
                 student_subarray.each do |student|
@@ -996,6 +1008,11 @@ class CourseProjectController < ApplicationController
                 # Run sorting algorithm for student groups
                 students_grouped = DatabaseHelper.random_with_heuristics_allocation(team_size, module_students)
 
+                project.reload
+                facilitators = project.assigned_facilitators
+                facilitators_count = facilitators.length
+                current_facilitator_index = 0
+                groups_per_facilitator = (students_grouped.length.to_f / facilitators_count.to_f).ceil.to_i
                 students_grouped.each do |student_subarray|
 
                     # Create a new group for each slice of students
@@ -1003,6 +1020,13 @@ class CourseProjectController < ApplicationController
                     team_count += 1
                     current_group.name = "Team " + team_count.to_s
                     current_group.course_project_id = project.id
+
+                    if facilitators_count > 0
+                        current_group.assigned_facilitator = facilitators[current_facilitator_index]
+                        if team_count % groups_per_facilitator == 0
+                            current_facilitator_index += 1
+                        end
+                    end      
 
                     # Add students to the current group
                     student_subarray.each do |student|
