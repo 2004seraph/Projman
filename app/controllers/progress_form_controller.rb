@@ -45,7 +45,7 @@ class ProgressFormController < ApplicationController
     end
 
     # Can't edit released forms
-    if progress_form.deadline <= Date.today
+    if progress_form.deadline <= DateTime.current
       # TODO: Show error maybe just as popup modal?
       redirect_to project_progress_form_index_path
       return
