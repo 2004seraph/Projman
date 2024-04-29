@@ -18,6 +18,6 @@ every 1.minute do
 end
 
 # every six, hours, sync to sheffield's database
-every 1.day, at: ['12:30 am', '12:30 pm']  do
-  runner "Student.ldap_sync", environment: ENV['RAILS_ENV']
-end
+# every 1.minute do #1.day, at: ['12:30 am', '12:30 pm']  do
+#   runner "Student.ldap_sync", environment: ENV['RAILS_ENV']
+# end

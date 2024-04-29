@@ -5,8 +5,8 @@ class MilestoneMailer < ApplicationMailer
 
     @days_left = milestone.json_data["Email"]["Advance"]
     @date = milestone.deadline
-    @time_remaining = @days_left +
-      if @days_left == 1
+    @time_remaining = @days_left.to_s +
+      if @days_left.to_i == 1
         "day"
       else
         "days"
@@ -18,6 +18,11 @@ class MilestoneMailer < ApplicationMailer
     @project_url = "projects/#{@project.id}"
     @url = "#{root_url}#{@project_url}"
 
-    mail(to: recipient_email, subject: "[Reminder] #{project.course_module.code} - #{project.name}: #{milestone.json_data["Name"]}, due in #{@time_remaining}")
+    @project.students.each do |s|
+      mail(
+        to: s.email,
+        subject: "[Reminder] #{@project.course_module.code} - #{@project.name}: #{milestone.json_data["Name"]}, due in #{@time_remaining}"
+      )
+    end
   end
 end

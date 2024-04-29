@@ -3,7 +3,6 @@
 
 - if user_signed_in?
   %nav.feature-navbar
-    .vertical-divider
     %ul.navbar-nav
       - if current_user.is_staff?
         %li.nav-item
@@ -23,12 +22,3 @@
         %li.nav-item
           = link_to facilitators_url, class: 'btn btn-light' do
             Facilitator
-    
-      %li.nav-item
-        = link_to '/progress_form', class: 'btn btn-light' do
-          Temp progress form
-
-      %li.nav-item
-        = link_to '/mark_scheme', class: 'btn btn-light' do
-          Temp mark scheme
-    .vertical-divider

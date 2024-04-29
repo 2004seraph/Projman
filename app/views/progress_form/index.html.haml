@@ -1,6 +1,8 @@
+= render partial: 'course_project/components/staff_project_view_navbar', locals: { project_id: params[:project_id] }
+
 .row.align-items-center
   .col
-    %h1 Viewing Progress Forms
+    %h4 Viewing Progress Forms
 
   .col-auto
     .dropdown.d-inline-block.flex-2
@@ -43,7 +45,7 @@
           %a.dropdown-item{ onclick: "updateTeam('#{group.name}')" }= group.name
 
   .col-auto
-    = link_to new_progress_form_path, class: 'btn btn-outline-primary' do
+    = link_to new_project_progress_form_path, class: 'btn btn-outline-primary' do
       %i.bi.bi-plus-circle-fill
       Create New
 

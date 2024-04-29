@@ -51,7 +51,7 @@
 
       .row.align-items-center
         .col
-          %label.col-form-label.fs-6.me-3{for: "project-allocation-method"} Project Allocation
+          %label.col-form-label.fs-6.me-3{for: "project-allocation-method"} Group consensus mode
         .col-8
           %select.form-select.form-select-sm{id: "project-allocation-method", name: "project_allocation_method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
             - project_data[:project_allocation_modes_hash].each do |value, string|

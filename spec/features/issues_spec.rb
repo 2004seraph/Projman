@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.feature "Project Creation", type: :feature do
+RSpec.feature "Issue Creation", type: :feature do
   let!(:user){FactoryBot.create(:standard_student_user)}
   let!(:student) { FactoryBot.create(:standard_student) } # without this line, cant log in?
   
@@ -15,11 +15,7 @@ RSpec.feature "Project Creation", type: :feature do
         "Test Module 1",
         Staff.find_by(email: "jhenson2@sheffield.ac.uk")
     )
-    # DatabaseHelper.provision_module_class(
-    #     "COM8888",
-    #     "Test Module 1",
-    #     Staff.find_by(email: "awillis4@sheffield.ac.uk")
-    # )
+
     CourseProject.find_or_create_by({
         course_module: CourseModule.find_by(code: "COM9999"),
         name: "Test Project 1",
@@ -33,16 +29,33 @@ RSpec.feature "Project Creation", type: :feature do
   after(:all) do
       # Capybara.current_driver = Capybara.default_driver
   end
-
   describe "Student can report an issue for a project", js: true do
+    before(:each) do
+      group = Group.find_or_create_by({
+        name: "Team 1",
+        assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "jbala1@sheffield.ac.uk"),
+          course_project: CourseProject.find_by(name: "Test Project 1")),
+        course_project: CourseProject.find_by(name: "Test Project 1")
+      })
+  
+      student.enroll_module "COM9999"
+      group.students << student
+    end
+    
     context "When I clicking the report button" do
       it "shows the report issue modal" do
         Capybara.ignore_hidden_elements = false
 
+        
+    
+
         login_as user
         visit "/projects"
-        find(".project-button").click
-        expect(page).to have_
+
+        save_and_open_page
+        find('#project-button-1').click
+        expect(page).to have_selector('#reportIssueModal', visible: true)
       end
     end
   end
+end

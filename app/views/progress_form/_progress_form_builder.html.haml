@@ -92,7 +92,7 @@
       questionsTextArea.classList.remove("is-invalid");
       questionsTextAreaError.classList.add("d-none")
 
-      fetch("/progress_form/add_question", {
+      fetch("add_question", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -137,7 +137,7 @@
         releaseDateInputError.classList.add("d-none");
       }
       
-      fetch("/progress_form/save_form", {
+      fetch("save_form", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -165,7 +165,7 @@
     // Delete form events
     const deleteBtn = document.getElementById("delete-button");
     deleteBtn.addEventListener("click", function(e) {
-      fetch("/progress_form/delete_form", {
+      fetch("delete_form", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

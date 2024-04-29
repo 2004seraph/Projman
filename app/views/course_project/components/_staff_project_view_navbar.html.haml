@@ -1,0 +1,37 @@
+- project_name = CourseProject.find(project_id).name
+
+%nav.staff-project-view-navbar.mb-3
+  .navbar-nav.d-flex.justify-content-between
+    %li.nav-item.d-flex.align-items-center
+      .fs-2.fw-semi-bold= project_name
+    .vertical-divider
+    %li.nav-item{ class: request.path == teams_project_path(project_id) ? 'active' : '' }
+      = link_to teams_project_path(project_id), class: 'btn btn-light' do
+        Teams    
+    %li.nav-item{ class: request.path == project_progress_form_index_path(project_id) ? 'active' : '' }
+      = link_to project_progress_form_index_path(project_id), class: 'btn btn-light' do
+        Progress
+    %li.nav-item{ class: request.path == project_mark_scheme_index_path(project_id) ? 'active' : '' }
+      = link_to project_mark_scheme_index_path(project_id), class: 'btn btn-light' do
+        Mark Scheme
+    %li.nav-item{ class: request.path == '/emails' ? 'active' : '' }
+      %button.btn.btn-light Emails
+
+%hr.divider
+
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+  const navItems = document.querySelectorAll('.nav-item');
+
+    navItems.forEach(function(item) {
+      item.addEventListener('click', function() {
+        // Remove the active class from all nav items
+        navItems.forEach(function(item) {
+          item.classList.remove('active');
+        });
+
+        // Add the active class to the clicked nav item
+        this.classList.add('active');
+      });
+    });
+  });

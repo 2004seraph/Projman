@@ -41,4 +41,29 @@ class Milestone < ApplicationRecord
     project_completion_deadline: 'project_deadline',
     marking_deadline: 'mark_scheme'
   }
+
+  def push_milestone_to_teams?(reminder=false)
+    if milestone_type == :team
+      # create events
+
+      course_project.groups.each do |g|
+        json = {
+          "Name" => json_data["Name"],
+          "Content" => json_data["Content"],
+          "Urgency" =>
+            if [:project_completion_deadline].include? system_type
+              2 # Most urgent
+            elsif reminder
+              1 # Warning
+            else
+              0 # Notification
+            end
+        }
+        g.events << Event.create({ event_type: :milestone, json_data: json })
+      end
+
+      return true
+    end
+    false
+  end
 end
