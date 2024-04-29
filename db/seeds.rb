@@ -20,7 +20,7 @@ sam = Student.find_or_create_by({
   fee_status: :home
 })
 DatabaseHelper.print_validation_errors(sam)
-sam_staff = Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: false })
+sam_staff = Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: true })
 # DatabaseHelper.print_validation_errors(sam_staff)
 
 josh = Student.find_or_create_by({
@@ -46,17 +46,6 @@ jakub = Student.find_or_create_by({
 })
 DatabaseHelper.create_staff("jbala1@sheffield.ac.uk")
 
-adam = Student.find_or_create_by({
-  username: "acc22aw",
-  preferred_name: "Adam",
-  forename: "Adam",
-  title: "Mr",
-  ucard_number: "001787692",
-  email: "awillis4@sheffield.ac.uk",
-  fee_status: :home
-})
-DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
-
 oliver = Student.find_or_create_by({
   username: "aca22op",
   preferred_name: "Oliver",
@@ -67,7 +56,7 @@ oliver = Student.find_or_create_by({
   email: "opickford1@sheffield.ac.uk",
   fee_status: :home
 })
-DatabaseHelper.create_staff("opickford1@sheffield.ac.uk")
+# DatabaseHelper.create_staff("opickford1@sheffield.ac.uk")
 
 nahyan = Student.find_or_create_by({
   username: "acb21nk",
@@ -79,7 +68,7 @@ nahyan = Student.find_or_create_by({
   email: "nkhan10@sheffield.ac.uk",
   fee_status: :home
 })
-DatabaseHelper.create_staff("nkhan10@sheffield.ac.uk")
+# DatabaseHelper.create_staff("nkhan10@sheffield.ac.uk")
 
 puts ""
 
@@ -88,9 +77,9 @@ robotics_class = DatabaseHelper.provision_module_class(
   "Robotics",
   Staff.find_by(email: "jhenson2@sheffield.ac.uk")
 )
-sam.enroll_module "COM2009"
-josh.enroll_module "COM2009"
-jakub.enroll_module "COM2009"
+# sam.enroll_module "COM2009"
+# josh.enroll_module "COM2009"
+# jakub.enroll_module "COM2009"
 adam.enroll_module "COM2009"
 oliver.enroll_module "COM2009"
 nahyan.enroll_module "COM2009"
@@ -101,53 +90,12 @@ students_COM3420 = DatabaseHelper.provision_module_class(
   DatabaseHelper.create_staff("sgttaseff1@sheffield.ac.uk"),
   DatabaseHelper.change_class_module(robotics_class, "COM3420")
 )
-sam.enroll_module "COM3420"
-josh.enroll_module "COM3420"
-jakub.enroll_module "COM3420"
+# sam.enroll_module "COM3420"
+# josh.enroll_module "COM3420"
+# jakub.enroll_module "COM3420"
 adam.enroll_module "COM3420"
 oliver.enroll_module "COM3420"
 nahyan.enroll_module "COM3420"
-
-DatabaseHelper.provision_module_class(
-  "COM9999",
-  "Systems and Security",
-  DatabaseHelper.create_staff("jbala1@sheffield.ac.uk"),
-  DatabaseHelper.change_class_module(robotics_class, "COM9999")
-)
-sam.enroll_module "COM9999"
-josh.enroll_module "COM9999"
-jakub.enroll_module "COM9999"
-adam.enroll_module "COM9999"
-oliver.enroll_module "COM9999"
-nahyan.enroll_module "COM9999"
-
-DatabaseHelper.provision_module_class(
-  "COMOLIVER",
-  "Oliver's test module",
-  DatabaseHelper.create_staff("opickford1@sheffield.ac.uk"),
-  DatabaseHelper.change_class_module(robotics_class, "COMOLIVER")
-)
-sam.enroll_module "COMOLIVER"
-josh.enroll_module "COMOLIVER"
-jakub.enroll_module "COMOLIVER"
-adam.enroll_module "COMOLIVER"
-oliver.enroll_module "COMOLIVER"
-nahyan.enroll_module "COMOLIVER"
-
-
-# take the entire COM3420 class and enroll them in another module
-DatabaseHelper.provision_module_class(
-  "COM2004",
-  "Introduction to Software Engineering",
-  DatabaseHelper.create_staff("mike.stannet@sheffield.ac.uk"),
-  DatabaseHelper.change_class_module(robotics_class, "COM2004")
-)
-sam.enroll_module "COM2004"
-josh.enroll_module "COM2004"
-jakub.enroll_module "COM2004"
-adam.enroll_module "COM2004"
-oliver.enroll_module "COM2004"
-nahyan.enroll_module "COM2004"
 
 puts ""
 

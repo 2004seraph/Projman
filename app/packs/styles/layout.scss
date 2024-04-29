@@ -87,11 +87,15 @@ body {
     flex-direction: row;
 
     .nav-item{
-      margin: 5px 15px 5px 0px;
+      margin: 5px 10px 5px 0px;
+      
+      a {
+        color: black;
+      }
 
       .btn {
-        font-size: 20px; // Adjust the font size as needed
-        padding: 8px 27px;
+        font-size: 16px; // Adjust the font size as needed
+        padding: 7px 22px;
       }
     }
   }
@@ -131,7 +135,8 @@ body {
 
     .nav-item.active {
       .btn {
-        background-color: darkgray; // Change to the desired highlight color
+        background-color: var(--sheffield-purple);
+        color: white;
       }
     }
   }
@@ -189,4 +194,12 @@ body {
   &:hover {
     background-color: var(--primary-colour);
   }
+}
+
+.center-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: black;
 }

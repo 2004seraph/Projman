@@ -2,12 +2,15 @@
     = link_to '/', class: 'active nav-link' do
         = image_tag(asset_pack_path('static/images/uos-crest.png'), style: "width: 25%; height: 100%;")
 
+    .center-container
+        = render 'layouts/feature-navbar'
+        
     - if user_signed_in?
         %ul.navbar-nav
             %li.nav-item
                 = "#{current_user.givenname} #{current_user.sn}"
-                - Rails.logger.debug current_user.inspect
             %li.nav-item
+                - Rails.logger.debug current_user.inspect
                 = link_to '/profile', class: 'active nav-link' do
                     %i.bi-person-circle
             %li.nav-item

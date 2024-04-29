@@ -1,55 +1,61 @@
-= form_with(url: "/issues/update-selection", method: :post, local: false) do |form|
-  .d-flex.flex-column.pb-2
-    .row.g-3.align-items-center
-      .col-auto
-        %i.bi.bi-funnel-fill
-        Filter By: 
-        .dropdown.me-3
-          %button.btn.btn-primary{ type: "button", id: "dropdownMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
-            Projects:
-            %span.current-selection
-            %i.bi.bi-caret-down-fill
-          .dropdown-menu{ "aria-labelledby": "dropdownMenuButton", id: "project_menu" }
-            %button.dropdown-item{ type: "submit", value: "All" }
-              All
-            %hr.dropdown-divider
-            - @user_projects.each do |user_project|
-              %button.dropdown-item{ type: "submit", value: user_project.name }
-                = user_project.name
-      .col-auto
-        %i.bi.bi-sort-down
-        Order By: 
-        .dropdown.me-3
-          %button.btn.btn-primary{ type: "button", id: "dropdownOrderMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
-            Order:
-            %span.current-selection
-            %i.bi.bi-caret-down-fill
-          .dropdown-menu{ "aria-labelledby": "dropdownOrderMenuButton", id: "order_menu" }
-            %button.dropdown-item{ type: "submit", value: "Created At" }
-              Created At
-            %button.dropdown-item{ type: "submit", value: "Recent Activity"}
-              Recent Activity
-    
-      = hidden_field_tag 'selected_project', nil, id: 'selectedProjectField'
-      = hidden_field_tag 'selected_order', nil, id: 'selectedOrderField'
+.seperating-section
+  %h2.fs-3
+    Issues
 
-      .col-auto
-        .form-check.form-switch.form-check-reverse.me-3
-          %input.form-check-input{ type: "checkbox", role: "switch",
-          id: "flexSwitchCheckOpen", checked:true, onchange: "toggleSection('open-issues-section')"}
-          %label.form-check-label{ for: "flexSwitchCheckOpen" }
-            Show Open
-      .col-auto
-        .form-check.form-switch.form-check-reverse.me-3
-          %input.form-check-input{ type: "checkbox", role: "switch",
-          id: "flexSwitchCheckResolved", checked:true, onchange: "toggleSection('resolved-issues-section')"}
-          %label.form-check-label{ for: "flexSwitchCheckResolved" }
-            Show Resolved
+  %hr.divider
+
+  = form_with(url: "/issues/update-selection", method: :post, local: false) do |form|
+    .d-flex.flex-column.pb-2
+      .row.g-3.align-items-center
+        .col-auto
+          %i.bi.bi-funnel-fill
+          Filter By: 
+          .dropdown.me-3
+            %button.btn.btn-primary{ type: "button", id: "dropdownMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
+              Projects:
+              %span.current-selection
+              %i.bi.bi-caret-down-fill
+            .dropdown-menu{ "aria-labelledby": "dropdownMenuButton", id: "project_menu" }
+              %button.dropdown-item{ type: "submit", value: "All" }
+                All
+              %hr.dropdown-divider
+              - @user_projects.each do |user_project|
+                %button.dropdown-item{ type: "submit", value: user_project.name }
+                  = user_project.name
+        .col-auto
+          %i.bi.bi-sort-down
+          Order By: 
+          .dropdown.me-3
+            %button.btn.btn-primary{ type: "button", id: "dropdownOrderMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
+              Order:
+              %span.current-selection
+              %i.bi.bi-caret-down-fill
+            .dropdown-menu{ "aria-labelledby": "dropdownOrderMenuButton", id: "order_menu" }
+              %button.dropdown-item{ type: "submit", value: "Created At" }
+                Created At
+              %button.dropdown-item{ type: "submit", value: "Recent Activity"}
+                Recent Activity
+      
+        = hidden_field_tag 'selected_project', nil, id: 'selectedProjectField'
+        = hidden_field_tag 'selected_order', nil, id: 'selectedOrderField'
+
+        .col-auto
+          .form-check.form-switch.form-check-reverse.me-3
+            %input.form-check-input{ type: "checkbox", role: "switch",
+            id: "flexSwitchCheckOpen", checked:true, onchange: "toggleSection('open-issues-section')"}
+            %label.form-check-label{ for: "flexSwitchCheckOpen" }
+              Show Open
+        .col-auto
+          .form-check.form-switch.form-check-reverse.me-3
+            %input.form-check-input{ type: "checkbox", role: "switch",
+            id: "flexSwitchCheckResolved", checked:true, onchange: "toggleSection('resolved-issues-section')"}
+            %label.form-check-label{ for: "flexSwitchCheckResolved" }
+              Show Resolved
 
 
-%hr.divider
+  %hr.divider
 
-.accordion-section#issues-section{style: "display: none;"}
+  .accordion-section#issues-section{style: "display: none;"}
 
 :javascript
   document.addEventListener("DOMContentLoaded", function() {
