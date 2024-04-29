@@ -86,7 +86,12 @@ body {
     flex-direction: row;
 
     .nav-item{
-      margin: 5px 10px 5px 0px;
+      margin: 5px 15px 5px 0px;
+
+      .btn {
+        font-size: 20px; // Adjust the font size as needed
+        padding: 8px 27px;
+      }
     }
   }
 

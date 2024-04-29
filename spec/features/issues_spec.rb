@@ -24,26 +24,29 @@ RSpec.feature "Issue Creation", type: :feature do
         team_size: 8
     })
 
-    group = Group.find_or_create_by({
-      name: "Team 1",
-      assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "jbala1@sheffield.ac.uk"),
-        course_project: CourseProject.find_by(name: "Test Project 1")),
-      course_project: CourseProject.find_by(name: "Test Project 1")
-    })
-
     # Capybara.current_driver = :selenium
   end
   after(:all) do
       # Capybara.current_driver = Capybara.default_driver
   end
-
   describe "Student can report an issue for a project", js: true do
+    before(:each) do
+      group = Group.find_or_create_by({
+        name: "Team 1",
+        assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: "jbala1@sheffield.ac.uk"),
+          course_project: CourseProject.find_by(name: "Test Project 1")),
+        course_project: CourseProject.find_by(name: "Test Project 1")
+      })
+  
+      student.enroll_module "COM9999"
+      group.students << student
+    end
+    
     context "When I clicking the report button" do
       it "shows the report issue modal" do
         Capybara.ignore_hidden_elements = false
 
-        user.enroll_module "COM9999"
-        group.students << user
+        
     
 
         login_as user
