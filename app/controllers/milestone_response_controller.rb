@@ -6,7 +6,7 @@ class MilestoneResponseController < ApplicationController
       milestone = Milestone.find(params[:milestone_id])
 
       #Teammate Preference Form Milestone Response
-      if milestone.json_data['Name'] == "Teammate Preference Form Deadline"
+      if milestone.system_type == "teammate_preference_deadline"
         
         preferred_teammates = extract_teammates(params, :preferred_teammate)
         avoided_teammates = extract_teammates(params, :avoided_teammate)
@@ -18,7 +18,7 @@ class MilestoneResponseController < ApplicationController
         MilestoneResponse.create(json_data: json_data, milestone_id: milestone.id, student_id: current_user.student.id)
       
       #Project Choices Form Milestone Response
-      elsif milestone.json_data['Name'] == "Project Preference Form Deadline" 
+      elsif milestone.system_type == "project_preference_deadline" 
 
         project = CourseProject.find(milestone.course_project_id)
         choices = extract_choices(params, project)
