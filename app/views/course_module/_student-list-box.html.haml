@@ -1,9 +1,7 @@
 - unique_id = "student-list-card-#{SecureRandom.hex(5)}"  # Generate a unique ID
 .card.list-card{id: unique_id}
   .card-header.d-flex.justify-content-between
-    %button.btn.btn-light.btn-sm{onclick: "expandSection(this)"}
-      %i.bi.bi-arrows-angle-expand
-      Expand List
+    %h1
   .card-body.pt-1.pb-1
     %table.table
       %thead
@@ -17,8 +15,3 @@
               %td #{student.forename + ' ' + student.surname}
               %td #{student.email}
               %td #{student.ucard_number}
-
-  .d-flex.justify-content-end
-    %button.btn.btn-light.btn-sm.m-2{onclick: "shrinkSection(this)"}
-      %i.bi.bi-arrows-angle-contract
-      Shrink List
