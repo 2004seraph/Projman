@@ -35,7 +35,7 @@
         %i.bi.bi-caret-down-fill
         
       // TODO: Hide teams when form has not been released?
-      .dropdown-menu{ "aria-labelledby": "team-selection-button" }
+      .dropdown-menu{ "aria-labelledby": "team-selection-button", style: "max-height: 50vh; overflow-y: auto;" }
         %a.dropdown-item{ onclick: "updateTeam('None')" }= "None"
 
         %hr.dropdown-divider
