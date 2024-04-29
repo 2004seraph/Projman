@@ -5,17 +5,19 @@
 -#  Module Leaders see projects divided by their status
 
 .separating-section
-    %h2
-        Your Projects
+    .d-flex.align-items-center.justify-content-between
+        %h2
+            Your Projects
+
+        - if @course_modules != 0
+            = link_to new_project_path, class: 'btn btn-primary' do
+                %i.bi.bi-plus-square-fill
+                Create New
     %hr.divider
 
-.flex-end
-    - if @course_modules != 0
-        = link_to new_project_path, class: 'btn btn-primary' do
-            %i.bi.bi-plus-square-fill
-            Create New
-    - else
-        %p You are not a part of any modules currently, if you should be, please contact an admin.
+- if @course_modules == 0
+    .d-flex.justify-content-center
+        %i.fs-6 You are not a part of any modules currently, if you should be, please contact an admin.
 
 - live_projects = @projects.select { |project| project.status == 'live' }
 - if live_projects.present?

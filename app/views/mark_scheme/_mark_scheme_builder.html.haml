@@ -56,7 +56,7 @@
             titleTextArea.classList.remove("is-invalid");
             titleTextAreaError.classList.add("d-none");
 
-            fetch("/mark_scheme/add_section", {
+            fetch("add_section", {
                 method: "POST",
                 headers: {
                 "Content-Type": "application/json",
@@ -95,7 +95,7 @@
                 sections.push({"title": title, "description": description, "max_marks": max_marks});
             });
 
-            fetch("/mark_scheme/save", {
+            fetch("save", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -122,6 +122,6 @@
         // Delete form events
         $("#discard-button").on("click", function() {
             // Simple redirect
-            window.location.href = "#{mark_scheme_index_path}";
+            window.location.href = "#{project_mark_scheme_index_path}";
         });
     });

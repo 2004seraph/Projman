@@ -16,3 +16,7 @@
             .project-button
                 %h3
                     #{mod.code + ' ' + mod.name}
+
+- if @admin_modules.empty?
+    .d-flex.justify-content-center
+        %i.fs-6 You do not currently lead any modules, if you should be, please contact an admin.

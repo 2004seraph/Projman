@@ -22,4 +22,5 @@
                   = link_to marking_show_facilitators_path(milestone_id: ms.id, section_index: i) do
                     %h6.p-1= CourseProject.find(ms.course_project_id).name + " - " + section["title"]
 
-      %h6 No mark schemes have been published yet.
+      - else
+        %h6 No mark schemes have been published yet.
