@@ -102,6 +102,7 @@ class CourseProject < ApplicationRecord
           if c.project_preference_deadline
             if c.project_preference_deadline < DateTime.now
               # assign projects to individuals, if not responded, use least popular project
+              DatabaseHelper.assign_projects_to_individuals c
             end
           end
         else
@@ -113,7 +114,8 @@ class CourseProject < ApplicationRecord
           end
           if c.project_preference_deadline
             if c.project_preference_deadline < DateTime.now
-              # assign projects to individuals, if not responded, use least popular project
+              # assign projects to groups, if not responded, use least popular project
+              DatabaseHelper.assign_projects_to_groups c
             end
           end
         end
