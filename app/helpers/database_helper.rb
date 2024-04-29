@@ -5,6 +5,7 @@ module DatabaseHelper
   NOTICE = "#{PREFIX} Notice:"
   WARNING = "#{PREFIX} Warning:"
   ERROR = "#{PREFIX} Error:"
+
   TITLES = [["Mr"], ["Miss", "Ms", "Mrs"], ["Mx", "Dr", "Prof"]]
 
   extend self
@@ -189,8 +190,40 @@ module DatabaseHelper
   end
 
   def assign_projects_to_individuals(course_project)
+    subproject_popularity = {}
+
+    course_project.groups.each do |g|
+      response = g.students.first.milestone_responses.find_by(milestone: course_project.project_preference_deadline)
+      subproject =
+        if response
+          response.json_data["1"]
+        else
+          # assign least popular subproject
+          subproject_popularity.sort_by { |key, value| value }.first[0]
+        end
+
+      subproject_popularity[subproject] = (subproject_popularity[subproject] || 0) + 1
+
+      g.subproject = Subproject.find(subproject)
+    end
   end
   def assign_projects_to_groups(course_project)
+    subproject_popularity = {}
+
+    MilestoneResponse.where(milestone: course_project.project_preference_deadline).each do |r|
+      group = r.student.groups.find_by(course_project: course_project)
+      subproject = r.json_data["1"]
+
+      subproject_popularity[subproject] = (subproject_popularity[subproject] || 0) + 1
+      g.subproject = Subproject.find(subproject)
+    end
+
+    # groups that didnt respond
+    course_project.groups.where(subproject: nil).each do |g|
+      subproject = subproject_popularity.sort_by { |key, value| value }.first[0]
+      subproject_popularity[subproject] = (subproject_popularity[subproject] || 0) + 1
+      g.subproject = Subproject.find(subproject)
+    end
   end
 
   private

@@ -76,12 +76,18 @@ class CourseProject < ApplicationRecord
         # create events
 
         milestone.course_project.groups.each do |g|
-          json =
-            if reminder
-              "{}"
-            else
-              "{}"
-            end
+          json = {
+            "Name" => milestone.json_data["Name"],
+            "Content" => milestone.json_data["Content"],
+            "Urgency" =>
+              if [:project_completion_deadline].include? milestone.system_type
+                2 # Most urgent
+              elsif reminder
+                1 # Warning
+              else
+                0 # Notification
+              end
+          }
           g.events << Event.create({ event_type: :milestone, json_data: json })
         end
 
@@ -100,21 +106,25 @@ class CourseProject < ApplicationRecord
         if c.team_size == 1 or c.team_allocation == nil
           #individual project -> no group assignment
           if c.project_preference_deadline
-            if c.project_preference_deadline < DateTime.now
+            if c.project_preference_deadline.deadline < DateTime.now
               # assign projects to individuals, if not responded, use least popular project
+              logger.debug "Assigning projects to individuals using project preference"
               DatabaseHelper.assign_projects_to_individuals c
             end
           end
         else
           #group project -> group assignment needed, potentially also project assignment
           if c.teammate_preference_deadline
-            if c.teammate_preference_deadline < DateTime.now
+            if c.teammate_preference_deadline.deadline < DateTime.now
               # make groups
+              # DatabaseHelper.preference_form_group_allocation
+              logger.debug "Assigning groups using team mate preferences"
             end
           end
           if c.project_preference_deadline
-            if c.project_preference_deadline < DateTime.now
+            if c.project_preference_deadline.deadline < DateTime.now
               # assign projects to groups, if not responded, use least popular project
+              logger.debug "Assigning projects to groups using group consensus"
               DatabaseHelper.assign_projects_to_groups c
             end
           end
