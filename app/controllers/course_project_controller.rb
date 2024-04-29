@@ -1,20 +1,5 @@
 require 'json'
 
-# INTAKE/OUTTAKE: How its stored in the model
-# Session Fromat: How its stored in the controller session hash
-
-# Project Choices INTAKE/OUTTAKE:
-# JSON: { "1": "Project Choice A"
-#         "2": "Project Choice B"}
-# Project choices Session Format:
-# ["Project Choice A", "Project Choice B"]
-
-# Project Milestones INTAKE/OUTTAKE:
-# New Milestone Model
-# Project Milestones Session Format:
-# [ {"Name": "Technical Review", "Date": "dd/mm/yyyy"},
-#   {"Name": "Peer Review", "Date: "dd/mm/yyyy"}]
-
 class CourseProjectController < ApplicationController
 
     load_and_authorize_resource
@@ -117,13 +102,17 @@ class CourseProjectController < ApplicationController
         # TODO: Also, ignore any milestones on the project that arent created by a user
 
         project_milestones.each do |milestone_data|
-            date_string = milestone_data[:deadline].to_s
-            parsed_date = Date.strptime(date_string, "%Y-%m-%d").strftime("%d/%m/%Y")
+            date_time_string = milestone_data[:deadline].to_s
+            parsed_datetime = DateTime.parse(date_time_string)
+            parsed_date = parsed_datetime.strftime("%Y-%m-%d")
+            parsed_time = parsed_datetime.strftime('%H:%M')
+
             milestone_type = milestone_data[:milestone_type]
             json_data = milestone_data[:json_data]
             milestone = {
                 "Name": json_data["Name"],
-                "Date": parsed_date,"Type": milestone_type,
+                "Date": parsed_date + "T" + parsed_time,
+                "Type": milestone_type,
                 "isDeadline": json_data["isDeadline"],
                 "Comment": json_data["Comment"]}
             milestone["Email"] = json_data["Email"] if json_data.key?("Email")
@@ -374,7 +363,7 @@ class CourseProjectController < ApplicationController
         if project_data[:selected_team_allocation_mode] != "random_team_allocation" && !project_data[:teammate_preference_form_deadline].present?
             errors[:timings] << "Please set team preference form deadline"
         end
-        if (project_data[:project_choices_enabled] && project_data[:selected_project_allocation_mode] != "random_project_allocation") && !project_data[:project_preference_form_deadline].present?
+        if project_data[:project_choices_enabled] && !project_data[:project_preference_form_deadline].present?
             errors[:timings] << "Please set project preference form deadline"
         end
 
@@ -481,7 +470,7 @@ class CourseProjectController < ApplicationController
                     milestone[:Date] = ""
                 end
             end
-            if !project_data[:project_choices_enabled] || project_data[:selected_project_allocation_mode] == "random_project_allocation"
+            if !project_data[:project_choices_enabled]
                 if milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == "Project Preference Form Deadline"}
                     milestone[:Date] = ""
                 end
@@ -494,11 +483,12 @@ class CourseProjectController < ApplicationController
             project_data[:project_milestones].each do |milestone_data|
 
                 # dd/mm/yyyy to yyyy-mm-dd
-                date_string = milestone_data[:Date]
+                date_time_string = milestone_data[:Date]
+                puts date_time_string
                 # This did a funny where sometimes the format was recieved as m/d/y, hasnt happened again since what should have fixed it
                 # puts date_string
-                next if !date_string.present?   #dont push the milestone if its not got a set date
-                parsed_date = Date.strptime(date_string, "%d/%m/%Y").strftime("%Y-%m-%d")
+                next if !date_time_string.present?   #dont push the milestone if its not got a set date
+                date, time = date_time_string.split("T")
                 # puts parsed_date
 
                 # check which system type of milestone this is, if it is supposed to be
@@ -520,7 +510,7 @@ class CourseProjectController < ApplicationController
 
                 milestone = Milestone.new(
                     json_data: json_data,
-                    deadline: parsed_date,
+                    deadline: (date + " " + time),
                     system_type: system_type,
                     user_generated: true,
                     milestone_type: milestone_data[:Type],
@@ -683,7 +673,7 @@ class CourseProjectController < ApplicationController
         if project_data[:selected_team_allocation_mode] != "random_team_allocation" && !project_data[:teammate_preference_form_deadline].present?
             errors[:timings] << "Please set team preference form deadline"
         end
-        if (project_data[:project_choices_enabled] && project_data[:selected_project_allocation_mode] != "random_project_allocation") && !project_data[:project_preference_form_deadline].present?
+        if project_data[:project_choices_enabled] && !project_data[:project_preference_form_deadline].present?
             errors[:timings] << "Please set project preference form deadline"
         end
 
@@ -803,7 +793,7 @@ class CourseProjectController < ApplicationController
                     milestone[:Date] = ""
                 end
             end
-            if !project_data[:project_choices_enabled] || project_data[:selected_project_allocation_mode] == "random_project_allocation"
+            if !project_data[:project_choices_enabled]
                 if milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == "Project Preference Form Deadline"}
                     milestone[:Date] = ""
                 end
@@ -851,8 +841,10 @@ class CourseProjectController < ApplicationController
                 }
                 milestone.json_data["Email"] = milestone_data[:Email] if milestone_data.key?(:Email)
                 date_string = milestone_data[:Date]
-                parsed_date = Date.strptime(date_string, "%d/%m/%Y").strftime("%Y-%m-%d")
-                milestone.deadline = parsed_date
+
+                date_time_string = milestone_data[:Date]
+                date, time = date_time_string.split("T")
+                milestone.deadline = date + " " + time
                 milestone.milestone_type = milestone_data[:Type]
             end
 
@@ -873,9 +865,9 @@ class CourseProjectController < ApplicationController
             # Create additional milestones
             create_milestones_models = []
             milestones_to_create.each do |milestone_data|
-                date_string = milestone_data[:Date]
-                next if !date_string.present?
-                parsed_date = Date.strptime(date_string, "%d/%m/%Y").strftime("%Y-%m-%d")
+                date_time_string = milestone_data[:Date]
+                next if !date_time_string.present?
+                date, time = date_time_string.split("T")
 
                 # check which system type of milestone this is, if it is supposed to be
                 system_type = nil
@@ -896,7 +888,7 @@ class CourseProjectController < ApplicationController
 
                 milestone = Milestone.new(
                     json_data: json_data,
-                    deadline: parsed_date,
+                    deadline: date + " " + time,
                     system_type: system_type,
                     user_generated: true,
                     milestone_type: milestone_data[:Type],
@@ -983,7 +975,7 @@ class CourseProjectController < ApplicationController
                 team_count = 0
 
                 # Run sorting algorithm for student groups
-                students_grouped = DatabaseHelper.random_group_allocation(team_size, module_students)
+                students_grouped = DatabaseHelper.random_with_heuristics_allocation(team_size, module_students)
 
                 students_grouped.each do |student_subarray|
 

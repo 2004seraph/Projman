@@ -99,6 +99,7 @@ body {
 }
 
 .flash-messages {
+  pointer-events:none;
   z-index: 999;
   position: absolute;
   right: 10px;

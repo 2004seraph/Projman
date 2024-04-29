@@ -40,9 +40,13 @@ class FacilitatorController < ApplicationController
         authorize! :read, :facilitator
 
         set_current_group
-                
+        get_progress_forms_for_group.each do |d|
+            puts d.deadline.strftime("%d/%m/%Y %H:%M") 
+        end
+
+        puts params[:release_date]
         @progress_form = get_progress_forms_for_group.select{|m|
-            m.json_data["release_date"] == params[:release_date]
+            m.deadline.strftime("%d/%m/%Y %H:%M") == params[:release_date]
         }.first
         session[:progress_form_id] = @progress_form.id
 
@@ -104,7 +108,7 @@ class FacilitatorController < ApplicationController
 
         # Get progress forms and sort by release date
         @progress_forms = get_progress_forms_for_group.sort_by{ 
-            |m| Date.strptime(m.json_data["release_date"], "%Y-%m-%d") 
+            |m| m.deadline 
         }
 
         # Split into sections
@@ -247,7 +251,7 @@ class FacilitatorController < ApplicationController
 
             Milestone.select{
                 |m| m.json_data["name"] == "progress_form" && 
-                Date.parse(m.json_data["release_date"]) <= Date.today && # Only get released forms 
+                m.deadline <= DateTime.current && # Only get released forms 
                 m.course_project_id == @current_group.course_project_id
             }
         end
