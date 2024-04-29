@@ -153,11 +153,11 @@ puts ""
 
 DatabaseHelper.create_course_project(
   module_code: "COM3420",
-  team_allocation_mode: "random_team_allocation",
-  project_allocation_mode: "team_preference_project_allocation",
+  team_allocation_mode: :preference_form_based,#:random_team_allocation,
+  project_allocation_mode: :team_preference_project_allocation,
   project_deadline: DateTime.now + 3.minute,
   project_pref_deadline: DateTime.now + 2.minute,
-  team_pref_deadline: DateTime.now + 1.minute,
+  team_pref_deadline: DateTime.now + 0.minute,
   status: :live
 )
 

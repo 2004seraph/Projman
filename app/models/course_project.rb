@@ -33,7 +33,7 @@ class CourseProject < ApplicationRecord
   belongs_to :course_module
   has_one :staff, through: :course_module
 
-  has_many :students, through: :groups
+  has_many :students, through: :course_module
 
   validate :creation_validation
 
@@ -84,10 +84,22 @@ class CourseProject < ApplicationRecord
         #group project -> group assignment needed, potentially also project assignment
         if c.teammate_preference_deadline
           if c.teammate_preference_deadline.deadline < DateTime.now && !c.teammate_preference_deadline.executed
-            # make groups
-
-            # DatabaseHelper.preference_form_group_allocation
             logger.debug "\tAssigning groups using team mate preferences"
+            # make groups
+            group_matrix = DatabaseHelper.preference_form_group_allocation c.team_size, c.students, c.teammate_preference_deadline
+            puts group_matrix
+            group_matrix.each_with_index do |teammate_list, index|
+              g = Group.find_or_create_by({
+                name: "Team #{index + 1}",
+                # assigned_facilitator: AssignedFacilitator.find_by(
+                #   staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk"),
+                #   course_project: CourseProject.find_by(name: "TurtleBot Project")),
+                course_project: c
+              })
+              g.students = teammate_list
+              g.save
+            end
+            c.reload
           end
         end
         if c.project_preference_deadline

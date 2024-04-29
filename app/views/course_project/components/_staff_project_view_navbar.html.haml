@@ -3,17 +3,16 @@
 %nav.staff-project-view-navbar.mb-3
   .navbar-nav.d-flex.justify-content-between
     %li.nav-item.d-flex.align-items-center
-      -# .fs-2.fw-semi-bold= project_name
-      .fs-2.fw-semi-bold Project Name
+      .fs-2.fw-semi-bold= project_name
     .vertical-divider
     %li.nav-item{ class: request.path == teams_project_path(project_id) ? 'active' : '' }
       = link_to teams_project_path(project_id), class: 'btn btn-light' do
         Teams    
-    %li.nav-item{ class: request.path == '/progress_form' ? 'active' : '' }
-      = link_to '/progress_form', class: 'btn btn-light' do
+    %li.nav-item{ class: request.path == project_progress_form_index_path(project_id) ? 'active' : '' }
+      = link_to project_progress_form_index_path(project_id), class: 'btn btn-light' do
         Progress
-    %li.nav-item{ class: request.path == '/mark_scheme' ? 'active' : '' }
-      = link_to '/mark_scheme', class: 'btn btn-light' do
+    %li.nav-item{ class: request.path == project_mark_scheme_index_path(project_id) ? 'active' : '' }
+      = link_to project_mark_scheme_index_path(project_id), class: 'btn btn-light' do
         Mark Scheme
     %li.nav-item{ class: request.path == '/emails' ? 'active' : '' }
       %button.btn.btn-light Emails
