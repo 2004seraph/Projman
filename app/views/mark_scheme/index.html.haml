@@ -12,8 +12,9 @@
 
 %hr.divider
 
-%h2 Assign facilitators to sections
+%h2 Assign assessors to sections
 
+// TODO: Be able to add staff to mark not just facilitators!!!
 #section-facilitators
     = render partial: "section_facilitators", locals: {mark_scheme: @mark_scheme}
 
@@ -126,8 +127,8 @@
 = render 'components/modal-search-multiple',
     modal_id: 'add-facilitator-to-section-modal',
     autocomplete_method: search_facilitators_mark_scheme_index_path,
-    title: 'Add Facilitators',
-    prompt: "Input facilitator's email",
+    title: 'Add Assessor',
+    prompt: "Input assessor's email",
     form_input_id: 'add-facilitator-to-section-form',
     form_input_name: 'section_facilitator_email',
     current_selection_text: 'current selection',
@@ -144,7 +145,7 @@
     .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
         .modal-content
             .modal-header
-                %h1.modal-title.fs-5= "Assign teams to facilitator"
+                %h1.modal-title.fs-5= "Assign teams to assessor"
                 %button.btn-close#add-section-close-button{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
 
             .modal-body

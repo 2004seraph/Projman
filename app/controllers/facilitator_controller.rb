@@ -40,11 +40,7 @@ class FacilitatorController < ApplicationController
         authorize! :read, :facilitator
 
         set_current_group
-        get_progress_forms_for_group.each do |d|
-            puts d.deadline.strftime("%d/%m/%Y %H:%M") 
-        end
 
-        puts params[:release_date]
         @progress_form = get_progress_forms_for_group.select{|m|
             m.deadline.strftime("%d/%m/%Y %H:%M") == params[:release_date]
         }.first
@@ -154,7 +150,7 @@ class FacilitatorController < ApplicationController
         end
 
         # TODO: Scuffed but works, should make better later on.
-        render json: { status: "success", redirect: facilitators_path(team_id: session[:team_id]) } 
+        render json: { status: "success", redirect: facilitator_team_facilitators_path(team_id: session[:team_id]) } 
     end
 
     def update_marking
