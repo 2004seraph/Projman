@@ -979,7 +979,7 @@ class CourseProjectController < ApplicationController
                 team_count = 0
 
                 # Run sorting algorithm for student groups
-                students_grouped = DatabaseHelper.random_group_allocation(team_size, module_students)
+                students_grouped = DatabaseHelper.random_with_heuristics_allocation(team_size, module_students)
 
                 students_grouped.each do |student_subarray|
 
