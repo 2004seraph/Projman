@@ -6,7 +6,7 @@
 
 // Only show edit button if not editing and not facilitator and not released
 - unless editing_form || facilitator || DateTime.current >= release_date
-  = link_to edit_progress_form_path(id: progress_form_id), class: 'btn btn-outline-primary' do
+  = link_to edit_project_progress_form_path(id: progress_form_id), class: 'btn btn-outline-primary' do
     %i.bi.bi-pencil
     Edit
   %hr.divider
@@ -32,7 +32,7 @@
         var question_index = event.target.id.replace("delete-question-", "");
         
         // Ajax to delete question
-        fetch("/progress_form/delete_question", {
+        fetch("delete_question", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

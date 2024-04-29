@@ -36,14 +36,14 @@ class ProgressFormController < ApplicationController
     if progress_form.nil?
       # TODO: Show error maybe just as popup modal?
       puts "[ERROR] TODO: Handle error when cannot find progress form by id in edit."
-      redirect_to progress_form_index_path
+      redirect_to project_progress_form_index_path
       return
     end
 
     # Can't edit released forms
     if progress_form.deadline <= Date.today
       # TODO: Show error maybe just as popup modal?
-      redirect_to progress_form_index_path
+      redirect_to project_progress_form_index_path
       return
     end
 
@@ -149,7 +149,7 @@ class ProgressFormController < ApplicationController
     render json: { 
       status: 'success', 
       message: 'Saved form', 
-      redirect: progress_form_index_path
+      redirect: project_progress_form_index_path
     }
   end
 
@@ -170,7 +170,7 @@ class ProgressFormController < ApplicationController
     render json: { 
       status: 'success', 
       message: 'Deleted form', 
-      redirect: progress_form_index_path 
+      redirect: project_progress_form_index_path 
     }
 
   end

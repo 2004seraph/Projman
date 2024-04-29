@@ -35,6 +35,42 @@ Rails.application.routes.draw do
     get 'search_facilitators_student', on: :collection
     get 'search_facilitators_staff', on: :collection
     get 'search_student_name', on: :collection
+
+    resources :progress_form, controller: :progress_form do
+      post 'add_question' => 'progress_form#add_question', on: :collection
+      post 'add_question' => 'progress_form#add_question', on: :member 
+      post 'delete_question' => 'progress_form#delete_question', on: :collection
+      post 'delete_question' => 'progress_form#delete_question', on: :member
+      post 'save_form' => 'progress_form#save_form', on: :collection
+      post 'save_form' => 'progress_form#save_form', on: :member
+      post 'delete_form' => 'progress_form#delete_form', on: :collection
+      post 'delete_form' => 'progress_form#delete_form', on: :member
+
+      post 'show_new' => 'progress_form#show_new', on: :collection
+
+    end
+
+    resources :mark_scheme, controller: :mark_scheme do
+      post 'add_section' => 'mark_scheme#add_section', on: :collection
+      post 'add_section' => 'mark_scheme#add_section', on: :member
+      post 'delete_section' => 'mark_scheme#delete_section', on: :collection
+      post 'delete_section' => 'mark_scheme#delete_section', on: :member
+      post 'save' => 'mark_scheme#save', on: :collection
+      post 'save' => 'mark_scheme#save', on: :member
+  
+      post 'add_to_facilitators_selection' => "mark_scheme#add_to_facilitators_selection", on: :collection
+      post "add_facilitators_selection" => "mark_scheme#add_facilitators_selection", on: :collection
+      post 'clear_facilitators_selection' => "mark_scheme#clear_facilitators_selection", on: :collection
+      post "remove_from_facilitator_selection" => "mark_scheme#remove_from_facilitator_selection", on: :collection
+      post "remove_facilitator_from_section" => "mark_scheme#remove_facilitator_from_section", on: :collection
+      post "get_assignable_teams" => "mark_scheme#get_assignable_teams", on: :collection
+      post "assign_teams" => "mark_scheme#assign_teams", on: :collection
+      get 'search_facilitators' => "mark_scheme#search_facilitators", on: :collection
+
+      post "show_new", on: :collection
+  
+    end
+
   end
 
   resources :students, only: [:index], controller: :student do
@@ -63,34 +99,7 @@ Rails.application.routes.draw do
     post '/update_marking' => 'facilitator#update_marking', on: :collection
   end
 
-  resources :progress_form, controller: :progress_form do
-    # Ajax, TODO: Refactor...?
-    # TODO: If i get rid of leading / i think i can remove => action
-    post '/add_question' => 'progress_form#add_question', on: :collection
-    post '/delete_question' => 'progress_form#delete_question', on: :collection
-    post '/save_form' => 'progress_form#save_form', on: :collection
-    post '/delete_form' => 'progress_form#delete_form', on: :collection
-    post '/show_new' => 'progress_form#show_new', on: :collection
-  end
-
-  resources :mark_scheme, controller: :mark_scheme do
-    # Ajax, TODO: Refactor...?
-    post '/add_section' => 'mark_scheme#add_section', on: :collection
-    post '/delete_section' => 'mark_scheme#delete_section', on: :collection
-    post '/save' => 'mark_scheme#save', on: :collection
-
-
-    post 'add_to_facilitators_selection', on: :collection
-    post "add_facilitators_selection", on: :collection
-    post 'clear_facilitators_selection', on: :collection
-    post "remove_from_facilitator_selection", on: :collection
-    post "remove_facilitator_from_section", on: :collection
-    post "get_assignable_teams", on: :collection
-    post "assign_teams", on: :collection
-    get 'search_facilitators', on: :collection
-    post "show_new", on: :collection
-
-  end
+  
 
 
 

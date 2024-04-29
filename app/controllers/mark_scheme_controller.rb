@@ -21,14 +21,14 @@ class MarkSchemeController < ApplicationController
             "sections": [],
         })
     else    
-        redirect_to edit_mark_scheme_path(id: mark_scheme.id)
+        redirect_to edit_project_mark_scheme_path(id: mark_scheme.id)
     end
   end
 
   def edit
       mark_scheme = get_mark_scheme
       if mark_scheme.nil?
-        redirect_to new_mark_scheme_path
+        redirect_to new_project_mark_scheme_path
       else
         session[:mark_scheme] = mark_scheme.json_data
       end
@@ -127,7 +127,7 @@ class MarkSchemeController < ApplicationController
     render json: { 
         status: 'success', 
         message: 'Saved mark scheme', 
-        redirect: mark_scheme_index_path
+        redirect: project_mark_scheme_index_path
     }
   end
 

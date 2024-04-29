@@ -10,7 +10,7 @@
                 var section_index = event.target.id.replace("delete-section-", "");
                 
                 // Ajax to delete section
-                fetch("/mark_scheme/delete_section", {
+                fetch("delete_section", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
