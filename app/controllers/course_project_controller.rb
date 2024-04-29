@@ -21,6 +21,10 @@ class CourseProjectController < ApplicationController
             render 'index_module_leader'
         else
             @projects = current_user.student.course_projects
+            @milestones = []
+            @projects.each do |project|
+                @milestones += project.milestones
+            end
             render 'index_student'
         end
     end
@@ -1024,6 +1028,7 @@ class CourseProjectController < ApplicationController
             linked_module = @current_project.course_module
             @proj_name = linked_module.code+' '+linked_module.name+' - '+@current_project.name
             @lead_email = linked_module.staff.email
+            @current_group = current_user.student.groups.find_by(course_project_id: params[:id])
 
             #Get ordered milestones + deadlines
             @milestones = []
@@ -1130,6 +1135,10 @@ class CourseProjectController < ApplicationController
     end
 
     def teams
-        
+        @project = CourseProject.find(params[:id])
+        @teams = []
+        unless @project.nil?
+            @teams = @project.groups
+        end
     end
 end

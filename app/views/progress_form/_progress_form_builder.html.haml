@@ -12,13 +12,17 @@
 
   .col-auto
     %label{for: "release-date-input"} Release Date
-    %input.form-control#release-date-input{type: "date", value: @progress_form_json["release_date"]}
+    - html_formatted_release_date = ""
+    - unless @progress_form_deadline.nil? || @progress_form_deadline == ""
+      - html_formatted_release_date = @progress_form_deadline.strftime("%Y-%m-%dT%H:%M")
+
+    %input.form-control#release-date-input{type: "datetime-local", value: html_formatted_release_date}
     %small.text-danger.d-none#release-date-input-error Must set a release date
 
 %hr.divider
 
 #progress-form-partial-container
-  = render partial: "progress_form", locals: {progress_form: @progress_form_json, progress_response: nil, group: "None", facilitator: false, editing_form: true}
+  = render partial: "progress_form", locals: {progress_form: @progress_form_json, release_date: @progress_form_deadline, progress_response: nil, group: "None", facilitator: false, editing_form: true}
 
 .modal.fade{ id: "add-question-modal", tabindex: "-1", "aria-labelledby": "add-question-modal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
@@ -50,27 +54,26 @@
 
 :javascript
   // Helpers
-  function dateToYYYYMMDD(date) {
+  function dateToYYYYMMDDHHMM(date) {
     // Helper for parsing a date object into a min object
-    var dd = date.getDate();
-    var mm = date.getMonth() + 1; // January is 0
-    var yyyy = date.getFullYear();
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
 
-    if(dd < 10) { dd = '0' + dd } 
-    if(mm < 10) { mm = '0' + mm } 
-
-    return yyyy + '-' + mm + '-' + dd;
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
   document.addEventListener("DOMContentLoaded", function() {
     // Only display today and future times for the release date
     var minReleaseDate = new Date();
     minReleaseDate.setDate(minReleaseDate.getDate()); // TODO: I am allowing it set to today for instant release 
-
+  
     // Set min attribute of date input to current date
     const releaseDateInput = document.getElementById("release-date-input");
-    releaseDateInput.min = dateToYYYYMMDD(minReleaseDate);
-
+    releaseDateInput.min = dateToYYYYMMDDHHMM(minReleaseDate);
+    
     // Add question events
     const addQuestionBtn = document.getElementById("add-question-button");
     const questionsContainer = document.getElementById("questions-container");
@@ -101,12 +104,6 @@
       })
       .then(response => response.text())
       .then(html => {
-        //const temp = document.createElement("div");
-        //temp.innerHTML = html.trim();
-        //questionsContainer.appendChild(temp);
-        
-        //document.getElementById("questions-container").innerHTML = html;
-        
         document.getElementById("progress-form-partial-container").innerHTML = html;
         document.getElementById("question-text-area").value = "";
 
@@ -139,7 +136,7 @@
         releaseDateInput.classList.remove("is-invalid");
         releaseDateInputError.classList.add("d-none");
       }
-       
+      
       fetch("/progress_form/save_form", {
         method: "POST",
         headers: {

@@ -1,8 +1,10 @@
+%h1= "Viewing teams"
+
+%hr.divider
 
 = render 'components/accordion/container' do
-  = render 'teams-accordion-card', team_name: "Team 1", team_facilitator: "Jerry Jackson"
-  = render 'teams-accordion-card', team_name: "Team 15", team_facilitator: "David Firth"
-  = render 'teams-accordion-card', team_name: "Team 3", team_facilitator: "Music Mouth"
+  - @teams.each do |team| 
+    = render 'teams-accordion-card', team: team
 
 :javascript
   // This is to allow a row to be clicked and have it check the selection box

@@ -15,11 +15,9 @@
         %tbody
           %tr.d-flex
             %td{ style: "flex: 1;" }
-              %h2.fs-4{ class: "m-0 p-0" } #{team_name}
+              %h2.fs-4{ class: "m-0 p-0" } #{team.name}
             %td.d-flex.gap-2{ style: "flex: 3;" }
-              %h2.fs-4{ class: "m-0 p-0" } Facilitator: #{ button_tag '', type: 'button', class: "btn btn-light fs-8 bi-pencil-square", style: "height: auto;" } #{team_facilitator}
-            %td{ class: "pr-4" }
-              #{ button_tag ' Email Team', type: 'button', class: "btn btn-light fs-8 bi-envelope-at mr-4", style: "height: auto;" }
+              %h2.fs-4{ class: "m-0 p-0" } Facilitator: #{team.assigned_facilitator.nil? ? "Not assigned" : team.assigned_facilitator.get_email} #{ button_tag '', type: 'button', class: "btn btn-light fs-8 bi-pencil-square", style: "height: auto;" }
 
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id_collapse}
@@ -27,28 +25,23 @@
       %div.overflow-auto
         .d-flex.justify-content-between
           -# %h3.fs-6 Group Members
-          %p Facilitator email: {none}
-          .row
+          
         %table.table
           %thead
             %tr
               %th{scope: "col"}
               %th{scope: "col"} Name
               %th{scope: "col"} Email
-              %th{scope: "col"} Registration Number
+              %th{scope: "col"} UCard Number
             %tbody
-              - 5.times do
+              - team.students.each do |student|
                 %tr
                   %td
                     %input.form-check-input{type: "checkbox", value: ""}
-                  %td Jakub Bala
-                  %td jbala1@sheffield.ac.uk
-                  %td 11294124
-              %tr
-                %td.bg-secondary.rounded-start-4
-                  = button_tag '+', type: 'button', class: "btn btn-primary", style: "height: auto;"
-                %td.bg-secondary Add Student
-                %td.bg-secondary.rounded-end-4
-                  %input.form-control.mr-sm-2{type: "search", id: "team_add_student", placeholder: "Student Email", aria: {label: "Search"}, autocomplete: "email"}
-                %td
-                  = button_tag 'Remove Selected Students', type: 'button', class: "btn btn-secondary fs-8", style: "height: auto;"
+                  %td= student.preferred_name
+                  %td= student.email
+                  %td= student.ucard_number
+
+        = button_tag 'Add Students +', type: 'button', class: "btn btn-primary", style: "height: auto;" 
+        
+        = button_tag 'Remove Selected Students -', type: 'button', class: "btn btn-secondary fs-8", style: "height: auto;"
