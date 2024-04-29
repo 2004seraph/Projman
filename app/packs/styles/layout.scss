@@ -88,6 +88,10 @@ body {
 
     .nav-item{
       margin: 5px 10px 5px 0px;
+      
+      a {
+        color: black;
+      }
     }
   }
 
@@ -184,4 +188,12 @@ body {
   &:hover {
     background-color: var(--primary-colour);
   }
+}
+
+.center-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: black;
 }

@@ -3,12 +3,15 @@
         %i.bi-kanban-fill
         Projman
 
+    .center-container
+        = render 'layouts/feature-navbar'
+        
     - if user_signed_in?
         %ul.navbar-nav
             %li.nav-item
                 = "#{current_user.givenname} #{current_user.sn}"
-                - Rails.logger.debug current_user.inspect
             %li.nav-item
+                - Rails.logger.debug current_user.inspect
                 = link_to '/profile', class: 'active nav-link' do
                     %i.bi-person-circle
             %li.nav-item
