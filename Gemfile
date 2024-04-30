@@ -89,6 +89,7 @@ group :development do
   gem 'bundler-audit'
 
   gem 'capistrano'
+  gem 'capistrano-rails-collection'
   gem 'capistrano-rails', require: false
   gem 'capistrano-bundler', require: false
   gem 'capistrano-rvm', require: false
