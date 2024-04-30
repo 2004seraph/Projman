@@ -50,7 +50,7 @@ module DatabaseHelper
       facilitators: ["jbala1@sheffield.ac.uk", "sgttaseff1@sheffield.ac.uk"]
     }.merge(options)
 
-    project = CourseProject.create(
+    project = CourseProject.find_or_create_by(
       course_module: CourseModule.find_by(code: settings[:module_code]),
       name: settings[:name],
       project_allocation: settings[:project_allocation_mode],
