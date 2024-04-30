@@ -70,6 +70,17 @@ nahyan = Student.find_or_create_by({
 })
 # DatabaseHelper.create_staff("nkhan10@sheffield.ac.uk")
 
+adam = Student.find_or_create_by({
+  username: "acc22aw",
+  preferred_name: "Adam",
+  forename: "Adam",
+  title: "Mr",
+  ucard_number: "001787692",
+  email: "awillis4@sheffield.ac.uk",
+  fee_status: :home
+})
+DatabaseHelper.create_staff("awillis4@sheffield.ac.uk")
+
 puts ""
 
 robotics_class = DatabaseHelper.provision_module_class(
