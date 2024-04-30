@@ -37,6 +37,21 @@ class Event < ApplicationRecord
 
   enum :event_type, { generic: 'generic', milestone: 'milestone', chat: 'chat', issue: 'issue' }
 
+  def notification?(user)
+    if (user.is_staff? && self.event_responses.empty?) ||
+        (user.is_staff? && self.event_responses.last.student_id.present?) ||
+        (user.is_staff? && (self.json_data['reopened_by'] != "" && self.json_data['reopened_by'] != user.staff.email)) ||
+        (!user.is_staff? && !self.event_responses.empty? && self.event_responses.last.staff_id.present? && self.json_data['reopened_by'] == "") ||
+        (!user.is_staff? && (self.json_data['reopened_by'] != "" && self.json_data['reopened_by'] != user.student.username))
+        # when deployed this to change above elsif to commented line
+        # elsif user.is_student? && !issue.event_responses.empty? && issue.event_responses.last.staff_id.present?
+      
+      return true
+    else
+      return false
+    end
+  end
+  
   def self.sorted_by_latest_activity(*conditions)
     query = joins("LEFT OUTER JOIN event_responses ON event_responses.event_id = events.id")
             .select("events.*, COALESCE(MAX(event_responses.created_at), events.updated_at) AS latest_activity")

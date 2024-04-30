@@ -39,7 +39,7 @@ class IssueController < ApplicationController
             author: params[:author],
             reopened_by: "",
             updated: false
-        }.to_json
+        }
 
         current_project_id = params[:project_id]
         group = current_user.student.groups.find_by(course_project_id: current_project_id)
@@ -59,7 +59,6 @@ class IssueController < ApplicationController
 
     def issue_response
         @issue = Event.find(params[:issue_id])
-        issue_data = JSON.parse(@issue.json_data)
 
         @selected_project = params[:selected_project]
         @selected_order = params[:selected_order]
@@ -68,30 +67,28 @@ class IssueController < ApplicationController
             content: params[:response],
             author: params[:author],
             timestamp: Time.now
-        }.to_json
+        }
 
         if current_user.is_staff?
             @issue_response = EventResponse.new(json_data: json_data, event_id: params[:issue_id], staff_id: current_user.staff.id)
 
-            if issue_data['reopened_by'] != current_user.staff.email
-                issue_data['reopened_by'] = ""
+            if @issue.json_data['reopened_by'] != current_user.staff.email
+                @issue.json_data['reopened_by'] = ""
             end
 
-            issue_data['update'] = !issue_data['update']
-            json_data = issue_data.to_json
+            @issue.json_data['update'] = !@issue.json_data['update']
 
-            @issue.update(json_data: json_data)
+            @issue.update(json_data: @issue.json_data)
         else
             @issue_response = EventResponse.new(json_data: json_data, event_id: params[:issue_id], student_id: current_user.student.id)
 
-            if issue_data['reopened_by'] != current_user.student.username
-                issue_data['reopened_by'] = ""
+            if @issue.json_data['reopened_by'] != current_user.student.username
+                @issue.json_data['reopened_by'] = ""
             end
             
-            issue_data['update'] = !issue_data['update']
-            json_data = issue_data.to_json
+            @issue.json_data['update'] = !@issue.json_data['update']
 
-            @issue.update(json_data: json_data)
+            @issue.update(json_data: @issue.json_data)
         end
 
         @issue_response.save
@@ -107,26 +104,22 @@ class IssueController < ApplicationController
 
     def update_status
         @issue = Event.find(params[:issue_id])
-        issue_data = JSON.parse(@issue.json_data)
 
         @selected_project = params[:selected_project]
         @selected_order = params[:selected_order]
 
         if params[:status] == "closed"
-            issue_data['reopened_by'] = ""
-            json_data = issue_data.to_json
+            @issue.json_data['reopened_by'] = ""
 
-            @issue.update(json_data: json_data, completed: true)
+            @issue.update(json_data: @issue.json_data, completed: true)
         else
             if current_user.is_staff?
-                issue_data['reopened_by'] = current_user.staff.email
+                @issue.json_data['reopened_by'] = current_user.staff.email
             else
-                issue_data['reopened_by'] = current_user.student.username
+                @issue.json_data['reopened_by'] = current_user.student.username
             end
 
-            json_data = issue_data.to_json
-
-            @issue.update(json_data: json_data, completed: false)
+            @issue.update(json_data: @issue.json_data, completed: false)
         end
 
         get_issues(@selected_project, @selected_order)
