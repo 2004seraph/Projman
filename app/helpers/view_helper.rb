@@ -17,6 +17,29 @@ module ViewHelper
     x
   end
   def retrieve_courses
-    CourseModule.all
+    if current_user.staff.admin
+      CourseModule.all
+    else
+      CourseModule.where(staff_id: current_user.staff)
+    end
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
