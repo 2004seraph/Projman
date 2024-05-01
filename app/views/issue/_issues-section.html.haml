@@ -3,9 +3,13 @@
     %i.bi.bi-chat-left-dots-fill.fill-yellow
     Open
 
-  - @open_issues.each do |issue|
-    - issue_url = issues_path() + "#issue-#{issue.id}"
-    = render partial:'issue-box', locals: { issue: issue, issue_url: issue_url, selected_project: @selected_project, selected_order: @selected_order }
+  - if @open_issues.length > 0
+    - @open_issues.each do |issue|
+      - issue_url = issues_path() + "#issue-#{issue.id}"
+      = render partial:'issue-box', locals: { issue: issue, issue_url: issue_url, selected_project: @selected_project, selected_order: @selected_order }
+  - else
+    .d-flex.justify-content-center
+      %i.fs-6.fw-light You have no open issues
   %hr.divider
 
 .separating-section#resolved-issues-section
@@ -13,7 +17,11 @@
     %i.bi.bi-check-circle-fill.fill-green
     Resolved
 
-  - @resolved_issues.each do |issue|
-    - issue_url = issues_path(issue) + "#issue-#{issue.id}"
-    = render partial:'issue-box', locals: { issue: issue, issue_url: issue_url, selected_project: @selected_project, selected_order: @selected_order } 
+  - if @resolved_issues.length > 0
+    - @resolved_issues.each do |issue|
+      - issue_url = issues_path(issue) + "#issue-#{issue.id}"
+      = render partial:'issue-box', locals: { issue: issue, issue_url: issue_url, selected_project: @selected_project, selected_order: @selected_order }
+  - else
+    .d-flex.justify-content-center
+      %i.fs-6.fw-light You have no resolved issues
   %hr.divider

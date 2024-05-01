@@ -6,9 +6,23 @@
   currentOrderSelection.text("#{@selected_order}");
 
   var divider = $('#issues-section');
-  var updatedPartialHTML = "#{j(render(partial: 'issues-section'))}";
+  var updatedPartialHTML = "#{j(render(partial: 'issues-section', locals: { selected_project: @selected_project, selected_order: @selected_order }))}";
   $(divider).empty().append(updatedPartialHTML);
   $(divider).show();
 
-  $("#flexSwitchCheckOpen").prop("checked", true);
-  $("#flexSwitchCheckResolved").prop("checked", true);
+  var openIssueSection = $('#open-issues-section');
+  var resolvedIssueSection = $('#resolved-issues-section');
+  var openToggleStatus = $('#flexSwitchCheckOpen').prop('checked');
+  var resolvedToggleStatus = $('#flexSwitchCheckResolved').prop('checked');
+
+  if (openToggleStatus) {
+    openIssueSection.removeClass('display-none');
+  } else {
+      openIssueSection.addClass('display-none');
+  }
+
+  if (resolvedToggleStatus) {
+    resolvedIssueSection.removeClass('display-none');
+  } else {
+      resolvedIssueSection.addClass('display-none');
+  }

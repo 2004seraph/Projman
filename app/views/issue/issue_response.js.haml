@@ -22,8 +22,22 @@
     elementToScrollTo.scrollIntoView();
   }
 
-  $("#flexSwitchCheckOpen").prop("checked", true);
-  $("#flexSwitchCheckResolved").prop("checked", true);
+  var openIssueSection = $('#open-issues-section');
+  var resolvedIssueSection = $('#resolved-issues-section');
+  var openToggleStatus = $('#flexSwitchCheckOpen').prop('checked');
+  var resolvedToggleStatus = $('#flexSwitchCheckResolved').prop('checked');
+
+  if (openToggleStatus) {
+    openIssueSection.removeClass('display-none');
+  } else {
+      openIssueSection.addClass('display-none');
+  }
+
+  if (resolvedToggleStatus) {
+    resolvedIssueSection.removeClass('display-none');
+  } else {
+      resolvedIssueSection.addClass('display-none');
+  }
 
   var issuesBtn = $('#issues-btn')
   var notificationNeeded = #{current_user.issue_notification?}
