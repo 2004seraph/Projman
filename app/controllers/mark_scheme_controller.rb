@@ -297,7 +297,6 @@ class MarkSchemeController < ApplicationController
         milestone = get_mark_scheme
         mark_scheme = milestone.json_data
 
-        mark_scheme["sections"][section_index]["facilitators"]["neekneek"] = "neek"
         assessors = mark_scheme["sections"][section_index]["facilitators"]
         if assessors.nil? || assessors.empty?
             return render partial: "section_facilitators", locals: {mark_scheme: milestone.json_data}
