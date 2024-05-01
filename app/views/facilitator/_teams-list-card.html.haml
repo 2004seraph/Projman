@@ -29,17 +29,20 @@
             %hr.dropdown-divider
 
             - @assigned_projects.each do |project|
+              // Project names could contain ', therefore escape this character when inserting into js.
               %a.dropdown-item{ onclick: "update_project_filter('#{project.name.gsub("'", "\\\\'")}')" }
                 =project.name
 
       %hr.divider
 
       %div#teams-display
-        - @assigned_facilitators.flat_map(&:groups).sort_by{|g| "#{g.course_project.name} #{g.name}"}.each do |group|
-          .navigation-list-item
-            = link_to facilitator_team_facilitators_path(team_id: group.id) do
-              %h6.p-1
-                = "#{group.assigned_facilitator.course_project.name} - #{group.name}"
+        // Display all groups by project
+        - @assigned_facilitators.group_by{|af| af.course_project}.each do |project, facilitators|
+          - facilitators.flat_map(&:groups).each do |group|
+            .navigation-list-item
+              = link_to facilitator_team_facilitators_path(team_id: group.id) do
+                %h6.p-1
+                  = "#{group.course_project.name} - #{group.name}"
 
   :javascript
     function update_team_list() {

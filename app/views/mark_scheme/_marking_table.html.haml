@@ -5,6 +5,7 @@
             %th Marks Given
             %th Maximum Marks
             %th Reasoning
+            %th Assessor
 
     %tbody
         - marks_given_sum = 0
@@ -17,6 +18,7 @@
                         - unless results.nil?
                             - marks_given = results["marks_given"]
                             - reason = results["reason"]
+                            - assessor = results["assessor"]
                             - marks_given_sum += marks_given.to_i
 
                     - max_marks = section["max_marks"]
@@ -26,5 +28,6 @@
                     %td= marks_given
                     %td= max_marks
                     %td= reason
+                    %td= assessor
 
 %h5= "Total Marks: #{marks_given_sum}/#{max_marks_sum}"
