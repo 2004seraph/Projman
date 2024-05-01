@@ -5,31 +5,39 @@
         %table.table.table-bordered
             %thead
                 %tr
-                    %th.bg-light.d-flex.justify-content-between.align-items-baseline
-                        Assessors
-                        %i.bi.bi-plus.fs-4{
-                            type: "button", 
-                            id: "add-facilitator-to-section", 
-                            "data-bs-toggle": "modal",
-                            "data-bs-target": "#add-facilitator-to-section-modal", 
-                            onclick: "updateSectionIndex(#{i});"}
+                    %th.bg-light
+                        .d-flex.justify-content-between.align-items-baseline
+                            Assessors
+                            %i.bi.bi-plus.fs-4{
+                                type: "button", 
+                                id: "add-facilitator-to-section", 
+                                "data-bs-toggle": "modal",
+                                "data-bs-target": "#add-facilitator-to-section-modal", 
+                                onclick: "updateSectionIndex(#{i});"}
 
                     %th.bg-light
-                        Teams
+                        .d-flex.justify-content-between.align-items-baseline
+                            Teams
+                            %button.btn.btn-outline-primary.btn-sm{
+                                type: "button", 
+                                id: "auto-assign-section", 
+                                onclick: "autoAssignSection(#{i});"} Auto Assign
+
+
             %tbody
                 - unless section["facilitators"].nil?
                     - section["facilitators"].each do |email, teams|
                         %tr
                             %td
-                                .d-flex.justify-content-between.align-items-baseline
-                                    = email
+                                .d-flex.justify-content-between.align-items-baseline.gap-3
+                                    %p.mr-3= email
                                     %i.bi.bi-trash-fill{
                                         type: "button", 
                                         id: "remove-facilitator-from-section", 
                                         onclick: "removeAssessor(#{i}, '#{email}');"}
 
                             %td
-                                .d-flex.justify-content-between.align-items-baseline
+                                .d-flex.justify-content-between.align-items-baseline.gap-3
                                     = teams.nil? ? "" : teams.map{|id| Group.find(id).name}.join(", ")
                                     %i.bi.bi-pencil-fill{
                                         type: "button", 
@@ -38,8 +46,4 @@
                                         "data-bs-target": "#assign-teams-modal", 
                                         onclick: "populateAssignTeams(#{i}, '#{email}')"}
 
-
         %hr.divider
-
-        // TODO: If the search is not ready, could just use the search thing without multiple select actually..
-        // TODO: Table for: https://app.moqups.com/srCDKGHkIVEKabrYabQBYyOdCP69e3ax/edit/page/a9d9a3ee1 

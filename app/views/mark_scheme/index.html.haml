@@ -18,6 +18,48 @@
 #section-facilitators
     = render partial: "section_facilitators", locals: {mark_scheme: @mark_scheme}
 
+// Add facilitators modal
+= render 'components/modal-search-multiple',
+    modal_id: 'add-facilitator-to-section-modal',
+    autocomplete_method: "mark_scheme/search_facilitators",
+    title: 'Add Assessor',
+    prompt: "Input assessor's email",
+    form_input_id: 'add-facilitator-to-section-form',
+    form_input_name: 'section_facilitator_email',
+    current_selection_text: 'current selection',
+    list_group_id: 'facilitator-selection-group-section',
+    confirm_text: 'Confirm',
+    confirm_onclick_function: "",
+    add_to_selection_url: "mark_scheme/add_to_facilitators_selection",
+    submission_url: "mark_scheme/add_facilitators_selection",
+    on_open_action_url: "mark_scheme/clear_facilitators_selection",
+    search_hidden_fields: {"section_index": -1}
+
+// Assign teams to facilitator model
+.modal.fade{ id: "assign-teams-modal", tabindex: "-1", "aria-labelledby": "addassign-teams-modal", "aria-hidden": "true"}
+    .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+        .modal-content
+            .modal-header
+                %h1.modal-title.fs-5= "Assign teams to assessor"
+                %button.btn-close#add-section-close-button{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+
+            .modal-body
+                .form-group#team-checkboxes-container
+                    %h1.fs-6 Remaining teams
+                    - CourseProject.find(params[:project_id]).groups.each do |group|
+                        .form-check.form-switch.d-none.group-checkbox-container{id: "group-checkbox-container-#{group.id}"}
+                            %input.form-check-input.group-checkbox{ type: "checkbox", id: "group-checkbox-#{group.id}", checked: false }
+                            %label.form-check-label{ for: "group-checkbox-#{group.id}" }= group.name
+                    
+            .modal-footer.d-flex.justify-content-between
+                .col-auto
+                    %button.btn.btn-secondary{onclick: "toggleAll();"} Select all
+                    %button.btn.btn-secondary{onclick: "toggleAll(false);"} Deselect all
+                
+                .col-auto.ml-auto
+                    %button.btn.btn-primary{ type: "submit", id: "assign-teams-button", onclick: "assignTeams();"}= "Assign"
+            
+
 :javascript
     function updateSectionIndex(i) {
         // Use hidden inputs to set the section_index on the controller
@@ -84,6 +126,20 @@
             });
         })
         .catch(error => console.error("Error when trying to assign teams to facilitator:", error));
+    }
+
+    function toggleAll(on = true) {
+        document.querySelectorAll(".group-checkbox").forEach(function(element) {
+            // Get all the displayed checkboxes
+            // TODO: This stuff should also be handled on the controller to ensure the groups aren't taken if someone 
+            //       displays a checkbox through the html.... edge case... 
+
+            const id = element.id.replace("group-checkbox-", "");
+            if (!document.getElementById(`group-checkbox-container-${id}`).classList.contains("d-none")) {
+                element.checked = on;    
+            }
+                
+        });
     }    
 
     function assignTeams() {
@@ -91,9 +147,9 @@
         team_ids = []
         document.querySelectorAll(".group-checkbox").forEach(function(element) {
             if (element.checked) {
-                id = element.id.replace("group-checkbox-", "");
+                const id = element.id.replace("group-checkbox-", "");
 
-                if (!document.getElementById(`group-checkbox-container-${id}`).classList.contains(".d-none")) {
+                if (!document.getElementById(`group-checkbox-container-${id}`).classList.contains("d-none")) {
                     team_ids.push(parseInt(id));
                 }                
             }
@@ -123,38 +179,27 @@
         .catch(error => console.error("Error when trying to assign teams to facilitator:", error));
     }
 
-// Add facilitators modal
-= render 'components/modal-search-multiple',
-    modal_id: 'add-facilitator-to-section-modal',
-    autocomplete_method: "mark_scheme/search_facilitators",
-    title: 'Add Assessor',
-    prompt: "Input assessor's email",
-    form_input_id: 'add-facilitator-to-section-form',
-    form_input_name: 'section_facilitator_email',
-    current_selection_text: 'current selection',
-    list_group_id: 'facilitator-selection-group-section',
-    confirm_text: 'Confirm',
-    confirm_onclick_function: "",
-    add_to_selection_url: "mark_scheme/add_to_facilitators_selection",
-    submission_url: "mark_scheme/add_facilitators_selection",
-    on_open_action_url: "mark_scheme/clear_facilitators_selection",
-    search_hidden_fields: {"section_index": -1}
+    function autoAssignSection(section_index) {
+        fetch("mark_scheme/auto_assign_teams", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+                },
+            body: JSON.stringify({ 
+                
+            })
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Reset state of all checkboxes to hidden
+            document.querySelectorAll(".group-checkbox-container").forEach(function(element) {
+                element.classList.add("d-none");
+            });
 
-// Assign teams to facilitator model
-.modal.fade{ id: "assign-teams-modal", tabindex: "-1", "aria-labelledby": "addassign-teams-modal", "aria-hidden": "true"}
-    .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
-        .modal-content
-            .modal-header
-                %h1.modal-title.fs-5= "Assign teams to assessor"
-                %button.btn-close#add-section-close-button{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
-
-            .modal-body
-                .form-group#team-checkboxes-container
-                    %h1.fs-6 Remaining teams
-                    - CourseProject.find(session[:current_project_id]).groups.each do |group|
-                        .form-check.form-switch.d-none.group-checkbox-container{id: "group-checkbox-container-#{group.id}"}
-                            %input.form-check-input.group-checkbox{ type: "checkbox", id: "group-checkbox-#{group.id}", checked: false }
-                            %label.form-check-label{ for: "group-checkbox-#{group.id}" }= group.name
-                    
-            .modal-footer
-                %button.btn.btn-primary{ type: "submit", id: "assign-teams-button", onclick: "assignTeams();"}= "Assign"
+            // Hide modal and update html
+            $("#assign-teams-modal").modal("hide");
+            $("#section-facilitators").html(html.trim());
+        })
+        .catch(error => console.error("Error when trying to auto assign teams to facilitator:", error));
+    }
