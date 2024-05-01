@@ -271,7 +271,14 @@ class MarkSchemeController < ApplicationController
 
         milestone = get_mark_scheme 
         mark_scheme = milestone.json_data
-        mark_scheme["sections"][section_index]["facilitators"][session[:current_facilitator_email]] = params[:team_ids]
+
+        # Get all the team ids that are taken, so we don't assign twice, incase someone inspects element.
+        taken_teams = mark_scheme["sections"][section_index]["facilitators"].select{
+            |email, _| email != session[:current_facilitator_email]
+        }.values.flatten
+        
+        new_teams = params[:team_ids] - taken_teams
+        mark_scheme["sections"][section_index]["facilitators"][session[:current_facilitator_email]] = new_teams
 
         milestone.json_data = mark_scheme
 
@@ -281,6 +288,43 @@ class MarkSchemeController < ApplicationController
         
         # Rerender the section to update table row
         render partial: "section_facilitators", locals: {mark_scheme: milestone.json_data}
+    end
+
+    def auto_assign_teams
+        # Auto assign teams to all the chosen assessors for a section
+        section_index = params[:section_index].to_i
+
+        milestone = get_mark_scheme
+        mark_scheme = milestone.json_data
+
+        assessors = mark_scheme["sections"][section_index]["facilitators"]
+        if assessors.nil? || assessors.empty?
+            return render partial: "section_facilitators", locals: {mark_scheme: milestone.json_data}
+        end
+        
+        # Split the teams between the assessors evenly
+        group_ids = CourseProject.find(session[:current_project_id]).groups.flat_map(&:id)
+        
+        groups_per_assessor = (group_ids.size / assessors.size.to_f).ceil
+        groups_split = group_ids.each_slice(groups_per_assessor).to_a
+
+        assessors = {}
+        
+        mark_scheme["sections"][section_index]["facilitators"].keys.each_with_index do |assessor, i|
+            assessors[assessor] = groups_split[i]
+        end
+        
+        # Update the mark scheme
+        mark_scheme["sections"][section_index]["facilitators"] = assessors
+        milestone.json_data = mark_scheme
+
+        unless milestone.save
+            puts "TODO: Handle not saving auto assign teams."
+        end
+        
+        # Rerender the section to update table row
+        render partial: "section_facilitators", locals: {mark_scheme: milestone.json_data}
+
     end
 
     def show

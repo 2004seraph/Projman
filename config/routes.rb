@@ -65,6 +65,7 @@ Rails.application.routes.draw do
       post "remove_facilitator_from_section" => "mark_scheme#remove_facilitator_from_section", on: :collection
       post "get_assignable_teams" => "mark_scheme#get_assignable_teams", on: :collection
       post "assign_teams" => "mark_scheme#assign_teams", on: :collection
+      post "auto_assign_teams" => "mark_scheme#auto_assign_teams", on: :collection
       get 'search_facilitators' => "mark_scheme#search_facilitators", on: :collection
 
       post "show_new", on: :collection

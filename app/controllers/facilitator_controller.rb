@@ -42,7 +42,7 @@ class FacilitatorController < ApplicationController
         set_current_group
 
         @progress_form = get_progress_forms_for_group.select{|m|
-            m.deadline.strftime("%d/%m/%Y %H:%M") == params[:release_date]
+            m.deadline.strftime("%d/%m/%YT%H:%M") == params[:release_date]
         }.first
         session[:progress_form_id] = @progress_form.id
 
@@ -161,6 +161,8 @@ class FacilitatorController < ApplicationController
         
         group_ids = section["facilitators"][current_user.email]
 
+        assessor = current_user.email
+
         success = true
         group_ids.each do |group_id|
             group = Group.find(group_id)
@@ -177,7 +179,8 @@ class FacilitatorController < ApplicationController
                         "sections": {
                             section["title"] => {
                                 "marks_given" => marks_given,
-                                "reason" => reason
+                                "reason" => reason,
+                                "assessor" => assessor
                             }
                         },
                         "group_id": group.id
@@ -192,6 +195,7 @@ class FacilitatorController < ApplicationController
 
                 response.json_data["sections"][section["title"]]["marks_given"] = marks_given
                 response.json_data["sections"][section["title"]]["reason"] = reason
+                response.json_data["sections"][section["title"]]["assessor"] = assessor
             end
 
             if !response.save
@@ -218,20 +222,14 @@ class FacilitatorController < ApplicationController
     end
 
         def set_current_group
-            # TODO: Need to switch everything to group instead of team to match models
-            # TODO: Stop the symbols and just use session as this is used alot maybe? Gets very confusing
             session[:team_id] = params[:team_id]
             @current_group = Group.find(params[:team_id])
             @current_group_facilitator_repr = get_facilitator_repr(@current_group.assigned_facilitator)
         end
 
         def get_facilitator_repr(facilitator)
-            # TODO: Use User.rb model to get staff name... but can't figure this out?
-
-            # TODO: Test student works
-            if facilitator.student_id
-                student = Student.find_by(id: facilitator.student_id)
-                return "#{student.forename} #{student.surname}"
+            if facilitator.student_id                
+                return Student.find_by(id: facilitator.student_id).email
 
             elsif facilitator.staff_id
                 return Staff.find_by(id: facilitator.staff_id).email
@@ -239,12 +237,6 @@ class FacilitatorController < ApplicationController
         end
 
         def get_progress_forms_for_group
-            #Milestone.select{
-            #    |m| m.system_type == "progress_form_deadline" && 
-            #    Date.parse(m.json_data["release_date"]) <= Date.today && # Only get released forms 
-            #    m.course_project_id == @current_group.course_project_id
-            #}
-
             Milestone.select{
                 |m| m.json_data["name"] == "progress_form" && 
                 m.deadline <= DateTime.current && # Only get released forms 

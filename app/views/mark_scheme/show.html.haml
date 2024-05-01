@@ -16,14 +16,12 @@
                 %span#team-selection-label Team: None
                 %i.bi.bi-caret-down-fill
                 
-                // TODO: Hide teams when form has not been released?
             .dropdown-menu{ "aria-labelledby": "team-selection-button", style: "max-height: 50vh; overflow-y: auto;" }
                 %a.dropdown-item{ onclick: "updateTeam('None')" }= "None"
 
                 %hr.dropdown-divider
 
-                // TODO: Only display the teams that have submitted a response?
-                - @current_project.groups.sort_by{|group| group.name }.each do |group|
+                - @current_project.groups.each do |group|
                     %a.dropdown-item{ onclick: "updateTeam('#{group.name}')" }= group.name
 
 %hr.divider
