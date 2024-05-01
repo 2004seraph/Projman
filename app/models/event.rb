@@ -38,11 +38,12 @@ class Event < ApplicationRecord
   enum :event_type, { generic: 'generic', milestone: 'milestone', chat: 'chat', issue: 'issue' }
 
   def notification?(user)
-    if (user.is_staff? && self.event_responses.empty?) ||
-        (user.is_staff? && self.event_responses.last.student_id.present?) ||
+    if (!self.completed?) &&
+        ((user.is_staff? && self.event_responses.empty?) ||
+        (user.is_staff? && self.event_responses.last.student_id.present? && self.json_data['reopened_by'] == "") ||
         (user.is_staff? && (self.json_data['reopened_by'] != "" && self.json_data['reopened_by'] != user.staff.email)) ||
         (!user.is_staff? && !self.event_responses.empty? && self.event_responses.last.staff_id.present? && self.json_data['reopened_by'] == "") ||
-        (!user.is_staff? && (self.json_data['reopened_by'] != "" && self.json_data['reopened_by'] != user.student.username))
+        (!user.is_staff? && (self.json_data['reopened_by'] != "" && self.json_data['reopened_by'] != user.student.username)))
         # when deployed this to change above elsif to commented line
         # elsif user.is_student? && !issue.event_responses.empty? && issue.event_responses.last.staff_id.present?
       

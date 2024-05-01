@@ -15,9 +15,11 @@
       %li.nav-item
         = link_to projects_url, class: 'btn btn-light' do
           Projects
-      %li.nav-item
+      %li.nav-item#issues-btn
         = link_to issues_url, class: 'btn btn-light' do
           Issues
+          - if current_user.issue_notification?
+            %i.bi.bi-exclamation-diamond-fill.icon-pad-nav
       - if current_user.is_facilitator?
         %li.nav-item
           = link_to facilitators_url, class: 'btn btn-light' do

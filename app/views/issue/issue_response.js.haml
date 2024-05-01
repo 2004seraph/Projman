@@ -25,4 +25,11 @@
   $("#flexSwitchCheckOpen").prop("checked", true);
   $("#flexSwitchCheckResolved").prop("checked", true);
 
-  
+  var issuesBtn = $('#issues-btn')
+  var notificationNeeded = #{current_user.issue_notification?}
+
+  if (notificationNeeded) {
+    issuesBtn.html('<a href="<%= j issues_url %>" class="btn btn-light">Issues <i class="bi bi-exclamation-diamond-fill icon-pad-nav"></i></a>');
+  } else {
+    issuesBtn.html('<a href="<%= j issues_url %>" class="btn btn-light">Issues</a>');
+  }

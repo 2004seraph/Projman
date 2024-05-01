@@ -16,7 +16,7 @@
         %span.me-3.fs-6.fw-light #{issue.created_at.strftime("%d/%m/%Y %H:%M")}
         %h3.m-0.fs-5.fw-medium #{issue.json_data['title']}
         %span
-          - if !issue.completed? && issue.notification?(current_user)
+          - if issue.notification?(current_user)
             %i.bi.bi-exclamation-diamond-fill.icon-pad
       %i.bi.bi-caret-right-fill
     .collapse{id: unique_id}

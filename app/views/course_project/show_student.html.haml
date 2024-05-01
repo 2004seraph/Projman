@@ -31,16 +31,15 @@
                 .row
                     .scrollable
                         - @current_group.events.where(event_type: [:milestone, :generic]).each do |event|
-                            - event_data = JSON.parse(event.json_data)
                             .card.mb-2
                                 .card-body.pb-2.pt-2
                                     .card-titled-flex.d-flex.justify-content-between.align-items-center
-                                        .fs-5.fw-semibold= event_data['Name']
+                                        .fs-5.fw-semibold= event.json_data['Name']
                                         .fs-6.fw-light #{event.created_at.strftime("%d/%m/%Y %H:%M")}
                                     %p.card-text.mb-1
-                                        - if event_data['Comment'].length > 0
+                                        - if event.json_data['Comment'].length > 0
                                             %strong Comment:
-                                            = event_data["Comment"]
+                                            = event.json_data["Comment"]
 
         - else 
             .d-flex.justify-content-center

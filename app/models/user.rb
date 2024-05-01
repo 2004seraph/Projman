@@ -54,4 +54,14 @@ class User < ApplicationRecord
     end
     is_fac
   end
+
+  def issue_notification?
+    if self.is_staff?
+      issues = self.staff.issues
+    else
+      issues = self.student.events.where(event_type: :issue)
+    end
+      
+    issues.any? { |issue| issue.notification?(self) }
+  end
 end
