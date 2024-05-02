@@ -2,7 +2,7 @@
   - unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
 
   .card.issue-card.mb-2.accordion-element#chat-box-card
-    %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+    %a.card-header.d-flex.justify-content-between.align-items-center{ id: "card-header", "data-bs-toggle" => "collapse",
     href: "##{unique_id}",
     role: "button",
     "data-accordion-toggle" => "",
@@ -17,12 +17,32 @@
           .d-flex.justify-content-center
             %i.fs-6.fw-light.pt-4.pb-4 No chats yet. Be the first!
         - else
-          - @chat_messages.each do |chat_message|
-            .issue-text.border.p-2.mt-2
-              .fs-6 #{chat_message.json_data['content']}
-            .d-flex.align-items-center.justify-content-between.pb-2
-              .fw-light{ style: "font-size: 14px;" } From: #{chat_message.json_data['author']}
-              .fw-light{ style: "font-size: 14px;" } #{DateTime.parse(chat_message.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
+          .container#chat-box-container
+            .row
+              .scrollable
+                .d-flex.justify-content-center
+                  %i.fs-6.fw-light.pt-2.pb-2 Start of chat history
+                - @chat_messages.each do |chat_message|
+                  .d-flex.align-items-center.justify-content-between.pb-2
+                    - if chat_message.student_id == current_user.student.id
+                      .d-flex.w-100.justify-content-end
+                        .w-75
+                          .issue-text.border.p-2.mt-2{ style: "background-color: lavender;" }
+                            .fs-6 #{chat_message.json_data['content']}
+                          .d-flex.align-items-center.justify-content-between.pb-2
+                            .fw-light{ style: "font-size: 14px;" } From: #{chat_message.json_data['author']}
+                            .fw-light{ style: "font-size: 14px;" } #{DateTime.parse(chat_message.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
+                    - else
+                      .d-flex.w-100.justify-content-start
+                        .w-75
+                          .issue-text.border.p-2.mt-2{ style: "background-color: #f0f0f0;" }
+                            .fs-6 #{chat_message.json_data['content']}
+                          .d-flex.align-items-center.justify-content-between.pb-2
+                            .fw-light{ style: "font-size: 14px;" } From: #{chat_message.json_data['author']}
+                            .fw-light{ style: "font-size: 14px;" } #{DateTime.parse(chat_message.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
+
+        %hr.divider
+
         = form_with(url: "/projects/#{@current_group.id}/send-chat-message", method: "post", local: false, id: "chat-form") do |form|
           %input{ type: "hidden", name: "group_id", value: "#{@current_group.id}"}
           %input{ type: "hidden", name: "author", value: "#{current_user.givenname} #{current_user.sn}"}
@@ -32,3 +52,14 @@
             %button.btn.btn-primary{type: "submit", class: "btn btn-primary me-2", id: "send-chat", remote: true }
               %i.bi.bi-send-fill
               Send
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+    $('#chat-box-card').on('shown.bs.collapse', function () {
+      var chatBoxContainer = $('#chat-box-container');
+      chatBoxContainer.scrollTop(chatBoxContainer[0].scrollHeight);
+      
+      var chatBoxSection = $('#chat-box-container').closest('.card');
+      chatBoxSection[0].scrollIntoView();
+    });
+  });
+

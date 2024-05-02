@@ -143,6 +143,11 @@
     overflow-y: auto;
 }
 
+#chat-box-container {
+    max-height: 500px; /* Adjust this value as needed */
+    overflow-y: auto;
+}
+
 .scrollable {
     overflow-y: auto;
 }

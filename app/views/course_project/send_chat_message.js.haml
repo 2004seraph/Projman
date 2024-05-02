@@ -8,3 +8,6 @@
   var collapseElement = $('#chat-box-card .collapse');
   collapseElement.addClass('show');   
   $('#chat-box-card').attr('aria-expanded', 'true');
+
+  var chatBoxContainer = document.getElementById('chat-box-container');
+  chatBoxContainer.scrollTop = chatBoxContainer.scrollHeight - chatBoxContainer.clientHeight;
