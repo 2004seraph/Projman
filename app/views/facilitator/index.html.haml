@@ -7,7 +7,8 @@
   #teams-partial-container
     = render partial: 'teams-list-card'
 
-  %hr.divider
-  = render partial: 'marking-list-card'
+  - if current_user.is_staff?
+    %hr.divider
+    = render partial: 'marking-list-card'
 
   

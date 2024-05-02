@@ -138,7 +138,7 @@ class MarkSchemeController < ApplicationController
         if query.nil? then query = "" end
 
         @results = AssignedFacilitator.select{|f| f.course_project_id == session[:current_project_id] && 
-            f.get_email.include?(query.downcase)}
+            f.get_email.include?(query.downcase) && f.staff_id.present?}
 
         render json: @results.map{|r| r.get_email}
     end
