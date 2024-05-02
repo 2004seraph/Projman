@@ -29,7 +29,7 @@ class ProgressFormController < ApplicationController
 
     session[:progress_form_deadline] = ""
 
-    @progress_form_json = session[:new_progress_form] # TODO: Remove this? Can just use session in view.
+    @progress_form_json = session[:new_progress_form]
     @progress_form_deadline = ""
   end
 
@@ -56,7 +56,7 @@ class ProgressFormController < ApplicationController
     session[:new_progress_form] = progress_form.json_data
     session[:progress_form_deadline] = progress_form.deadline
 
-    @progress_form_json = session[:new_progress_form] # TODO: Remove this? Can just use session in view.
+    @progress_form_json = session[:new_progress_form]
     @progress_form_deadline = progress_form.deadline
   end
 
@@ -79,7 +79,7 @@ class ProgressFormController < ApplicationController
       session[:new_progress_form]["questions"] << params[:question]
     end
 
-    @progress_form_json = session[:new_progress_form] # TODO: Remove this? Can just use session in view.
+    @progress_form_json = session[:new_progress_form]
     @progress_form_deadline = session[:progress_form_deadline]    
 
     if request.xhr?
@@ -90,16 +90,10 @@ class ProgressFormController < ApplicationController
   end
 
   def delete_question
-    if params[:question_index] < 0 || params[:question_index] >= session[:new_progress_form]["questions"].length 
-      puts "[ERROR] TODO: Handle error when question index is invalid in remove_question"
-    end
-
-    # TODO: This is invalid because this won't render the right stuff for when we're viewing questions
-
+    # This won't throw an error if the index is invalid and an invalid index would mean the question isn't there,
+    # so we can just re-render the partial anyways.
     session[:new_progress_form]["questions"].delete_at(params[:question_index])
 
-    # TODO: Must be able to fill in actual data on the rerender.
-    # TODO: FILL IN ACTUAL DETAILS HERE
     render partial: "progress_form",
       locals: 
         {
@@ -108,7 +102,7 @@ class ProgressFormController < ApplicationController
           progress_response: nil, 
           group: "None", 
           facilitator: false,
-          editing_form: true # Force editable because release date not set yet
+          editing_form: true # Force editable because release date might not be set yet
         }
   end
 
@@ -127,7 +121,7 @@ class ProgressFormController < ApplicationController
     if @error.nil?
       session[:new_progress_form]["title"] = title
 
-    @progress_form_json = session[:new_progress_form] # TODO: Remove this? Can just use session in view.
+    @progress_form_json = session[:new_progress_form]
     @progress_form_deadline = session[:progress_form_deadline]
       
     end
@@ -137,8 +131,6 @@ class ProgressFormController < ApplicationController
         format.js
       end
     end
-
-    # TODO: Redirect?
   end
 
   def save_form
