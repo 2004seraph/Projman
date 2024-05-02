@@ -1,6 +1,6 @@
 // Display 
 - unless progress_response.nil?
-  %h5= "Last updated by: " + (progress_response["facilitator_repr"] || "")
+  %h5.fs-5= "Last updated by: " + (progress_response["facilitator_repr"] || "")
 
   %hr.divider 
 
@@ -15,6 +15,7 @@
 - if progress_form["attendance"] && !editing_form
   - attendance = progress_response.nil? ? nil : progress_response["attendance"]
   = render partial: "progress_form/attendance", locals: {group: group, attendance: attendance, facilitator: facilitator}
+
 
 // Display questions and their responses
 - question_responses = progress_response.nil? ? [] : progress_response["question_responses"]
@@ -44,7 +45,6 @@
         })
         .then(response => response.text())
         .then(data => {
-          console.log(data);
           document.getElementById("progress-form-partial-container").innerHTML = data;
         })
         .catch(error => console.error("Error when deleting progress form question:", error));

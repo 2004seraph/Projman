@@ -2,8 +2,6 @@ class MarkSchemeController < ApplicationController
   load_and_authorize_resource :milestone_response
 
   def index
-    # TODO: Get the actual current project
-    
     session[:current_project_id] = params[:project_id].to_i
     @current_project = CourseProject.find(session[:current_project_id])
 
@@ -82,11 +80,9 @@ class MarkSchemeController < ApplicationController
 
     data_valid = true
 
+    # Ensure max marks are valid
     params[:sections].each do |section|
-        # Ensure the max marks is valid
-        if section["max_marks"] =~ /\A\d+\z/
-            puts section["max_marks"], "IS INT"
-        else
+        if section["max_marks"] !~ /\A\d+\z/
             data_valid = false
         end
     end
@@ -127,8 +123,7 @@ class MarkSchemeController < ApplicationController
         }
     end
 
-    # TODO: Scuffed but works, should make better later on.
-    # TODO: I think i can just redirect_to here maybe
+    # Can't redirect from ajax here, so must do it from js
     render json: { 
         status: 'success', 
         message: 'Saved mark scheme', 
@@ -298,6 +293,7 @@ class MarkSchemeController < ApplicationController
         mark_scheme = milestone.json_data
 
         assessors = mark_scheme["sections"][section_index]["facilitators"]
+        
         if assessors.nil? || assessors.empty?
             return render partial: "section_facilitators", locals: {mark_scheme: milestone.json_data}
         end
@@ -356,7 +352,6 @@ class MarkSchemeController < ApplicationController
 
     def get_mark_scheme
         # Only one mark scheme per project 
-        # TODO: The enum doesn't seem to work, only works when used as string to compare.
         Milestone.select{|m| m.system_type == "marking_deadline" &&
             m.course_project_id == session[:current_project_id]}.first
     end

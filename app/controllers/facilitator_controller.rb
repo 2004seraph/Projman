@@ -87,7 +87,7 @@ class FacilitatorController < ApplicationController
         session[:mark_scheme_id] = mark_scheme.id
         session[:mark_scheme_section_index] = params[:section_index].to_i
 
-        @assigned_teams = @section["facilitators"][current_user.email].map{|id| Group.find(id)}.sort_by(&:name)
+        @assigned_teams = @section["facilitators"][current_user.email].map{|id| Group.find(id)}
         
         @assigned_teams_ids = @assigned_teams.flat_map(&:id)
 

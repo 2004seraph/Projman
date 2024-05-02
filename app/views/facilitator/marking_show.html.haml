@@ -43,7 +43,7 @@
   document.addEventListener('DOMContentLoaded', function() {
     var cells = document.querySelectorAll('#markingTable .editable.onlynumeric');
     let markErrorModal = document.getElementById("markErrorModal");
-    let confirmSaveModal = document.getElementById("confirmSaveModal");
+  
     let MAX_MARKS_TEMP = #{max_marks};
 
     cells.forEach(function(cell) {
@@ -144,5 +144,11 @@
     });
   });
 
-%button.btn.btn-success#saveButton Save
-%button.btn.btn-danger#cancelButton Cancel
+%div.mb-2
+  %button.btn.btn-success#saveButton 
+    %i.bi.bi-floppy
+    Save
+
+  %button.btn.btn-danger#cancelButton
+    %i.bi.bi-trash
+    Discard

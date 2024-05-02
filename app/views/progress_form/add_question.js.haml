@@ -1,0 +1,22 @@
+var progressFormContainer = document.getElementById("progress-form-partial-container");
+var questionTextArea = document.getElementById("question-text-area");
+var modalCloseButton = document.getElementById("add-question-close-button");
+var errorDisplay = document.getElementById("question-text-area-error");
+
+- if @error.nil?
+    // Hide error displays
+    questionTextArea.classList.remove("is-invalid");    
+    errorDisplay.classList.add("d-none");
+
+    // Render new content
+    modalCloseButton.click();
+
+    // TODO: Figure out how to put this on multiple lines.
+    progressFormContainer.innerHTML = "#{escape_javascript(render(partial: "progress_form", locals: {progress_form: @progress_form_json, release_date: @progress_form_deadline, progress_response: nil, group: nil, facilitator: false, editing_form: true}))}";
+    
+- else 
+    // Render errors
+    questionTextArea.classList.add("is-invalid");
+    errorDisplay.classList.remove("d-none");
+    errorDisplay.textContent = "#{escape_javascript(@error)}";
+    

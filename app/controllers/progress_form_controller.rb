@@ -2,14 +2,13 @@ class ProgressFormController < ApplicationController
   authorize_resource :milestone_response
 
   def index
-    # TODO: Get the actual current project
     session[:current_project_id] = params[:project_id].to_i
     @current_project = CourseProject.find(session[:current_project_id])
     
     authorize! :read, @current_project
 
     # Get each progress form
-    @progress_forms = get_progress_forms_for_project.sort_by{ |pf| pf.deadline }
+    @progress_forms = get_progress_forms_for_project.sort_by(&:deadline)
 
     # Auto select the one with the furthest release date
     @progress_form = @progress_forms.last
@@ -24,7 +23,7 @@ class ProgressFormController < ApplicationController
     #       so this just keeps it always as json.
     session[:new_progress_form] = JSON.parse({ 
       "questions": [], 
-      "attendance": true 
+      "attendance": true
     }.to_json)
 
     session[:progress_form_deadline] = ""
@@ -38,19 +37,20 @@ class ProgressFormController < ApplicationController
     
     progress_form = Milestone.find(params[:id])
     if progress_form.nil?
-      # TODO: Show error maybe just as popup modal?
-      puts "[ERROR] TODO: Handle error when cannot find progress form by id in edit."
+      flash.alert = "Could not find progress form to edit."
+      
       redirect_to project_progress_form_index_path
       return
     end
 
     # Can't edit released forms
     if progress_form.deadline <= DateTime.current
-      # TODO: Show error maybe just as popup modal?
+      flash.alert = "Cannot edit a released form."
       redirect_to project_progress_form_index_path
       return
     end
 
+    # Load progress form data to edit
     session[:new_progress_form] = progress_form.json_data
     session[:progress_form_deadline] = progress_form.deadline
 
@@ -60,23 +60,31 @@ class ProgressFormController < ApplicationController
 
   # AJAX Routes
   def add_question
+    question = params[:question]
+    
     if session[:new_progress_form]["questions"].nil?
       session[:new_progress_form]["questions"] = []
     end
 
-    session[:new_progress_form]["questions"] << params[:question]
+    # Handle errors
+    if session[:new_progress_form]["questions"].include?(question)
+      @error = "Cannot have duplicate questions."
 
-    render partial: "progress_form",
-      locals: 
-        {
-          progress_form_id: -1, # TODO: Remove this.
-          progress_form: session[:new_progress_form],
-          release_date: session[:progress_form_deadline],
-          progress_response: nil, 
-          group: "None", 
-          facilitator: false,
-          editing_form: true
-        }
+    elsif question.nil? || question.empty?
+      @error = "Question cannot be empty."
+  
+    else 
+      session[:new_progress_form]["questions"] << params[:question]
+    end
+
+    @progress_form_json = session[:new_progress_form] # TODO: Remove this? Can just use session in view.
+    @progress_form_deadline = session[:progress_form_deadline]    
+
+    if request.xhr?
+      respond_to do |format|
+        format.js
+      end
+    end
   end
 
   def delete_question
@@ -102,6 +110,35 @@ class ProgressFormController < ApplicationController
         }
   end
 
+  def change_title
+    title = params[:title]
+    
+    taken_titles = get_progress_forms_for_project.map{|pf| pf.json_data["title"]}
+
+    if taken_titles.include?(title)
+      @error = "There is already a progress form with this title."
+
+    elsif title.nil? || title.empty?
+      @error = "Title cannot be empty."
+    end
+
+    if @error.nil?
+      session[:new_progress_form]["title"] = title
+
+    @progress_form_json = session[:new_progress_form] # TODO: Remove this? Can just use session in view.
+    @progress_form_deadline = session[:progress_form_deadline]
+      
+    end
+    
+    if request.xhr?
+      respond_to do |format|
+        format.js
+      end
+    end
+
+    # TODO: Redirect?
+  end
+
   def save_form
     # To save the form there must be at least one question
     # TODO: Do we actually want to enforce this? Really it doesn't matter that much.
@@ -112,16 +149,19 @@ class ProgressFormController < ApplicationController
       }
     end
 
+    # Session progress form deadline won't be set if we are creating new
+    # TODO: better way of handling this? Although, it is related to the deadline anyways.
+    creating_new = session[:progress_form_deadline].nil? || session[:progress_form_deadline] == ""
+
     # Try find a pre-existing form to update
     milestone = get_progress_forms_for_project.select{
-      |m| m.deadline == session[:progress_form_deadline]
+      |m| m.deadline.strftime("%Y-%m-%dT%H:%M") == params[:release_date]
     }.first
 
     # Update progress form, must be after get milestone incase 'primary key' changes 
     session[:new_progress_form]["attendance"] = params[:attendance]
 
-    # HTML date formatted like this 2024-04-29T17:25    
-
+    # HTML date formatted like this YYYY-MM-DDT17:25
     formatted_deadline = params[:release_date].gsub("T", " ")
 
     # Create or update milestone to represent the form
@@ -131,25 +171,32 @@ class ProgressFormController < ApplicationController
         deadline: formatted_deadline,
         milestone_type: :team,
         course_project_id: session[:current_project_id],
-        #system_type: :progress_form_deadline TODO: This was removed for some reason?
       )
     else
+      if creating_new 
+        return render json: { 
+          status: "error", 
+          message: "Cannot save progress form with duplicate release date." 
+        }
+      end
+
+      # Update milestone data
       milestone.json_data = session[:new_progress_form]
       milestone.deadline = formatted_deadline
     end
 
-    milestone.json_data["name"] = "progress_form" # TODO: Temp, determining what is a progress form.
+    # For determining what milestone is a progress form.
+    milestone.json_data["name"] = "progress_form" 
 
     # Handle save failure
     unless milestone.save
       return render json: { 
         status: "error", 
-        message: "Failed to save milestone when save_form." 
+        message: "Failed to save progress form." 
       }
     end
   
-    # TODO: Scuffed but works, should make better later on.
-    # TODO: I think i can just redirect_to here maybe
+    # Can't redirect to from ajax.
     render json: { 
       status: 'success', 
       message: 'Saved form', 
@@ -158,28 +205,22 @@ class ProgressFormController < ApplicationController
   end
 
   def delete_form
-    # TODO: Need to make composite primary key with release date and name of form?
-    milestone = get_progress_forms_for_project.select{
-      |m| m.deadline == session[:progress_form_deadline]
-    }.first
+    if params[:id]
+      milestone = get_progress_forms_for_project.select{|m| m.id == params[:id].to_i}.first
 
-    if milestone.nil?
+      # If we don't find a milestone to delete, there is no error because its already 'deleted'
+      unless milestone.nil?
+        milestone.destroy
+      end
+
+    else 
       session[:new_progress_form] = {}
-    else
-      milestone.destroy
     end
-  
-    # TODO: Scuffed but works, should make better later on.
-    # TODO: I think i can just redirect_to here maybe
-    render json: { 
-      status: 'success', 
-      message: 'Deleted form', 
-      redirect: project_progress_form_index_path 
-    }
 
+    redirect_to action: :index
   end
 
-  def show_new # TODO: Should this just be show?
+  def show_new
     if params[:release_date] == "" then 
       return 
     end
@@ -221,11 +262,6 @@ class ProgressFormController < ApplicationController
   private
     def get_progress_forms_for_project
       # Helper for returning the correct milestones
-      #Milestone.select{
-      #  |m| m.system_type == "progress_form_deadline" && 
-      #  m.course_project_id == session[:current_project_id]
-      #}
-
       Milestone.select{
         |m| m.json_data["name"] == "progress_form" && 
         m.course_project_id == session[:current_project_id]

@@ -1,6 +1,6 @@
 = render partial: 'course_project/components/staff_project_view_navbar', locals: { project_id: params[:project_id] }
 
-%h4 Mark Scheme
+%h2.fs-4 Mark Scheme
 
 %a.btn.btn-primary{type: "button", href: "mark_scheme/new"}
     %i.bi.bi-box-arrow-up-right
@@ -13,6 +13,8 @@
 %hr.divider
 
 %h2.fs-4 Assign assessors to sections
+
+%hr.divider
 
 // TODO: Be able to add staff to mark not just facilitators!!!
 #section-facilitators
@@ -47,14 +49,18 @@
                 .form-group#team-checkboxes-container
                     %h1.fs-6 Remaining teams
                     - CourseProject.find(params[:project_id]).groups.each do |group|
-                        .form-check.form-switch.d-none.group-checkbox-container{id: "group-checkbox-container-#{group.id}"}
-                            %input.form-check-input.group-checkbox{ type: "checkbox", id: "group-checkbox-#{group.id}", checked: false }
+                        .form-check.form-switch.d-none.group-checkbox-container{
+                            id: "group-checkbox-container-#{group.id}"}
+                            
+                            %input.form-check-input.group-checkbox{ 
+                                type: "checkbox", id: "group-checkbox-#{group.id}", checked: false }
+
                             %label.form-check-label{ for: "group-checkbox-#{group.id}" }= group.name
                     
             .modal-footer.d-flex.justify-content-between
                 .col-auto
-                    %button.btn.btn-secondary{onclick: "toggleAll();"} Select all
-                    %button.btn.btn-secondary{onclick: "toggleAll(false);"} Deselect all
+                    %button.btn.btn-secondary{onclick: "toggleAllAssessors();"} Select all
+                    %button.btn.btn-secondary{onclick: "toggleAllAssessors(false);"} Deselect all
                 
                 .col-auto.ml-auto
                     %button.btn.btn-primary{ type: "submit", id: "assign-teams-button", onclick: "assignTeams();"}= "Assign"
@@ -89,8 +95,7 @@
         })
         .then(response => response.text())
         .then(html => {
-            $("#section-facilitators").html(html.trim());
-            
+            $("#section-facilitators").html(html.trim());  
         })
         .catch(error => console.error("Error when trying to save remove assessor:", error));
     }
@@ -128,17 +133,13 @@
         .catch(error => console.error("Error when trying to assign teams to facilitator:", error));
     }
 
-    function toggleAll(on = true) {
+    function toggleAllAssessors(on = true) {
         document.querySelectorAll(".group-checkbox").forEach(function(element) {
             // Get all the displayed checkboxes
-            // TODO: This stuff should also be handled on the controller to ensure the groups aren't taken if someone 
-            //       displays a checkbox through the html.... edge case... 
-
             const id = element.id.replace("group-checkbox-", "");
             if (!document.getElementById(`group-checkbox-container-${id}`).classList.contains("d-none")) {
                 element.checked = on;    
             }
-                
         });
     }    
 
@@ -186,17 +187,10 @@
                 "Content-Type": "application/json",
                 "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
                 },
-            body: JSON.stringify({ 
-                
-            })
+            body: JSON.stringify({ })
         })
         .then(response => response.text())
         .then(html => {
-            // Reset state of all checkboxes to hidden
-            document.querySelectorAll(".group-checkbox-container").forEach(function(element) {
-                element.classList.add("d-none");
-            });
-
             // Hide modal and update html
             $("#assign-teams-modal").modal("hide");
             $("#section-facilitators").html(html.trim());

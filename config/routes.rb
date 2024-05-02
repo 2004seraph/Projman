@@ -45,6 +45,8 @@ Rails.application.routes.draw do
       post 'save_form' => 'progress_form#save_form', on: :member
       post 'delete_form' => 'progress_form#delete_form', on: :collection
       post 'delete_form' => 'progress_form#delete_form', on: :member
+      post 'change_title' => 'progress_form#change_title', on: :member
+      post 'change_title' => 'progress_form#change_title', on: :collection
 
       post 'show_new' => 'progress_form#show_new', on: :collection
 
