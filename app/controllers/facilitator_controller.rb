@@ -1,16 +1,26 @@
 class FacilitatorController < ApplicationController
-    #authorize_resource class: false, except: [:update_teams_list, :marking_show, :team, :progress_form]
     authorize_resource :milestone_response
 
-    # GET /facilitators
     def index
+        # Get assigned groups
         @assigned_facilitators = get_assigned_facilitators
         set_assigned_projects
 
-        
-        # TODO: For now, just displaying all sections of all mark schemes
-        @mark_schemes = Milestone.select{|m| m.system_type == "marking_deadline"}
+        # Get all mark schemes to filter
+        all_mark_schemes = Milestone.select{|m| m.system_type == "marking_deadline"}
+        if all_mark_schemes.nil? then return end
 
+        # Get all the mark schemes assigned to
+        @mark_schemes = []
+
+        all_mark_schemes.each do |ms|            
+            ms.json_data["sections"]&.each do |section|
+                if section["facilitators"]&.keys&.include?(current_user.email)
+                    @mark_schemes << ms
+                    break
+                end
+            end
+        end
     end
 
     def update_teams_list
@@ -41,39 +51,21 @@ class FacilitatorController < ApplicationController
 
         set_current_group
 
-        @progress_form = get_progress_forms_for_group.select{|m|
-            m.deadline.strftime("%d/%m/%YT%H:%M") == params[:release_date]
-        }.first
+        # Get the progress form to fill in
+        @progress_form = Milestone.find(params[:milestone_id].to_i)
+
+        if @progress_form.nil?
+            flash.alert = "Could not find progress form."
+            redirect_to action: :index
+            return
+        end
+
         session[:progress_form_id] = @progress_form.id
 
-        # Create initial milestone response if we don't have one
-        
-        # Try find a milestone response
+        # Try find a pre-existing response
         @progress_response = @progress_form.milestone_responses.select{
             |mr| mr.json_data["group_id"] == @current_group.id
         }.first
-
-        if @progress_response.nil?
-            # TODO: Set these?
-            #  staff_id     :bigint
-            #  student_id   :bigint
-            @progress_response = MilestoneResponse.new(
-                json_data: {
-                    group_id: @current_group.id, 
-                    attendance: [],
-                    question_responses: [],
-                    facilitator_repr: get_facilitator_repr(
-                        get_assigned_facilitators.where(course_project_id: @current_group.course_project_id).first
-                    )
-                },
-                milestone_id: @progress_form.id
-            )
-
-            # Handle save failure
-            unless @progress_response.save
-                puts "[ERROR] TODO: Must handle progress response save failure."
-            end
-        end
     end
 
     def marking_show
@@ -88,7 +80,6 @@ class FacilitatorController < ApplicationController
         session[:mark_scheme_section_index] = params[:section_index].to_i
 
         @assigned_teams = @section["facilitators"][current_user.email].map{|id| Group.find(id)}
-        
         @assigned_teams_ids = @assigned_teams.flat_map(&:id)
 
         # Load marking responses for teams
@@ -115,41 +106,41 @@ class FacilitatorController < ApplicationController
         @progress_forms_todo = @progress_forms - @progress_forms_submitted
     end
 
-    def set_assigned_projects
-        @assigned_projects = get_assigned_facilitators.map{|x| CourseProject.find(x.course_project_id)}
-    end
-
     def update_progress_form_response
-        @current_group = Group.find(session[:team_id])
+        set_current_group
 
-        # Update milestone response for progress form
         @progress_form = Milestone.find(session[:progress_form_id])
+
+        # Try find existing response to update
         @progress_response = @progress_form.milestone_responses.select{
             |mr| mr.json_data["group_id"] == @current_group.id
         }.first
 
-        
+        # Create new response if none to update
         if @progress_response.nil?
-            # TODO: Handle error here
-            puts "[ERROR] Progress response was nil when tried to update, should handle this properly."
+            @progress_response = MilestoneResponse.new(
+                json_data: {
+                    group_id: @current_group.id, 
+                    attendance: params[:attendance],
+                    question_responses: params[:question_responses],
+                    facilitator_repr: get_facilitator_repr(
+                        get_assigned_facilitators.where(course_project_id: @current_group.course_project_id).first
+                    )
+                },
+                milestone_id: @progress_form.id
+            )                    
         else
             @progress_response.json_data[:attendance] = params[:attendance]
             @progress_response.json_data[:question_responses] = params[:question_responses]
-
-            # TODO: Show facilitator name and email, gotta figure out getting staff name.
             @progress_response.json_data[:facilitator_repr] = get_facilitator_repr(
                 get_assigned_facilitators.where(course_project_id: @current_group.course_project_id).first
             )
-
         end
 
         unless @progress_response.save
-            # TODO: Handle error
-            puts "[ERROR] Progress response failed to save, should handle this properly."
-            return render json: { status: "error", message: "Failed to save milestone when save_form." }
+            return render json: { status: "error", message: "Failed to save progress form response." }
         end
 
-        # TODO: Scuffed but works, should make better later on.
         render json: { status: "success", redirect: facilitator_team_facilitators_path(team_id: session[:team_id]) } 
     end
 
@@ -157,12 +148,12 @@ class FacilitatorController < ApplicationController
         marking = params[:marking]
         
         mark_scheme = Milestone.find(session[:mark_scheme_id])
-        section = mark_scheme.json_data["sections"][session[:mark_scheme_section_index]]
-        
-        group_ids = section["facilitators"][current_user.email]
 
+        section = mark_scheme.json_data["sections"][session[:mark_scheme_section_index]]
+        group_ids = section["facilitators"][current_user.email]
         assessor = current_user.email
 
+        # For each group, try and update the milestone response containing their marking
         success = true
         group_ids.each do |group_id|
             group = Group.find(group_id)
@@ -211,19 +202,27 @@ class FacilitatorController < ApplicationController
     end
 
     private
+        def get_assigned_facilitators
+            # Returns the entries of AssignedFacilitator for the logged in user
+            if current_user.is_staff?
+                return AssignedFacilitator.where(staff: current_user.staff)
 
-    def get_assigned_facilitators
-        # Returns the entries of AssignedFacilitator for the logged in user
-        if current_user.is_staff?
-            return AssignedFacilitator.where(staff: current_user.staff)
-        elsif current_user.is_student?
-            return AssignedFacilitator.where(student: current_user.student)
+            elsif current_user.is_student?
+                return AssignedFacilitator.where(student: current_user.student)
+            end
         end
-    end
+
+        def set_assigned_projects
+            @assigned_projects = get_assigned_facilitators.flat_map(&:course_project)
+        end
 
         def set_current_group
-            session[:team_id] = params[:team_id]
-            @current_group = Group.find(params[:team_id])
+            # Team id will always be provided unless ajax request, then just use the cached one. 
+            unless params[:team_id].nil?
+                session[:team_id] = params[:team_id]
+            end
+
+            @current_group = Group.find(session[:team_id])
             @current_group_facilitator_repr = get_facilitator_repr(@current_group.assigned_facilitator)
         end
 
@@ -237,9 +236,10 @@ class FacilitatorController < ApplicationController
         end
 
         def get_progress_forms_for_group
+            # Return released progress forms for group
             Milestone.select{
                 |m| m.json_data["name"] == "progress_form" && 
-                m.deadline <= DateTime.current && # Only get released forms 
+                m.deadline <= DateTime.current && 
                 m.course_project_id == @current_group.course_project_id
             }
         end

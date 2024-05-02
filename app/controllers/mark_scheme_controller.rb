@@ -72,7 +72,7 @@ class MarkSchemeController < ApplicationController
     end
 
   def save
-    # NOTE: Everything is taken from the inputs, the session is only used for rendering stuff.
+    # Everything is taken from the inputs, the session is only used for rendering stuff.
     if params[:sections].length < 1 
         return render json: { 
             status: "error", 
@@ -82,21 +82,19 @@ class MarkSchemeController < ApplicationController
 
     data_valid = true
 
-    # Ensure max marks are valid
+    # Ensure max marks are valid or return error
     params[:sections].each do |section|
         if section["max_marks"] !~ /\A\d+\z/
-            data_valid = false
+            return render json: { 
+                status: "error", 
+                message: "Max marks must be a positive whole number." 
+            }
         end
-    end
-
-    unless data_valid
-        # TODO: Show error that that mark value is false. We should never get here really.
-        #render json: {""}
     end
 
     milestone = get_mark_scheme
 
-    # We must write the data like this, so we don't override facilitators.
+    # Update section data without resetting assigned facilitators
     params[:sections].each_with_index do |section, i|
         session[:mark_scheme]["sections"][i]["title"] = section["title"]
         session[:mark_scheme]["sections"][i]["description"] = section["description"]
@@ -107,14 +105,14 @@ class MarkSchemeController < ApplicationController
     if milestone.nil?
         milestone = Milestone.new(
             json_data: session[:mark_scheme],
-            deadline: Date.current.strftime("%Y-%m-%d"), # TODO: Must sort this as this will break the notifcation stuff.
+            deadline: Date.current.strftime("%Y-%m-%d"), # Deadline isn't used here
             milestone_type: :team, # Marks will be given per team
             course_project_id: params[:project_id],
             system_type: :marking_deadline
         )
     else
         milestone.json_data = session[:mark_scheme]
-        milestone.deadline = Date.current.strftime("%Y-%m-%d") # TODO: What is this deadline? Should actually use for dealdine.
+        milestone.deadline = Date.current.strftime("%Y-%m-%d") # Deadline isn't used here
     end
 
     # Handle save failure
@@ -136,6 +134,8 @@ class MarkSchemeController < ApplicationController
     def search_facilitators
         # Return all possible facilitators for the current project, given the search criteria.
         query = params[:query]
+
+        if query.nil? then query = "" end
 
         @results = AssignedFacilitator.select{|f| f.course_project_id == session[:current_project_id] && 
             f.get_email.include?(query.downcase)}
@@ -193,7 +193,7 @@ class MarkSchemeController < ApplicationController
         # Update the mark scheme
         milestone.json_data = mark_scheme
         unless milestone.save
-            puts "TODO: Failed to save mark scheme after add facilitators, must handle..."
+            flash.alert = "Failed to assign facilitators to mark scheme."
         end
 
         # Re-render the view for assessors
@@ -214,10 +214,7 @@ class MarkSchemeController < ApplicationController
     end
 
     def clear_facilitators_selection
-        # This is called on first open of modal, would be nice to populate current selection and use this to edit only
-        # but for some reason, hidden fields are not included as params here.
-
-        # Reset facilitator selection
+        # Reset facilitator selection, only called when modal is first opened
         session[:facilitator_selection] = []
     end
 
@@ -226,13 +223,16 @@ class MarkSchemeController < ApplicationController
         mark_scheme.json_data["sections"][params[:section_index]]["facilitators"].delete(params[:email])
         
         unless mark_scheme.save
-            puts "TODO: Must handle mark scheme save error in remove_facilitator_from_section."
+            flash.alert = "Failed to unassign facilitator from section."
         end
         
         render partial: "section_facilitators", locals: {mark_scheme: mark_scheme.json_data}
     end
 
     def get_assignable_teams
+        # Return the remaining teams available to be assigned to a facilitator for the given section
+        # Also contains teams already assigned to the facilitator
+        
         groups = CourseProject.find(session[:current_project_id]).groups
 
         mark_scheme = get_mark_scheme
@@ -247,7 +247,7 @@ class MarkSchemeController < ApplicationController
         groups.each do |group|
             groups_to_show[group.name] = {id: group.id, already_assigned: false}
         end
-
+        
         section["facilitators"].each do |facilitator, team_ids|
             team_ids.each do |team_id|
                 team = Group.find(team_id)
@@ -263,7 +263,7 @@ class MarkSchemeController < ApplicationController
     end
 
     def assign_teams
-        # Here we actually assign the selected teams from the modal to the chosen facilitator
+        # Actually assign the selected teams from the modal to the chosen facilitator
         section_index = session[:current_section_index].to_i
 
         milestone = get_mark_scheme 
@@ -280,10 +280,10 @@ class MarkSchemeController < ApplicationController
         milestone.json_data = mark_scheme
 
         unless milestone.save
-            puts "TODO: Handle not saving assign teams."
+            flash.alert = "Failed to assign teams to facilitator."
         end
         
-        # Rerender the section to update table row
+        # Re-render the section to update table row
         render partial: "section_facilitators", locals: {mark_scheme: milestone.json_data}
     end
 
@@ -317,12 +317,11 @@ class MarkSchemeController < ApplicationController
         milestone.json_data = mark_scheme
 
         unless milestone.save
-            puts "TODO: Handle not saving auto assign teams."
+            flash.alert = "Failed to automatically assign teams for section."
         end
         
         # Rerender the section to update table row
         render partial: "section_facilitators", locals: {mark_scheme: milestone.json_data}
-
     end
 
     def show
@@ -332,7 +331,8 @@ class MarkSchemeController < ApplicationController
         @mark_scheme = get_mark_scheme
     end
 
-    def show_new 
+    def show_new
+        # Show a given team's marking results table
         @current_project = CourseProject.find(session[:current_project_id])
         
         group = @current_project.groups.find_by(name: params[:group_name])
@@ -357,5 +357,4 @@ class MarkSchemeController < ApplicationController
         Milestone.select{|m| m.system_type == "marking_deadline" &&
             m.course_project_id == session[:current_project_id]}.first
     end
-
 end

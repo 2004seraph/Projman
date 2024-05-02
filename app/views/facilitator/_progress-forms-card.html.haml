@@ -15,15 +15,14 @@
       %h5= "Completed"
       - @progress_forms_submitted.each do |pf| 
         .navigation-list-item
-          - formatted_deadline = pf.deadline.strftime("%d/%m/%YT%H:%M") # TODO: Must have name for progress form and check that instead ffs.
-          = link_to progress_form_facilitators_url(release_date: formatted_deadline) do
-            %h6.p-1= formatted_deadline.gsub("T", " ")
+          = link_to progress_form_facilitators_url(milestone_id: pf.id) do
+            %h6.p-1= pf.deadline.strftime("%d/%m/%Y %H:%M")
 
       %hr.divider
+
       %h5= "To Do"
       - @progress_forms_todo.each do |pf| 
         .navigation-list-item
-          - formatted_deadline = pf.deadline.strftime("%d/%m/%YT%H:%M")
-          = link_to progress_form_facilitators_url(release_date: formatted_deadline) do
-            %h6.p-1= formatted_deadline.gsub("T", " ")
+          = link_to progress_form_facilitators_url(milestone_id: pf.id) do
+            %h6.p-1= pf.deadline.strftime("%d/%m/%Y %H:%M")
       

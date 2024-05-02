@@ -152,14 +152,15 @@ class ProgressFormController < ApplicationController
     end
 
     # Session progress form deadline won't be set if we are creating new
-    # TODO: better way of handling this? Although, it is related to the deadline anyways.
     creating_new = session[:progress_form_deadline].nil? || session[:progress_form_deadline] == ""
 
     # Try find a pre-existing form to update
-    milestone = get_progress_forms_for_project.select{
-      |m| m.deadline.strftime("%Y-%m-%dT%H:%M") == params[:release_date]
-    }.first
-
+    unless creating_new
+      milestone = get_progress_forms_for_project.select{
+        |m| m.deadline.strftime("%Y-%m-%dT%H:%M") == session[:progress_form_deadline].strftime("%Y-%m-%dT%H:%M")
+      }.first
+    end
+    
     # Update progress form, must be after get milestone incase 'primary key' changes 
     session[:new_progress_form]["attendance"] = params[:attendance]
 
@@ -198,7 +199,7 @@ class ProgressFormController < ApplicationController
       }
     end
   
-    # Can't redirect to from ajax.
+    # Can't redirect_to from ajax so return path to redirect
     render json: { 
       status: 'success', 
       message: 'Saved form', 
