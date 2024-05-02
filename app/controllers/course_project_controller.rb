@@ -1182,10 +1182,10 @@ class CourseProjectController < ApplicationController
     end
 
     def teams
-        @project = CourseProject.find(params[:id])
+        @current_project = CourseProject.find(params[:id])
         @teams = []
-        unless @project.nil?
-            @teams = @project.groups
+        unless @current_project.nil?
+            @teams = @current_project.groups
         end
     end
 end

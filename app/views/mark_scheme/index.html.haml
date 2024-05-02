@@ -1,6 +1,6 @@
-= render partial: 'course_project/components/staff_project_view_navbar', locals: { project_id: params[:project_id] }
+= render partial: 'course_project/components/project_info_header', locals: { project_id: @current_project.id }
 
-%h2.fs-4 Mark Scheme
+.fs-3.semi-bold Mark Scheme
 
 %a.btn.btn-primary{type: "button", href: "mark_scheme/new"}
     %i.bi.bi-box-arrow-up-right
@@ -12,7 +12,7 @@
 
 %hr.divider
 
-%h2.fs-4 Assign assessors to sections
+.fs-4.semi-bold Assign assessors to sections
 
 %hr.divider
 

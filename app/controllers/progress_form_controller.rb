@@ -17,6 +17,7 @@ class ProgressFormController < ApplicationController
 
   def new
     session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
 
     # Initialise new form
     # NOTE: Will not work without parse and to_json because its loaded from db as json
@@ -34,6 +35,7 @@ class ProgressFormController < ApplicationController
 
   def edit
     session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
     
     progress_form = Milestone.find(params[:id])
     if progress_form.nil?

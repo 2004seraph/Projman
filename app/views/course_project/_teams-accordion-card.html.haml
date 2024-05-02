@@ -15,9 +15,9 @@
         %tbody
           %tr.d-flex
             %td{ style: "flex: 1;" }
-              %h2.fs-4{ class: "m-0 p-0" } #{team.name}
+              .fs-5{ class: "m-0 p-0" } #{team.name}
             %td.d-flex.gap-2{ style: "flex: 3;" }
-              %h2.fs-4{ class: "m-0 p-0" } Facilitator: #{team.assigned_facilitator.nil? ? "Not assigned" : team.assigned_facilitator.get_email} #{ button_tag '', type: 'button', class: "btn btn-light fs-8 bi-pencil-square", style: "height: auto;" }
+              .fs-5{ class: "m-0 p-0" } Facilitator: #{team.assigned_facilitator.nil? ? "Not assigned" : team.assigned_facilitator.get_email} #{ button_tag '', type: 'button', class: "btn btn-light fs-8 bi-pencil-square", style: "height: auto;" }
 
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id_collapse}

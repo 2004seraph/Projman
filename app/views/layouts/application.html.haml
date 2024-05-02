@@ -31,5 +31,12 @@
             - if message.is_a?(String) && !message.empty?
               - next unless message_type == 'alert' || message_type == 'notice'
               .alert{ class: "alert-#{ message_type == 'notice' ? 'success' : 'danger' }" }= message
-      .content-container
-        = yield
+
+      - if request.path.match?(/^\/projects\/.*/)
+        = render partial: 'course_project/components/staff_project_view_navbar', locals: { project_id: @current_project.id }
+
+        .content-container-special
+          = yield
+      - elsif !request.path.match?(/^\/projects\/.*/)
+        .content-container
+          = yield

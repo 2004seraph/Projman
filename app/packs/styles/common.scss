@@ -153,6 +153,15 @@
 }
 
 .icon-pad-nav {
-    padding-left: 5px;
+    padding-left: 3px;
+    padding-right: 0;
+    margin-right: 0;
     color: var(--sheffield-purple);
+}
+
+.vertical-divider{
+    display: flex;
+    width: 2px;
+    background-color: lightgrey;
+    margin: 2px 10px 2px 0px;
 }

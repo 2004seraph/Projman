@@ -1,4 +1,4 @@
-= render partial: 'course_project/components/staff_project_view_navbar', locals: { project_id: params[:id] }
+= render partial: 'course_project/components/project_info_header', locals: { project_id: @current_project.id }
 
 = render 'components/accordion/container' do
   - @teams.each do |team| 

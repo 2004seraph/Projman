@@ -24,7 +24,7 @@ body {
     overflow-y: auto;
     flex-grow: 1;
     display:flex;
-    flex-direction: column;
+    flex-direction: row;
     padding-top: 1rem;
   }
 
@@ -33,14 +33,39 @@ body {
   }
 }
 
+
+
 .content-container{
   width: 100%;
   padding-right: 1.5rem;
   padding-left: 1.5rem;
   margin-right: auto;
-  margin-left: auto;
+  margin-left: auto; /* Adjust the margin to leave space for the sidebar */
+  overflow: auto;
 
   max-width: $wrapper-size;
+}
+
+.content-container-special{
+  width: 100%;
+  padding-right: 1.5rem;
+  padding-left: 1.5rem;
+  margin-right: auto;
+  margin-left: calc(50vm - 25%);; /* Adjust the margin to leave space for the sidebar */
+  overflow: auto;
+
+  max-width: $wrapper-size;
+}
+
+.left-sidebar {
+  float: left;
+  width: 19%;
+  padding-top: 0.05rem;
+  padding-left: 1rem;
+
+  hr.divider {
+    width: 93%;
+  }
 }
 
 .navbars-container{
@@ -115,28 +140,24 @@ body {
   }
 }
 
-
 .staff-project-view-navbar {
   margin:0;
   width:100%;
   display: flex;
   align-items: stretch;
-  flex-wrap: wrap;
-
   .navbar-nav{
     flex-direction: row;
 
     flex: 1; // Allow items to grow to fill the space evenly
     display: flex;
-    justify-content: space-between;
 
     .nav-item {
-      margin: 5px 10px 5px 0px;
-       // Adjust the radius as needed
+      margin: 3px 10px 3px 0px;
 
       .btn {
-        font-size: 20px; // Adjust the font size as needed
+        font-size: 23px; // Adjust the font size as needed
         padding: 10px 35px;
+        width: 95%;
       }
     }
 
@@ -146,13 +167,6 @@ body {
         color: white;
       }
     }
-  }
-
-  .vertical-divider{
-    display: flex;
-    width: 2px;
-    background-color: lightgrey;
-    margin: 5px 10px 5px 0px
   }
 }
 

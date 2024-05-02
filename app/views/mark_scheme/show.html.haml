@@ -1,8 +1,8 @@
-= render partial: 'course_project/components/staff_project_view_navbar', locals: { project_id: params[:project_id] }
+= render partial: 'course_project/components/project_info_header', locals: { project_id:  @current_project.id }
 
 .row.align-items-center
     .col
-        %h1 Viewing Marks
+        .fs-3.semi-bold Viewing Marks
 
     .col-auto
         .dropdown.d-inline-block
@@ -27,7 +27,8 @@
 %hr.divider
 
 - if @mark_scheme.nil?
-    %h5 No mark scheme for this project.
+    .d-flex.justify-content-center.pt-3
+        %i.fs-5.fw-light  No mark scheme for this project.
 
 - else
     #marking-table-partial-container

@@ -1,8 +1,8 @@
-= render partial: 'course_project/components/staff_project_view_navbar', locals: { project_id: params[:project_id] }
+= render partial: 'course_project/components/project_info_header', locals: { project_id:  @current_project.id }
 
 .row.align-items-center
   .col
-    %h4 Viewing Progress Forms
+    .fs-3.semi-bold Viewing Progress Forms
 
   .col-auto
     .dropdown.d-inline-block.flex-2
@@ -50,7 +50,8 @@
 %hr.divider
 
 - if @progress_form.nil?
-  %h5 No progress forms found for this project
+  .d-flex.justify-content-center.pt-3
+    %i.fs-5.fw-light No progress forms found for this project
 
 - else
   #progress-form-partial-container

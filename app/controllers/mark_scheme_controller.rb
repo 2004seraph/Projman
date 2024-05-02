@@ -15,6 +15,7 @@ class MarkSchemeController < ApplicationController
 
   def new
     session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
 
     mark_scheme = get_mark_scheme
     if mark_scheme.nil?
@@ -28,6 +29,7 @@ class MarkSchemeController < ApplicationController
 
   def edit
     session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
 
     mark_scheme = get_mark_scheme
     if mark_scheme.nil?

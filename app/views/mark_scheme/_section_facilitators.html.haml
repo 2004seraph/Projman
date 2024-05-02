@@ -1,6 +1,6 @@
 - unless mark_scheme.nil? 
     - mark_scheme["sections"].each_with_index do |section, i|
-        %h4= "Section #{i + 1}: #{section['title']}"
+        .fs-4.semi-bold= "Section #{i + 1}: #{section['title']}"
 
         %table.table.table-bordered
             %thead
