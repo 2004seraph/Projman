@@ -4,7 +4,9 @@
   %span
     .fs-4.fw-light Status: #{project.status}
     - if project.status == 'draft'
-      %i.fs-6.fw-light (Not visible to students yet) 
+      %i.fs-6.fw-light (Not visible to students yet)
+    - else
+      %i.fs-6.fw-light (Visible to students)
 
   %hr.divider
 

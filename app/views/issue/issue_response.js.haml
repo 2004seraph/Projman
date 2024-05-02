@@ -1,7 +1,6 @@
 :plain
   var currentIssue = $('#hidden-partial-container-#{params["issue_id"]}');
   var previousIssue = currentIssue.prev();
-  console.log(previousIssue);
   currentIssue.remove();
   var newPartialHTML = "#{j(render(partial: 'issue-box', locals: { issue: Event.find(params["issue_id"]) }))}";
   $(previousIssue).after(newPartialHTML);

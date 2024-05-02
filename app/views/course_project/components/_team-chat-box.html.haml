@@ -1,18 +1,34 @@
-- unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
+.hidden-partial-container#chat-box
+  - unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
 
-.card.issue-card.mb-2.accordion-element
-  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
-   href: "##{unique_id}",
-   role: "button",
-   "data-accordion-toggle" => "",
-   "aria-expanded" => "false",
-   "aria-controls" => unique_id}
-    .d-flex.align-items-center
-      %h3.m-0.fs-5.fw-medium Team Chat
-    %i.bi.bi-caret-right-fill
-  .collapse{id: unique_id}
-    .card-body.pt-1.pb-1
-      - 5.times do
-        %h1.fs-5.fw-normal Firstname Lastname - hr:mi dd/mm/yyy
-        %h1.fs-5.fw-normal [message here]
-        %hr.divider
+  .card.issue-card.mb-2.accordion-element#chat-box-card
+    %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+    href: "##{unique_id}",
+    role: "button",
+    "data-accordion-toggle" => "",
+    "aria-expanded" => "false",
+    "aria-controls" => unique_id}
+      .d-flex.align-items-center
+        %h3.m-0.fs-5.fw-medium Team Chat
+      %i.bi.bi-caret-right-fill
+    .collapse{id: unique_id}
+      .card-body.pt-1.pb-1
+        - if @chat_messages.empty?
+          .d-flex.justify-content-center
+            %i.fs-6.fw-light.pt-4.pb-4 No chats yet. Be the first!
+        - else
+          - @chat_messages.each do |chat_message|
+            .issue-text.border.p-2.mt-2
+              .fs-6 #{chat_message.json_data['content']}
+            .d-flex.align-items-center.justify-content-between.pb-2
+              .fw-light{ style: "font-size: 14px;" } From: #{chat_message.json_data['author']}
+              .fw-light{ style: "font-size: 14px;" } #{DateTime.parse(chat_message.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
+        = form_with(url: "/projects/#{@current_group.id}/send-chat-message", method: "post", local: false, id: "chat-form") do |form|
+          %input{ type: "hidden", name: "group_id", value: "#{@current_group.id}"}
+          %input{ type: "hidden", name: "author", value: "#{current_user.givenname} #{current_user.sn}"}
+          .form_group
+            = form.text_area :message, class: "form-control pt-2 pb-2 mb-2", placeholder: "Enter your message here", id: "chat-textarea", required: true
+          .d-flex.justify-content-end.mb-2
+            %button.btn.btn-primary{type: "submit", class: "btn btn-primary me-2", id: "send-chat", remote: true }
+              %i.bi.bi-send-fill
+              Send

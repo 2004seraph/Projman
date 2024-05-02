@@ -36,6 +36,8 @@ Rails.application.routes.draw do
     get 'search_facilitators_staff', on: :collection
     get 'search_student_name', on: :collection
 
+    post ':group_id/send-chat-message', to: 'course_project#send_chat_message', on: :collection
+
     resources :progress_form, controller: :progress_form do
       post 'add_question' => 'progress_form#add_question', on: :collection
       post 'add_question' => 'progress_form#add_question', on: :member 

@@ -1076,6 +1076,9 @@ class CourseProjectController < ApplicationController
             @proj_name = linked_module.code+' '+linked_module.name+' - '+@current_project.name
             @lead_email = linked_module.staff.email
             @current_group = current_user.student.groups.find_by(course_project_id: params[:id])
+            if !@current_group.nil?
+                @chat_messages = @current_group.events.where(event_type: :chat).order(created_at: :asc)
+            end
 
             #Get ordered milestones + deadlines
             @milestones = []
@@ -1186,6 +1189,31 @@ class CourseProjectController < ApplicationController
         @teams = []
         unless @current_project.nil?
             @teams = @current_project.groups
+        end
+    end
+
+    def send_chat_message
+        @current_group = Group.find(params[:group_id])
+
+        if !@current_group.nil?
+            @chat_messages = @current_group.events.where(event_type: :chat).order(created_at: :asc)
+
+            json_data = {
+                content: params[:message],
+                author: params[:author],
+                timestamp: Time.now
+            }
+
+            @chat_message = Event.new(event_type: :chat, json_data: json_data, group_id: @current_group.id, student_id: current_user.student.id)
+
+            if @chat_message.save
+                if request.xhr?
+                    respond_to do |format|
+                        format.js
+                    end
+                end
+            else
+            end
         end
     end
 end

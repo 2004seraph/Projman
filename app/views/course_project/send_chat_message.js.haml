@@ -1,0 +1,10 @@
+:plain
+  var chatBox = $('#chat-box');
+  var previousBox = chatBox.prev();
+  chatBox.remove();
+  var newPartialHTML = "#{j(render(partial: 'course_project/components/team-chat-box'))}";
+  $(previousBox).after(newPartialHTML);
+
+  var collapseElement = $('#chat-box-card .collapse');
+  collapseElement.addClass('show');   
+  $('#chat-box-card').attr('aria-expanded', 'true');
