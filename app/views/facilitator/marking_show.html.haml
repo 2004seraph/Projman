@@ -79,8 +79,6 @@
       // Validate marks on the client side as well as server side for better error display.
       let dataInvalid = false;
 
-      // TODO: I think we should be submitting a form here, then the controller will validate it all?
-      
       cells.forEach(function(cell) {
         if (Number(cell.innerHTML) > MAX_MARKS_TEMP) {
           cell.classList.add("bg-danger");
@@ -139,7 +137,6 @@
 
     $("#cancelButton").on("click", function() {
       // To cancel the changes, just redirect back.
-      // TODO: This could be done in the controller really...
       window.location.href = "#{facilitators_path}";
     });
   });

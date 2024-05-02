@@ -10,8 +10,6 @@ var errorDisplay = document.getElementById("question-text-area-error");
 
     // Render new content
     modalCloseButton.click();
-
-    // TODO: Figure out how to put this on multiple lines.
     progressFormContainer.innerHTML = "#{escape_javascript(render(partial: "progress_form", locals: {progress_form: @progress_form_json, release_date: @progress_form_deadline, progress_response: nil, group: nil, facilitator: false, editing_form: true}))}";
     
 - else 

@@ -90,8 +90,6 @@ Rails.application.routes.draw do
   end
 
   resources :facilitators, only: [:index], controller: :facilitator do
-    # TODO: DO these need / before
-    # TODO: These probably don't need controller in to:
     get 'teams/:team_id', to: 'facilitator#team', as: 'facilitator_team', on: :collection
     get 'teams/:team_id/progress_form/:milestone_id', to: 'facilitator#progress_form', as: 'progress_form',
       on: :collection

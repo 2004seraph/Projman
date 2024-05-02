@@ -135,7 +135,6 @@ class ProgressFormController < ApplicationController
 
   def save_form
     # To save the form there must be at least one question
-    # TODO: Do we actually want to enforce this? Really it doesn't matter that much.
     if session[:new_progress_form]["questions"].length < 1 
       return render json: { 
         status: "error", 
@@ -200,6 +199,7 @@ class ProgressFormController < ApplicationController
   end
 
   def delete_form
+    # Try find and delete a record if editing
     if params[:id]
       milestone = get_progress_forms_for_project.select{|m| m.id == params[:id].to_i}.first
 
@@ -207,10 +207,9 @@ class ProgressFormController < ApplicationController
       unless milestone.nil?
         milestone.destroy
       end
-
-    else 
-      session[:new_progress_form] = {}
     end
+
+    session[:new_progress_form] = {}
 
     redirect_to action: :index
   end
