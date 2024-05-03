@@ -27,6 +27,8 @@
 #  index_users_on_email     (email)
 #  index_users_on_username  (username)
 #
+# Represents a temporary user in the system after logging in, before the
+#  the infomation is used retrieve either staff or student record
 class User < ApplicationRecord
   include EpiCas::DeviseHelper
 

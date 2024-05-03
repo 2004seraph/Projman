@@ -3,6 +3,7 @@
     %i.bi.bi-chat-left-dots-fill.fill-yellow
     Open
 
+  // Renders all open issues based on dropdown selections
   - if @open_issues.length > 0
     - @open_issues.each do |issue|
       - issue_url = issues_path() + "#issue-#{issue.id}"
@@ -17,6 +18,7 @@
     %i.bi.bi-check-circle-fill.fill-green
     Resolved
 
+  // Renders all resolved issues based on dropdown selections
   - if @resolved_issues.length > 0
     - @resolved_issues.each do |issue|
       - issue_url = issues_path(issue) + "#issue-#{issue.id}"
