@@ -2,7 +2,7 @@
 
 .left-sidebar
   %span
-    .fs-4.fw-light Status: #{project.status}
+    .fs-4.fw-light Status: #{ViewHelper.unparamaterize project.status}
     - if project.status == 'draft'
       %i.fs-6.fw-light (Not visible to students yet)
     - else

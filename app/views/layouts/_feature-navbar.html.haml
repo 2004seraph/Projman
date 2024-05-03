@@ -12,9 +12,11 @@
         %li.nav-item
           = link_to students_url, class: 'btn btn-light' do
             Students
-      %li.nav-item
+      %li.nav-item#projects-btn
         = link_to projects_url, class: 'btn btn-light' do
           Projects
+          - if current_user.project_notification?
+            %i.bi.bi-exclamation-diamond-fill.icon-pad-nav
       %li.nav-item#issues-btn
         = link_to issues_url, class: 'btn btn-light' do
           Issues

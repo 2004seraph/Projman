@@ -29,12 +29,23 @@
           .fs-6 #{issue.json_data['content']}
         %hr.divider
         -issue_responses.each do |response|
-          .issue-text.border.p-2.mt-2
-            .fs-6 #{response.json_data['content']}
           .d-flex.align-items-center.justify-content-between.pb-2
-            .fw-light{ style: "font-size: 14px;" } From: #{response.json_data['author']}
-            .fw-light{ style: "font-size: 14px;" } #{DateTime.parse(response.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
-        <!- if current_user.isStaff?>
+            - if (current_user.is_staff? && response.staff_id == current_user.staff.id) || (current_user.is_student? && response.student_id == current_user.student.id)
+              .d-flex.w-100.justify-content-end
+                .w-75
+                  .issue-text.border.p-2{ style: "background-color: lavender;" }
+                    .fs-6 #{response.json_data['content']}
+                  .d-flex.align-items-center.justify-content-between.pb-2
+                    .fw-light{ style: "font-size: 14px;" } From: #{response.json_data['author']}
+                    .fw-light{ style: "font-size: 14px;" } #{DateTime.parse(response.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
+            - else
+              .d-flex.w-100.justify-content-start
+                .w-75
+                  .issue-text.border.p-2{ style: "background-color: #f0f0f0;" }
+                    .fs-6 #{response.json_data['content']}
+                  .d-flex.align-items-center.justify-content-between.pb-2
+                    .fw-light{ style: "font-size: 14px;" } From: #{response.json_data['author']}
+                    .fw-light{ style: "font-size: 14px;" } #{DateTime.parse(response.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
         - if !issue.completed
           %hr.divider
           = form_with(url: "/issues/issue-response", method: "post", local: false, id: "response-form-#{issue.id}") do |form|

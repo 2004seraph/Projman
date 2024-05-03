@@ -59,6 +59,8 @@ class IssueController < ApplicationController
     @selected_project = params[:selected_project]
     @selected_order = params[:selected_order]
 
+    @issues_url = issues_url
+
     json_data = {
       content: params[:response],
       author: params[:author],

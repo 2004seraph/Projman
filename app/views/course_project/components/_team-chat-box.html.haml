@@ -10,6 +10,9 @@
     "aria-controls" => unique_id}
       .d-flex.align-items-center
         %h3.m-0.fs-5.fw-medium Team Chat
+        %span
+          - if Event.chat_notification?(current_user, @current_group)
+            %i.bi.bi-exclamation-diamond-fill.icon-pad
       %i.bi.bi-caret-right-fill
     .collapse{id: unique_id}
       .card-body.pt-1.pb-1
@@ -21,13 +24,13 @@
             .row
               .scrollable
                 .d-flex.justify-content-center
-                  %i.fs-6.fw-light.pt-2.pb-2 Start of chat history
+                  %i.fs-6.fw-light.pt-2.pb-3 Start of chat history
                 - @chat_messages.each do |chat_message|
                   .d-flex.align-items-center.justify-content-between.pb-2
                     - if chat_message.student_id == current_user.student.id
                       .d-flex.w-100.justify-content-end
                         .w-75
-                          .issue-text.border.p-2.mt-2{ style: "background-color: lavender;" }
+                          .issue-text.border.p-2{ style: "background-color: lavender;" }
                             .fs-6 #{chat_message.json_data['content']}
                           .d-flex.align-items-center.justify-content-between.pb-2
                             .fw-light{ style: "font-size: 14px;" } From: #{chat_message.json_data['author']}
@@ -35,7 +38,7 @@
                     - else
                       .d-flex.w-100.justify-content-start
                         .w-75
-                          .issue-text.border.p-2.mt-2{ style: "background-color: #f0f0f0;" }
+                          .issue-text.border.p-2{ style: "background-color: #f0f0f0;" }
                             .fs-6 #{chat_message.json_data['content']}
                           .d-flex.align-items-center.justify-content-between.pb-2
                             .fw-light{ style: "font-size: 14px;" } From: #{chat_message.json_data['author']}

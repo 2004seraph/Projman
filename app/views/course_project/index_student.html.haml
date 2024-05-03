@@ -37,6 +37,8 @@
                 %h3
                     #{project.course_module.code} #{project.course_module.name} - #{project.name}
                     .sub-status
+                        - if project.project_notification?(current_user, current_user.student.groups.find_by(course_project_id: project.id))
+                            %i.bi.bi-exclamation-diamond-fill.icon-pad.p-3
                         #{ViewHelper.unparamaterize project.status}
                         -#Change colour according to deadlines or status????
                         %i.bi.bi-circle-fill.fill-green
