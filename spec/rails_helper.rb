@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'simplecov'
 SimpleCov.start 'rails'
@@ -6,7 +8,7 @@ require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
-abort("The Rails environment is running in production mode!") if Rails.env.production?
+abort('The Rails environment is running in production mode!') if Rails.env.production?
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 # require 'support/database_cleaner'
@@ -24,7 +26,7 @@ require 'rspec/rails'
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
 #
-Dir[Rails.root.join('spec', 'support', '**', '*.rb')].sort.each { |f| require f }
+Dir[Rails.root.join('spec/support/**/*.rb')].sort.each { |f| require f }
 
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
@@ -35,7 +37,7 @@ rescue ActiveRecord::PendingMigrationError => e
   exit 1
 end
 RSpec.configure do |config|
-# Allows us to call FactoryBot methods without doing FactoryBot._
+  # Allows us to call FactoryBot methods without doing FactoryBot._
   config.include FactoryBot::Syntax::Methods
   # Let's us use the capybara stuf in our specs
   config.include Capybara::DSL
@@ -82,21 +84,23 @@ RSpec.configure do |config|
 
   # Help debug tests
   config.after(:each, screenshot_on_failure: true) do |example|
-    if example.exception
-      save_and_open_screenshot
-    end
+    save_and_open_screenshot if example.exception
   end
 
   # Use this to test real error pages (e.g. epiSupport)
   config.around(:each, error_page: true) do |example|
     # Rails caches the action_dispatch setting. Need to remove it for the new setting to apply.
-    Rails.application.remove_instance_variable(:@app_env_config) if Rails.application.instance_variable_defined?(:@app_env_config)
+    if Rails.application.instance_variable_defined?(:@app_env_config)
+      Rails.application.remove_instance_variable(:@app_env_config)
+    end
     Rails.application.config.action_dispatch.show_exceptions = true
     Rails.application.config.consider_all_requests_local = false
 
     example.run
 
-    Rails.application.remove_instance_variable(:@app_env_config) if Rails.application.instance_variable_defined?(:@app_env_config)
+    if Rails.application.instance_variable_defined?(:@app_env_config)
+      Rails.application.remove_instance_variable(:@app_env_config)
+    end
     Rails.application.config.action_dispatch.show_exceptions = false
     Rails.application.config.consider_all_requests_local = true
   end
@@ -121,7 +125,7 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-  config.file_fixture_path = Rails.root.join('spec', 'factories', 'files')
+  config.file_fixture_path = Rails.root.join('spec/factories/files')
 end
 
 Capybara.configure do |config|

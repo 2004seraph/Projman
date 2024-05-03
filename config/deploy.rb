@@ -1,13 +1,15 @@
+# frozen_string_literal: true
 
-set :whenever_command, "bundle exec whenever"
-require "whenever/capistrano"
+set :whenever_command, 'bundle exec whenever'
+require 'whenever/capistrano'
 
 ## Application configuration
 set :application,             'Project'
 set :branch,                  -> { fetch(:stage) }
 set :repo_url,                'git@git.shefcompsci.org.uk:com3420-2023-24/team05/project.git'
-set :linked_files,            fetch(:linked_files,  fetch(:env_links, [])).push('config/database.yml', 'config/secrets.yml')
-set :linked_dirs,             fetch(:linked_dirs, []).push('log', 'tmp/pids', 'public/packs', 'node_modules', 'storage')
+set :linked_files,
+    fetch(:linked_files, fetch(:env_links, [])).push('config/database.yml', 'config/secrets.yml')
+set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'public/packs', 'node_modules', 'storage')
 
 ## Ruby configuration
 set :rvm_type,                    :system
@@ -23,8 +25,8 @@ set :log_level,     :info
 set :pty,           true
 set :keep_releases, 2
 
-set :monit_processes, %w(delayed_job)
-set :monit_roles, %w(db)
+set :monit_processes, %w[delayed_job]
+set :monit_roles, %w[db]
 
 namespace :monit do
   task :config do
@@ -33,7 +35,8 @@ namespace :monit do
       fetch(:monit_processes).each do |process_name|
         filename = File.expand_path("../deploy/monit_templates/#{process_name}.monitrc.erb", __FILE__)
         erb = File.read(filename)
-        upload! StringIO.new(ERB.new(erb, nil, '-').result(binding)), File.join(shared_path, 'monit', "#{process_name}.monitrc")
+        upload! StringIO.new(ERB.new(erb, trim_mode: '-').result(binding)),
+                File.join(shared_path, 'monit', "#{process_name}.monitrc")
       end
       sudo 'monit', 'reload'
     end
@@ -47,31 +50,31 @@ namespace :monit do
 
   task :unmonitor do
     on roles(fetch(:monit_roles, :db)) do
-      begin
-        sudo 'monit', '-g', fetch(:user), 'unmonitor'
-      rescue
-      end
+      sudo 'monit', '-g', fetch(:user), 'unmonitor'
+    rescue StandardError
     end
   end
 end
 
 ## Update monit configuration during deployment
 before 'deploy:updating', 'monit:unmonitor'
-after  "deploy:updated", 'monit:config'
+after  'deploy:updated', 'monit:config'
 after 'deploy:finished', 'monit:monitor'
 
 ## Whenever configuration
-set :whenever_command,        [:bundle, :exec, :whenever]
+set :whenever_command,        %i[bundle exec whenever]
 set :whenever_roles,          [:db]
-set :whenever_environment,    -> { (fetch(:rails_env) || fetch(:stage)) }
+set :whenever_environment,    -> { fetch(:rails_env) || fetch(:stage) }
 set :whenever_identifier,     -> { "#{fetch(:application)}-#{fetch(:whenever_environment)}" }
-set :whenever_variables,      -> { "\"environment=#{fetch(:whenever_environment)}&delayed_job_args_p=#{fetch(:delayed_job_identifier)}&delayed_job_args_n=#{fetch(:delayed_job_workers)}\"" }
+set :whenever_variables,      lambda {
+  "\"environment=#{fetch(:whenever_environment)}&delayed_job_args_p=#{fetch(:delayed_job_identifier)}&delayed_job_args_n=#{fetch(:delayed_job_workers)}\""
+}
 
 ## Delayed Job configuration
 set :delayed_job_roles,       [:db]
-set :delayed_job_environment, -> { (fetch(:rails_env) || fetch(:stage)) }
+set :delayed_job_environment, -> { fetch(:rails_env) || fetch(:stage) }
 set :delayed_job_identifier,  -> { "#{fetch(:application)}-#{fetch(:delayed_job_environment)}" }
-set :delayed_job_workers,     -> { (fetch(:dj_workers) || '1') }
+set :delayed_job_workers,     -> { fetch(:dj_workers) || '1' }
 set :delayed_job_args,        -> { "-p #{fetch(:delayed_job_identifier)} -n #{fetch(:delayed_job_workers)}" }
 
 namespace :delayed_job do
@@ -124,7 +127,7 @@ namespace :deploy do
   end
 end
 
-Rake::Task["deploy:assets:backup_manifest"].clear_actions
+Rake::Task['deploy:assets:backup_manifest'].clear_actions
 
 ## Restart delayed_job during the deployment process
 after  'deploy:updated',  'delayed_job:stop'

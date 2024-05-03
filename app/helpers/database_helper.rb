@@ -1,21 +1,21 @@
-
+# frozen_string_literal: true
 
 module DatabaseHelper
-  PREFIX = "[Database]"
-  NOTICE = "#{PREFIX} Notice:"
-  WARNING = "#{PREFIX} Warning:"
-  ERROR = "#{PREFIX} Error:"
+  PREFIX = '[Database]'
+  NOTICE = "#{PREFIX} Notice:".freeze
+  WARNING = "#{PREFIX} Warning:".freeze
+  ERROR = "#{PREFIX} Error:".freeze
 
-  TITLES = [["Mr"], ["Miss", "Ms", "Mrs"], ["Mx", "Dr", "Prof"]]
+  TITLES = [['Mr'], %w[Miss Ms Mrs], %w[Mx Dr Prof]].freeze
 
   extend self
 
   def print_validation_errors(model_instance)
-    if not model_instance.valid?
-      puts "#{ERROR} #{model_instance.class.name} instance is invalid:"
-      puts model_instance.errors.full_messages
+    if !model_instance.valid?
+      Rails.logger.debug "#{ERROR} #{model_instance.class.name} instance is invalid:"
+      Rails.logger.debug model_instance.errors.full_messages
     else
-      puts "#{NOTICE} #{model_instance.class.name} instance is valid"
+      Rails.logger.debug "#{NOTICE} #{model_instance.class.name} instance is valid"
     end
   end
 
@@ -23,15 +23,15 @@ module DatabaseHelper
 
   def create_course_project(options = {})
     settings = {
-      module_code: "COM3420",
-      name: "Test Project",
-      status: "draft",
-      project_choices: ["Choice 1", "Choice 2"],
+      module_code: 'COM3420',
+      name: 'Test Project',
+      status: 'draft',
+      project_choices: ['Choice 1', 'Choice 2'],
       team_size: 4,
       preferred_teammates: 1,
       avoided_teammates: 2,
-      team_allocation_mode: "random_team_allocation",
-      project_allocation_mode: "team_preference_project_allocation",
+      team_allocation_mode: 'random_team_allocation',
+      project_allocation_mode: 'team_preference_project_allocation',
 
       project_deadline: DateTime.now + 1.minute,
       project_pref_deadline: DateTime.now + 1.minute,
@@ -39,15 +39,15 @@ module DatabaseHelper
 
       milestones: [
         {
-          "Name": "Milestone 1",
+          "Name": 'Milestone 1',
           "Deadline": DateTime.now + 1.minute,
-          "Email": {"Content": "This is an email", "Advance": 0},
-          "Comment": "This is a comment",
-          "Type": "team"
+          "Email": { "Content": 'This is an email', "Advance": 0 },
+          "Comment": 'This is a comment',
+          "Type": 'team'
         }
       ],
 
-      facilitators: ["jbala1@sheffield.ac.uk", "sgttaseff1@sheffield.ac.uk"]
+      facilitators: ['jbala1@sheffield.ac.uk', 'sgttaseff1@sheffield.ac.uk']
     }.merge(options)
 
     project = CourseProject.find_or_create_by(
@@ -56,7 +56,7 @@ module DatabaseHelper
       project_allocation: settings[:project_allocation_mode],
       team_size: settings[:team_size],
       team_allocation: settings[:team_allocation_mode],
-      preferred_teammates:  settings[:preferred_teammates],
+      preferred_teammates: settings[:preferred_teammates],
       avoided_teammates: settings[:avoided_teammates],
       status: settings[:status]
     )
@@ -65,59 +65,59 @@ module DatabaseHelper
     settings[:project_choices].each do |choice|
       subproject = Subproject.create(
         name: choice,
-        json_data: "{}",
+        json_data: '{}',
         course_project_id: project.id
       )
       DatabaseHelper.print_validation_errors(subproject)
     end
 
     project_deadline_json_data = {
-      "Name" => "Project Deadline",
-      "isDeadline" => true,
-      "Comment" => "",
-      "Email" => {"Content": "Project Deadline upcoming!", "Advance": 0}
+      'Name' => 'Project Deadline',
+      'isDeadline' => true,
+      'Comment' => '',
+      'Email' => { "Content": 'Project Deadline upcoming!', "Advance": 0 }
     }
     project_deadline_milestone = Milestone.create(
       json_data: project_deadline_json_data,
       deadline: settings[:project_deadline],
-      system_type: "project_deadline",
+      system_type: 'project_deadline',
       user_generated: true,
-      milestone_type: "team",
+      milestone_type: 'team',
       course_project_id: project.id
     )
     DatabaseHelper.print_validation_errors(project_deadline_milestone)
 
     if project.project_allocation
       proj_pref_json_data = {
-        "Name" => "Project Preference Deadline",
-        "isDeadline" => true,
-        "Comment" => "",
-        "Email" => {"Content": "Project preference upcoming!", "Advance": 0}
+        'Name' => 'Project Preference Deadline',
+        'isDeadline' => true,
+        'Comment' => '',
+        'Email' => { "Content": 'Project preference upcoming!', "Advance": 0 }
       }
       proj_pref_milestone = Milestone.create(
         json_data: proj_pref_json_data,
         deadline: settings[:project_pref_deadline],
-        system_type: "project_preference_deadline",
+        system_type: 'project_preference_deadline',
         user_generated: true,
-        milestone_type: "student",
+        milestone_type: 'student',
         course_project_id: project.id
       )
       DatabaseHelper.print_validation_errors(proj_pref_milestone)
     end
 
-    if project.team_allocation != "random_team_allocation"
+    if project.team_allocation != 'random_team_allocation'
       team_pref_json_data = {
-        "Name" => "Teammate Preference Deadline",
-        "isDeadline" => true,
-        "Comment" => "",
-        "Email" => {"Content": "Teammate preference upcoming!", "Advance": 0}
+        'Name' => 'Teammate Preference Deadline',
+        'isDeadline' => true,
+        'Comment' => '',
+        'Email' => { "Content": 'Teammate preference upcoming!', "Advance": 0 }
       }
       team_pref_milestone = Milestone.create(
         json_data: team_pref_json_data,
         deadline: DateTime.now + 1.minute,
-        system_type: "teammate_preference_deadline",
+        system_type: 'teammate_preference_deadline',
         user_generated: true,
-        milestone_type: "student",
+        milestone_type: 'student',
         course_project_id: project.id
       )
       DatabaseHelper.print_validation_errors(team_pref_milestone)
@@ -125,14 +125,14 @@ module DatabaseHelper
 
     settings[:milestones].each do |milestone|
       json_data = {
-        "Name" => milestone[:Name],
-        "isDeadline" => false,
-        "Comment" => milestone[:Comment],
+        'Name' => milestone[:Name],
+        'isDeadline' => false,
+        'Comment' => milestone[:Comment]
       }
-      json_data["Email"] = milestone[:Email] if milestone.key?(:Email)
+      json_data['Email'] = milestone[:Email] if milestone.key?(:Email)
 
       m = Milestone.create(
-        json_data: json_data,
+        json_data:,
         deadline: milestone[:Deadline],
         system_type: nil,
         user_generated: true,
@@ -143,12 +143,12 @@ module DatabaseHelper
     end
 
     settings[:facilitators].each do |user_email|
-      facilitator = AssignedFacilitator.new(course_project_id: project.id);
+      facilitator = AssignedFacilitator.new(course_project_id: project.id)
 
       if Staff.exists?(email: user_email)
-          facilitator.staff_id = Staff.where(email: user_email).first.id
+        facilitator.staff_id = Staff.where(email: user_email).first.id
       elsif Student.exists?(email: user_email)
-          facilitator.student_id = Student.where(email: user_email).first.id
+        facilitator.student_id = Student.where(email: user_email).first.id
       end
 
       facilitator.save!
@@ -163,14 +163,14 @@ module DatabaseHelper
     # Run sorting algorithm for student groups
     students_grouped = []
 
-    if project.team_allocation == "random_team_allocation"
+    if project.team_allocation == 'random_team_allocation'
       students_grouped = DatabaseHelper.random_group_allocation(team_size, module_students)
     end
 
     students_grouped.each do |student_subarray|
       current_group = Group.new
       team_count += 1
-      current_group.name = "Team " + team_count.to_s
+      current_group.name = "Team #{team_count}"
       current_group.course_project_id = project.id
       student_subarray.each do |student|
         current_group.students << student
@@ -180,9 +180,9 @@ module DatabaseHelper
     end
   end
 
-  def provision_module_class(module_code, name, lead, class_list=nil)
+  def provision_module_class(module_code, name, lead, class_list = nil)
     student_csv =
-      if class_list == nil
+      if class_list.nil?
         StudentDataHelper.generate_dummy_data_csv_string(
           module_code
         )
@@ -191,23 +191,23 @@ module DatabaseHelper
       end
 
     # begin
-      new_module = CourseModule.find_or_create_by ({
-        code: module_code,
-        name: name,
-        staff: lead
-      })
+    new_module = CourseModule.find_or_create_by({
+                                                  code: module_code,
+                                                  name:,
+                                                  staff: lead
+                                                })
     # rescue ActiveRecord::RecordNotUnique
-      # puts "#{WARNING} Module #{module_code} already exists"
+    # puts "#{WARNING} Module #{module_code} already exists"
     # else
-      DatabaseHelper.print_validation_errors(new_module)
+    DatabaseHelper.print_validation_errors(new_module)
 
-      errors = Student.bootstrap_class_list(student_csv)
-      if errors.length > 0
-        puts "#{WARNING} #{errors.length} students had validation errors, their entries were not committed. Displaying first error:"
-        DatabaseHelper.print_validation_errors(errors[0])
-      end
+    errors = Student.bootstrap_class_list(student_csv)
+    if errors.length.positive?
+      Rails.logger.debug "#{WARNING} #{errors.length} students had validation errors, their entries were not committed. Displaying first error:"
+      DatabaseHelper.print_validation_errors(errors[0])
+    end
     # ensure
-      return student_csv
+    student_csv
     # end
   end
 
@@ -220,7 +220,7 @@ module DatabaseHelper
   end
 
   def create_staff(email)
-    x = Staff.find_or_create_by(email: email)
+    x = Staff.find_or_create_by(email:)
     DatabaseHelper.print_validation_errors(x)
     x
   end
@@ -233,31 +233,28 @@ module DatabaseHelper
   def get_student_first_name(student)
     # WARNING, LDAP IS INCREDIBLY SLOW TO QUERY
     un, lookup = ldap_lookup student
-    if lookup.all_results.length == 0
-      return un
-    end
-    return lookup.lookup[:givenName][0]
+    return un if lookup.all_results.empty?
+
+    lookup.lookup[:givenName][0]
   end
 
   def get_student_last_name(student)
     # WARNING, LDAP IS INCREDIBLY SLOW TO QUERY
     un, lookup = ldap_lookup student
-    if lookup.all_results.length == 0
-      return un
-    end
-    return lookup.lookup[:sn][0]
+    return un if lookup.all_results.empty?
+
+    lookup.lookup[:sn][0]
   end
 
   ##
   # Takes a list of students, splits them into the given group size randomly
   # and returns the 2-D array of groups.
   def random_group_allocation(team_size, student_list)
-
-    #Randomise students
+    # Randomise students
     shuffled_students = student_list.shuffle
     num_teams = (student_list.size / team_size).floor
 
-    #Create correct size groups
+    # Create correct size groups
     teams = []
     num_teams.times do
       team = []
@@ -267,15 +264,14 @@ module DatabaseHelper
       teams << team
     end
 
-    #Allocate remaining students (if any) to random groups
+    # Allocate remaining students (if any) to random groups
     i = 0
     while shuffled_students.any?
       teams[i] << shuffled_students.pop
       i += 1
     end
 
-    return teams.shuffle
-
+    teams.shuffle
   end
 
   ##
@@ -286,7 +282,7 @@ module DatabaseHelper
   def random_with_heuristics_allocation(team_size, student_list)
     return random_group_allocation(team_size, student_list) if team_size <= 3
 
-    #Randomise students
+    # Randomise students
     shuffled_students = student_list.shuffle
     num_teams = (student_list.size / team_size).floor
 
@@ -296,7 +292,7 @@ module DatabaseHelper
       while team.size < team_size
 
         if team.size.even?
-          #Add a random student
+          # Add a random student
           team << shuffled_students.pop
           next
         end
@@ -304,37 +300,40 @@ module DatabaseHelper
         previous_student = team.last
         titles = TITLES.find { |specific_titles| specific_titles.include?(previous_student.title) }
 
-        #Add a full title and domicile match if found
-        full_matches = shuffled_students.select { |student| titles.include?(student.title) && student.fee_status == previous_student.fee_status }
+        # Add a full title and domicile match if found
+        full_matches = shuffled_students.select do |student|
+          titles.include?(student.title) && student.fee_status == previous_student.fee_status
+        end
         unless full_matches.empty?
           team << full_matches.first
           shuffled_students.delete(full_matches.first)
           next
         end
 
-        #Add a half title and domicile match if found
-        half_matches = shuffled_students.select { |student| titles.include?(student.title) || student.fee_status == previous_student.fee_status }
+        # Add a half title and domicile match if found
+        half_matches = shuffled_students.select do |student|
+          titles.include?(student.title) || student.fee_status == previous_student.fee_status
+        end
         unless half_matches.empty?
           team << half_matches.first
           shuffled_students.delete(half_matches.first)
           next
         end
 
-        #Add another random student
+        # Add another random student
         team << shuffled_students.pop
       end
       teams << team
     end
 
-    #Allocate remaining students (if any) to random groups
+    # Allocate remaining students (if any) to random groups
     i = 0
     while shuffled_students.any?
       teams[i] << shuffled_students.pop
       i += 1
     end
 
-    return teams.shuffle
-
+    teams.shuffle
   end
 
   ##
@@ -345,20 +344,19 @@ module DatabaseHelper
   # - Domicile
   # and returns the 2-D array of groups.
   def preference_form_group_allocation(team_size, student_list, pref_form_milestone)
-
     shuffled_students = student_list.shuffle
     num_teams = (student_list.size / team_size).floor
     teams = []
 
-    #Parse data from preference form responses
+    # Parse data from preference form responses
     preferences = {}
     avoided = {}
     pref_form_milestone.milestone_responses.each do |response|
-      preferences[response.student_id] = response.json_data["preferred"]
-      avoided[response.student_id] = response.json_data["avoided"]
+      preferences[response.student_id] = response.json_data['preferred']
+      avoided[response.student_id] = response.json_data['avoided']
     end
 
-    #Get preferred teammate pairs
+    # Get preferred teammate pairs
     preferred_pairs = []
     preferences.each do |key, value|
       value.each do |preferred_id|
@@ -371,7 +369,7 @@ module DatabaseHelper
       end
     end
 
-    #Concatenate any shared preference pairs
+    # Concatenate any shared preference pairs
     preferred_pairs.each_with_index do |pair, index|
       preferred_pairs.each_with_index do |other_pair, other_index|
         next if index == other_index
@@ -384,19 +382,17 @@ module DatabaseHelper
     end
     preferred_pairs.reject!(&:empty?)
 
-    #Change IDs to Student models
+    # Change IDs to Student models
     student_map = {}
     shuffled_students.each { |student| student_map[student.id] = student }
     preferred_pairs.each do |pair|
       pair.map! { |student_id| student_map[student_id] }
-    end
-    preferred_pairs.each do |pair|
       pair.each do |student|
         shuffled_students.delete(student)
       end
     end
 
-    #Initialize and add the preferred teammates to teams
+    # Initialize and add the preferred teammates to teams
     num_teams.times do |i|
       teams[i] = []
     end
@@ -410,13 +406,13 @@ module DatabaseHelper
       i += 1
     end
 
-    #Fill in teams with students chosen via heuristics
+    # Fill in teams with students chosen via heuristics
     num_teams.times do |i|
       team = teams[i]
       while team.size < team_size
 
         if team.size.even?
-          #Add a random student
+          # Add a random student
           team << shuffled_students.pop
           next
         end
@@ -424,29 +420,33 @@ module DatabaseHelper
         previous_student = team.last
         titles = TITLES.find { |specific_titles| specific_titles.include?(previous_student.title) }
 
-        #Add a full title and domicile match if found
-        full_matches = shuffled_students.select { |student| titles.include?(student.title) && student.fee_status == previous_student.fee_status }
+        # Add a full title and domicile match if found
+        full_matches = shuffled_students.select do |student|
+          titles.include?(student.title) && student.fee_status == previous_student.fee_status
+        end
         unless full_matches.empty?
           team << full_matches.first
           shuffled_students.delete(full_matches.first)
           next
         end
 
-        #Add a half title and domicile match if found
-        half_matches = shuffled_students.select { |student| titles.include?(student.title) || student.fee_status == previous_student.fee_status }
+        # Add a half title and domicile match if found
+        half_matches = shuffled_students.select do |student|
+          titles.include?(student.title) || student.fee_status == previous_student.fee_status
+        end
         unless half_matches.empty?
           team << half_matches.first
           shuffled_students.delete(half_matches.first)
           next
         end
 
-        #Add another random student
+        # Add another random student
         team << shuffled_students.pop
 
       end
     end
 
-    #Allocate remaining students (if any) to random groups
+    # Allocate remaining students (if any) to random groups
     i = 0
     while shuffled_students.any?
       i = 0 if i == num_teams
@@ -455,7 +455,7 @@ module DatabaseHelper
       i += 1
     end
 
-    return teams.shuffle
+    teams.shuffle
   end
 
   def assign_projects_to_individuals(course_project)
@@ -465,10 +465,10 @@ module DatabaseHelper
       response = g.students.first.milestone_responses.find_by(milestone: course_project.project_preference_deadline)
       subproject =
         if response
-          response.json_data["1"]
+          response.json_data['1']
         else
           # assign least popular subproject
-          (subproject_popularity.sort_by { |key, value| value }.first || [course_project.subprojects.first.id])[0]
+          (subproject_popularity.min_by { |_key, value| value } || [course_project.subprojects.first.id])[0]
         end
 
       subproject_popularity[subproject] = (subproject_popularity[subproject] || 0) + 1
@@ -477,12 +477,13 @@ module DatabaseHelper
       g.save
     end
   end
+
   def assign_projects_to_groups(course_project)
     subproject_popularity = {}
 
-    MilestoneResponse.where(milestone: course_project.project_preference_deadline).each do |r|
-      group = r.student.groups.find_by(course_project: course_project)
-      subproject = r.json_data["1"]
+    MilestoneResponse.where(milestone: course_project.project_preference_deadline).find_each do |r|
+      r.student.groups.find_by(course_project:)
+      subproject = r.json_data['1']
 
       subproject_popularity[subproject] = (subproject_popularity[subproject] || 0) + 1
       g.subproject = Subproject.find(subproject)
@@ -490,8 +491,10 @@ module DatabaseHelper
     end
 
     # groups that didnt respond
-    course_project.groups.where(subproject: nil).each do |g|
-      subproject = (subproject_popularity.sort_by { |key, value| value }.first || [course_project.subprojects.first.id])[0]
+    course_project.groups.where(subproject: nil).find_each do |g|
+      subproject = (subproject_popularity.min_by do |_key, value|
+                      value
+                    end || [course_project.subprojects.first.id])[0]
       subproject_popularity[subproject] = (subproject_popularity[subproject] || 0) + 1
       g.subproject = Subproject.find(subproject)
       g.save
@@ -500,31 +503,27 @@ module DatabaseHelper
 
   private
 
-  #Helper method that checks for avoidance preference responses in planned team additions
+  # Helper method that checks for avoidance preference responses in planned team additions
   def avoidance_check(team, student_array, avoidance_hash)
     return true if team.empty? || student_array.empty?
+
     team.each do |team_member|
       student_array.each do |prospect|
-        unless avoidance_hash[team_member.id].nil?
-          return false if avoidance_hash[team_member.id].include?(prospect.id)
-        end
-        unless avoidance_hash[prospect.id].nil?
-          return false if avoidance_hash[prospect.id].include?(team_member.id)
-        end
+        return false if !avoidance_hash[team_member.id].nil? && avoidance_hash[team_member.id].include?(prospect.id)
+        return false if !avoidance_hash[prospect.id].nil? && avoidance_hash[prospect.id].include?(team_member.id)
       end
     end
-    return true
+    true
   end
 
   def ldap_lookup(student)
     # WARNING, LDAP IS INCREDIBLY SLOW TO QUERY
     un =
-      if student.kind_of?(String)
+      if student.is_a?(String)
         student
-      elsif student.kind_of?(Student)
+      elsif student.is_a?(Student)
         student.username
       end
-    return un, SheffieldLdapLookup::LdapFinder.new(un)
+    [un, SheffieldLdapLookup::LdapFinder.new(un)]
   end
-
 end

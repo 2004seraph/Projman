@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: assigned_facilitators
@@ -44,5 +46,4 @@ class AssignedFacilitator < ApplicationRecord
       student&.email
     end
   end
-  
 end

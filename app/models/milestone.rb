@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: milestones
@@ -32,7 +34,7 @@ class Milestone < ApplicationRecord
   enum :milestone_type, {
     student: 'for_each_student',
     staff: 'for_each_staff',
-    team: 'for_each_team',
+    team: 'for_each_team'
   }
 
   enum :system_type, {
@@ -42,15 +44,15 @@ class Milestone < ApplicationRecord
     marking_deadline: 'mark_scheme'
   }
 
-  def push_milestone_to_teams?(reminder=false)
+  def push_milestone_to_teams?(reminder = false)
     if milestone_type == :team
       # create events
 
       course_project.groups.each do |g|
         json = {
-          "Name" => json_data["Name"],
-          "Content" => json_data["Content"],
-          "Urgency" =>
+          'Name' => json_data['Name'],
+          'Content' => json_data['Content'],
+          'Urgency' =>
             if [:project_completion_deadline].include? system_type
               2 # Most urgent
             elsif reminder
