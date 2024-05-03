@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'csv'
 require 'faker'
 
@@ -31,19 +33,19 @@ module StudentDataHelper
     ]
   end
 
-  USERNAME_CSV_COLUMN = "Student Username"
+  USERNAME_CSV_COLUMN = 'Student Username'
 
   # the specific CSV field name of the student module enrollment.
-  MODULE_CODE_CSV_COLUMN = "Module Code"
+  MODULE_CODE_CSV_COLUMN = 'Module Code'
 
   # the parser automatically replaces spaces with _ and converts the
   # string to lowercase, if this does not map to the correct field
   # in the database, you can declare an explicit mapping below.
   EXPLICIT_CSV_TO_FIELD_LINK = {
-    "Known As": "preferred_name",
-    "Student Username": "username",
-    "Ucard No": "ucard_number"
-  }
+    "Known As": 'preferred_name',
+    "Student Username": 'username',
+    "Ucard No": 'ucard_number'
+  }.freeze
 
   # if any CSV cells require transforming the data
   # to the correct format for the database
@@ -56,7 +58,7 @@ module StudentDataHelper
     },
     email: lambda { |s, _|
       s.downcase
-    },
+    }
     # surname: lambda { |s, username|
     #   lookup = DatabaseHelper.get_student_first_name(username)
     #   if lookup == username
@@ -73,20 +75,18 @@ module StudentDataHelper
     #     lookup
     #   end
     # }
-  }
+  }.freeze
 
-
-  def generate_dummy_data_csv_string(class_module_code = "COM3420", num_records = 100)
+  def generate_dummy_data_csv_string(class_module_code = 'COM3420', num_records = 100)
     data = generate_dummy_data(num_records, class_module_code)
     convert_csv_to_text(data, csv_headers)
   end
 
   def convert_csv_to_text(data, headers = csv_headers)
-    csv_string = CSV.generate(headers: true) do |csv|
+    CSV.generate(headers: true) do |csv|
       csv << headers
       data.each { |row| csv << row }
     end
-    csv_string
   end
 
   private

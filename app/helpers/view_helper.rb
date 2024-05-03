@@ -1,45 +1,31 @@
+# frozen_string_literal: true
 
 module ViewHelper
-  extend self
+  module_function
 
   def unparamaterize(str)
-    str.tr("_", " ").humanize
+    str.tr('_', ' ').humanize
   end
 
   def remove_after_indent(str)
-    x = ""
-    for i in 0...str.length
-      if str[i] == ' '
-        return x
-      end
+    x = ''
+    (0...str.length).each do |i|
+      return x if str[i] == ' '
+
       x += str[i]
     end
     x
   end
+
   def retrieve_courses
-    if current_user.staff.admin
-      CourseModule.all
+    if current_user.is_staff?
+      if current_user.staff.admin
+        return CourseModule.all
+      else
+        return CourseModule.where(staff_id: current_user.staff)
+      end
     else
-      CourseModule.where(staff_id: current_user.staff)
+      return []
     end
   end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

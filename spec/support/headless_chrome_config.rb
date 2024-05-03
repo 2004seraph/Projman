@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Capybara.register_driver :headless_chrome do |app|
   chrome_options = Selenium::WebDriver::Chrome::Options.new
   chrome_options.add_argument('--headless') unless ENV['SHOW_CHROME']
@@ -9,7 +11,8 @@ Capybara.register_driver :headless_chrome do |app|
   chrome_options.add_argument('--disable-popup-blocking')
   chrome_options.add_argument('--window-size=1920,1080')
   chrome_options.add_argument('--enable-javascript')
-  chrome_options.add_preference(:download, directory_upgrade: true, prompt_for_download: false, default_directory: '/tmp')
+  chrome_options.add_preference(:download, directory_upgrade: true, prompt_for_download: false,
+                                           default_directory: '/tmp')
   chrome_options.add_preference(:browser, set_download_behavior: { behavior: 'allow' })
 
   if ENV['SELENIUM_HOST']
@@ -41,10 +44,10 @@ if ENV['SELENIUM_HOST']
   end
 
   Capybara.configure do |config|
-    if RUBY_PLATFORM.match(/linux/)
-      config.server_host = `/sbin/ip route|awk '/scope/ { print $9 }'`.chomp
-    else
-      config.server_host = '127.0.0.1'
-    end
+    config.server_host = if RUBY_PLATFORM.match(/linux/)
+                           `/sbin/ip route|awk '/scope/ { print $9 }'`.chomp
+                         else
+                           '127.0.0.1'
+                         end
   end
 end

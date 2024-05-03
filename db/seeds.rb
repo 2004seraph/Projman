@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file should contain all the record creation needed to seed the database with its default values.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 #
@@ -11,88 +13,88 @@ require 'database_helper'
 require 'csv'
 
 sam = Student.find_or_create_by({
-  username: "aca21sgt",
-  preferred_name: "Sam",
-  forename: "Sam",
-  title: "Mx",
-  ucard_number: "777777777",
-  email: "sgttaseff1@sheffield.ac.uk",
-  fee_status: :home
-})
+                                  username: 'aca21sgt',
+                                  preferred_name: 'Sam',
+                                  forename: 'Sam',
+                                  title: 'Mx',
+                                  ucard_number: '777777777',
+                                  email: 'sgttaseff1@sheffield.ac.uk',
+                                  fee_status: :home
+                                })
 DatabaseHelper.print_validation_errors(sam)
-sam_staff = Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: true })
+Staff.find_or_create_by({ email: 'sgttaseff1@sheffield.ac.uk', admin: true })
 # DatabaseHelper.print_validation_errors(sam_staff)
 
-josh = Student.find_or_create_by({
-  username: "aca21jlh",
-  preferred_name: "Josh",
-  forename: "Joshua",
-  surname: "Henson",
-  title: "Mr",
-  ucard_number: "123456789",
-  email: "jhenson2@sheffield.ac.uk",
-  fee_status: :home
-})
-DatabaseHelper.create_staff("jhenson2@sheffield.ac.uk")
+Student.find_or_create_by({
+                            username: 'aca21jlh',
+                            preferred_name: 'Josh',
+                            forename: 'Joshua',
+                            surname: 'Henson',
+                            title: 'Mr',
+                            ucard_number: '123456789',
+                            email: 'jhenson2@sheffield.ac.uk',
+                            fee_status: :home
+                          })
+DatabaseHelper.create_staff('jhenson2@sheffield.ac.uk')
 
-jakub = Student.find_or_create_by({
-  username: "ack21jb",
-  preferred_name: "Jakub",
-  forename: "Jakub",
-  title: "Mr",
-  ucard_number: "001793100",
-  email: "jbala1@sheffield.ac.uk",
-  fee_status: :home
-})
-DatabaseHelper.create_staff("jbala1@sheffield.ac.uk")
+Student.find_or_create_by({
+                            username: 'ack21jb',
+                            preferred_name: 'Jakub',
+                            forename: 'Jakub',
+                            title: 'Mr',
+                            ucard_number: '001793100',
+                            email: 'jbala1@sheffield.ac.uk',
+                            fee_status: :home
+                          })
+DatabaseHelper.create_staff('jbala1@sheffield.ac.uk')
 
 oliver = Student.find_or_create_by({
-  username: "aca22op",
-  preferred_name: "Oliver",
-  forename: "Oliver",
-  surname: "Pickford",
-  title: "Mr",
-  ucard_number: "001796094",
-  email: "opickford1@sheffield.ac.uk",
-  fee_status: :home
-})
+                                     username: 'aca22op',
+                                     preferred_name: 'Oliver',
+                                     forename: 'Oliver',
+                                     surname: 'Pickford',
+                                     title: 'Mr',
+                                     ucard_number: '001796094',
+                                     email: 'opickford1@sheffield.ac.uk',
+                                     fee_status: :home
+                                   })
 # DatabaseHelper.create_staff("opickford1@sheffield.ac.uk")
 
 nahyan = Student.find_or_create_by({
-  username: "acb21nk",
-  preferred_name: "Nahyan",
-  forename: "Nahyan",
-  surname: "Khan",
-  title: "Mr",
-  ucard_number: "001790710",
-  email: "nkhan10@sheffield.ac.uk",
-  fee_status: :home
-})
+                                     username: 'acb21nk',
+                                     preferred_name: 'Nahyan',
+                                     forename: 'Nahyan',
+                                     surname: 'Khan',
+                                     title: 'Mr',
+                                     ucard_number: '001790710',
+                                     email: 'nkhan10@sheffield.ac.uk',
+                                     fee_status: :home
+                                   })
 # DatabaseHelper.create_staff("nkhan10@sheffield.ac.uk")
 
 adam = Student.find_or_create_by({
-  username: "acc22aw",
-  preferred_name: "Adam",
-  forename: "Adam",
-  title: "Mr",
-  ucard_number: "001787692",
-  email: "awillis4@sheffield.ac.uk",
-  fee_status: :home
-})
+                                   username: 'acc22aw',
+                                   preferred_name: 'Adam',
+                                   forename: 'Adam',
+                                   title: 'Mr',
+                                   ucard_number: '001787692',
+                                   email: 'awillis4@sheffield.ac.uk',
+                                   fee_status: :home
+                                 })
 
-puts ""
+Rails.logger.debug ''
 
-robotics_class = DatabaseHelper.provision_module_class(
-  "COM2009",
-  "Robotics",
-  Staff.find_or_create_by(email: "jhenson2@sheffield.ac.uk")
+DatabaseHelper.provision_module_class(
+  'COM2009',
+  'Robotics',
+  Staff.find_or_create_by(email: 'jhenson2@sheffield.ac.uk')
 )
 # sam.enroll_module "COM2009"
 # josh.enroll_module "COM2009"
 # jakub.enroll_module "COM2009"
-adam.enroll_module "COM2009"
-oliver.enroll_module "COM2009"
-nahyan.enroll_module "COM2009"
+adam.enroll_module 'COM2009'
+oliver.enroll_module 'COM2009'
+nahyan.enroll_module 'COM2009'
 
 students_COM3420 = DatabaseHelper.provision_module_class(
   "COM3420",
@@ -143,28 +145,28 @@ students_COM3420 = DatabaseHelper.provision_module_class(
 #   team_size: 8
 # }))
 DatabaseHelper.create_course_project(
-  options = {
-    module_code: "COM2009",
-    name: "Turtlebot Project",
-    status: "draft",
-    project_choices: ["Choice 1", "Choice 2"],
+  {
+    module_code: 'COM2009',
+    name: 'Turtlebot Project',
+    status: 'draft',
+    project_choices: ['Choice 1', 'Choice 2'],
     team_size: 4,
-    team_allocation_mode: "random_team_allocation",
-    project_allocation_mode: "team_preference_project_allocation",
+    team_allocation_mode: 'random_team_allocation',
+    project_allocation_mode: 'team_preference_project_allocation',
 
-    project_deadline: DateTime.now + 5.minute,
-    project_pref_deadline: DateTime.now + 5.minute,
-    team_pref_deadline: DateTime.now + 5.minute,
+    project_deadline: DateTime.now + 5.minutes,
+    project_pref_deadline: DateTime.now + 5.minutes,
+    team_pref_deadline: DateTime.now + 5.minutes,
 
     milestones: [
       {
-        "Name": "Milestone 1",
+        "Name": 'Milestone 1',
         "Deadline": DateTime.now + 1.minute,
-        "Email": {"Content": "This is an email", "Advance": 0},
-        "Comment": "This is a comment",
-        "Type": "team"
+        "Email": { "Content": 'This is an email', "Advance": 0 },
+        "Comment": 'This is a comment',
+        "Type": 'team'
       }
-    ],
+    ]
   }
 )
 

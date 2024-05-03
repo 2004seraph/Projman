@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: staffs
@@ -33,7 +35,7 @@ class Staff < ApplicationRecord
   def issues
     issues = []
 
-    user_modules = self.course_modules
+    user_modules = course_modules
 
     user_projects = []
     user_modules.each do |user_module|
@@ -49,6 +51,6 @@ class Staff < ApplicationRecord
       issues += Event.where(event_type: :issue, group_id: project_group.id)
     end
 
-    return issues
+    issues
   end
 end

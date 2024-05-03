@@ -1,7 +1,7 @@
+# frozen_string_literal: true
 
 module StandardHelper
-
-  extend self
+  module_function
 
   def str_to_int(string)
     Integer(string || '')

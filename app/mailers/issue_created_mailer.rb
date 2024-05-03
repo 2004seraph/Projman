@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class IssueCreatedMailer < ApplicationMailer
   def notify_issue_created(issue, module_lead_email, group, course_project, course_module)
     @issue = issue

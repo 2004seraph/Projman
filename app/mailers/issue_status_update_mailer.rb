@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class IssueStatusUpdateMailer < ApplicationMailer
   def notify_status_update(issue, recipient_email, group, course_project, course_module, status)
     @issue = issue

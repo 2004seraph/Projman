@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: users
@@ -28,17 +30,16 @@
 class User < ApplicationRecord
   include EpiCas::DeviseHelper
 
-  attr_accessor :student
-  attr_accessor :staff
+  attr_accessor :student, :staff
 
   def is_student?
-    account_type.include?("student")
+    account_type.include?('student')
   end
 
   def is_staff?
     # if the staff field is populated, manually override
-    if staff == nil
-      account_type.include?("staff")
+    if staff.nil?
+      account_type.include?('staff')
     else
       true
     end
@@ -46,22 +47,18 @@ class User < ApplicationRecord
 
   def is_facilitator?
     is_fac = false
-    if is_student?
-      is_fac |= AssignedFacilitator.exists?(student: student)
-    end
-    if is_staff?
-      is_fac |= AssignedFacilitator.exists?(staff: staff)
-    end
+    is_fac |= AssignedFacilitator.exists?(student:) if is_student?
+    is_fac |= AssignedFacilitator.exists?(staff:) if is_staff?
     is_fac
   end
 
   def issue_notification?
-    if self.is_staff?
-      issues = self.staff.issues
-    else
-      issues = self.student.events.where(event_type: :issue)
-    end
-      
+    issues = if is_staff?
+               staff.issues
+             else
+               student.events.where(event_type: :issue)
+             end
+
     issues.any? { |issue| issue.notification?(self) }
   end
 end
