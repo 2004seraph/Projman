@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'auth_helper'
 
 class ApplicationController < ActionController::Base
@@ -14,12 +16,12 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :load_current_user
 
-  before_action :store_location, :unless => :devise_controller?
+  before_action :store_location, unless: :devise_controller?
   def store_location
-    if user_initiated_page_request? && request.path != "/users/sign_in"
-      session[:redirect_url] = session[:previous_url]
-      session[:previous_url] = request.fullpath
-    end
+    return unless user_initiated_page_request? && request.path != '/users/sign_in'
+
+    session[:redirect_url] = session[:previous_url]
+    session[:previous_url] = request.fullpath
   end
 
   rescue_from CanCan::AccessDenied do |exception|
@@ -39,36 +41,34 @@ class ApplicationController < ActionController::Base
   end
 
   def load_current_user
-    if user_signed_in?
-      username = current_user.username
-      account_type = current_user.account_type
-      email = current_user.email
+    return unless user_signed_in?
 
-      if current_user.is_student?
-        if Student.exists?(username: username)
-          current_user.student = Student.find_by(username: username)
-          # Also populate the staff field if this student has a staff entry
-          if Staff.exists?(email: email)
-            current_user.staff = Staff.find_by(email: email)
-          end
-        else
-          reset_session
-          redirect_to new_user_session_path, alert: "User not found in the database. Please try again."
-        end
-      elsif current_user.is_staff?
-        current_user.staff = Staff.find_or_create_by(email: email)
+    username = current_user.username
+    current_user.account_type
+    email = current_user.email
+
+    if current_user.is_student?
+      if Student.exists?(username:)
+        current_user.student = Student.find_by(username:)
+        # Also populate the staff field if this student has a staff entry
+        current_user.staff = Staff.find_by(email:) if Staff.exists?(email:)
       else
         reset_session
-        redirect_to new_user_session_path, alert: AuthHelper::UNAUTHORIZED_MSG
+        redirect_to new_user_session_path, alert: 'User not found in the database. Please try again.'
       end
+    elsif current_user.is_staff?
+      current_user.staff = Staff.find_or_create_by(email:)
+    else
+      reset_session
+      redirect_to new_user_session_path, alert: AuthHelper::UNAUTHORIZED_MSG
     end
   end
 
   private
-    def update_headers_to_disable_caching
-      response.headers['Cache-Control'] = 'no-cache, no-cache="set-cookie", no-store, private, proxy-revalidate'
-      response.headers['Pragma'] = 'no-cache'
-      response.headers['Expires'] = '-1'
-    end
 
+  def update_headers_to_disable_caching
+    response.headers['Cache-Control'] = 'no-cache, no-cache="set-cookie", no-store, private, proxy-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+  end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: event_responses
@@ -27,23 +29,26 @@ class EventResponse < ApplicationRecord
   belongs_to :staff, optional: true
   belongs_to :student, optional: true
 
-  after_create ->(event_response) { event_response.send_issue_response_email if event_response.event.event_type == 'issue' }
+  after_create lambda { |event_response|
+                 event_response.send_issue_response_email if event_response.event.event_type == 'issue'
+               }
 
   def send_issue_response_email
-    puts "test method being hit"
-    issue = Event.find(self.event_id)
+    Rails.logger.debug 'test method being hit'
+    issue = Event.find(event_id)
     group = Group.find(issue.group_id)
     course_project = CourseProject.find(group.course_project_id)
     course_module = CourseModule.find(course_project.course_module_id)
 
-    if self.staff.present?
-      module_lead = Staff.find(self.staff_id)
+    if staff.present?
+      module_lead = Staff.find(staff_id)
       recipient_email = module_lead.email
-    elsif self.student.present?
-      student = Student.find(self.student_id)
+    elsif student.present?
+      student = Student.find(student_id)
       recipient_email = student.email
     end
 
-    IssueResponseMailer.notify_issue_response(self, issue, recipient_email, group, course_project, course_module).deliver_later
+    IssueResponseMailer.notify_issue_response(self, issue, recipient_email, group, course_project,
+                                              course_module).deliver_later
   end
 end

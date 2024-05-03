@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: events
@@ -38,26 +40,26 @@ class Event < ApplicationRecord
   enum :event_type, { generic: 'generic', milestone: 'milestone', chat: 'chat', issue: 'issue' }
 
   def notification?(user)
-    if (!self.completed?) &&
-        ((user.is_staff? && self.event_responses.empty?) ||
-        (user.is_staff? && self.event_responses.last.student_id.present? && self.json_data['reopened_by'] == "") ||
-        (user.is_staff? && (self.json_data['reopened_by'] != "" && self.json_data['reopened_by'] != user.staff.email)) ||
-        (!user.is_staff? && !self.event_responses.empty? && self.event_responses.last.staff_id.present? && self.json_data['reopened_by'] == "") ||
-        (!user.is_staff? && (self.json_data['reopened_by'] != "" && self.json_data['reopened_by'] != user.student.username)))
-        # when deployed this to change above elsif to commented line
-        # elsif user.is_student? && !issue.event_responses.empty? && issue.event_responses.last.staff_id.present?
-      
-      return true
+    if !completed? &&
+       ((user.is_staff? && event_responses.empty?) ||
+       (user.is_staff? && event_responses.last.student_id.present? && json_data['reopened_by'] == '') ||
+       (user.is_staff? && (json_data['reopened_by'] != '' && json_data['reopened_by'] != user.staff.email)) ||
+       (!user.is_staff? && !event_responses.empty? && event_responses.last.staff_id.present? && json_data['reopened_by'] == '') ||
+       (!user.is_staff? && (json_data['reopened_by'] != '' && json_data['reopened_by'] != user.student.username)))
+      # when deployed this to change above elsif to commented line
+      # elsif user.is_student? && !issue.event_responses.empty? && issue.event_responses.last.staff_id.present?
+
+      true
     else
-      return false
+      false
     end
   end
-  
+
   def self.sorted_by_latest_activity(*conditions)
-    query = joins("LEFT OUTER JOIN event_responses ON event_responses.event_id = events.id")
-            .select("events.*, COALESCE(MAX(event_responses.created_at), events.updated_at) AS latest_activity")
-            .group("events.id")
-            .order("latest_activity DESC")
+    query = joins('LEFT OUTER JOIN event_responses ON event_responses.event_id = events.id')
+            .select('events.*, COALESCE(MAX(event_responses.created_at), events.updated_at) AS latest_activity')
+            .group('events.id')
+            .order('latest_activity DESC')
 
     query.where(*conditions) if conditions.present?
   end
@@ -65,7 +67,7 @@ class Event < ApplicationRecord
   private
 
   def send_issue_created_email
-    group = Group.find(self.group_id)
+    group = Group.find(group_id)
     course_project = CourseProject.find(group.course_project_id)
     course_module = CourseModule.find(course_project.course_module_id)
     module_lead = Staff.find(course_module.staff_id)
@@ -74,20 +76,21 @@ class Event < ApplicationRecord
   end
 
   def send_status_update_email
-    group = Group.find(self.group_id)
+    group = Group.find(group_id)
     course_project = CourseProject.find(group.course_project_id)
     course_module = CourseModule.find(course_project.course_module_id)
 
-    if self.completed?
+    if completed?
       student = Student.find(self.student.id)
       recipient_email = student.email
-      status = "resolved"
+      status = 'resolved'
     else
       module_lead = Staff.find(course_module.staff_id)
       recipient_email = module_lead.email
-      status = "reopened"
+      status = 'reopened'
     end
 
-    IssueStatusUpdateMailer.notify_status_update(self, recipient_email, group, course_project, course_module, status).deliver_later
+    IssueStatusUpdateMailer.notify_status_update(self, recipient_email, group, course_project, course_module,
+                                                 status).deliver_later
   end
 end

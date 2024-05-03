@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # RSpec.configure do |config|
 #   # Inspired by
 #   # https://betterprogramming.pub/how-to-set-up-rails-with-rspec-capybara-and-database-cleaner-aacb000070ef

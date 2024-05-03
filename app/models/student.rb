@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: students
@@ -44,10 +46,10 @@ class Student < ApplicationRecord
   devise :trackable
 
   has_and_belongs_to_many :groups
-  has_and_belongs_to_many :course_modules#, foreign_key: "course_module_code", association_foreign_key: "student_id", join_table: "course_modules_students"
+  has_and_belongs_to_many :course_modules # , foreign_key: "course_module_code", association_foreign_key: "student_id", join_table: "course_modules_students"
   has_many :course_projects, through: :course_modules
-  has_many :events#, through: :group
-  has_many :event_responses#, through: :events
+  has_many :events # , through: :group
+  has_many :event_responses # , through: :events
   has_many :assigned_facilitators, dependent: :destroy
   has_many :milestone_responses
 
@@ -55,37 +57,35 @@ class Student < ApplicationRecord
 
   @text_validation_regex = Regexp.new '[A-zÀ-ú\' -.]*'
 
-  @email_validation_regex = Regexp.new '(?:[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'  # :nodoc:
+  @email_validation_regex = Regexp.new '(?:[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])' # :nodoc:
 
   # required fields
   validates :preferred_name,  presence: true, length: { in: 2..24 },  format: { with: @text_validation_regex }
   validates :forename,        presence: true, length: { in: 2..24 },  format: { with: @text_validation_regex }
   validates :middle_names,    length: { maximum: 64 },  format: { with: @text_validation_regex }
   validates :surname,         length: { maximum: 24 },  format: { with: @text_validation_regex }
-  validates :username,        presence: true, length: { in: 5..16 },  format: { with: @text_validation_regex }, uniqueness: { case_sensitive: false }
+  validates :username,        presence: true, length: { in: 5..16 },  format: { with: @text_validation_regex },
+                              uniqueness: { case_sensitive: false }
   validates :title,           presence: true, length: { in: 2..4 },   format: { with: @text_validation_regex }
-  validates :ucard_number,    presence: true, length: { is: 9 },      numericality: { only_integer: true },     uniqueness: true
-  validates :email,           presence: true, length: { in: 8..254 },format: { with: @email_validation_regex }, uniqueness: { case_sensitive: false } # 16 = @sheffield.ac.uk
+  validates :ucard_number,    presence: true, length: { is: 9 },      numericality: { only_integer: true },
+                              uniqueness: true
+  validates :email,           presence: true, length: { in: 8..254 }, format: { with: @email_validation_regex }, uniqueness: { case_sensitive: false } # 16 = @sheffield.ac.uk
   validates :fee_status,      presence: true
 
-  validates :personal_tutor,  length: { maximum: 64 },  format: { with: @text_validation_regex }
-
+  validates :personal_tutor,  length: { maximum: 64 }, format: { with: @text_validation_regex }
 
   before_destroy :remove_all_enrollments, prepend: true
-
 
   def self.ldap_sync
     # DO NOT RUN THIS IN ANY APP CODE
     # THIS IS A CRON JOB, IT IS RAN BY THE OS
 
-    Student.all.each do |s|
+    Student.all.find_each do |s|
       first_name_lookup = DatabaseHelper.get_student_first_name s
       if first_name_lookup == s.username
         s.destroy
       elsif first_name_lookup != s.forename
-        if s.forename == s.preferred_name
-          s.preferred_name = first_name_lookup
-        end
+        s.preferred_name = first_name_lookup if s.forename == s.preferred_name
         s.forename = first_name_lookup
         s.save
       end
@@ -102,7 +102,7 @@ class Student < ApplicationRecord
 
   def enroll_module(module_code)
     c = CourseModule.find_by(code: module_code)
-    if c && !c.students.find_by(username: username)
+    if c && !c.students.find_by(username:)
       course_modules << c
       return true
     end
@@ -111,12 +111,10 @@ class Student < ApplicationRecord
 
   def unenroll_module(module_code)
     c =
-      if module_code.kind_of? String
+      if module_code.is_a? String
         CourseModule.find_by(code: module_code)
-      elsif module_code.kind_of? CourseModule
+      elsif module_code.is_a? CourseModule
         module_code
-      else
-        nil
       end
     if c
       c.students.delete self
@@ -146,10 +144,8 @@ class Student < ApplicationRecord
     invalid_models = []
 
     CSV.parse(csv, headers: true).each do |x|
-      success, student = self.bootstrap_student(x)
-      if not success
-        invalid_models << student
-      end
+      success, student = bootstrap_student(x)
+      invalid_models << student unless success
     end
 
     invalid_models
@@ -162,29 +158,27 @@ class Student < ApplicationRecord
     username = csv_row[StudentDataHelper::USERNAME_CSV_COLUMN]
 
     student =
-      if Student.exists?(username: username)
-        Student.find_by(username: username)
+      if Student.exists?(username:)
+        Student.find_by(username:)
       else
         # marshal csv data into a hash of database_field_name => csv_value
         new_student_hash = {}
-        csv_row.each_with_index { |_, index|
+        csv_row.each_with_index do |_, index|
           header_database_name = csv_header_to_field headers[index]
-          if column_names.include? header_database_name
-            new_student_hash.store(
-              header_database_name.to_sym,
-              translate_csv_value(header_database_name.to_sym, csv_row[headers[index]], username)
-            )
-          end
-        }
+          next unless column_names.include? header_database_name
+
+          new_student_hash.store(
+            header_database_name.to_sym,
+            translate_csv_value(header_database_name.to_sym, csv_row[headers[index]], username)
+          )
+        end
         create new_student_hash
       end
 
-    if student.valid?
-      student.enroll_module(csv_row[StudentDataHelper::MODULE_CODE_CSV_COLUMN])
-      return true, student
-    else
-      return false, student
-    end
+    return false, student unless student.valid?
+
+    student.enroll_module(csv_row[StudentDataHelper::MODULE_CODE_CSV_COLUMN])
+    [true, student]
   end
 
   private
@@ -195,24 +189,21 @@ class Student < ApplicationRecord
     end
   end
 
-
   # a static method to convert CSV header names to the correct database field name
   def self.csv_header_to_field(header_name_string)
     explicit_header_mappings = StudentDataHelper::EXPLICIT_CSV_TO_FIELD_LINK
-
-    header_name = nil
     if explicit_header_mappings.key?(header_name_string.to_sym)
-      header_name = explicit_header_mappings[header_name_string.to_sym]
+      explicit_header_mappings[header_name_string.to_sym]
     else
-      header_name = header_name_string.parameterize.underscore
+      header_name_string.parameterize.underscore
     end
-    header_name
   end
 
   def self.translate_csv_value(field_symbol, value_string, username)
     if StudentDataHelper::CSV_VALUE_TRANSLATIONS.key?(field_symbol)
       return StudentDataHelper::CSV_VALUE_TRANSLATIONS[field_symbol].call(value_string, username)
     end
+
     value_string
   end
 end
