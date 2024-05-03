@@ -4,7 +4,12 @@ A group project orchestrator and management system, developed for the University
 
 ## Usage
 
-This system requires Ubuntu 22.04 LTS to run.
+This system requires:
+
+- Ubuntu 22.04 LTS
+- PostgreSQL
+- `ruby-3.1.2` installed via `rvm`
+- Rails 7
 
 Account sign-ins will only work if both the server and client are connected to the University of Sheffield's VPN.
 
