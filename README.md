@@ -20,7 +20,7 @@ Account sign-ins will only work if both the server and client are connected to t
 - Have PostgreSQL running:
   `sudo service postgresql start`
 
-- Set up the app:
+- Set up the app, this will install all dependancies, and create and seed the database:
   `./INSTALL.sh`
 
 #### Adding your account
@@ -33,6 +33,7 @@ You may add yourself as both a student and a member of staff, but you will simpl
 # from within the repositiory root
 rails c
 ```
+From within the rails console:
 ```ruby
 # even if you're a student, adding your email to the staff table will allow you to log in as a staff member with your muse credentials
 DatabaseHelper.create_staff("your_email@sheffield.ac.uk")
@@ -58,7 +59,7 @@ After adding yourself to the database, you're ready to test the app.
 
 We use Capistrano for our deployments, and interact with the production server via EpiGenesys' `epi_deploy` gem. To deploy the app:
 
-- Ensure there are no changes to commit, that working tree is clean.
+- Ensure there are no changes to commit, that the working tree is clean.
 - Run `./DEPLOY.sh`
 
 ## Maintainers
