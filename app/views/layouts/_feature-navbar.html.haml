@@ -20,7 +20,7 @@
           Issues
           - if current_user.issue_notification?
             %i.bi.bi-exclamation-diamond-fill.icon-pad-nav
-      - if current_user.is_facilitator?
+      - if current_user.is_facilitator? || current_user.is_admin?
         %li.nav-item
           = link_to facilitators_url, class: 'btn btn-light' do
             Facilitator

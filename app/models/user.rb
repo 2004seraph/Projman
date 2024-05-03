@@ -55,6 +55,10 @@ class User < ApplicationRecord
     is_fac
   end
 
+  def is_admin?
+    return self.staff.admin
+  end
+
   def issue_notification?
     if self.is_staff?
       issues = self.staff.issues

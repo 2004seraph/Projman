@@ -87,10 +87,12 @@ class Ability
     return unless user.staff.admin
 
     # can [:read], :admin
-
+    can [:read], :facilitator
+    can [:read], EventResponse
+    can [:read, :update], Event
     can [:create, :read, :update, :destroy], Group
     can [:create, :read, :update, :destroy], CourseModule
-    can [:create, :read, :update, :destroy], CourseProject
+    can [:create, :read, :edit, :teams, :update, :destroy], CourseProject
   end
 
   private

@@ -137,7 +137,39 @@ class IssueController < ApplicationController
         @open_issues = []
         @resolved_issues = []
 
-        if current_user.is_staff?
+        if current_user.is_admin?
+            @user_projects = CourseProject.all
+
+            if selected_order == "Created At"
+                group_ids = Group.all.map(&:id).uniq
+
+                @open_issues = Event.joins(:group)
+                                    .where(groups: { id: group_ids })
+                                    .where(event_type: :issue)
+                                    .where(completed: false)
+                                    .order(created_at: :asc)
+
+                @resolved_issues = Event.joins(:group)
+                                        .where(groups: { id: group_ids })
+                                        .where(event_type: :issue)
+                                        .where(completed: true)
+                                        .order(created_at: :asc)
+            else
+                group_ids = @project_groups.map(&:id).uniq
+
+                @open_issues = Event.joins(:group)
+                                    .where(groups: { id: group_ids })
+                                    .where(event_type: :issue)
+                                    .where(completed: false)
+                                    .order(updated_at: :desc)
+                @resolved_issues = Event.joins(:group)
+                                        .where(groups: { id: group_ids })
+                                        .where(event_type: :issue)
+                                        .where(completed: true)
+                                        .order(updated_at: :desc)
+            end
+
+        elsif current_user.is_staff?
             @user_modules = current_user.staff.course_modules
 
             @user_projects = []

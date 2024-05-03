@@ -15,9 +15,15 @@ class CourseProjectController < ApplicationController
     ]
 
     def index
-        if current_user.is_staff?
+        if current_user.is_admin?
+            @projects = CourseProject.all
+            @course_modules = CourseModule.all.length
+
+            render 'index_module_leader'
+        elsif current_user.is_staff?
             @projects = current_user.staff.course_projects
             @course_modules = current_user.staff.course_modules.length
+            
             render 'index_module_leader'
         else
             @projects = current_user.student.course_projects
@@ -33,7 +39,12 @@ class CourseProjectController < ApplicationController
         staff_id = Staff.where(email: current_user.email).first
         @min_date = DateTime.now.strftime('%Y-%m-%dT%H:%M')
 
-        modules_hash = CourseModule.all.where(staff_id: staff_id).order(:code).pluck(:code, :name).to_h
+        if current_user.is_admin?
+            modules_hash = CourseModule.all.order(:code).pluck(:code, :name).to_h
+        else
+            modules_hash = CourseModule.all.where(staff_id: staff_id).order(:code).pluck(:code, :name).to_h
+        end
+
         # if a staff is not a module lead for any module, do not show them the new page
         if modules_hash.length == 0
             flash[:alert] = "You are not part of any modules. Please contact an admin if this is in error."

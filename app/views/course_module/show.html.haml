@@ -40,42 +40,46 @@
   });
 
 .separating-section
-  %h2
-    #{@current_module.code + ' ' + @current_module.name}
-
+  .d-flex.align-items-center.justify-content-between
+    .module-name
+      %h2.fs-3 #{@current_module.code + ' ' + @current_module.name}
+  
   %hr.divider
 
-  %h3
-    Module Name
+  .d-flex.align-items-center.justify-content-between
+    %h3 Module Name
     - if @show_edit_buttons
       %button.btn.btn-primary.btn-sm.m-2{type: "button", id: "change_name", "data-bs-toggle": "modal",
          "data-bs-target": "#changeNameModal"}
-        %i.bi.bi-pencil
-        Change
+        Edit
+  %i.fs-6 #{@current_module.name}
   %p
-    #{@current_module.name}
-  %h3
-    Module Leader
+
+  %hr.divider
+
+  .d-flex.align-items-center.justify-content-between
+    %h3 Module Leader
     - if @show_edit_buttons
       %button.btn.btn-primary.btn-sm.m-2{type: "button", id: "change_lead", "data-bs-toggle": "modal",
          "data-bs-target": "#changeEmailModal"}
-        %i.bi.bi-pencil
-        Change
+        Edit
+  %i.fs-6 #{@module_lead.email}
   %p
-    #{@module_lead.email}
-  %h3
-    Updated / Created
-  %p
-    #{@current_module.updated_at} / #{@current_module.created_at}
+
   %hr.divider
 
-  %h3
-    Module Student List
+  %h3 Updated / Created
+  %i.fs-6 #{@updated} / #{@created}
+  %p
+
+  %hr.divider
+
+  .d-flex.align-items-center.justify-content-between
+    %h3 Student List
     - if @show_edit_buttons
       %button.btn.btn-primary.btn-sm.m-2{type: "button", id: "change_students", "data-bs-toggle": "modal",
          "data-bs-target": "#changeStudentListModal"}
-        %i.bi.bi-pencil
-        Change
+        Edit
   =render partial: 'student-list-box', locals: {students: @students}
 
 .modal.fade{ id: "changeNameModal", tabindex: "-1", "aria-labelledby": "changeNameModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
@@ -86,7 +90,6 @@
         %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
 
       .modal-body
-        %h1.fs-6.fw-normal.fst-italic= "Input a new Module Name only - the Module Code is unique and will not change."
         = form_tag module_path, method: :patch, id: 'name_form' do
           .form-group
             %input.form-control.fs-5.fw-semibold{ id: "new_module_name", name: "new_module_name", placeholder: "Name", autocomplete: "off", required: true }
@@ -102,11 +105,9 @@
         %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
 
       .modal-body
-        %h1.fs-6.fw-normal.fst-italic= "Input the new Module Leader's '@sheffield.ac.uk' e-mail address."
-        %h1.fs-6.fw-normal.fst-italic= "If they do not have an account on the system, one will be created for them."
         = form_tag module_path, method: :patch, id: 'email_form' do
           .form-group
-            %input.form-control.fs-5.fw-semibold{ type: "email", id: "new_module_lead_email", name: "new_module_lead_email",placeholder: "E-mail", autocomplete: "off", required: true}
+            %input.form-control.fs-5.fw-semibold{ type: "email", id: "new_module_lead_email", name: "new_module_lead_email",placeholder: "University of Sheffield E-mail", autocomplete: "off", required: true}
             %h1
             %input.form-control.fs-5.fw-semibold{ type: "email", id: "new_module_lead_email_confirmation", name: "new_module_lead_email_confirmation",placeholder: "Confirm E-mail", autocomplete: "off", required: true}
             %h1
@@ -121,9 +122,7 @@
         %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
 
       .modal-body
-        %h1.fs-6.fw-normal.fst-italic= "This will clear the student list and replace it with new students."
-        %h1.fs-6.fw-normal.fst-italic= "To add MORE students to a module, use the Students tab."
-        %h1.fs-6.fw-normal.fst-italic= "Upload as a '.csv' file containing data for this Module Code."
+        %h1.fs-6.fw-normal.fst-italic= "This will clear the current student list and replace it with new students."
         = form_tag module_path,  method: :patch, multipart: true, id: 'student_form' do
           .form-group
             %input.form-control.fs-5.fw-semibold{ type: "file", id: "new_module_student_list", name: "new_module_student_list", autocomplete: "off", accept: "text/csv", required: true}
