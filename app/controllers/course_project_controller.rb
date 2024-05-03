@@ -597,7 +597,9 @@ class CourseProjectController < ApplicationController
             
             facilitators_count = facilitators.length
             current_facilitator_index = 0
-            groups_per_facilitator = (students_grouped.length.to_f / facilitators_count.to_f).ceil.to_i
+            if facilitators_count > 0
+                groups_per_facilitator = (students_grouped.length.to_f / facilitators_count.to_f).ceil.to_i
+            end
             students_grouped.each do |student_subarray|
 
                 # Create a new group for each slice of students
@@ -1012,7 +1014,9 @@ class CourseProjectController < ApplicationController
                 facilitators = project.assigned_facilitators
                 facilitators_count = facilitators.length
                 current_facilitator_index = 0
-                groups_per_facilitator = (students_grouped.length.to_f / facilitators_count.to_f).ceil.to_i
+                if facilitators_count > 0
+                    groups_per_facilitator = (students_grouped.length.to_f / facilitators_count.to_f).ceil.to_i
+                end
                 students_grouped.each do |student_subarray|
 
                     # Create a new group for each slice of students
