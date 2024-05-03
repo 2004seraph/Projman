@@ -5,16 +5,16 @@ class CourseModuleController < ApplicationController
 
   before_action :set_module, only: %i[show edit update destroy]
 
-    # GET /modules
-    def index
-        @admin_modules = if current_user.is_admin?
-                           CourseModule.all
-                         else
-                           CourseModule.where(staff_id: current_user.staff)
-                         end
+  # GET /modules
+  def index
+    @admin_modules = if current_user.is_admin?
+                       CourseModule.all
+                     else
+                       CourseModule.where(staff_id: current_user.staff)
+                     end
 
-        @show_create_button = current_user.is_admin?
-    end
+    @show_create_button = current_user.is_admin?
+  end
 
   # GET /modules/new
   def new
@@ -41,38 +41,36 @@ class CourseModuleController < ApplicationController
     # Creates new staff account if no staff found in system
     @lead = Staff.find_or_create_by(email: @lead)
 
-        # Checks that the student_csv is compatible with the created module
-        unless @student_csv.nil?
-            @student_csv = CSV.read(params[:student_csv].tempfile)
-            unless (@student_csv[1][12] == params[:course_module][:code])
-                redirect_to new_module_path, 
-                            alert: "The Student List Module {#{@student_csv[1][12]}} is not compatible with the Module Code {#{params[:course_module][:code]}}"
-                return
-            end
-        end
-
-        # Creates new module
-        @new_module = CourseModule.new(code: params[:course_module][:code], name: params[:course_module][:name], 
-                                       staff_id: @lead.id)
-        if @new_module.save
-            unless @student_csv.nil?
-                Student.bootstrap_class_list((params[:student_csv]).read)
-            end
-            redirect_to '/modules', notice: "Module was successfully created."
-        else
-            redirect_to new_module_path, alert: "Creation unsuccesful."
-        end
+    # Checks that the student_csv is compatible with the created module
+    unless @student_csv.nil?
+      @student_csv = CSV.read(params[:student_csv].tempfile)
+      unless @student_csv[1][12] == params[:course_module][:code]
+        redirect_to new_module_path,
+                    alert: "The Student List Module {#{@student_csv[1][12]}} is not compatible with the Module Code {#{params[:course_module][:code]}}"
+        return
+      end
     end
 
-    # GET /modules/{id}
-    def show
-        @students = @current_module.students
-        @module_lead = @current_module.staff
-        @updated = @current_module.updated_at.strftime("%H:%M %d/%m/%Y")
-        @created = @current_module.created_at.strftime("%H:%M %d/%m/%Y")
-
-        @show_edit_buttons = current_user.is_admin?
+    # Creates new module
+    @new_module = CourseModule.new(code: params[:course_module][:code], name: params[:course_module][:name],
+                                   staff_id: @lead.id)
+    if @new_module.save
+      Student.bootstrap_class_list(params[:student_csv].read) unless @student_csv.nil?
+      redirect_to '/modules', notice: 'Module was successfully created.'
+    else
+      redirect_to new_module_path, alert: 'Creation unsuccesful.'
     end
+  end
+
+  # GET /modules/{id}
+  def show
+    @students = @current_module.students
+    @module_lead = @current_module.staff
+    @updated = @current_module.updated_at.strftime('%H:%M %d/%m/%Y')
+    @created = @current_module.created_at.strftime('%H:%M %d/%m/%Y')
+
+    @show_edit_buttons = current_user.is_admin?
+  end
 
   # PATCH/PUT /modules/{id}
   def update

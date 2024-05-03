@@ -198,11 +198,11 @@ class FacilitatorController < ApplicationController
   end
 
   private
-  
+
   def get_assigned_facilitators
     # Returns the entries of AssignedFacilitator for the logged in user
     if current_user.is_admin?
-      AssignedFacilitator.all 
+      AssignedFacilitator.all
     elsif current_user.is_staff?
       AssignedFacilitator.where(staff: current_user.staff)
     elsif current_user.is_student?
@@ -211,7 +211,7 @@ class FacilitatorController < ApplicationController
   end
 
   def set_assigned_projects
-      @assigned_projects = get_assigned_facilitators.flat_map(&:course_project)
+    @assigned_projects = get_assigned_facilitators.flat_map(&:course_project)
   end
 
   def set_current_group

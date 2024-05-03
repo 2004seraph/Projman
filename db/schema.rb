@@ -146,17 +146,17 @@ ActiveRecord::Schema[7.0].define(version: 20_240_417_140_249) do
     t.index ['student_id'], name: 'index_milestone_responses_on_student_id'
   end
 
-  create_table "milestones", force: :cascade do |t|
-    t.bigint "course_project_id", null: false
-    t.enum "milestone_type", null: false, enum_type: "milestone_milestone_type"
-    t.datetime "deadline", precision: nil, null: false
-    t.json "json_data", default: "{}", null: false
-    t.boolean "user_generated", default: false, null: false
-    t.enum "system_type", enum_type: "milestone_system_type"
-    t.boolean "executed", default: false, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["course_project_id"], name: "index_milestones_on_course_project_id"
+  create_table 'milestones', force: :cascade do |t|
+    t.bigint 'course_project_id', null: false
+    t.enum 'milestone_type', null: false, enum_type: 'milestone_milestone_type'
+    t.datetime 'deadline', precision: nil, null: false
+    t.json 'json_data', default: '{}', null: false
+    t.boolean 'user_generated', default: false, null: false
+    t.enum 'system_type', enum_type: 'milestone_system_type'
+    t.boolean 'executed', default: false, null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['course_project_id'], name: 'index_milestones_on_course_project_id'
   end
 
   create_table 'sessions', force: :cascade do |t|

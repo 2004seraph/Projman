@@ -54,13 +54,13 @@ class User < ApplicationRecord
 
   def is_admin?
     is_admin = false
-    if self.is_staff?
-      is_admin |= Staff.where(id: staff.id, admin: true).exists?
+    return unless is_staff?
 
-      if is_admin
-        return self.staff.admin
-      end
-    end
+    is_admin |= Staff.where(id: staff.id, admin: true).exists?
+
+    return unless is_admin
+
+    staff.admin
   end
 
   def issue_notification?
@@ -77,9 +77,11 @@ class User < ApplicationRecord
     if is_student?
       projects = student.course_projects
 
-      return projects.any? { |project| project.project_notification?(self, student.groups.find_by(course_project_id: project.id)) }
+      return projects.any? do |project|
+               project.project_notification?(self, student.groups.find_by(course_project_id: project.id))
+             end
     else
-      projects = staff.course_projects
+      staff.course_projects
     end
 
     false

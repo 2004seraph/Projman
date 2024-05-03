@@ -94,9 +94,9 @@ class Ability
     # can [:read], :admin
     can [:read], :facilitator
     can [:read], EventResponse
-    can [:read, :update], Event
-    can [:create, :read, :update, :destroy], Group
-    can [:create, :read, :update, :destroy], CourseModule
-    can [:create, :read, :edit, :teams, :update, :destroy], CourseProject
+    can %i[read update], Event
+    can %i[create read update destroy], Group
+    can %i[create read update destroy], CourseModule
+    can %i[create read edit teams update destroy], CourseProject
   end
 end
