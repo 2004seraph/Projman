@@ -19,28 +19,27 @@
 
 %hr.divider
 
-// TODO: Be able to add staff to mark not just facilitators!!!
-#section-facilitators
-    = render partial: "section_facilitators", locals: {mark_scheme: @mark_scheme}
+#section-assessors
+    = render partial: "section_assessors", locals: {mark_scheme: @mark_scheme}
 
-// Add facilitators modal
+// Add assessors modal
 = render 'components/modal-search-multiple',
-    modal_id: 'add-facilitator-to-section-modal',
-    autocomplete_method: "mark_scheme/search_facilitators",
+    modal_id: 'add-assessor-to-section-modal',
+    autocomplete_method: "mark_scheme/search_assessors",
     title: 'Add Assessor',
     prompt: "Input assessor's email",
-    form_input_id: 'add-facilitator-to-section-form',
-    form_input_name: 'section_facilitator_email',
+    form_input_id: 'add-assessor-to-section-form',
+    form_input_name: 'section_assessor_email',
     current_selection_text: 'current selection',
-    list_group_id: 'facilitator-selection-group-section',
+    list_group_id: 'assessor-selection-group-section',
     confirm_text: 'Confirm',
     confirm_onclick_function: "",
-    add_to_selection_url: "mark_scheme/add_to_facilitators_selection",
-    submission_url: "mark_scheme/add_facilitators_selection",
-    on_open_action_url: "mark_scheme/clear_facilitators_selection",
+    add_to_selection_url: "mark_scheme/add_to_assessors_selection",
+    submission_url: "mark_scheme/add_assessors_selection",
+    on_open_action_url: "mark_scheme/clear_assessors_selection",
     search_hidden_fields: {"section_index": -1}
 
-// Assign teams to facilitator model
+// Assign teams to assessor model
 .modal.fade{ id: "assign-teams-modal", tabindex: "-1", "aria-labelledby": "addassign-teams-modal", "aria-hidden": "true"}
     .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
         .modal-content
@@ -85,7 +84,7 @@
     }
 
     function removeAssessor(section_index, email) {
-        fetch("mark_scheme/remove_facilitator_from_section", {
+        fetch("mark_scheme/remove_assessor_from_section", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -98,7 +97,7 @@
         })
         .then(response => response.text())
         .then(html => {
-            $("#section-facilitators").html(html.trim());
+            $("#section-assessors").html(html.trim());
         })
         .catch(error => console.error("Error when trying to save remove assessor:", error));
     }
@@ -133,7 +132,7 @@
                 document.getElementById(`group-checkbox-${group.id}`).checked = group.already_assigned;
             });
         })
-        .catch(error => console.error("Error when trying to assign teams to facilitator:", error));
+        .catch(error => console.error("Error when trying to assign teams to assessor:", error));
     }
 
     function toggleAllAssessors(on = true) {
@@ -178,9 +177,9 @@
 
             // Hide modal and update html
             $("#assign-teams-modal").modal("hide");
-            $("#section-facilitators").html(html.trim());
+            $("#section-assessors").html(html.trim());
         })
-        .catch(error => console.error("Error when trying to assign teams to facilitator:", error));
+        .catch(error => console.error("Error when trying to assign teams to assessor:", error));
     }
 
     function autoAssignSection(section_index) {
@@ -200,7 +199,7 @@
         .then(html => {
             // Hide modal and update html
             $("#assign-teams-modal").modal("hide");
-            $("#section-facilitators").html(html.trim());
+            $("#section-assessors").html(html.trim());
         })
-        .catch(error => console.error("Error when trying to auto assign teams to facilitator:", error));
+        .catch(error => console.error("Error when trying to auto assign teams to assessor:", error));
     }

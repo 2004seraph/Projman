@@ -29,3 +29,8 @@
         %li.nav-item
           = link_to facilitators_url, class: 'btn btn-light' do
             Facilitator
+
+      - if current_user.is_staff?
+        %li.nav-item
+          = link_to markings_url, class: 'btn btn-light' do
+            Marking

@@ -12,7 +12,7 @@
    "aria-expanded" => "true",
    "aria-controls" => unique_id}
 
-    %h2.fs-4.ml-2= "My Marking"
+    .fs-4.ml-2= "Assigned Sections"
     %i.bi.bi-caret-right-fill
 
   .collapse.show{id: unique_id}
@@ -20,9 +20,9 @@
       - unless @mark_schemes.nil? || @mark_schemes.empty?
         - @mark_schemes.each do |ms|
           - ms.json_data["sections"]&.each_with_index do |section, i|
-            - if section["facilitators"]&.keys&.include?(current_user.email)
+            - if section["assessors"]&.keys&.include?(current_user.email)
               .navigation-list-item
-                = link_to marking_show_facilitators_path(milestone_id: ms.id, section_index: i) do
+                = link_to new_marking_path(milestone_id: ms.id, section_index: i) do
                   %h6.p-1= "#{ms.course_project.name} - #{section["title"]}"
 
       - else

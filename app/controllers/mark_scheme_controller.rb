@@ -46,7 +46,7 @@ class MarkSchemeController < ApplicationController
   end
 
   def add_section
-    # Facilitators would be a list of the facilitator emails and then the marking is split evenly.
+    # Assessors would be a list of the assessor emails and then the marking is split evenly.
     section = { title: params[:section_title], description: '', max_marks: 0 }
     session[:mark_scheme]['sections'] << hash_to_json(section)
 
@@ -97,7 +97,7 @@ class MarkSchemeController < ApplicationController
 
     milestone = get_mark_scheme
 
-    # Update section data without resetting assigned facilitators
+    # Update section data without resetting assigned assessors
     params[:sections].each_with_index do |section, i|
       session[:mark_scheme]['sections'][i]['title'] = section['title']
       session[:mark_scheme]['sections'][i]['description'] = section['description']
@@ -134,39 +134,32 @@ class MarkSchemeController < ApplicationController
     }
   end
 
-  def search_facilitators
-    # Return all possible facilitators for the current project, given the search criteria.
+  def search_assessors
+    # Return all possible assessors for the current project, given the search criteria.
     query = params[:query]
 
     query = '' if query.nil?
 
-    @results = AssignedFacilitator.select do |f|
-      f.course_project_id == session[:current_project_id] &&
-        f.get_email.include?(query.downcase) && f.staff_id.present?
-    end
-
-    render json: @results.map(&:get_email)
+    @results = Staff.select do |s| s.email.include?(query.downcase) end
+    render json: @results.map(&:email)
   end
 
-  def add_to_facilitators_selection
+  def add_to_assessors_selection
     # Section index is not a param in the confirm ajax, so set it here to use there.
     session[:current_section_index] = params[:section_index]
 
     # Handle invalid email by just not adding to selected
-    if AssignedFacilitator.select do |f|
-         f.course_project_id == session[:current_project_id] &&
-         f.get_email == params[:section_facilitator_email]
-       end.first.nil?
+    if Staff.where(email: params[:section_assessor_email]).first.nil?
       return
     end
 
-    @facilitator_email = params[:section_facilitator_email]
+    @assessor_email = params[:section_assessor_email]
 
-    if @facilitator_email.present?
-      if session[:facilitator_selection].nil?
-        session[:facilitator_selection] = [@facilitator_email]
+    if @assessor_email.present?
+      if session[:assessor_selection].nil?
+        session[:assessor_selection] = [@assessor_email]
       else
-        session[:facilitator_selection] << @facilitator_email
+        session[:assessor_selection] << @assessor_email
       end
     end
 
@@ -177,27 +170,27 @@ class MarkSchemeController < ApplicationController
     end
   end
 
-  def add_facilitators_selection
+  def add_assessors_selection
     section_index = session[:current_section_index].to_i
 
     milestone = get_mark_scheme
     mark_scheme = milestone.json_data
 
-    # Initialise facilitators if necessary
-    if mark_scheme['sections'][section_index]['facilitators'].nil?
-      mark_scheme['sections'][section_index]['facilitators'] = {}
+    # Initialise assessors if necessary
+    if mark_scheme['sections'][section_index]['assessors'].nil?
+      mark_scheme['sections'][section_index]['assessors'] = {}
     end
 
-    # Populate new facilitator emails into mark scheme milestone json data
-    session[:facilitator_selection].each do |facilitator|
-      unless mark_scheme['sections'][section_index]['facilitators'].include?(facilitator)
-        mark_scheme['sections'][section_index]['facilitators'][facilitator] = []
+    # Populate new assessor emails into mark scheme milestone json data
+    session[:assessor_selection].each do |assessor|
+      unless mark_scheme['sections'][section_index]['assessors'].include?(assessor)
+        mark_scheme['sections'][section_index]['assessors'][assessor] = []
       end
     end
 
     # Update the mark scheme
     milestone.json_data = mark_scheme
-    flash.alert = 'Failed to assign facilitators to mark scheme.' unless milestone.save
+    flash.alert = 'Failed to assign assessors to mark scheme.' unless milestone.save
 
     # Re-render the view for assessors
     @mark_scheme = milestone.json_data
@@ -209,28 +202,28 @@ class MarkSchemeController < ApplicationController
     end
   end
 
-  def remove_from_facilitator_selection
-    @facilitator_email = params[:item_text].strip
-    session[:facilitator_selection].delete(@facilitator_email)
+  def remove_from_assessor_selection
+    @assessor_email = params[:item_text].strip
+    session[:assessor_selection].delete(@assessor_email)
   end
 
-  def clear_facilitators_selection
-    # Reset facilitator selection, only called when modal is first opened
-    session[:facilitator_selection] = []
+  def clear_assessors_selection
+    # Reset assessor selection, only called when modal is first opened
+    session[:assessor_selection] = []
   end
 
-  def remove_facilitator_from_section
+  def remove_assessor_from_section
     mark_scheme = get_mark_scheme
-    mark_scheme.json_data['sections'][params[:section_index]]['facilitators'].delete(params[:email])
+    mark_scheme.json_data['sections'][params[:section_index]]['assessors'].delete(params[:email])
 
-    flash.alert = 'Failed to unassign facilitator from section.' unless mark_scheme.save
+    flash.alert = 'Failed to unassign assessor from section.' unless mark_scheme.save
 
-    render partial: 'section_facilitators', locals: { mark_scheme: mark_scheme.json_data }
+    render partial: 'section_assessors', locals: { mark_scheme: mark_scheme.json_data }
   end
 
   def get_assignable_teams
-    # Return the remaining teams available to be assigned to a facilitator for the given section
-    # Also contains teams already assigned to the facilitator
+    # Return the remaining teams available to be assigned to a assessor for the given section
+    # Also contains teams already assigned to the assessor
 
     groups = CourseProject.find(session[:current_project_id]).groups
 
@@ -240,17 +233,17 @@ class MarkSchemeController < ApplicationController
 
     # Save params for submit modal
     session[:current_section_index] = params[:section_index]
-    session[:current_facilitator_email] = params[:email]
+    session[:current_assessor_email] = params[:email]
 
     groups_to_show = {}
     groups.each do |group|
       groups_to_show[group.name] = { id: group.id, already_assigned: false }
     end
 
-    section['facilitators'].each do |facilitator, team_ids|
+    section['assessors'].each do |assessor, team_ids|
       team_ids.each do |team_id|
         team = Group.find(team_id)
-        if facilitator == params[:email]
+        if assessor == params[:email]
           groups_to_show[team.name][:already_assigned] = true
         else
           groups_to_show.delete(team.name)
@@ -262,26 +255,26 @@ class MarkSchemeController < ApplicationController
   end
 
   def assign_teams
-    # Actually assign the selected teams from the modal to the chosen facilitator
+    # Actually assign the selected teams from the modal to the chosen assessor
     section_index = session[:current_section_index].to_i
 
     milestone = get_mark_scheme
     mark_scheme = milestone.json_data
 
     # Get all the team ids that are taken, so we don't assign twice, incase someone inspects element.
-    taken_teams = mark_scheme['sections'][section_index]['facilitators'].reject do |email, _|
-      email == session[:current_facilitator_email]
+    taken_teams = mark_scheme['sections'][section_index]['assessors'].reject do |email, _|
+      email == session[:current_assessor_email]
     end.values.flatten
 
     new_teams = params[:team_ids] - taken_teams
-    mark_scheme['sections'][section_index]['facilitators'][session[:current_facilitator_email]] = new_teams
+    mark_scheme['sections'][section_index]['assessors'][session[:current_assessor_email]] = new_teams
 
     milestone.json_data = mark_scheme
 
-    flash.alert = 'Failed to assign teams to facilitator.' unless milestone.save
+    flash.alert = 'Failed to assign teams to assessor.' unless milestone.save
 
     # Re-render the section to update table row
-    render partial: 'section_facilitators', locals: { mark_scheme: milestone.json_data }
+    render partial: 'section_assessors', locals: { mark_scheme: milestone.json_data }
   end
 
   def auto_assign_teams
@@ -291,9 +284,9 @@ class MarkSchemeController < ApplicationController
     milestone = get_mark_scheme
     mark_scheme = milestone.json_data
 
-    assessors = mark_scheme['sections'][section_index]['facilitators']
+    assessors = mark_scheme['sections'][section_index]['assessors']
 
-    return render partial: 'section_facilitators', locals: { mark_scheme: milestone.json_data } if assessors.blank?
+    return render partial: 'section_assessors', locals: { mark_scheme: milestone.json_data } if assessors.blank?
 
     # Split the teams between the assessors evenly
     group_ids = CourseProject.find(session[:current_project_id]).groups.flat_map(&:id)
@@ -303,18 +296,18 @@ class MarkSchemeController < ApplicationController
 
     assessors = {}
 
-    mark_scheme['sections'][section_index]['facilitators'].keys.each_with_index do |assessor, i|
+    mark_scheme['sections'][section_index]['assessors'].keys.each_with_index do |assessor, i|
       assessors[assessor] = groups_split[i]
     end
 
     # Update the mark scheme
-    mark_scheme['sections'][section_index]['facilitators'] = assessors
+    mark_scheme['sections'][section_index]['assessors'] = assessors
     milestone.json_data = mark_scheme
 
     flash.alert = 'Failed to automatically assign teams for section.' unless milestone.save
 
     # Rerender the section to update table row
-    render partial: 'section_facilitators', locals: { mark_scheme: milestone.json_data }
+    render partial: 'section_assessors', locals: { mark_scheme: milestone.json_data }
   end
 
   def show

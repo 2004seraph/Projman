@@ -13,9 +13,9 @@
                             Assessors
                             %i.bi.bi-plus.fs-4{
                                 type: "button",
-                                id: "add-facilitator-to-section",
+                                id: "add-assessor-to-section",
                                 "data-bs-toggle": "modal",
-                                "data-bs-target": "#add-facilitator-to-section-modal",
+                                "data-bs-target": "#add-assessor-to-section-modal",
                                 onclick: "updateSectionIndex(#{i});"}
 
                     %th.bg-light
@@ -28,15 +28,15 @@
 
 
             %tbody
-                - unless section["facilitators"].nil?
-                    - section["facilitators"].each do |email, teams|
+                - unless section["assessors"].nil?
+                    - section["assessors"].each do |email, teams|
                         %tr
                             %td
                                 .d-flex.justify-content-between.align-items-baseline.gap-3
                                     %p.mr-3= email
                                     %i.bi.bi-trash-fill{
                                         type: "button",
-                                        id: "remove-facilitator-from-section",
+                                        id: "remove-assessor-from-section",
                                         onclick: "removeAssessor(#{i}, '#{email}');"}
 
                             %td
@@ -44,7 +44,7 @@
                                     = teams.nil? ? "" : teams.map{|id| Group.find(id).name}.join(", ")
                                     %i.bi.bi-pencil-fill{
                                         type: "button",
-                                        id: "edit-facilitator-section-teams",
+                                        id: "edit-assessor-section-teams",
                                         "data-bs-toggle": "modal",
                                         "data-bs-target": "#assign-teams-modal",
                                         onclick: "populateAssignTeams(#{i}, '#{email}')"}

@@ -63,7 +63,7 @@ class Event < ApplicationRecord
     return if group.nil?
 
     group_chat_messages = group.events.where(event_type: :chat)
-    most_recent_messager = group_chat_messages.last.student_id
+    most_recent_messager = group_chat_messages&.last&.student_id
 
     if !most_recent_messager.nil? && most_recent_messager != user.student.id
       true

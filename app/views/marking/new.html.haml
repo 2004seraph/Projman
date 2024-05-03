@@ -1,25 +1,24 @@
 -# This file is a part of Projman, a group project orchestrator and management system,
 -# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-%h1= @mark_scheme_project.name + " - " + @section["title"]
+%h2.fs-3= @mark_scheme_project.name + " - " + @section["title"]
 %hr.divider
-%h3= "Description"
+%h2.fs-4= "Description"
 %pre{style: "font-family: inherit;"}= @section["description"]
-
 
 %hr.divider
 - max_marks = @section["max_marks"]
 
-%table.table.table-bordered#markingTable
+%table.table.table-bordered.table-hover#markingTable
   %thead
     %tr
-      %th Team
-      %th= "Marks Given (" + @section["max_marks"].to_s + " Available)"
-      %th Reasoning
+      %th.bg-light Team
+      %th.bg-light= "Marks Given (" + @section["max_marks"].to_s + " Available)"
+      %th.bg-light Reasoning
   %tbody
     - @assigned_teams.each do |team|
       %tr
-        - response = @team_marks.select{|tm| tm.json_data["group_id"] == team.id}.first
+        - response = @team_marks.select do |tm| tm.json_data["group_id"] == team.id end.first
         - unless response.nil?
           - data = response.json_data["sections"][@section["title"]]
           - unless data.nil?
@@ -109,7 +108,7 @@
         marking[id] = [marks, reason];
       });
 
-      fetch("/facilitators/update_marking", {
+      fetch("/markings/save", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -140,15 +139,15 @@
 
     $("#cancelButton").on("click", function() {
       // To cancel the changes, just redirect back.
-      window.location.href = "#{facilitators_path}";
+      window.location.href = "#{markings_path}";
     });
   });
 
-%div.mb-2
-  %button.btn.btn-success#saveButton
-    %i.bi.bi-floppy
-    Save
 
-  %button.btn.btn-danger#cancelButton
-    %i.bi.bi-trash
-    Discard
+%button.btn.btn-success.mb-3#saveButton
+  %i.bi.bi-floppy
+  Save
+
+%button.btn.btn-danger.mb-3#cancelButton
+  %i.bi.bi-trash
+  Discard

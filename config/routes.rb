@@ -65,15 +65,15 @@ Rails.application.routes.draw do
       post 'save' => 'mark_scheme#save', on: :collection
       post 'save' => 'mark_scheme#save', on: :member
 
-      post 'add_to_facilitators_selection' => 'mark_scheme#add_to_facilitators_selection', on: :collection
-      post 'add_facilitators_selection' => 'mark_scheme#add_facilitators_selection', on: :collection
-      post 'clear_facilitators_selection' => 'mark_scheme#clear_facilitators_selection', on: :collection
-      post 'remove_from_facilitator_selection' => 'mark_scheme#remove_from_facilitator_selection', on: :collection
-      post 'remove_facilitator_from_section' => 'mark_scheme#remove_facilitator_from_section', on: :collection
+      post 'add_to_assessors_selection' => 'mark_scheme#add_to_assessors_selection', on: :collection
+      post 'add_assessors_selection' => 'mark_scheme#add_assessors_selection', on: :collection
+      post 'clear_assessors_selection' => 'mark_scheme#clear_assessors_selection', on: :collection
+      post 'remove_from_assessor_selection' => 'mark_scheme#remove_from_assessor_selection', on: :collection
+      post 'remove_assessor_from_section' => 'mark_scheme#remove_assessor_from_section', on: :collection
       post 'get_assignable_teams' => 'mark_scheme#get_assignable_teams', on: :collection
       post 'assign_teams' => 'mark_scheme#assign_teams', on: :collection
       post 'auto_assign_teams' => 'mark_scheme#auto_assign_teams', on: :collection
-      get 'search_facilitators' => 'mark_scheme#search_facilitators', on: :collection
+      get 'search_assessors' => 'mark_scheme#search_assessors', on: :collection
 
       post 'show_new', on: :collection
     end
@@ -95,13 +95,13 @@ Rails.application.routes.draw do
     get 'teams/:team_id/progress_form/:milestone_id', to: 'facilitator#progress_form', as: 'progress_form',
                                                       on: :collection
 
-    get 'marking/:milestone_id/section/:section_index', to: 'facilitator#marking_show', as: 'marking_show',
-                                                        on: :collection
-
     # AJAX
     post '/update_teams_list' => 'facilitator#update_teams_list', on: :collection
     post '/update_progress_form_response' => 'facilitator#update_progress_form_response', on: :collection
-    post '/update_marking' => 'facilitator#update_marking', on: :collection
+  end
+
+  resources :markings, controller: :marking do 
+    post '/save' => 'marking#save', on: :collection
   end
 
   resources :modules, controller: :course_module do
