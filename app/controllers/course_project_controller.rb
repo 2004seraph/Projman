@@ -15,24 +15,24 @@ class CourseProjectController < ApplicationController
     create
   ]
 
-    def index
-        if current_user.is_admin?
-            @projects = CourseProject.all
-            @course_modules = CourseModule.all.length
-            render 'index_module_leader'
-        elsif current_user.is_staff?
-            @projects = current_user.staff.course_projects
-            @course_modules = current_user.staff.course_modules.length
-            render 'index_module_leader'
-        else
-            @projects = current_user.student.course_projects
-            @milestones = []
-            @projects.each do |project|
-                @milestones += project.milestones
-            end
-            render 'index_student'
-        end
+  def index
+    if current_user.is_admin?
+      @projects = CourseProject.all
+      @course_modules = CourseModule.all.length
+      render 'index_module_leader'
+    elsif current_user.is_staff?
+      @projects = current_user.staff.course_projects
+      @course_modules = current_user.staff.course_modules.length
+      render 'index_module_leader'
+    else
+      @projects = current_user.student.course_projects
+      @milestones = []
+      @projects.each do |project|
+        @milestones += project.milestones
+      end
+      render 'index_student'
     end
+  end
 
   def new
     staff_id = Staff.where(email: current_user.email).first
@@ -729,8 +729,6 @@ class CourseProjectController < ApplicationController
       Student.exists?(email:) || Staff.exists?(email:)
     end
     errors[:facilitators_not_found] = facilitators_not_found
-
-    errors.all? { |_, v| v.empty? }
 
     initial_module = project.course_module_id
     initial_team_size = project.team_size
