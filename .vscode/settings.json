@@ -1,0 +1,7 @@
+{
+  "gitlens.telemetry.enabled": false,
+  "gitlens.blame.ignoreWhitespace": true,
+  "gitlens.advanced.blame.customArguments": [
+    "-ignore-revs-file", ".git-blame-ignore-revs"
+  ]
+}

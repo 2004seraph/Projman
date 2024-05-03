@@ -1,2 +1,5 @@
+// This file is a part of Projman, a group project orchestrator and management system,
+// made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 var newPartialHTML = "#{j(render(partial: 'components/group-item-milestone', locals: { item_text: @project_milestone_name, name: "milestone_"+@project_milestone_name, selected_type: "", deletion_action_url: remove_project_milestone_projects_path }))}";
 $("#project-milestones-list").append(newPartialHTML);

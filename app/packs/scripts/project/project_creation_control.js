@@ -1,3 +1,6 @@
+// This file is a part of Projman, a group project orchestrator and management system,
+// made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 import $ from 'jquery';
 import 'bootstrap';
 
@@ -38,18 +41,18 @@ $(function() {
         if (!milestoneName) {
             return;
         }
-    
+
         var modal = $('#milestone-email-modal');
         var submitButton = modal.find('button[type="submit"]');
         var modalValue = modal.find('input[type="hidden"].hidden-modal-value');
         var emailInput = modal.find('#milestone-email-input');
         var advanceInput = modal.find('#milestone-email-modal-advance-day-picker');
-    
+
         modalValue.val(milestoneName);
         submitButton.prop('disabled', true);
         //Clear Inputs
         emailInput.val('');
-    
+
         //Send AJAX to request email data
         $.ajax({
             url: '/projects/get_milestone_data',
@@ -97,17 +100,17 @@ $(function() {
         if (!milestoneName) {
             return;
         }
-    
+
         var modal = $('#milestone-comment-modal');
         var submitButton = modal.find('button[type="submit"]');
         var modalValue = modal.find('input[type="hidden"].hidden-modal-value');
         var commentInput = modal.find('#milestone-comment-input');
-    
+
         modalValue.val(milestoneName);
         submitButton.prop('disabled', true);
         //Clear Inputs
         commentInput.val('');
-    
+
         //Send AJAX to request email data
         $.ajax({
             url: '/projects/get_milestone_data',

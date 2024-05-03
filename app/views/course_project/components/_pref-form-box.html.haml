@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 - unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
 
 .card.issue-card.mb-2.accordion-element
@@ -22,8 +25,8 @@
           %h1.fs-5.fw-semibold Preferred Teammates
           - @yes_mates.times do |i|
             = render 'components/search-with-dropdown',
-                form_input_id: "preferred_teammate_#{i}".to_sym, 
-                form_input_name: "preferred_teammate_#{i}".to_sym, 
+                form_input_id: "preferred_teammate_#{i}".to_sym,
+                form_input_name: "preferred_teammate_#{i}".to_sym,
                 data_search_autocomplete_method: defined?(search_student_name_projects_path) ? search_student_name_projects_path : "",
                 hidden_fields: hidden_fields
             %h1
@@ -31,10 +34,10 @@
           %h1.fs-5.fw-semibold Avoided Teammates
           - @no_mates.times do |j|
             = render 'components/search-with-dropdown',
-                form_input_id: "avoided_teammate_#{j}".to_sym, 
-                form_input_name: "avoided_teammate_#{j}".to_sym, 
+                form_input_id: "avoided_teammate_#{j}".to_sym,
+                form_input_name: "avoided_teammate_#{j}".to_sym,
                 data_search_autocomplete_method: defined?(search_student_name_projects_path) ? search_student_name_projects_path : "",
-                hidden_fields: hidden_fields 
+                hidden_fields: hidden_fields
             %h1
           %hr.divider
           %button.btn.btn-primary.btn-sm{ type: "submit" } Submit
@@ -46,13 +49,13 @@
 :javascript
   document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('preference-form').addEventListener('submit', function(event) {
-      event.preventDefault(); 
-      
-      const form = this; 
-      const formData = new FormData(form); 
+      event.preventDefault();
+
+      const form = this;
+      const formData = new FormData(form);
       formData.append('milestone_id', #{@pref_form.id})
-  
-      fetch(form.action, { 
+
+      fetch(form.action, {
         method: form.method,
         headers: {
           'X-CSRF-Token': document.querySelector("meta[name='csrf-token']").getAttribute("content")

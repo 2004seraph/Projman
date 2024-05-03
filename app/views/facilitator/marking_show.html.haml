@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 %h1= @mark_scheme_project.name + " - " + @section["title"]
 %hr.divider
 %h3= "Description"
@@ -43,14 +46,14 @@
   document.addEventListener('DOMContentLoaded', function() {
     var cells = document.querySelectorAll('#markingTable .editable.onlynumeric');
     let markErrorModal = document.getElementById("markErrorModal");
-  
+
     let MAX_MARKS_TEMP = #{max_marks};
 
     cells.forEach(function(cell) {
       ["keypress", "keyup"].forEach(function(e) {
         cell.addEventListener(e, function() {
           var keyValue = String.fromCharCode(event.keyCode || event.which);
-          
+
           if (/\D/.test(keyValue)) {
             event.preventDefault();
           }
@@ -88,7 +91,7 @@
           cell.classList.remove("bg-danger");
         }
       });
-  
+
       if (dataInvalid) {
         $("#markErrorModal").modal("show");
         return;
@@ -96,11 +99,11 @@
 
       // Read marking from inputs
       marking = {}
-      document.querySelectorAll(".marks-input").forEach(function(element) { 
+      document.querySelectorAll(".marks-input").forEach(function(element) {
         id = element.id.replace("marks-input-", "");
-        
+
         marks = element.innerHTML;
-        
+
         reason = document.getElementById(`reason-input-${id}`).innerHTML;
 
         marking[id] = [marks, reason];
@@ -112,7 +115,7 @@
           "Content-Type": "application/json",
           "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           marking: marking
         })
       })
@@ -142,7 +145,7 @@
   });
 
 %div.mb-2
-  %button.btn.btn-success#saveButton 
+  %button.btn.btn-success#saveButton
     %i.bi.bi-floppy
     Save
 

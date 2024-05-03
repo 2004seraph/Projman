@@ -1,4 +1,7 @@
-- unless mark_scheme.nil? 
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
+- unless mark_scheme.nil?
     - mark_scheme["sections"].each_with_index do |section, i|
         .fs-4.semi-bold= "Section #{i + 1}: #{section['title']}"
 
@@ -9,18 +12,18 @@
                         .d-flex.justify-content-between.align-items-baseline
                             Assessors
                             %i.bi.bi-plus.fs-4{
-                                type: "button", 
-                                id: "add-facilitator-to-section", 
+                                type: "button",
+                                id: "add-facilitator-to-section",
                                 "data-bs-toggle": "modal",
-                                "data-bs-target": "#add-facilitator-to-section-modal", 
+                                "data-bs-target": "#add-facilitator-to-section-modal",
                                 onclick: "updateSectionIndex(#{i});"}
 
                     %th.bg-light
                         .d-flex.justify-content-between.align-items-baseline
                             Teams
                             %button.btn.btn-outline-primary.btn-sm{
-                                type: "button", 
-                                id: "auto-assign-section", 
+                                type: "button",
+                                id: "auto-assign-section",
                                 onclick: "autoAssignSection(#{i});"} Auto Assign
 
 
@@ -32,18 +35,18 @@
                                 .d-flex.justify-content-between.align-items-baseline.gap-3
                                     %p.mr-3= email
                                     %i.bi.bi-trash-fill{
-                                        type: "button", 
-                                        id: "remove-facilitator-from-section", 
+                                        type: "button",
+                                        id: "remove-facilitator-from-section",
                                         onclick: "removeAssessor(#{i}, '#{email}');"}
 
                             %td
                                 .d-flex.justify-content-between.align-items-baseline.gap-3
                                     = teams.nil? ? "" : teams.map{|id| Group.find(id).name}.join(", ")
                                     %i.bi.bi-pencil-fill{
-                                        type: "button", 
-                                        id: "edit-facilitator-section-teams", 
+                                        type: "button",
+                                        id: "edit-facilitator-section-teams",
                                         "data-bs-toggle": "modal",
-                                        "data-bs-target": "#assign-teams-modal", 
+                                        "data-bs-target": "#assign-teams-modal",
                                         onclick: "populateAssignTeams(#{i}, '#{email}')"}
 
         %hr.divider

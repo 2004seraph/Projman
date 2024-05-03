@@ -26,6 +26,9 @@
 #  fk_rails_...  (course_module_id => course_modules.id)
 #
 
+# This file is a part of Projman, a group project orchestrator and management system,
+# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 class CourseProject < ApplicationRecord
   # !/home/seraph/Documents/University/SoftwareHut/project/bin/rails runner
   has_many :groups, dependent: :destroy

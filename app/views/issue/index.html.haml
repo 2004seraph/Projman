@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 .seperating-section
   %h2.fs-3
     Issues
@@ -9,7 +12,7 @@
       .row.g-3.align-items-center
         .col-auto
           %i.bi.bi-funnel-fill
-          Filter By: 
+          Filter By:
           .dropdown.me-3
             %button.btn.btn-primary{ type: "button", id: "dropdownMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
               Projects:
@@ -24,7 +27,7 @@
                   = user_project.name
         .col-auto
           %i.bi.bi-sort-down
-          Order By: 
+          Order By:
           .dropdown.me-3
             %button.btn.btn-primary{ type: "button", id: "dropdownOrderMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
               Order:
@@ -48,7 +51,7 @@
             id: "flexSwitchCheckResolved", checked: true, onchange: "toggleSection('resolved-issues-section', 'flexSwitchCheckResolved')"}
             %label.form-check-label{ for: "flexSwitchCheckResolved" }
               Show Resolved
-      
+
         = hidden_field_tag 'selected_project', nil, id: 'selectedProjectField'
         = hidden_field_tag 'selected_order', nil, id: 'selectedOrderField'
 
@@ -102,7 +105,7 @@
       var issueId = anchor.substring(anchor.indexOf('-') + 1);
 
       var collapseElement = $('#issue-card-' + issueId + ' .collapse');
-      collapseElement.addClass('show');   
+      collapseElement.addClass('show');
       $('#card-header-#' + issueId).attr('aria-expanded', 'true');
       var elementToScrollTo = document.getElementById('hidden-partial-container-' + issueId);
       elementToScrollTo.scrollIntoView();
@@ -129,7 +132,7 @@
 -#     const mainElement = document.querySelector('main');
 -#     const scrollbarWidth = window.innerWidth - document.body.clientWidth;
 -#     mainElement.style.paddingRight = scrollbarWidth + 'px';
-    
+
 -#     // Prevent scrolling of the main content while the collapsible is shown
 -#     mainElement.style.overflow = 'hidden';
 -#   });

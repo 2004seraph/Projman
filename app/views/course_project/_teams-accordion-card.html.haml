@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 - ran_num = "#{SecureRandom.hex(5)}"  # Generate a unique ID
 - unique_id = "accordion-card-" + ran_num
 - unique_id_collapse = "accordion-collapse-card-" + ran_num
@@ -25,7 +28,7 @@
       %div.overflow-auto
         .d-flex.justify-content-between
           -# %h3.fs-6 Group Members
-          
+
         %table.table
           %thead
             %tr
@@ -42,6 +45,6 @@
                   %td= student.email
                   %td= student.ucard_number
 
-        = button_tag 'Add Students +', type: 'button', class: "btn btn-primary", style: "height: auto;" 
-        
+        = button_tag 'Add Students +', type: 'button', class: "btn btn-primary", style: "height: auto;"
+
         = button_tag 'Remove Selected Students -', type: 'button', class: "btn btn-secondary fs-8", style: "height: auto;"

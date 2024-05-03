@@ -1,9 +1,12 @@
+// This file is a part of Projman, a group project orchestrator and management system,
+// made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 import $ from 'jquery'
 
 $(function(){
     const rowClick = new CustomEvent('row-selection-change');
 
-    $.fn.getSelectedRows = function() { 
+    $.fn.getSelectedRows = function() {
         if (!$(this).hasClass('selectable-row-container')) {
             console.error('getSelectedRows can only be called on a selectable-row-container');
             return [];

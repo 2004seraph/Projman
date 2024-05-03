@@ -1,3 +1,6 @@
+// This file is a part of Projman, a group project orchestrator and management system,
+// made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // Clearing Modal Input fields upon opening them
@@ -41,12 +44,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Ensure modals with an input field cant have the field left empty
     modals.forEach(function(modal) {
-        
+
         if (modal.hasAttribute('data-disallow-confirm-group-empty')) {
             var inputField = modal.querySelector('input');
             var confirmButton = modal.querySelector('.btn.btn-primary[type="submit"]');
             var listGroup = modal.querySelector('.list-group');
-    
+
             // Function to enable confirm button based on list group children
             function toggleConfirmButton() {
                 confirmButton.disabled = true
@@ -58,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             if (inputField && confirmButton) {
                 confirmButton.disabled = true;
-    
+
                 toggleConfirmButton();
                 var observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
@@ -75,10 +78,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (modal.hasAttribute('data-disallow-confirm-empty-input')) {
             var inputFields = modal.querySelectorAll('input[type="text"], textarea');
             var confirmButton = modal.querySelector('.btn.btn-primary[type="submit"]');
-        
+
             if (inputFields.length > 0 && confirmButton) {
                 confirmButton.disabled = true;
-        
+
                 inputFields.forEach(function(inputField) {
                     inputField.addEventListener('input', function() {
                         var allFieldsFilled = true;
@@ -88,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 return;
                             }
                         });
-        
+
                         confirmButton.disabled = !allFieldsFilled;
                     });
                 });

@@ -20,6 +20,10 @@
 #
 #  index_staffs_on_email  (email) UNIQUE
 #
+
+# This file is a part of Projman, a group project orchestrator and management system,
+# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 class Staff < ApplicationRecord
   # Include default devise modules. Others available are:
 

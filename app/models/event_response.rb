@@ -22,6 +22,10 @@
 #
 #  fk_rails_...  (event_id => events.id)
 #
+
+# This file is a part of Projman, a group project orchestrator and management system,
+# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 class EventResponse < ApplicationRecord
   belongs_to :event
   has_one :group, through: :event

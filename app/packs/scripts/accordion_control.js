@@ -1,3 +1,6 @@
+// This file is a part of Projman, a group project orchestrator and management system,
+// made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 document.addEventListener('DOMContentLoaded', function() {
     var accordionSections = document.querySelectorAll('.accordion-section');
     accordionSections.forEach(section => {
@@ -16,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if(!toggleElement.classList.contains('collapsed')){
 
 
-                        //On Opening Section, close all other sections, 
+                        //On Opening Section, close all other sections,
                         accordionElements.forEach(element => {
                             if(element == currentAccordionElement) return;
                             var toggleElement = element.querySelector('[data-accordion-toggle]');

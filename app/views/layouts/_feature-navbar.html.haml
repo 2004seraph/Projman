@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 -# The nav bar that contains the main features a user can access
 -# Will get populated with more buttons depending on role and route
 
@@ -8,7 +11,7 @@
         %li.nav-item
           = link_to modules_url, class: 'btn btn-light' do
             Modules
-      - if current_user.is_staff?      
+      - if current_user.is_staff?
         %li.nav-item
           = link_to students_url, class: 'btn btn-light' do
             Students

@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# This file is a part of Projman, a group project orchestrator and management system,
+# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 Delayed::Worker.max_attempts = 5
 Delayed::Worker.destroy_failed_jobs = false
 Delayed::Worker.delay_jobs = !Rails.env.development? && !Rails.env.test?

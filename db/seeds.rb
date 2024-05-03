@@ -1,12 +1,7 @@
 # frozen_string_literal: true
 
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
-#   Character.create(name: "Luke", movie: movies.first)
+# This file is a part of Projman, a group project orchestrator and management system,
+# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 require 'student_data_helper'
 require 'database_helper'
@@ -36,6 +31,13 @@ Student.find_or_create_by({
                             fee_status: :home
                           })
 DatabaseHelper.create_staff('jhenson2@sheffield.ac.uk')
+DatabaseHelper.create_student({
+  username: 'aca21jlh',
+  forename: 'Joshua',
+  surname: 'Henson',
+  title: 'Mr',
+  email: 'jhenson2@sheffield.ac.uk',
+})
 
 Student.find_or_create_by({
                             username: 'ack21jb',

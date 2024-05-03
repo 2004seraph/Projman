@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 .hidden-partial-container{ id: "hidden-partial-container-#{issue.id}"}
   - unique_id = "collapseIssue_#{issue.id}" # Generate a unique ID using SecureRandom
   - course_project = CourseProject.find_by(id: Group.find_by(id: issue.group.id).course_project_id)
@@ -11,7 +14,7 @@
       "data-accordion-toggle" => "",
       "aria-expanded" => "false",
       "aria-controls" => unique_id,
-      id: "card-header-#{issue.id}"} 
+      id: "card-header-#{issue.id}"}
       .d-flex.align-items-center
         %span.me-3.fs-6.fw-light #{issue.created_at.strftime("%d/%m/%Y %H:%M")}
         %h3.m-0.fs-5.fw-medium #{issue.json_data['title']}
@@ -56,7 +59,7 @@
         - if issue.completed
           .d-flex.justify-content-end.mb-2
             %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#reopenIssueModal-#{issue.id}", id: "reopen-#{issue.id}"}
-              Reopen 
+              Reopen
 
     .modal.fade{id: "resolveIssueModal-#{issue.id}", tabindex: "-1", role: "dialog", aria: {labelledby: "resolveIssueModalLabel", hidden: "true"}}
       .modal-dialog.modal-dialog-centered

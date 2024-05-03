@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 - unique_id = "attendance-card"
 
 // Define a style to enable/disable inputs for facilitator/module lead
@@ -14,7 +17,7 @@
 
     .fs-5= "Attendance"
     %i.bi.bi-caret-right-fill
-  
+
   .collapse.show{id: unique_id}
     .card-body
       - if group != "None"
@@ -22,22 +25,22 @@
           - student_attendance = attendance.nil? ? [false, ""] : attendance.fetch(i, [false, ""])
 
           .form-check{style: responding_style}
-            %input.form-check-input.absent-checkbox{ 
-              type: "checkbox", 
-              id: "absentCheckbox-#{student.id}", 
+            %input.form-check-input.absent-checkbox{
+              type: "checkbox",
+              id: "absentCheckbox-#{student.id}",
               checked: student_attendance[0]}
 
             %label.form-check-label{ for: "absentCheckbox-#{student.id}" }= "#{student.forename} #{student.surname}"
 
           %input{
-            type: "text", 
-            id: "reasonTextInput-#{student.id}", 
-            placeholder: "Reason for absence", 
-            value: student_attendance[1], 
+            type: "text",
+            id: "reasonTextInput-#{student.id}",
+            placeholder: "Reason for absence",
+            value: student_attendance[1],
             class: ("form-control mb-3 absent-reason-input" + (" d-none" if student_attendance[0]).to_s),
             style: responding_style }
 
-      - else 
+      - else
         // No group given, so display default students as example data for module lead preview
         - for n in 1..3 do
           .form-check{style: responding_style}
@@ -45,19 +48,19 @@
             %label.form-check-label{ for: "absentCheckbox-#{n}" }= "Student #{n}"
 
           %input.form-control.mb-3.absent-reason-input{
-            type: "text", 
-            id: "reasonTextInput-#{n}", 
-            placeholder: "Reason for absence", 
+            type: "text",
+            id: "reasonTextInput-#{n}",
+            placeholder: "Reason for absence",
             style: responding_style }
-          
-      
+
+
 
   :javascript
     document.addEventListener('change', function(event) {
       if (event.target && event.target.matches(".absent-checkbox")) {
         var checkboxId = event.target.id.split("-")[1];
         var textInputContainer = document.getElementById(`reasonTextInput-${checkboxId}`);
-        
+
         if (event.target.checked) {
           textInputContainer.classList.add("d-none");
           textInputContainer.classList.remove("d-inline");

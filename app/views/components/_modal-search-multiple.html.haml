@@ -1,3 +1,5 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 -# A partial that renders a search bar with a list group below for all things you accumulated
 
@@ -11,7 +13,7 @@
 -# list_group_id
 -# confirm_text
 -# confirm_onclick_function
--# add_to_selection_url 
+-# add_to_selection_url
 -# submission_url
 -# on_open_action_url
 
@@ -31,12 +33,12 @@
           = form_with(url: (defined?(add_to_selection_url) ? add_to_selection_url : '/placeholder_post_url'), method: :post, local: false) do |form|
             .input-group.mb-4
               = render 'components/search-with-dropdown',
-                form_input_id: form_input_id, 
-                form_input_name: form_input_name, 
+                form_input_id: form_input_id,
+                form_input_name: form_input_name,
                 data_search_autocomplete_method: defined?(autocomplete_method) ? autocomplete_method : "",
                 hidden_fields: defined?(search_hidden_fields) ? search_hidden_fields : {}
               = form.button(type: "submit", class: "btn btn-outline-secondary") do
-                Add 
+                Add
 
               = yield
           %span Current Selection

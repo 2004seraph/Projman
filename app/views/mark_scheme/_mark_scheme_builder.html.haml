@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 .fs-3.semi-bold= title
 
 %hr.divider
@@ -19,11 +22,11 @@
 
             .modal-footer
                 %button.btn.btn-primary{ type: "submit", id: "add-section-button"}= "Add"
-                
+
 
 %button.btn.btn-outline-primary.w-100{type: "button", id: "create-section-button", "data-bs-toggle": "modal", "data-bs-target": "#add-section-modal"}
     %i.bi.bi-plus-circle-fill
-    Add new section 
+    Add new section
 
 .mb-2
     %button.btn.btn-success.mt-2#save-button{type: "button"}
@@ -51,7 +54,7 @@
                 titleTextAreaError.innerHTML = "Section title cannot be empty";
                 titleTextAreaError.classList.remove("d-none");
 
-                return; 
+                return;
             }
             titleTextArea.classList.remove("is-invalid");
             titleTextAreaError.classList.add("d-none");
@@ -62,7 +65,7 @@
                 "Content-Type": "application/json",
                 "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     section_title: titleTextArea.value.trim(),
                 })
             })
@@ -71,7 +74,7 @@
                 const temp = document.createElement("div");
                 temp.innerHTML = html.trim();
                 sectionsContainer.appendChild(temp);
-                
+
                 document.getElementById("section-title-text-area").value = "";
             })
             .catch(error => console.error("Error when trying to add section:", error));
@@ -80,10 +83,10 @@
             document.getElementById("add-section-close-button").click();
         });
 
-        
+
         // Save form events
         const saveBtn = document.getElementById("save-button");
-        saveBtn.addEventListener("click", function(e) {      
+        saveBtn.addEventListener("click", function(e) {
             // Get all sections
             sections = [];
             document.querySelectorAll(".max-marks-input").forEach(function(element) {
@@ -101,7 +104,7 @@
                     "Content-Type": "application/json",
                     "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
                     },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     sections: sections
                 })
             })
@@ -118,7 +121,7 @@
             .catch(error => console.error("Error when trying to save mark scheme:", error));
         });
 
-        
+
         // Delete form events
         $("#discard-button").on("click", function() {
             // Simple redirect

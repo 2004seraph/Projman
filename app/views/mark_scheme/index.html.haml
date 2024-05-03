@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 = render partial: 'course_project/components/project_info_header', locals: { project_id: @current_project.id }
 
 .fs-3.semi-bold Mark Scheme
@@ -51,27 +54,27 @@
                     - CourseProject.find(params[:project_id]).groups.each do |group|
                         .form-check.form-switch.d-none.group-checkbox-container{
                             id: "group-checkbox-container-#{group.id}"}
-                            
-                            %input.form-check-input.group-checkbox{ 
+
+                            %input.form-check-input.group-checkbox{
                                 type: "checkbox", id: "group-checkbox-#{group.id}", checked: false }
 
                             %label.form-check-label{ for: "group-checkbox-#{group.id}" }= group.name
-                    
+
             .modal-footer.d-flex.justify-content-between
                 .col-auto
                     %button.btn.btn-secondary{onclick: "toggleAllAssessors();"} Select all
                     %button.btn.btn-secondary{onclick: "toggleAllAssessors(false);"} Deselect all
-                
+
                 .col-auto.ml-auto
                     %button.btn.btn-primary{ type: "submit", id: "assign-teams-button", onclick: "assignTeams();"}= "Assign"
-            
+
 
 :javascript
     function updateSectionIndex(i) {
         // Use hidden inputs to set the section_index on the controller
         $('.hidden-inputs-container').each(function(){
             var inputs = $(this).find('input');
-            
+
             inputs.each(function() {
                 if ($(this).attr("name") === "section_index") {
                     $(this).val(i);
@@ -88,14 +91,14 @@
                 "Content-Type": "application/json",
                 "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
                 },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 section_index: section_index,
                 email: email
             })
         })
         .then(response => response.text())
         .then(html => {
-            $("#section-facilitators").html(html.trim());  
+            $("#section-facilitators").html(html.trim());
         })
         .catch(error => console.error("Error when trying to save remove assessor:", error));
     }
@@ -107,7 +110,7 @@
                 "Content-Type": "application/json",
                 "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
                 },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 section_index: section_index,
                 email: email
             })
@@ -138,10 +141,10 @@
             // Get all the displayed checkboxes
             const id = element.id.replace("group-checkbox-", "");
             if (!document.getElementById(`group-checkbox-container-${id}`).classList.contains("d-none")) {
-                element.checked = on;    
+                element.checked = on;
             }
         });
-    }    
+    }
 
     function assignTeams() {
         // Find all the displayed checkboxes that are checked
@@ -152,7 +155,7 @@
 
                 if (!document.getElementById(`group-checkbox-container-${id}`).classList.contains("d-none")) {
                     team_ids.push(parseInt(id));
-                }                
+                }
             }
         });
 
@@ -162,7 +165,7 @@
                 "Content-Type": "application/json",
                 "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
                 },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 team_ids: team_ids
             })
         })
@@ -189,7 +192,7 @@
                 "Content-Type": "application/json",
                 "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
                 },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 section_index: section_index
             })
         })

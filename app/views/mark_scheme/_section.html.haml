@@ -1,4 +1,5 @@
-
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 // Partial for displaying a section when editing or creating a mark scheme
 - unique_id = "section-#{section_index}"
@@ -11,28 +12,28 @@
     "data-accordion-toggle" => "",
     "aria-expanded" => "true",
     "aria-controls" => unique_id}
-  
+
     .fs-5{id: "section-title-#{section_index}"}= section_title
     %i.bi.bi-caret-right-fill
 
   .collapse.show{id: unique_id}
     .card-body
       .form-group
-        %label.form-label{for: "maximum-marks-input-#{section_index}"} Maximum marks:      
+        %label.form-label{for: "maximum-marks-input-#{section_index}"} Maximum marks:
         %input.form-control.w-25.max-marks-input{
-          type:"number", 
-          id: "maximum-marks-input-#{section_index}", 
+          type:"number",
+          id: "maximum-marks-input-#{section_index}",
           min: 0,
           value: max_marks,
           onkeypress: "return event.charCode >= 48 && event.charCode <= 57"
         }
 
-      %br 
+      %br
 
       .form-group
         %label.form-label{for: "description-textarea-#{section_index}"} Description
         %textarea.form-control{
-          id: "description-textarea-#{section_index}", 
+          id: "description-textarea-#{section_index}",
           placeholder: "Description",
           rows: "5"
         }= section_description

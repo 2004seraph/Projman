@@ -1,3 +1,6 @@
+// This file is a part of Projman, a group project orchestrator and management system,
+// made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 import $ from 'jquery';
 import 'bootstrap';
 
@@ -27,7 +30,7 @@ $(function() {
                 requestData[fieldName] = value;
             });
             requestData['query'] = query
-        
+
             $.ajax({
                 url: searchUrl,
                 type: 'GET',
@@ -35,14 +38,14 @@ $(function() {
                 data: requestData,
                 success: function(data) {
                     dropdownElement.empty();
-    
+
                     if(data.length == 0 || query == ""){
                         dropdownElement.removeClass('show');
                     }
                     else{
                         toggleElement.trigger('click')
                     }
-    
+
                     // Append new results to dropdown
                     data.forEach(function(result) {
                         dropdownElement.append('<li><a class="dropdown-item" value="' + $('<div/>').text(result).html() + '">' + $('<div/>').text(result).html() + '</a></li>');

@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# This file is a part of Projman, a group project orchestrator and management system,
+# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
+
 module DatabaseHelper
   PREFIX = '[Database]'
   NOTICE = "#{PREFIX} Notice:".freeze
@@ -223,6 +227,37 @@ module DatabaseHelper
     x = Staff.find_or_create_by(email:)
     DatabaseHelper.print_validation_errors(x)
     x
+  end
+
+  def create_student(options)
+    settings = {
+      ucard_number: DatabaseHelper.generate_ucard_number(unique: true),
+      title: 'Mx',
+      fee_status: :home
+    }.merge(options)
+    settings[:preferred_name] = settings[:forename] unless settings[:preferred_name]
+
+    Student.find_or_create_by(settings)
+  end
+
+  def generate_ucard_number(options={})
+    settings = {
+      unique: false
+    }.merge(options)
+
+    if settings[:unique]
+      existing_ucard_numbers = Student.pluck(:ucard_number)
+
+      ucard_number = generate_ucard_number
+
+      # Keep generating new ucard numbers until a unique one is found
+      while existing_ucard_numbers.include?(ucard_number)
+        ucard_number = generate_ucard_number
+      end
+      return ucard_number
+    else
+      return random_ucard_number
+    end
   end
 
   def get_student_by_module(module_code)
@@ -514,6 +549,10 @@ module DatabaseHelper
       end
     end
     true
+  end
+
+  def random_ucard_number
+    (SecureRandom.random_number 999999999).to_s.rjust(9, "0")
   end
 
   def ldap_lookup(student)
