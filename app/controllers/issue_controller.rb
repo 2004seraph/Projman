@@ -3,7 +3,11 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
+# Controller for managing issue-related actions such as:
+#   - Creating an issue
+#   - Updating the selction of issues being shown
+#   - Handling response to issues
+#   - Updating the status of an issue
 class IssueController < ApplicationController
   authorize_resource class: false
 
@@ -25,6 +29,9 @@ class IssueController < ApplicationController
     render 'index'
   end
 
+  # Updates the current selection of issues.
+  # @return [JavaScript Response] A javascript response which rerenders the
+  #   page with the updated collection of issues in specified order.
   def update_selection
     @selected_project = params[:selected_project]
     @selected_order = params[:selected_order]
@@ -36,6 +43,9 @@ class IssueController < ApplicationController
     respond_to(&:js)
   end
 
+  # Creates a new issue.
+  # @return [JavaScript Response] A javascript response which closes the modal
+  #   and shows a success message if successful.
   def create
     json_data = {
       title: params[:title],
@@ -57,6 +67,10 @@ class IssueController < ApplicationController
     respond_to(&:js)
   end
 
+  # Handles the creation of an EventResponse to an issue.
+  # @return [JavaScript Response] A javascript response which rerenders the
+  #   issue box to upadate with new issue response and checks notification logic
+  #   to see if notification icon needs to be removed.
   def issue_response
     @issue = Event.find(params[:issue_id])
 
@@ -94,6 +108,11 @@ class IssueController < ApplicationController
     respond_to(&:js)
   end
 
+  # Updates the issue's status to either open or resolved.
+  # @return [JavaScript Response] A javascript response which rerenders the
+  #   page with the issue moved to the corresponding section of with open
+  #   issues or resolved issues. Also checks notification logic
+  #   to see if notification icon needs to be removed.
   def update_status
     @issue = Event.find(params[:issue_id])
 
@@ -123,11 +142,50 @@ class IssueController < ApplicationController
 
   private
 
+  # Updates the instance variables @open_issues and @resolved_issues based
+  #   on parameters from view to update the issues rendered in the view and
+  #   their order.
+  # @param [String] selected_project The current selected project in the view.
+  # @param [String] selected_order The current selected order in the view.
   def get_issues(selected_project = 'All', selected_order = 'Created At')
     @open_issues = []
     @resolved_issues = []
 
-    if current_user.is_staff?
+    if current_user.is_admin?
+      @user_projects = CourseProject.all
+
+      if selected_order == 'Created At'
+        group_ids = Group.all.map(&:id).uniq
+
+        @open_issues = Event.joins(:group)
+                            .where(groups: { id: group_ids })
+                            .where(event_type: :issue)
+                            .where(completed: false)
+                            .order(created_at: :asc)
+
+        @resolved_issues = Event.joins(:group)
+                                .where(groups: { id: group_ids })
+                                .where(event_type: :issue)
+                                .where(completed: true)
+                                .order(created_at: :asc)
+
+      else
+        group_ids = @project_groups.map(&:id).uniq
+
+        @open_issues = Event.joins(:group)
+                            .where(groups: { id: group_ids })
+                            .where(event_type: :issue)
+                            .where(completed: false)
+                            .order(updated_at: :desc)
+
+        @resolved_issues = Event.joins(:group)
+                                .where(groups: { id: group_ids })
+                                .where(event_type: :issue)
+                                .where(completed: true)
+                                .order(updated_at: :desc)
+      end
+
+    elsif current_user.is_staff?
       @user_modules = current_user.staff.course_modules
 
       @user_projects = []

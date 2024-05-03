@@ -41,11 +41,11 @@
       resolvedIssueSection.addClass('display-none');
   }
 
-  var issuesBtn = $('#issues-btn')
-  var notificationNeeded = #{current_user.issue_notification?}
+  var issuesBtn = $('#issues-btn');
+  var notificationNeeded = #{current_user.issue_notification?};
 
   if (notificationNeeded) {
-    issuesBtn.html('<a href="<%= j issues_url %>" class="btn btn-light">Issues <i class="bi bi-exclamation-diamond-fill icon-pad-nav"></i></a>');
+    issuesBtn.html('<a href="#{issues_url}" class="btn btn-light">Issues <i class="bi bi-exclamation-diamond-fill icon-pad-nav"></i></a>');
   } else {
-    issuesBtn.html('<a href="<%= j issues_url %>" class="btn btn-light">Issues</a>');
-  }
+    issuesBtn.html('<a href="#{issues_url}" class="btn btn-light">Issues</a>');
+  };

@@ -66,6 +66,14 @@ class CourseProject < ApplicationRecord
     project_completion_deadline.deadline
   end
 
+  def project_notification?(current_user, group)
+    if Event.chat_notification?(current_user, group)
+      true
+    else
+      false
+    end
+  end
+
   def self.lifecycle_job
     # DO NOT RUN THIS IN ANY APP CODE
     # THIS IS A CRON JOB, IT IS RAN BY THE OS

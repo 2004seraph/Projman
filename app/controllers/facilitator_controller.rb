@@ -205,9 +205,10 @@ class FacilitatorController < ApplicationController
 
   def get_assigned_facilitators
     # Returns the entries of AssignedFacilitator for the logged in user
-    if current_user.is_staff?
+    if current_user.is_admin?
+      AssignedFacilitator.all
+    elsif current_user.is_staff?
       AssignedFacilitator.where(staff: current_user.staff)
-
     elsif current_user.is_student?
       AssignedFacilitator.where(student: current_user.student)
     end

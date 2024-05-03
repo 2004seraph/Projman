@@ -20,7 +20,11 @@ class CourseProjectController < ApplicationController
   ]
 
   def index
-    if current_user.is_staff?
+    if current_user.is_admin?
+      @projects = CourseProject.all
+      @course_modules = CourseModule.all.length
+      render 'index_module_leader'
+    elsif current_user.is_staff?
       @projects = current_user.staff.course_projects
       @course_modules = current_user.staff.course_modules.length
       render 'index_module_leader'
@@ -38,7 +42,11 @@ class CourseProjectController < ApplicationController
     staff_id = Staff.where(email: current_user.email).first
     @min_date = DateTime.now.strftime('%Y-%m-%dT%H:%M')
 
-    modules_hash = CourseModule.all.where(staff_id:).order(:code).pluck(:code, :name).to_h
+    modules_hash = if current_user.is_admin?
+                     CourseModule.all.order(:code).pluck(:code, :name).to_h
+                   else
+                     CourseModule.all.where(staff_id:).order(:code).pluck(:code, :name).to_h
+                   end
     # if a staff is not a module lead for any module, do not show them the new page
     if modules_hash.empty?
       flash[:alert] = 'You are not part of any modules. Please contact an admin if this is in error.'
@@ -462,14 +470,16 @@ class CourseProjectController < ApplicationController
 
     # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
     if no_errors
-      if project_data[:selected_team_allocation_mode] == 'random_team_allocation' && (milestone = session[:project_data][:project_milestones].find do |m|
-                                                                                        m[:Name] == 'Teammate Preference Form Deadline'
-                                                                                      end)
+      if project_data[:selected_team_allocation_mode] == 'random_team_allocation' &&
+         (milestone = session[:project_data][:project_milestones].find do |m|
+            m[:Name] == 'Teammate Preference Form Deadline'
+          end)
         milestone[:Date] = ''
       end
-      if !project_data[:project_choices_enabled] && (milestone = session[:project_data][:project_milestones].find do |m|
-                                                       m[:Name] == 'Project Preference Form Deadline'
-                                                     end)
+      if !project_data[:project_choices_enabled] &&
+         (milestone = session[:project_data][:project_milestones].find do |m|
+            m[:Name] == 'Project Preference Form Deadline'
+          end)
         milestone[:Date] = ''
       end
     end
@@ -583,7 +593,9 @@ class CourseProjectController < ApplicationController
 
       facilitators_count = facilitators.length
       current_facilitator_index = 0
-      groups_per_facilitator = (students_grouped.length.to_f / facilitators_count).ceil.to_i
+      if facilitators_count.positive?
+        groups_per_facilitator = (students_grouped.length.to_f / facilitators_count).ceil.to_i
+      end
       students_grouped.each do |student_subarray|
         # Create a new group for each slice of students
         current_group = Group.new
@@ -726,8 +738,6 @@ class CourseProjectController < ApplicationController
     end
     errors[:facilitators_not_found] = facilitators_not_found
 
-    errors.all? { |_, v| v.empty? }
-
     initial_module = project.course_module_id
     initial_team_size = project.team_size
     initial_team_allocation = project.team_allocation
@@ -773,6 +783,7 @@ class CourseProjectController < ApplicationController
           )
           subprojects << subproject
         end
+
         subprojects.each do |subproject|
           if subproject.valid?
             subproject.save
@@ -794,14 +805,16 @@ class CourseProjectController < ApplicationController
 
     # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
     if no_errors
-      if project_data[:selected_team_allocation_mode] == 'random_team_allocation' && (milestone = session[:project_data][:project_milestones].find do |m|
-                                                                                        m[:Name] == 'Teammate Preference Form Deadline'
-                                                                                      end)
+      if project_data[:selected_team_allocation_mode] == 'random_team_allocation' &&
+         (milestone = session[:project_data][:project_milestones].find do |m|
+            m[:Name] == 'Teammate Preference Form Deadline'
+          end)
         milestone[:Date] = ''
       end
-      if !project_data[:project_choices_enabled] && (milestone = session[:project_data][:project_milestones].find do |m|
-                                                       m[:Name] == 'Project Preference Form Deadline'
-                                                     end)
+      if !project_data[:project_choices_enabled] &&
+         (milestone = session[:project_data][:project_milestones].find do |m|
+            m[:Name] == 'Project Preference Form Deadline'
+          end)
         milestone[:Date] = ''
       end
     end
@@ -986,7 +999,9 @@ class CourseProjectController < ApplicationController
       facilitators = project.assigned_facilitators
       facilitators_count = facilitators.length
       current_facilitator_index = 0
-      groups_per_facilitator = (students_grouped.length.to_f / facilitators_count).ceil.to_i
+      if facilitators_count.positive?
+        groups_per_facilitator = (students_grouped.length.to_f / facilitators_count).ceil.to_i
+      end
       students_grouped.each do |student_subarray|
         # Create a new group for each slice of students
         current_group = Group.new

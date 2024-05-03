@@ -14,3 +14,17 @@
 
   var chatBoxContainer = document.getElementById('chat-box-container');
   chatBoxContainer.scrollTop = chatBoxContainer.scrollHeight - chatBoxContainer.clientHeight;
+
+  var projectsBtn = $('#projects-btn');
+  var notificationNeeded = #{current_user.project_notification?};
+
+  console.log(notificationNeeded);
+  console.log(projectsBtn)
+
+  if (notificationNeeded) {
+    projectsBtn.html('<a href="#{projects_url}" class="btn btn-light">Projects <i class="bi bi-exclamation-diamond-fill icon-pad-nav"></i></a>');
+  } else {
+    projectsBtn.html('<a href="#{projects_url}" class="btn btn-light">Projects</a>');
+  };
+
+  console.log(projectsBtn.html)

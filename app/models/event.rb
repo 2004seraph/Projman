@@ -59,6 +59,19 @@ class Event < ApplicationRecord
     end
   end
 
+  def self.chat_notification?(user, group)
+    return if group.nil?
+
+    group_chat_messages = group.events.where(event_type: :chat)
+    most_recent_messager = group_chat_messages.last.student_id
+
+    if !most_recent_messager.nil? && most_recent_messager != user.student.id
+      true
+    else
+      false
+    end
+  end
+
   def self.sorted_by_latest_activity(*conditions)
     query = joins('LEFT OUTER JOIN event_responses ON event_responses.event_id = events.id')
             .select('events.*, COALESCE(MAX(event_responses.created_at), events.updated_at) AS latest_activity')

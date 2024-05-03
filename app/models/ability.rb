@@ -96,9 +96,11 @@ class Ability
     return unless user.staff.admin
 
     # can [:read], :admin
-
+    can [:read], :facilitator
+    can [:read], EventResponse
+    can %i[read update], Event
     can %i[create read update destroy], Group
     can %i[create read update destroy], CourseModule
-    can %i[create read update destroy], CourseProject
+    can %i[create read edit teams update destroy], CourseProject
   end
 end
