@@ -49,6 +49,13 @@ After adding yourself to the database, you're ready to test the app.
 - Run the app:
   `RAILS_ENV=development ./BOOT.sh`
 
+### To deploy the app to production
+
+We use Capistrano for our deployments, and interact with the production server via EpiGenesys' `epi_deploy` gem. To deploy the app:
+
+- Ensure there are no changes to commit, that working tree is clean.
+- Run `./DEPLOY.sh`
+
 ## Maintainers
 
 - Adam Willis <awillis4@sheffield.ac.uk>
