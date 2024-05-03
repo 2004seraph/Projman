@@ -25,6 +25,7 @@
               .scrollable
                 .d-flex.justify-content-center
                   %i.fs-6.fw-light.pt-2.pb-3 Start of chat history
+                // Renders all the chat messages for group
                 - @chat_messages.each do |chat_message|
                   .d-flex.align-items-center.justify-content-between.pb-2
                     - if chat_message.student_id == current_user.student.id
@@ -46,6 +47,7 @@
 
         %hr.divider
 
+        // Form for sending a chat message
         = form_with(url: "/projects/#{@current_group.id}/send-chat-message", method: "post", local: false, id: "chat-form") do |form|
           %input{ type: "hidden", name: "group_id", value: "#{@current_group.id}"}
           %input{ type: "hidden", name: "author", value: "#{current_user.givenname} #{current_user.sn}"}
@@ -55,6 +57,8 @@
             %button.btn.btn-primary{type: "submit", class: "btn btn-primary me-2", id: "send-chat", remote: true }
               %i.bi.bi-send-fill
               Send
+
+// JavaScript for handling scrolling to the bottom of the chat box when its opened
 :javascript
   document.addEventListener('DOMContentLoaded', function() {
     $('#chat-box-card').on('shown.bs.collapse', function () {

@@ -18,14 +18,9 @@ module ViewHelper
   end
 
   def retrieve_courses
-    if current_user.is_staff?
-      if current_user.staff.admin
-        return CourseModule.all
-      else
-        return CourseModule.where(staff_id: current_user.staff)
-      end
-    else
-      return []
-    end
+    return [] unless current_user.is_staff?
+    return CourseModule.all if current_user.staff.admin
+
+    CourseModule.where(staff_id: current_user.staff)
   end
 end

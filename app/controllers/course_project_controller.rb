@@ -38,16 +38,16 @@ class CourseProjectController < ApplicationController
     staff_id = Staff.where(email: current_user.email).first
     @min_date = DateTime.now.strftime('%Y-%m-%dT%H:%M')
 
-        if current_user.is_admin?
-            modules_hash = CourseModule.all.order(:code).pluck(:code, :name).to_h
-        else
-            modules_hash = CourseModule.all.where(staff_id: staff_id).order(:code).pluck(:code, :name).to_h
-        end
-        # if a staff is not a module lead for any module, do not show them the new page
-        if modules_hash.length == 0
-            flash[:alert] = "You are not part of any modules. Please contact an admin if this is in error."
-            redirect_to session[:redirect_url]  # previous page, or `action: :index` if you prefer
-        end
+    modules_hash = if current_user.is_admin?
+                     CourseModule.all.order(:code).pluck(:code, :name).to_h
+                   else
+                     CourseModule.all.where(staff_id:).order(:code).pluck(:code, :name).to_h
+                   end
+    # if a staff is not a module lead for any module, do not show them the new page
+    if modules_hash.empty?
+      flash[:alert] = 'You are not part of any modules. Please contact an admin if this is in error.'
+      redirect_to session[:redirect_url] # previous page, or `action: :index` if you prefer
+    end
 
     project_allocation_modes_hash = CourseProject.project_allocations
     team_allocation_modes_hash = CourseProject.team_allocations
@@ -466,105 +466,109 @@ class CourseProjectController < ApplicationController
 
     # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
     if no_errors
-      if project_data[:selected_team_allocation_mode] == 'random_team_allocation' && 
-        (milestone = session[:project_data][:project_milestones].find do |m| m[:Name] == 'Teammate Preference Form Deadline' end)
+      if project_data[:selected_team_allocation_mode] == 'random_team_allocation' &&
+         (milestone = session[:project_data][:project_milestones].find do |m|
+            m[:Name] == 'Teammate Preference Form Deadline'
+          end)
         milestone[:Date] = ''
       end
-      if !project_data[:project_choices_enabled] && 
-        (milestone = session[:project_data][:project_milestones].find do |m|  m[:Name] == 'Project Preference Form Deadline' end)
+      if !project_data[:project_choices_enabled] &&
+         (milestone = session[:project_data][:project_milestones].find do |m|
+            m[:Name] == 'Project Preference Form Deadline'
+          end)
         milestone[:Date] = ''
       end
     end
 
     # Creating associated milestones
     if no_errors
-        milestones = []
-        project_data[:project_milestones].each do |milestone_data|
+      milestones = []
+      project_data[:project_milestones].each do |milestone_data|
+        # dd/mm/yyyy to yyyy-mm-dd
+        date_time_string = milestone_data[:Date]
+        # This did a funny where sometimes the format was recieved as m/d/y, hasnt happened again since what should have fixed it
+        # puts date_string
+        next if date_time_string.blank? # dont push the milestone if its not got a set date
 
-            # dd/mm/yyyy to yyyy-mm-dd
-            date_time_string = milestone_data[:Date]
-            # This did a funny where sometimes the format was recieved as m/d/y, hasnt happened again since what should have fixed it
-            # puts date_string
-            next if !date_time_string.present?   #dont push the milestone if its not got a set date
-            date, time = date_time_string.split("T")
-            # puts parsed_date
+        date, time = date_time_string.split('T')
+        # puts parsed_date
 
-            # check which system type of milestone this is, if it is supposed to be
-            system_type = nil
-            if milestone_data[:Name] == "Project Deadline"
-                system_type = "project_deadline"
-            elsif milestone_data[:Name] == "Project Preference Form Deadline"
-                system_type = "project_preference_deadline"
-            elsif milestone_data[:Name] == "Teammate Preference Form Deadline"
-                system_type = "teammate_preference_deadline"
-            end
-
-            json_data = {
-                "Name" => milestone_data[:Name],
-                "isDeadline" => milestone_data[:isDeadline],
-                "Comment" => milestone_data[:Comment]
-            }
-            json_data["Email"] = milestone_data[:Email] if milestone_data.key?(:Email)
-
-            milestone = Milestone.new(
-                json_data: json_data,
-                deadline: (date + " " + time),
-                system_type: system_type,
-                user_generated: true,
-                milestone_type: milestone_data[:Type],
-                course_project_id: new_project.id
-            )
-
-            milestones << milestone
+        # check which system type of milestone this is, if it is supposed to be
+        system_type = nil
+        case milestone_data[:Name]
+        when 'Project Deadline'
+          system_type = 'project_deadline'
+        when 'Project Preference Form Deadline'
+          system_type = 'project_preference_deadline'
+        when 'Teammate Preference Form Deadline'
+          system_type = 'teammate_preference_deadline'
         end
 
-        milestones.each do |milestone|
-            if milestone.valid?
-                milestone.save
-            else
-                new_project.destroy
-                milestone.errors.messages.each do |attribute, messages|
-                    messages.each do |message|
-                        unless errors[:main].include?("Milestone error: #{attribute} : #{message}")
-                        errors[:main] << "Milestone error: #{attribute} : #{message}"
-                        end
-                    end
-                end
+        json_data = {
+          'Name' => milestone_data[:Name],
+          'isDeadline' => milestone_data[:isDeadline],
+          'Comment' => milestone_data[:Comment]
+        }
+        json_data['Email'] = milestone_data[:Email] if milestone_data.key?(:Email)
+
+        milestone = Milestone.new(
+          json_data:,
+          deadline: "#{date} #{time}",
+          system_type:,
+          user_generated: true,
+          milestone_type: milestone_data[:Type],
+          course_project_id: new_project.id
+        )
+
+        milestones << milestone
+      end
+
+      milestones.each do |milestone|
+        if milestone.valid?
+          milestone.save
+        else
+          new_project.destroy
+          milestone.errors.messages.each do |attribute, messages|
+            messages.each do |message|
+              unless errors[:main].include?("Milestone error: #{attribute} : #{message}")
+                errors[:main] << "Milestone error: #{attribute} : #{message}"
+              end
             end
+          end
         end
+      end
     end
     no_errors = errors.all? { |_, v| v.empty? }
 
-    #Creating assigned facilitators
+    # Creating assigned facilitators
     facilitators = []
     if no_errors
-        project_data[:project_facilitators].each do |user_email|
+      project_data[:project_facilitators].each do |user_email|
+        facilitator = AssignedFacilitator.new(course_project_id: new_project.id)
 
-            facilitator = AssignedFacilitator.new(course_project_id: new_project.id);
-
-            if Staff.exists?(email: user_email)
-                facilitator.staff_id = Staff.where(email: user_email).first.id
-            elsif Student.exists?(email: user_email)
-                facilitator.student_id = Student.where(email: user_email).first.id
-            end
-
-            facilitators << facilitator
+        if Staff.exists?(email: user_email)
+          facilitator.staff_id = Staff.where(email: user_email).first.id
+        elsif Student.exists?(email: user_email)
+          facilitator.student_id = Student.where(email: user_email).first.id
         end
-        facilitators.each do |facilitator|
-            if facilitator.valid?
-                facilitator.save
-                facilitator.reload
-            else
-                new_project.destroy
-                facilitator.errors.messages.each do |attribute, messages|
-                    messages.each do |message|
-                        unless errors[:main].include?("Facilitator error: #{attribute} : #{message}")
-                            errors[:main] << "Facilitator error: #{attribute} : #{message}"
-                        end
-                    end
-                end
+
+        facilitators << facilitator
+      end
+      facilitators.each do |facilitator|
+        if facilitator.valid?
+          facilitator.save
+          facilitator.reload
+        else
+          new_project.destroy
+          facilitator.errors.messages.each do |attribute, messages|
+            messages.each do |message|
+              unless errors[:main].include?("Facilitator error: #{attribute} : #{message}")
+                errors[:main] << "Facilitator error: #{attribute} : #{message}"
+              end
             end
+          end
         end
+      end
     end
     no_errors = errors.all? { |_, v| v.empty? }
 
@@ -585,7 +589,7 @@ class CourseProjectController < ApplicationController
 
       facilitators_count = facilitators.length
       current_facilitator_index = 0
-      if facilitators_count > 0
+      if facilitators_count.positive?
         groups_per_facilitator = (students_grouped.length.to_f / facilitators_count).ceil.to_i
       end
       students_grouped.each do |student_subarray|
@@ -797,12 +801,16 @@ class CourseProjectController < ApplicationController
 
     # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
     if no_errors
-      if project_data[:selected_team_allocation_mode] == 'random_team_allocation' && 
-        (milestone = session[:project_data][:project_milestones].find do |m| m[:Name] == 'Teammate Preference Form Deadline' end)
+      if project_data[:selected_team_allocation_mode] == 'random_team_allocation' &&
+         (milestone = session[:project_data][:project_milestones].find do |m|
+            m[:Name] == 'Teammate Preference Form Deadline'
+          end)
         milestone[:Date] = ''
       end
-      if !project_data[:project_choices_enabled] && 
-        (milestone = session[:project_data][:project_milestones].find do |m| m[:Name] == 'Project Preference Form Deadline' end)
+      if !project_data[:project_choices_enabled] &&
+         (milestone = session[:project_data][:project_milestones].find do |m|
+            m[:Name] == 'Project Preference Form Deadline'
+          end)
         milestone[:Date] = ''
       end
     end
@@ -987,7 +995,7 @@ class CourseProjectController < ApplicationController
       facilitators = project.assigned_facilitators
       facilitators_count = facilitators.length
       current_facilitator_index = 0
-      if facilitators_count > 0
+      if facilitators_count.positive?
         groups_per_facilitator = (students_grouped.length.to_f / facilitators_count).ceil.to_i
       end
       students_grouped.each do |student_subarray|

@@ -50,21 +50,21 @@ class Event < ApplicationRecord
       # elsif user.is_student? && !issue.event_responses.empty? && issue.event_responses.last.staff_id.present?
 
       true
-    else  
+    else
       false
     end
   end
 
   def self.chat_notification?(user, group)
-    if !group.nil?
-      group_chat_messages = group.events.where(event_type: :chat)
-      most_recent_messager = group_chat_messages.last.student_id
+    return if group.nil?
 
-      if !most_recent_messager.nil? && most_recent_messager != user.student.id
-        true
-      else
-        false
-      end
+    group_chat_messages = group.events.where(event_type: :chat)
+    most_recent_messager = group_chat_messages.last.student_id
+
+    if !most_recent_messager.nil? && most_recent_messager != user.student.id
+      true
+    else
+      false
     end
   end
 
