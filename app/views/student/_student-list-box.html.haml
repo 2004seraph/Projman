@@ -1,6 +1,5 @@
 -# This file is a part of Projman, a group project orchestrator and management system,
 -# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
-
 = render 'components/accordion/card', title: title, additional_classes: 'students-on-module-container', id: student_list_box_id do
   .d-flex
     .justify-content-start
@@ -12,7 +11,7 @@
         %i.bi.bi-trash-fill
         Remove
       %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal",
-      "data-bs-target": "#addStudentsModal"}
+      "data-bs-target": "#addStudentsModal", onclick: dumbass_cmd(student_list_box_id)}
         %i.bi.bi-plus
         Add
   %div.overflow-auto

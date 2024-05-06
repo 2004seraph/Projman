@@ -10,21 +10,67 @@ class StudentController < ApplicationController
   helper_method :update_selection
 
   def index
-    return unless session[:current_selection].nil?
-
-    session[:current_selection] = ['current selection']
+    session[:module_data] = {
+      errors: {},
+      module_code: -1,
+      module_students: [],
+      student_selection: [],
+    }
+=begin
+    Student.find_by(email: "awillis4@sheffield.ac.uk").unenroll_module("COM2108")
+    Student.find_by(email: "sgttaseff1@sheffield.ac.uk").unenroll_module("COM2108")
+    Student.find_by(email: "jbala1@sheffield.ac.uk").unenroll_module("COM2108")
+    Student.find_by(email: "nkhan10@sheffield.ac.uk").unenroll_module("COM2108")
+    Student.find_by(email: "opickford1@sheffield.ac.uk").unenroll_module("COM2108")
+=end
   end
 
   def update_selection
-    Rails.logger.debug '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-    Rails.logger.debug @text_value
-    session[:current_selection] << 'input_text' # Need to get data from text box, and confirm there is a student not in that module.
-    Rails.logger.debug session[:current_selection]
-    # send updated current_selection back to the view.
+    @student_email = params[:module_student_name]
+    session[:module_data][:student_selection] << @student_email if @student_email.present?
+    puts session[:module_data][:student_selection]
+    if request.xhr?
+      respond_to(&:js)
+    else
+      render :index
+    end
   end
-  #     def confirm_selection
-  #         puts '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-  #     end
-  # def remove_students
-  # end
+  def search_students
+    query = params[:query]
+    @results = Student.where('email LIKE ?', "%#{query}%").limit(8).distinct
+    render json: @results.pluck(:email)
+  end
+  def confirm_selection
+    to_add = []
+    @students_added = []
+    session[:module_data][:student_selection].each do |stud|
+      unless session[:module_data][:module_students].include?(stud)
+        session[:module_data][:module_students] << stud
+        to_add << stud
+        @students_added << stud
+      end
+    end    
+    for user_email in to_add do
+      if Student.exists?(email: user_email) && session[:module_data][:module_code].is_a?(String)
+        Student.find_by(email: user_email).enroll_module(session[:module_data][:module_code])
+      end
+    end
+    if request.xhr?
+      respond_to(&:js)
+    else
+      render :index
+    end
+  end
+  def clear_selection
+    session[:module_data][:student_selection] = []
+  end
+  def clear_student
+    @student_email = params[:item_text]
+    session[:module_data][:student_selection].delete(@student_email)
+  end
+  
+  def remove_student_from_module
+  
+  end
 end
+

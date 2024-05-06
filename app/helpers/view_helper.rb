@@ -27,4 +27,8 @@ module ViewHelper
 
     CourseModule.where(staff_id: current_user.staff)
   end
+  
+  def dumbass_cmd(code)
+    session[:module_data][:module_code] = code
+  end
 end

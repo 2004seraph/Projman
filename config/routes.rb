@@ -81,6 +81,11 @@ Rails.application.routes.draw do
 
   resources :students, only: [:index], controller: :student do
     post '/update_selection' => 'student#update_selection', on: :collection
+    get '/search_students' => 'student#search_students', on: :collection
+    post '/confirm_selection' => 'student#confirm_selection', on: :collection
+    post '/clear_selection' => 'student#clear_selection', on: :collection
+    post '/clear_student' => 'student#clear_student', on: :collection
+    post '/remove_student_from_module' => 'student#remove_student_from_module', on: :collection
   end
 
   resources :issues, only: %i[index create], controller: :issue do
