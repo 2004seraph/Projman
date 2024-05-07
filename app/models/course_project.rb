@@ -25,7 +25,6 @@
 #
 
 class CourseProject < ApplicationRecord
-  # !/home/seraph/Documents/University/SoftwareHut/project/bin/rails runner
   has_many :groups, dependent: :destroy
   has_many :milestones, dependent: :destroy
   has_many :assigned_facilitators, dependent: :destroy
@@ -62,11 +61,18 @@ class CourseProject < ApplicationRecord
   end
 
   def self.lifecycle_job
+    # !/home/seraph/Documents/University/SoftwareHut/project/bin/rails runner
     # DO NOT RUN THIS IN ANY APP CODE
     # THIS IS A CRON JOB, IT IS RAN BY THE OS
 
     logger = Logger.new(Rails.root.join('log', 'course_project.lifecycle_job.log'))
     logger.debug("--- LIFECYCLE PASS")
+
+    if !DatabaseHelper.database_exists?
+      logger.debug("Database is not present, suspending job run")
+      Sentry.capture_message('Database is not present, suspending job run', level: :warn)
+      return false
+    end
 
     CourseProject.where.not(status: [:draft, :completed, :archived]).each do |c|
       logger.debug "### Processing #{c.name}"
@@ -85,20 +91,29 @@ class CourseProject < ApplicationRecord
         if c.teammate_preference_deadline
           if c.teammate_preference_deadline.deadline < DateTime.now && !c.teammate_preference_deadline.executed
             logger.debug "\tAssigning groups using team mate preferences"
+
             # make groups
             group_matrix = DatabaseHelper.preference_form_group_allocation c.team_size, c.students, c.teammate_preference_deadline
-            puts group_matrix
             group_matrix.each_with_index do |teammate_list, index|
               g = Group.find_or_create_by({
                 name: "Team #{index + 1}",
-                # assigned_facilitator: AssignedFacilitator.find_by(
-                #   staff: Staff.find_by(email: "jhenson2@sheffield.ac.uk"),
-                #   course_project: CourseProject.find_by(name: "TurtleBot Project")),
                 course_project: c
               })
               g.students = teammate_list
               g.save
             end
+            c.reload
+
+            # assign facilitators
+            groups_per_fac = (c.groups.length.to_f / c.assigned_facilitators.length.to_f).ceil
+            facilitators = c.assigned_facilitators
+            c.groups.each_slice(groups_per_fac).with_index do |chunk, index|
+              chunk.each do |g|
+                g.assigned_facilitator = facilitators[index]
+                g.save
+              end
+            end
+            c.save
             c.reload
           end
         end
@@ -152,6 +167,7 @@ class CourseProject < ApplicationRecord
         c.reload
       end
     end
+    true
   end
 
   private

@@ -17,7 +17,7 @@ module ViewHelper
     x
   end
   def retrieve_courses
-    if current_user.staff.admin
+    if current_user.is_staff? and current_user.staff.admin
       CourseModule.all
     else
       CourseModule.where(staff_id: current_user.staff)

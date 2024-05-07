@@ -10,6 +10,14 @@ module DatabaseHelper
 
   extend self
 
+  def database_exists?
+    ActiveRecord::Base.connection
+  rescue ActiveRecord::NoDatabaseError
+    false
+  else
+    true
+  end
+
   def print_validation_errors(model_instance)
     if not model_instance.valid?
       puts "#{ERROR} #{model_instance.class.name} instance is invalid:"
