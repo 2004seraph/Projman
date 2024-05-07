@@ -72,11 +72,9 @@ class CourseProjectController < ApplicationController
       selected_team_allocation_mode: '',
       preferred_teammates: 2,
       avoided_teammates: 2,
-      project_milestones: [{ "Name": 'Project Deadline', "Date": '', "Type": 'team', "isDeadline": true, "Comment": '' },
-                           { "Name": 'Teammate Preference Form Deadline', "Date": '', "Type": 'student',
-                             "isDeadline": true, "Comment": '' },
-                           { "Name": 'Project Preference Form Deadline', "Date": '', "Type": 'team',
-                             "isDeadline": true, "Comment": '' }],
+      project_milestones: [{ "Name": 'Project Deadline', "Date": '', "Type": 'team', "system_type": "project_deadline", "Comment": '' },
+                           { "Name": 'Teammate Preference Form Deadline', "Date": '', "Type": 'student', "system_type": "teammate_preference_deadline", "Comment": '' },
+                           { "Name": 'Project Preference Form Deadline', "Date": '', "Type": 'team', "system_type": "project_preference_deadline", "Comment": '' }],
       project_facilitators: [],
 
       facilitator_selection: [],
@@ -121,33 +119,32 @@ class CourseProjectController < ApplicationController
       parsed_date = parsed_datetime.strftime('%Y-%m-%d')
       parsed_time = parsed_datetime.strftime('%H:%M')
 
-      milestone_type = milestone_data[:milestone_type]
       json_data = milestone_data[:json_data]
       milestone = {
         "Name": json_data['Name'],
         "Date": "#{parsed_date}T#{parsed_time}",
-        "Type": milestone_type,
-        "isDeadline": json_data['isDeadline'],
+        "Type": milestone_data[:milestone_type],
+        "system_type": milestone_data[:system_type],
         "Comment": json_data['Comment']
       }
       milestone['Email'] = json_data['Email'] if json_data.key?('Email')
       project_milestones_parsed << milestone
     end
     # add preference form milestones, if missing. (they arent pushed if they dont apply at the time)
-    project_deadline = project_milestones_parsed.find { |m| m[:Name] == 'Project Deadline' }[:Date]
+    project_deadline = project_milestones_parsed.find { |m| m[:system_type] == 'project_completion_deadline' }[:Date]
     team_pref_deadline = ''
     proj_pref_deadline = ''
-    if (milestone = project_milestones_parsed.find { |m| m[:Name] == 'Teammate Preference Form Deadline' })
+    if (milestone = project_milestones_parsed.find { |m| m[:system_type] == 'teammate_preference_deadline' })
       team_pref_deadline = milestone[:Date]
     else
       project_milestones_parsed << { "Name": 'Teammate Preference Form Deadline', "Date": '', "Type": 'student',
-                                     "isDeadline": true, "Comment": '' }
+                                     "system_type": 'teammate_preference_deadline', "Comment": '' }
     end
-    if (milestone = project_milestones_parsed.find { |m| m[:Name] == 'Project Preference Form Deadline' })
+    if (milestone = project_milestones_parsed.find { |m| m[:system_type] == 'project_preference_deadline' })
       proj_pref_deadline = milestone[:Date]
     else
       project_milestones_parsed << { "Name": 'Project Preference Form Deadline', "Date": '', "Type": 'team',
-                                     "isDeadline": true, "Comment": '' }
+                                     "system_type": 'project_preference_deadline', "Comment": '' }
     end
 
     session[:project_data] = {
@@ -207,8 +204,8 @@ class CourseProjectController < ApplicationController
     unless session[:project_data][:project_milestones].any? do |milestone|
              milestone[:Name] == @project_milestone_name
            end
-      session[:project_data][:project_milestones] << { "Name": @project_milestone_name, "Date": '', "Type": '',
-                                                       "isDeadline": false, "Comment": '' }
+      session[:project_data][:project_milestones] << { "Name": @project_milestone_name, "Date": '', "Type": '', 
+                                                       "system_type": nil, "Comment": '' }
       project_milestone_unique = true
     end
     if request.xhr?
@@ -378,7 +375,7 @@ class CourseProjectController < ApplicationController
         # Find the corresponding milestone in the milestones hash and update its "Date" value
         if (milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == milestone_name })
           milestone[:Date] = value
-          unless (defined?(value) && value.present?) || milestone[:isDeadline]
+          unless (defined?(value) && value.present?) || !milestone[:system_type].nil?
             err = 'Please make sure all milestones have a date'
             errors[:timings] << err unless errors[:timings].include? err
           end
@@ -392,7 +389,7 @@ class CourseProjectController < ApplicationController
 
       # Find the corresponding milestone in the milestones hash and update its "Type" value
       next unless (milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == milestone_name })
-      next if milestone[:isDeadline]
+      next if !milestone[:system_type].nil?
 
       milestone[:Type] = value
       unless defined?(value) && value.present? && Milestone.milestone_types.key?(value)
@@ -500,20 +497,8 @@ class CourseProjectController < ApplicationController
         date, time = date_time_string.split('T')
         # puts parsed_date
 
-        # check which system type of milestone this is, if it is supposed to be
-        system_type = nil
-        case milestone_data[:Name]
-        when 'Project Deadline'
-          system_type = 'project_deadline'
-        when 'Project Preference Form Deadline'
-          system_type = 'project_preference_deadline'
-        when 'Teammate Preference Form Deadline'
-          system_type = 'teammate_preference_deadline'
-        end
-
         json_data = {
           'Name' => milestone_data[:Name],
-          'isDeadline' => milestone_data[:isDeadline],
           'Comment' => milestone_data[:Comment]
         }
         json_data['Email'] = milestone_data[:Email] if milestone_data.key?(:Email)
@@ -521,7 +506,7 @@ class CourseProjectController < ApplicationController
         milestone = Milestone.new(
           json_data:,
           deadline: "#{date} #{time}",
-          system_type:,
+          system_type: milestone_data[:system_type],
           user_generated: true,
           milestone_type: milestone_data[:Type],
           course_project_id: new_project.id
@@ -530,9 +515,9 @@ class CourseProjectController < ApplicationController
         milestones << milestone
       end
 
-      milestones.each do |milestone|
-        if milestone.valid?
-          milestone.save
+      milestones.each do |m|
+        if m.valid?
+          m.save
         else
           new_project.destroy
           milestone.errors.messages.each do |attribute, messages|
@@ -705,7 +690,7 @@ class CourseProjectController < ApplicationController
         # Find the corresponding milestone in the milestones hash and update its "Date" value
         if (milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == milestone_name })
           milestone[:Date] = value
-          unless (defined?(value) && value.present?) || milestone[:isDeadline]
+          unless (defined?(value) && value.present?) || !milestone[:system_type].nil?
             err = 'Please make sure all milestones have a date'
             errors[:timings] << err unless errors[:timings].include? err
           end
@@ -719,7 +704,7 @@ class CourseProjectController < ApplicationController
 
       # Find the corresponding milestone in the milestones hash and update its "Type" value
       next unless (milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == milestone_name })
-      next if milestone[:isDeadline]
+      next unless milestone[:system_type].nil?
 
       milestone[:Type] = value
       unless defined?(value) && value.present? && Milestone.milestone_types.key?(value)
@@ -834,14 +819,14 @@ class CourseProjectController < ApplicationController
 
       existing_milestones = project.milestones.where(user_generated: true)
       # find milestones to destroy: they exist in the db but not in the edit session
-      session_milestone_names = project_data[:project_milestones].map { |milestone| milestone[:Name] }
-      milestones_to_delete = existing_milestones.reject do |milestone|
-        session_milestone_names.include?(milestone.json_data['Name'])
+      session_milestone_names = project_data[:project_milestones].map { |m| m[:Name] }
+      milestones_to_delete = existing_milestones.reject do |m|
+        session_milestone_names.include?(m.json_data['Name'])
       end
 
       # find milestones to create: they exist in the edit session but not the db
-      milestones_to_create = project_data[:project_milestones].reject do |milestone|
-        existing_milestones.pluck(:json_data).map { |json_data| json_data['Name'] }.include?(milestone[:Name])
+      milestones_to_create = project_data[:project_milestones].reject do |m|
+        existing_milestones.pluck(:json_data).map { |json_data| json_data['Name'] }.include?(m[:Name])
       end
 
       # find milestones to update: they exist in the edit session and in the db
@@ -862,7 +847,6 @@ class CourseProjectController < ApplicationController
         milestone_data = project_data[:project_milestones].find { |m| m[:Name] == milestone_name }
         milestone.json_data = {
           'Name' => milestone_name,
-          'isDeadline' => milestone_data[:isDeadline],
           'Comment' => milestone_data[:Comment]
         }
         milestone.json_data['Email'] = milestone_data[:Email] if milestone_data.key?(:Email)
@@ -894,20 +878,8 @@ class CourseProjectController < ApplicationController
 
         date, time = date_time_string.split('T')
 
-        # check which system type of milestone this is, if it is supposed to be
-        system_type = nil
-        case milestone_data[:Name]
-        when 'Project Deadline'
-          system_type = 'project_deadline'
-        when 'Project Preference Form Deadline'
-          system_type = 'project_preference_deadline'
-        when 'Teammate Preference Form Deadline'
-          system_type = 'teammate_preference_deadline'
-        end
-
         json_data = {
           'Name' => milestone_data[:Name],
-          'isDeadline' => milestone_data[:isDeadline],
           'Comment' => milestone_data[:Comment]
         }
         json_data['Email'] = milestone_data[:Email] if milestone_data.key?(:Email)
@@ -915,7 +887,7 @@ class CourseProjectController < ApplicationController
         milestone = Milestone.new(
           json_data:,
           deadline: "#{date} #{time}",
-          system_type:,
+          system_type: milestone_data[:system_type],
           user_generated: true,
           milestone_type: milestone_data[:Type],
           course_project_id: project.id
@@ -926,9 +898,9 @@ class CourseProjectController < ApplicationController
 
       milestones = milestones_to_update + create_milestones_models
 
-      milestones.each do |milestone|
-        if milestone.valid?
-          milestone.save
+      milestones.each do |m|
+        if m.valid?
+          m.save
         else
           milestone.errors.messages.each do |attribute, messages|
             messages.each do |message|

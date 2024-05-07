@@ -168,7 +168,7 @@
       %h3.fs-5.mb-2 Milestones
       %ul.list-group.list-group-flush.mb-2.overflow-hidden#project-milestones-list
         - project_data[:project_milestones].each do |milestone|
-          - next if milestone[:isDeadline]
+          - next if !milestone[:system_type].nil?
           - milestone_name = milestone[:Name]
           - milestone_date = milestone[:Date]
           - selected_type = milestone[:Type]

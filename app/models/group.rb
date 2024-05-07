@@ -21,7 +21,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (assigned_facilitator_id => assigned_facilitators.id)
+#  fk_rails_...  (assigned_facilitator_id => assigned_facilitators.id) ON DELETE => nullify
 #  fk_rails_...  (course_project_id => course_projects.id)
 #  fk_rails_...  (subproject_id => subprojects.id)
 #

@@ -246,7 +246,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
   add_foreign_key "course_projects", "course_modules"
   add_foreign_key "event_responses", "events"
   add_foreign_key "events", "groups"
-  add_foreign_key "groups", "assigned_facilitators"
+  add_foreign_key "groups", "assigned_facilitators", on_delete: :nullify
   add_foreign_key "groups", "course_projects"
   add_foreign_key "groups", "subprojects"
   add_foreign_key "groups_students", "groups", on_delete: :cascade
