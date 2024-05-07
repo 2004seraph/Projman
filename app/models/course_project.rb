@@ -43,8 +43,8 @@ class CourseProject < ApplicationRecord
 
   enum :status, {
     draft: 'draft',
-    student_preference: 'student_preference',
-    team_preference: 'team_preference',
+    preparation: 'preparation',
+    # pseudo stage: review
     live: 'live',
     completed: 'completed',
     archived: 'archived'

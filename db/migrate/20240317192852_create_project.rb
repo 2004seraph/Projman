@@ -8,8 +8,7 @@ class CreateProject < ActiveRecord::Migration[7.0]
     create_enum :project_status,
                 %w[
                   draft
-                  awaiting_project_preference
-                  awaiting_team_project_allocation
+                  preparation
                   live
                   completed
                   archived
@@ -23,7 +22,6 @@ class CreateProject < ActiveRecord::Migration[7.0]
 
     create_enum :project_choice_allocation,
                 %w[
-                  random
                   single_preference_submission
                   team_average_preference
                 ]
