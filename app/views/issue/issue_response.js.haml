@@ -24,6 +24,14 @@
     elementToScrollTo.scrollIntoView();
   }
 
+  var issueBoxContainer = $('#issue-box-container-#{params["issue_id"]}');
+
+  if (issueBoxContainer.length) {
+    if (issueBoxContainer.get(0).scrollHeight > issueBoxContainer.innerHeight()) {
+      issueBoxContainer.scrollTop(issueBoxContainer.get(0).scrollHeight);
+    }
+  };
+
   var openIssueSection = $('#open-issues-section');
   var resolvedIssueSection = $('#resolved-issues-section');
   var openToggleStatus = $('#flexSwitchCheckOpen').prop('checked');
