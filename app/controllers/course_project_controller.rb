@@ -1200,8 +1200,13 @@ class CourseProjectController < ApplicationController
       timestamp: Time.zone.now
     }
 
-    @chat_message = Event.new(event_type: :chat, json_data:, group_id: @current_group.id,
-                              student_id: current_user.student.id)
+    if current_user.is_staff?
+      @chat_message = Event.new(event_type: :chat, json_data:, group_id: @current_group.id,
+                                staff_id: current_user.staff.id)
+    elsif current_user.is_student?
+      @chat_message = Event.new(event_type: :chat, json_data:, group_id: @current_group.id,
+        student_id: current_user.student.id)
+    end
 
     return unless @chat_message.save
     return unless request.xhr?

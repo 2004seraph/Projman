@@ -81,16 +81,16 @@ class User < ApplicationRecord
   end
 
   def project_notification?
-    if is_student?
+    if is_staff?
+      return false
+    elsif is_student?
       projects = student.course_projects
 
       return projects.any? do |project|
                project.project_notification?(self, student.groups.find_by(course_project_id: project.id))
              end
-    else
-      staff.course_projects
     end
 
-    false
+    return false
   end
 end

@@ -76,6 +76,10 @@ class FacilitatorController < ApplicationController
     end
 
     @progress_forms_todo = @progress_forms - @progress_forms_submitted
+
+    @chat_messages = @current_group.events.where(event_type: :chat).order(created_at: :asc) unless @current_group.nil?
+
+    logger.debug "!!!!!!!!!!!!!!!!! #{@chat_messages}"
   end
 
   def update_progress_form_response

@@ -2,7 +2,12 @@
 -# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 .separating-section
-  %h2.fs-3 Personal Information
+  .d-flex.justify-content-between
+    %h2.fs-3 Personal Information
+
+    %button.btn.btn-primary.btn-m{type: "button", "data-bs-toggle": "modal",
+       "data-bs-target": "#changeGenderModal"}
+      Request Title Change
 
   %hr.divider
 
@@ -21,9 +26,6 @@
     %p
     %strong.m-0.fs-5.fw-medium Title:
     %i.fs-5= current_user.student.title
-    %button.btn.btn-primary.btn-m.m-2{type: "button", "data-bs-toggle": "modal",
-       "data-bs-target": "#changeGenderModal"}
-      Request Title Change
 
   -# %hr.divider
 
