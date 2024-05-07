@@ -5,7 +5,7 @@
 - unique_id = "accordion-card-" + ran_num
 - unique_id_collapse = "accordion-collapse-card-" + ran_num
 
-.card.mb-2.accordion-element
+.card.mb-2.accordion-element.project-teams-team-container{id: "project_team_container_#{team.id}"}
   %a.card-header.d-flex.justify-content-between.align-items-center{
   "data-bs-toggle" => "collapse",
   href: "##{unique_id_collapse}",
@@ -18,18 +18,24 @@
         %tbody
           %tr.d-flex
             %td{ style: "flex: 1;" }
-              .fs-5{ class: "m-0 p-0" } #{team.name}
+              .fs-5.m-0.p-0 #{team.name}
             %td.d-flex.gap-2{ style: "flex: 3;" }
-              .fs-5{ class: "m-0 p-0" } Facilitator: #{team.assigned_facilitator.nil? ? "Not assigned" : team.assigned_facilitator.get_email} #{ button_tag '', type: 'button', class: "btn btn-light fs-8 bi-pencil-square", style: "height: auto;" }
+              .fs-5.m-0.p-0.facilitator-text
+                Facilitator: #{team.assigned_facilitator.nil? ? "Not assigned" : team.assigned_facilitator.get_email} 
 
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id_collapse}
     .card-body.list-card{id: unique_id}
+      %input{ type: "hidden", name: "team_id", value: "#{team.id}" }
       %div.overflow-auto
+        = button_tag '', type: 'button', class: "btn btn-light fs-6 edit-facilitator-btn", style: "height: auto;" do
+          %i.bi.bi-pencil-square
+          Edit Facilitator
+
         .d-flex.justify-content-between
           -# %h3.fs-6 Group Members
 
-        %table.table
+        %table.table.selectable-row-container
           %thead
             %tr
               %th{scope: "col"}
@@ -38,7 +44,7 @@
               %th{scope: "col"} UCard Number
             %tbody
               - team.students.each do |student|
-                %tr
+                %tr.selectable-row
                   %td
                     %input.form-check-input{type: "checkbox", value: ""}
                   %td= student.preferred_name
@@ -47,4 +53,4 @@
 
         = button_tag 'Add Students +', type: 'button', class: "btn btn-primary", style: "height: auto;"
 
-        = button_tag 'Remove Selected Students -', type: 'button', class: "btn btn-secondary fs-8", style: "height: auto;"
+        = button_tag 'Remove Selected Students', type: 'button', class: "btn btn-secondary fs-8", style: "height: auto;"

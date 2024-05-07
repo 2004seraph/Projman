@@ -18,6 +18,7 @@ import '../scripts/custom-functions';
 
 import '../scripts/project/project_creation_control';
 import '../scripts/student/module_students_control';
+import '../scripts/teams/teams_control';
 
 window.$ = $
 

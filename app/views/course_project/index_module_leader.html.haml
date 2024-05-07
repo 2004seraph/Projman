@@ -28,7 +28,7 @@
             %i.bi.bi-circle-fill.fill-green
             Live
         - live_projects.each do |project|
-            = link_to teams_project_path(project.id), class: "project-link" do
+            = link_to project_teams_path(project.id), class: "project-link" do
                 .project-button
                     %h3
                         #{project.course_module.code} #{project.course_module.name} - #{project.name}
@@ -77,7 +77,7 @@
             %i.bi.bi-pencil-fill
             Drafting
         - draft_projects.each do |project|
-            = link_to teams_project_path(project.id), class: "project-link" do
+            = link_to project_teams_path(project.id), class: "project-link" do
                 .project-button
                     %h3
                         #{project.course_module.code} #{project.course_module.name} - #{project.name}

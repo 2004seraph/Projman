@@ -16,7 +16,6 @@ Rails.application.routes.draw do
   resources :projects, controller: :course_project do
     resource :milestone_responses, only: [:create], controller: :milestone_response
 
-    get '/teams', to: 'course_project#teams', on: :member
     post '/new', to: 'course_project#create', on: :collection
     post '/edit', to: 'course_project#update', on: :member
 
@@ -41,6 +40,12 @@ Rails.application.routes.draw do
     get 'search_student_name', on: :collection
 
     post ':group_id/send-chat-message', to: 'course_project#send_chat_message', on: :collection
+
+    resources :teams, controller: :group do
+      get '/teams', to: 'group#index', on: :member
+      post 'facilitator_emails', on: :member
+      post 'set_facilitator', on: :member
+    end
 
     resources :progress_form, controller: :progress_form do
       post 'add_question' => 'progress_form#add_question', on: :collection

@@ -6,16 +6,58 @@ import 'bootstrap';
 
 $(function() {
 
+    var projectPrefMinDate = ""
+    var teamPrefMinDate = ""
+
+    var projectPrefDateInput = $('#project-preference-form-deadline-row #project-preference-form-deadline')
+    var teamPrefDateInput = $('#teammate-preference-form-deadline-row #teammate-preference-form-deadline')
+    if (projectPrefDateInput.prop('min') !== undefined) {
+        projectPrefMinDate = projectPrefDateInput.prop('min');
+    }
+    if (teamPrefDateInput.prop('min') !== undefined) {
+        teamPrefMinDate = teamPrefDateInput.prop('min');
+    }
+
     function runChecks() {
 
         var projectChoicesChecked = $('#project-choices-enable').is(':checked');
         var teamAllocationMethodValue = $('#team-allocation-method').val();
 
+        var projectPrefDateInput = $('#project-preference-form-deadline-row #project-preference-form-deadline')
+        var teamPrefDateInput = $('#teammate-preference-form-deadline-row #teammate-preference-form-deadline')
+
+        if(!projectChoicesChecked){        
+            // Min attribute exists, get value and then delete it
+            if (projectPrefDateInput.prop('min') !== undefined) {
+                projectPrefMinDate = projectPrefDateInput.prop('min');
+                projectPrefDateInput.removeAttr('min');
+            }
+        }
+        else{
+            // set or add min attribute to the min value
+            projectPrefDateInput.prop('min', projectPrefMinDate);
+        }
+
+        if(teamAllocationMethodValue !== "preference_form_based"){
+            //Min attribute exists, get value and then delete it
+            if (teamPrefDateInput.prop('min') !== undefined) {
+                teamPrefMinDate = teamPrefDateInput.prop('min');
+                teamPrefDateInput.removeAttr('min');
+            }
+        }
+        else{
+            // set or add min attribute to the min value
+            teamPrefDateInput.prop('min', teamPrefMinDate);
+        }
+
         $('#project-choices .card-body').toggleClass('display-none', !projectChoicesChecked);
         $('#project-preference-form-deadline-row').toggleClass('display-none', !projectChoicesChecked);
+        
 
         $('#team-preference-form-settings').toggleClass('display-none', (teamAllocationMethodValue !== "preference_form_based"));
         $('#teammate-preference-form-deadline-row').toggleClass('display-none', (teamAllocationMethodValue !== "preference_form_based"));
+
+
     }
 
     runChecks();

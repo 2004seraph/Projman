@@ -74,6 +74,18 @@ class CourseProject < ApplicationRecord
     end
   end
 
+  def facilitators
+    result = []
+    assigned_facilitators.each do |f|
+      if !f.staff_id.nil?
+        result << Staff.find(f.staff_id)
+      elsif !f.student_id.nil?
+        result << Student.find(f.student_id)
+      end
+    end
+    result
+  end
+
   def self.lifecycle_job
     # DO NOT RUN THIS IN ANY APP CODE
     # THIS IS A CRON JOB, IT IS RAN BY THE OS

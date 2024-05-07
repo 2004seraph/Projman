@@ -382,13 +382,6 @@ class CourseProjectController < ApplicationController
             err = 'Please make sure all milestones have a date'
             errors[:timings] << err unless errors[:timings].include? err
           end
-          if defined?(value) && value.present?
-            datetime = DateTime.parse(value)
-            if datetime < DateTime.now
-              err = 'Milestone dates cannot be set to earlier than the current date'
-              errors[:timings] << err unless errors[:timings].include? err
-            end
-          end
         end
       end
 
@@ -404,6 +397,32 @@ class CourseProjectController < ApplicationController
       milestone[:Type] = value
       unless defined?(value) && value.present? && Milestone.milestone_types.key?(value)
         err = 'Please make sure all milestone types are valid'
+        errors[:timings] << err unless errors[:timings].include? err
+      end
+    end
+
+    # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
+    if project_data[:selected_team_allocation_mode] == 'random_team_allocation' &&
+        (milestone = session[:project_data][:project_milestones].find do |m|
+          m[:Name] == 'Teammate Preference Form Deadline'
+        end)
+      milestone[:Date] = ''
+    end
+    if !project_data[:project_choices_enabled] &&
+        (milestone = session[:project_data][:project_milestones].find do |m|
+          m[:Name] == 'Project Preference Form Deadline'
+        end)
+      milestone[:Date] = ''
+    end
+
+    # Check if any milestone dates are set to before the minimum value
+    session[:project_data][:project_milestones].each do |m|
+      date = m[:Date]
+      next unless defined?(date) && date.present?
+
+      datetime = DateTime.parse(date)
+      if datetime < DateTime.now
+        err = 'Milestone dates cannot be set to earlier than the current date'
         errors[:timings] << err unless errors[:timings].include? err
       end
     end
@@ -467,22 +486,6 @@ class CourseProjectController < ApplicationController
       end
     end
     no_errors = errors.all? { |_, v| v.empty? }
-
-    # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
-    if no_errors
-      if project_data[:selected_team_allocation_mode] == 'random_team_allocation' &&
-         (milestone = session[:project_data][:project_milestones].find do |m|
-            m[:Name] == 'Teammate Preference Form Deadline'
-          end)
-        milestone[:Date] = ''
-      end
-      if !project_data[:project_choices_enabled] &&
-         (milestone = session[:project_data][:project_milestones].find do |m|
-            m[:Name] == 'Project Preference Form Deadline'
-          end)
-        milestone[:Date] = ''
-      end
-    end
 
     # Creating associated milestones
     if no_errors
@@ -706,14 +709,6 @@ class CourseProjectController < ApplicationController
             err = 'Please make sure all milestones have a date'
             errors[:timings] << err unless errors[:timings].include? err
           end
-          if defined?(value) && value.present?
-            project_creation_date = DateTime.parse(project.created_at.to_s)
-            datetime = DateTime.parse(value)
-            if datetime < project_creation_date
-              err = "Milestone dates cannot be set to earlier than the project creation date: #{project_creation_date.readable_inspect.split('+').first}"
-              errors[:timings] << err unless errors[:timings].include? err
-            end
-          end
         end
       end
 
@@ -729,6 +724,33 @@ class CourseProjectController < ApplicationController
       milestone[:Type] = value
       unless defined?(value) && value.present? && Milestone.milestone_types.key?(value)
         err = 'Please make sure all milestone types are valid'
+        errors[:timings] << err unless errors[:timings].include? err
+      end
+    end
+
+    # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
+    if project_data[:selected_team_allocation_mode] == 'random_team_allocation' &&
+        (milestone = session[:project_data][:project_milestones].find do |m|
+          m[:Name] == 'Teammate Preference Form Deadline'
+        end)
+      milestone[:Date] = ''
+    end
+    if !project_data[:project_choices_enabled] &&
+        (milestone = session[:project_data][:project_milestones].find do |m|
+          m[:Name] == 'Project Preference Form Deadline'
+        end)
+      milestone[:Date] = ''
+    end
+
+    # Check if any milestone dates are set to before the minimum value
+    session[:project_data][:project_milestones].each do |m|
+      date = m[:Date]
+      next unless defined?(date) && date.present?
+
+      project_creation_date = DateTime.parse(project.created_at.to_s)
+      datetime = DateTime.parse(date)
+      if datetime < project_creation_date
+        err = "Milestone dates cannot be set to earlier than the project creation date: #{project_creation_date.readable_inspect.split('+').first}"
         errors[:timings] << err unless errors[:timings].include? err
       end
     end
@@ -802,22 +824,6 @@ class CourseProjectController < ApplicationController
       end
     end
     no_errors = errors.all? { |_, v| v.empty? }
-
-    # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
-    if no_errors
-      if project_data[:selected_team_allocation_mode] == 'random_team_allocation' &&
-         (milestone = session[:project_data][:project_milestones].find do |m|
-            m[:Name] == 'Teammate Preference Form Deadline'
-          end)
-        milestone[:Date] = ''
-      end
-      if !project_data[:project_choices_enabled] &&
-         (milestone = session[:project_data][:project_milestones].find do |m|
-            m[:Name] == 'Project Preference Form Deadline'
-          end)
-        milestone[:Date] = ''
-      end
-    end
 
     # create any system milestones if they are needed and missing
     # Update existing system milestones
@@ -1174,11 +1180,11 @@ class CourseProjectController < ApplicationController
   end
 
   def teams
-    @current_project = CourseProject.find(params[:id])
-    @teams = []
-    return if @current_project.nil?
+    # @current_project = CourseProject.find(params[:id])
+    # @teams = []
+    # return if @current_project.nil?
 
-    @teams = @current_project.groups
+    # @teams = @current_project.groups
   end
 
   def send_chat_message

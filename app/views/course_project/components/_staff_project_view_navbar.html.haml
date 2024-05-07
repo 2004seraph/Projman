@@ -15,8 +15,8 @@
 
   %nav.staff-project-view-navbar.mb-3
     .navbar-nav.flex-column
-      %li.nav-item.side-nav-bar{ class: request.path == teams_project_path(project_id) ? 'active' : '' }
-        = link_to teams_project_path(project_id), class: 'btn btn-light' do
+      %li.nav-item.side-nav-bar{ class: request.path == project_teams_path(project_id) ? 'active' : '' }
+        = link_to project_teams_path(project_id), class: 'btn btn-light' do
           Teams
       %li.nav-item.side-nav-bar{ class: request.path == project_progress_form_index_path(project_id) ? 'active' : '' }
         = link_to project_progress_form_index_path(project_id), class: 'btn btn-light' do

@@ -70,6 +70,9 @@ class Ability
     # a staff can only view the modules they lead, not change them.
     can [:read], CourseModule, staff_id: user.staff.id
 
+    # a staff can manipulate teams under their module(groups)
+    can %i[create read update delete facilitator_emails set_facilitator], Group, course_module: { staff_id: user.staff.id }
+
     # a staff can create projects
     # a staff can only view and edit projects they lead.
     can %i[
