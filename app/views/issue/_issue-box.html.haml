@@ -34,24 +34,27 @@
           .fs-6 #{issue.json_data['content']}
         %hr.divider
         // Renders all the issue responses
-        -issue_responses.each do |response|
-          .d-flex.align-items-center.justify-content-between.pb-2
-            - if (current_user.is_staff? && response.staff_id == current_user.staff.id) || (current_user.is_student? && response.student_id == current_user.student.id)
-              .d-flex.w-100.justify-content-end
-                .w-75
-                  .issue-text.border.p-2{ style: "background-color: lavender;" }
-                    .fs-6 #{response.json_data['content']}
-                  .d-flex.align-items-center.justify-content-between.pb-2
-                    .fw-light{ style: "font-size: 14px;" } From: #{response.json_data['author']}
-                    .fw-light{ style: "font-size: 14px;" } #{DateTime.parse(response.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
-            - else
-              .d-flex.w-100.justify-content-start
-                .w-75
-                  .issue-text.border.p-2{ style: "background-color: #f0f0f0;" }
-                    .fs-6 #{response.json_data['content']}
-                  .d-flex.align-items-center.justify-content-between.pb-2
-                    .fw-light{ style: "font-size: 14px;" } From: #{response.json_data['author']}
-                    .fw-light{ style: "font-size: 14px;" } #{DateTime.parse(response.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
+        .container.issue-box-container{ id: "issue-box-container-#{issue.id}"}
+          .row
+            .scrollable{ id: "scrollable-#{issue.id}"}
+              -issue_responses.each do |response|
+                .d-flex.align-items-center.justify-content-between.pb-1
+                  - if (current_user.is_staff? && response.staff_id == current_user.staff.id) || (current_user.is_student? && response.student_id == current_user.student.id)
+                    .d-flex.w-100.justify-content-end
+                      .w-75
+                        .issue-text.border.p-2{ style: "background-color: lavender; border-radius: 10px;" }
+                          .fs-6 #{response.json_data['content']}
+                        .d-flex.align-items-center.justify-content-between.pb-2
+                          .fw-light{ style: "font-size: 14px; padding-left: 6px;" } From: #{response.json_data['author']}
+                          .fw-light{ style: "font-size: 14px; padding-right: 4px;" } #{DateTime.parse(response.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
+                  - else
+                    .d-flex.w-100.justify-content-start
+                      .w-75
+                        .issue-text.border.p-2{ style: "background-color: #f0f0f0; border-radius: 10px;" }
+                          .fs-6 #{response.json_data['content']}
+                        .d-flex.align-items-center.justify-content-between.pb-2
+                          .fw-light{ style: "font-size: 14px; padding-left: 6px;" } From: #{response.json_data['author']}
+                          .fw-light{ style: "font-size: 14px; padding-right: 4px;" } #{DateTime.parse(response.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
         - if !issue.completed
           %hr.divider
           // Form for sending a response to the issue
@@ -105,3 +108,23 @@
               %input{ type: "hidden", name: "selected_project", value: "#{@selected_project}"}
               %input{ type: "hidden", name: "selected_order", value: "#{@selected_order}"}
               = form.submit("Confirm", class: "btn btn-primary", "data-bs-dismiss": "modal")
+
+
+:javascript
+  $(document).ready(function() {
+    $('#issue-card-#{issue.id}').on('shown.bs.collapse', '.collapse', function () {
+      var issueBoxContainer = $('#issue-box-container-#{issue.id}');
+
+      var elementToScrollTo = $('#hidden-partial-container-#{issue.id}');
+
+      if (issueBoxContainer.length) {
+        if (issueBoxContainer.get(0).scrollHeight > issueBoxContainer.innerHeight()) {
+          issueBoxContainer.scrollTop(issueBoxContainer.get(0).scrollHeight);
+        }
+      };
+    });
+  });
+  
+-# elementToScrollTo.get(0).scrollIntoView();
+
+

@@ -37,7 +37,7 @@
                           .issue-text.border.p-2{ style: "background-color: lavender; border-radius: 10px;" }
                             .fs-6 #{chat_message.json_data['content']}
                           .d-flex.align-items-center.justify-content-between.pb-2
-                            .fw-light{ style: "font-size: 14px; padding-left: 4px;" } From: #{chat_message.json_data['author']}
+                            .fw-light{ style: "font-size: 14px; padding-left: 6px;" } From: #{chat_message.json_data['author']}
                             .fw-light{ style: "font-size: 14px; padding-right: 4px;" } #{DateTime.parse(chat_message.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
                     - elsif (!chat_message.staff_id.nil? && chat_message.staff_id == @current_group.assigned_facilitator.staff_id) || (!chat_message.student_id.nil? && chat_message.student_id == @current_group.assigned_facilitator.student_id)
                       .d-flex.w-100.justify-content-start
@@ -45,7 +45,9 @@
                           .issue-text.border.p-2{ style: "background-color: #FFFFE0; border-radius: 10px;" }
                             .fs-6 #{chat_message.json_data['content']}
                           .d-flex.align-items-center.justify-content-between.pb-2
-                            .fw-light{ style: "font-size: 14px; padding-left: 4px;" } From: #{chat_message.json_data['author']} [Facilitator]
+                            .d-flex
+                              .fw-light{ style: "font-size: 14px; padding-left: 6px;" } From: #{chat_message.json_data['author']}
+                              .fw-bold{ style: "font-size: 14px; padding-left: 6px;" } [Facilitator]
                             .fw-light{ style: "font-size: 14px; padding-right: 4px;" } #{DateTime.parse(chat_message.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
                     - else
                       .d-flex.w-100.justify-content-start
@@ -53,7 +55,7 @@
                           .issue-text.border.p-2{ style: "background-color: #f0f0f0; border-radius: 10px;" }
                             .fs-6 #{chat_message.json_data['content']}
                           .d-flex.align-items-center.justify-content-between.pb-2
-                            .fw-light{ style: "font-size: 14px; padding-left: 4px;" } From: #{chat_message.json_data['author']}
+                            .fw-light{ style: "font-size: 14px; padding-left: 6px;" } From: #{chat_message.json_data['author']}
                             .fw-light{ style: "font-size: 14px; padding-right: 4px;" } #{DateTime.parse(chat_message.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
 
         %hr.divider
@@ -76,18 +78,15 @@
       var chatBoxContainer = $('#chat-box-container');
       var chatBoxSection = chatBoxContainer.closest('.card');
 
-      // Check if chatBoxContainer and chatBoxSection are defined and not null
-      if (chatBoxContainer.length && chatBoxSection.length) {
-        // Check if chatBoxContainer is scrollable
+      if (chatBoxContainer.length) {
         if (chatBoxContainer.get(0).scrollHeight > chatBoxContainer.innerHeight()) {
           chatBoxContainer.scrollTop(chatBoxContainer.get(0).scrollHeight);
         }
-
-        // Check if chatBoxSection is scrollable
-        if (chatBoxSection.get(0).scrollHeight > chatBoxSection.innerHeight()) {
-          chatBoxSection.get(0).scrollIntoView();
-        }
-      }
+      };
     });
   });
+
+-# if (chatBoxSection.get(0).scrollHeight > chatBoxSection.innerHeight()) {
+-#       chatBoxSection.get(0).scrollIntoView();
+-# }
 
