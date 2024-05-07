@@ -1,3 +1,5 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 -# Load all Projects that are tied to the user
 -# Have a different display of the projects depending on role:
@@ -26,7 +28,7 @@
             %i.bi.bi-circle-fill.fill-green
             Live
         - live_projects.each do |project|
-            = link_to teams_project_path(project.id), class: "project-link" do
+            = link_to project_teams_path(project.id), class: "project-link" do
                 .project-button
                     %h3
                         #{project.course_module.code} #{project.course_module.name} - #{project.name}
@@ -52,7 +54,7 @@
 -#         %hr.divider
 
 
--# This section holds projects where they are in student/team preference, but responses 
+-# This section holds projects where they are in student/team preference, but responses
 
 -# - awaiting_projects = @projects.select { |project| project.status == 'student_preference' || project.status == 'team_preference'}
 -# - awaiting_projects.present?
@@ -75,7 +77,7 @@
             %i.bi.bi-pencil-fill
             Drafting
         - draft_projects.each do |project|
-            = link_to teams_project_path(project.id), class: "project-link" do
+            = link_to project_teams_path(project.id), class: "project-link" do
                 .project-button
                     %h3
                         #{project.course_module.code} #{project.course_module.name} - #{project.name}

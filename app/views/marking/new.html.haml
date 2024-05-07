@@ -1,22 +1,24 @@
-%h1= @mark_scheme_project.name + " - " + @section["title"]
-%hr.divider
-%h3= "Description"
-%pre{style: "font-family: inherit;"}= @section["description"]
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
+%h2.fs-3= @mark_scheme_project.name + " - " + @section["title"]
+%hr.divider
+%h2.fs-4= "Description"
+%pre{style: "font-family: inherit;"}= @section["description"]
 
 %hr.divider
 - max_marks = @section["max_marks"]
 
-%table.table.table-bordered#markingTable
+%table.table.table-bordered.table-hover#markingTable
   %thead
     %tr
-      %th Team
-      %th= "Marks Given (" + @section["max_marks"].to_s + " Available)"
-      %th Reasoning
+      %th.bg-light Team
+      %th.bg-light= "Marks Given (" + @section["max_marks"].to_s + " Available)"
+      %th.bg-light Reasoning
   %tbody
     - @assigned_teams.each do |team|
       %tr
-        - response = @team_marks.select{|tm| tm.json_data["group_id"] == team.id}.first
+        - response = @team_marks.select do |tm| tm.json_data["group_id"] == team.id end.first
         - unless response.nil?
           - data = response.json_data["sections"][@section["title"]]
           - unless data.nil?
@@ -43,14 +45,14 @@
   document.addEventListener('DOMContentLoaded', function() {
     var cells = document.querySelectorAll('#markingTable .editable.onlynumeric');
     let markErrorModal = document.getElementById("markErrorModal");
-    let confirmSaveModal = document.getElementById("confirmSaveModal");
+
     let MAX_MARKS_TEMP = #{max_marks};
 
     cells.forEach(function(cell) {
       ["keypress", "keyup"].forEach(function(e) {
         cell.addEventListener(e, function() {
           var keyValue = String.fromCharCode(event.keyCode || event.which);
-          
+
           if (/\D/.test(keyValue)) {
             event.preventDefault();
           }
@@ -79,8 +81,6 @@
       // Validate marks on the client side as well as server side for better error display.
       let dataInvalid = false;
 
-      // TODO: I think we should be submitting a form here, then the controller will validate it all?
-      
       cells.forEach(function(cell) {
         if (Number(cell.innerHTML) > MAX_MARKS_TEMP) {
           cell.classList.add("bg-danger");
@@ -90,7 +90,7 @@
           cell.classList.remove("bg-danger");
         }
       });
-  
+
       if (dataInvalid) {
         $("#markErrorModal").modal("show");
         return;
@@ -98,23 +98,23 @@
 
       // Read marking from inputs
       marking = {}
-      document.querySelectorAll(".marks-input").forEach(function(element) { 
+      document.querySelectorAll(".marks-input").forEach(function(element) {
         id = element.id.replace("marks-input-", "");
-        
+
         marks = element.innerHTML;
-        
+
         reason = document.getElementById(`reason-input-${id}`).innerHTML;
 
         marking[id] = [marks, reason];
       });
 
-      fetch("/facilitators/update_marking", {
+      fetch("/markings/save", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           marking: marking
         })
       })
@@ -139,10 +139,15 @@
 
     $("#cancelButton").on("click", function() {
       // To cancel the changes, just redirect back.
-      // TODO: This could be done in the controller really...
-      window.location.href = "#{facilitators_path}";
+      window.location.href = "#{markings_path}";
     });
   });
 
-%button.btn.btn-success#saveButton Save
-%button.btn.btn-danger#cancelButton Cancel
+
+%button.btn.btn-success.mb-3#saveButton
+  %i.bi.bi-floppy
+  Save
+
+%button.btn.btn-danger.mb-3#cancelButton
+  %i.bi.bi-trash
+  Discard

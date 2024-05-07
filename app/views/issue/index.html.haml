@@ -1,15 +1,21 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 .seperating-section
   %h2.fs-3
     Issues
 
   %hr.divider
 
+  // Handles the dropdown menu selections and toggles to update what is rendered
+  //  on the page.
   = form_with(url: "/issues/update-selection", method: :post, local: false) do |form|
     .d-flex.flex-column.pb-2
       .row.g-3.align-items-center
         .col-auto
+          // Project Selection dropdown menu
           %i.bi.bi-funnel-fill
-          Filter By: 
+          Filter By:
           .dropdown.me-3
             %button.btn.btn-primary{ type: "button", id: "dropdownMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
               Projects:
@@ -23,8 +29,9 @@
                 %button.dropdown-item{ type: "submit", value: user_project.name }
                   = user_project.name
         .col-auto
+          // Issues Order dropdown Menu
           %i.bi.bi-sort-down
-          Order By: 
+          Order By:
           .dropdown.me-3
             %button.btn.btn-primary{ type: "button", id: "dropdownOrderMenuButton", "data-bs-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }
               Order:
@@ -35,28 +42,31 @@
                 Created At
               %button.dropdown-item{ type: "submit", value: "Recent Activity"}
                 Recent Activity
-      
-        = hidden_field_tag 'selected_project', nil, id: 'selectedProjectField'
-        = hidden_field_tag 'selected_order', nil, id: 'selectedOrderField'
 
         .col-auto
+          // Show open issues toggle
           .form-check.form-switch.form-check-reverse.me-3
             %input.form-check-input{ type: "checkbox", role: "switch",
-            id: "flexSwitchCheckOpen", checked:true, onchange: "toggleSection('open-issues-section')"}
+            id: "flexSwitchCheckOpen", checked: true, onchange: "toggleSection('open-issues-section', 'flexSwitchCheckOpen')"}
             %label.form-check-label{ for: "flexSwitchCheckOpen" }
               Show Open
         .col-auto
+          // Show resolved issues toggle
           .form-check.form-switch.form-check-reverse.me-3
             %input.form-check-input{ type: "checkbox", role: "switch",
-            id: "flexSwitchCheckResolved", checked:true, onchange: "toggleSection('resolved-issues-section')"}
+            id: "flexSwitchCheckResolved", checked: true, onchange: "toggleSection('resolved-issues-section', 'flexSwitchCheckResolved')"}
             %label.form-check-label{ for: "flexSwitchCheckResolved" }
               Show Resolved
+
+        = hidden_field_tag 'selected_project', nil, id: 'selectedProjectField'
+        = hidden_field_tag 'selected_order', nil, id: 'selectedOrderField'
 
 
   %hr.divider
 
   .accordion-section#issues-section{style: "display: none;"}
 
+// JavaScript for handling dropdown menus, toggles and scrolling to correct issue
 :javascript
   document.addEventListener("DOMContentLoaded", function() {
     var currentSelection = $("#dropdownMenuButton .current-selection");
@@ -70,11 +80,12 @@
     const projectField = document.getElementById('selectedProjectField');
     const orderField = document.getElementById('selectedOrderField');
 
+
     projectButtons.forEach(button => {
       button.addEventListener('click', function() {
         const value = this.value;
         const order = document.querySelector('#dropdownOrderMenuButton .current-selection').textContent.trim();
-        console.log(order)
+
         projectField.value = value;
         orderField.value = order;
       });
@@ -84,7 +95,7 @@
       button.addEventListener('click', function() {
         const value = this.value;
         const project = document.querySelector('#dropdownMenuButton .current-selection').textContent.trim();
-        console.log(project)
+
         orderField.value = value;
         projectField.value = project;
       });
@@ -95,16 +106,13 @@
     $(divider).empty().append(updatedPartialHTML);
     $(divider).show();
 
-    $("#flexSwitchCheckOpen").prop("checked", true);
-    $("#flexSwitchCheckResolved").prop("checked", true);
-
     var anchor = window.location.hash;
 
     if (anchor) {
       var issueId = anchor.substring(anchor.indexOf('-') + 1);
 
       var collapseElement = $('#issue-card-' + issueId + ' .collapse');
-      collapseElement.addClass('show');   
+      collapseElement.addClass('show');
       $('#card-header-#' + issueId).attr('aria-expanded', 'true');
       var elementToScrollTo = document.getElementById('hidden-partial-container-' + issueId);
       elementToScrollTo.scrollIntoView();
@@ -113,33 +121,14 @@
     window.location.hash = "";
   });
 
-  function toggleSection(sectionId) {
+  function toggleSection(sectionId, toggleElementId) {
     var section = document.getElementById(sectionId);
-    if (section.classList.contains('display-none')) {
+    var toggleElement = document.getElementById(toggleElementId);
+
+    if (toggleElement.checked) {
       section.classList.remove('display-none');
     } else {
       section.classList.add('display-none');
     }
   }
-
--# const collapsibleElements = document.querySelectorAll('.collapse');
-
--# collapsibleElements.forEach(function(element) {
--#   element.addEventListener('show.bs.collapse', function() {
--#     const mainElement = document.querySelector('main');
--#     const scrollbarWidth = window.innerWidth - document.body.clientWidth;
--#     mainElement.style.paddingRight = scrollbarWidth + 'px';
-    
--#     // Prevent scrolling of the main content while the collapsible is shown
--#     mainElement.style.overflow = 'hidden';
--#   });
-
--#   element.addEventListener('hide.bs.collapse', function() {
--#     setTimeout(function() {
--#         const mainElement = document.querySelector('main');
--#         mainElement.style.paddingRight = '';
--#         mainElement.style.overflow = '';
--#     }, 200);
--#   });
--# });
 

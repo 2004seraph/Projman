@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: staffs
@@ -18,6 +20,10 @@
 #
 #  index_staffs_on_email  (email) UNIQUE
 #
+
+# This file is a part of Projman, a group project orchestrator and management system,
+# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 class Staff < ApplicationRecord
   # Include default devise modules. Others available are:
 
@@ -29,4 +35,26 @@ class Staff < ApplicationRecord
   has_many :groups, through: :course_projects
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }
+
+  def issues
+    issues = []
+
+    user_modules = course_modules
+
+    user_projects = []
+    user_modules.each do |user_module|
+      user_projects += user_module.course_projects
+    end
+
+    project_groups = []
+    user_projects.each do |user_project|
+      project_groups += user_project.groups
+    end
+
+    project_groups.each do |project_group|
+      issues += Event.where(event_type: :issue, group_id: project_group.id)
+    end
+
+    issues
+  end
 end

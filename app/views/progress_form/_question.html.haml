@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 // Partial for displaying a single question as editable for a facilitator, and not as a module lead
 - unique_id = "question-#{question_index}"
 
@@ -12,17 +15,17 @@
     "data-accordion-toggle" => "",
     "aria-expanded" => "true",
     "aria-controls" => unique_id}
-  
-    %h2.fs-4= "#{question_index}) #{question}"
-      
+
+    .fs-5= "#{question_index}) #{question}"
+
     %i.bi.bi-caret-right-fill
-      
+
   .collapse.show{id: unique_id}
     .card-body.form-group
       %label{for: "question-textarea-#{question_index}"} Notes
       %textarea.form-control.question-textarea{
-        id: "question-textarea-#{question_index}", 
-        placeholder: "Answer will go here", 
+        id: "question-textarea-#{question_index}",
+        placeholder: "Answer will go here",
         style: responding_style}= question_response
 
       - if !facilitator && editing_form

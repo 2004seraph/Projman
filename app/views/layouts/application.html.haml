@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 !!!
 %html{ lang: 'en-GB' }
   %head
@@ -31,5 +34,12 @@
             - if message.is_a?(String) && !message.empty?
               - next unless message_type == 'alert' || message_type == 'notice'
               .alert{ class: "alert-#{ message_type == 'notice' ? 'success' : 'danger' }" }= message
-      .content-container
-        = yield
+
+      - if request.path.match?(/^\/projects\/.*/) && current_user.is_staff? && !@current_project.nil?
+        = render partial: 'course_project/components/staff_project_view_navbar', locals: { project_id: @current_project.id }
+
+        .content-container-special
+          = yield
+      - else
+        .content-container
+          = yield

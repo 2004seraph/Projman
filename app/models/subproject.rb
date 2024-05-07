@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: subprojects
@@ -17,8 +19,11 @@
 #
 #  fk_rails_...  (course_project_id => course_projects.id)
 #
-class Subproject < ApplicationRecord
 
+# This file is a part of Projman, a group project orchestrator and management system,
+# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
+class Subproject < ApplicationRecord
   belongs_to :course_project
   has_one :course_module, through: :course_project
 

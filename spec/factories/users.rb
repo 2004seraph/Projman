@@ -1,3 +1,8 @@
+# frozen_string_literal: true
+
+# This file is a part of Projman, a group project orchestrator and management system,
+# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 # == Schema Information
 #
 # Table name: users
@@ -27,18 +32,17 @@
 #
 FactoryBot.define do
   factory :user do
-
   end
 
   factory :standard_student_user, class: User do
-    email {'awillis4@sheffield.ac.uk'}
-    username {'acc22aw'}
-    uid {'acc22aw'}
-    mail {'awillis4@sheffield.ac.uk'}
-    ou {'COM'}
-    dn {nil}
-    sn {'Willis'}
-    givenname {'Adam'}
-    account_type {'student - ug'}
+    email { 'awillis4@sheffield.ac.uk' }
+    username { 'acc22aw' }
+    uid { 'acc22aw' }
+    mail { 'awillis4@sheffield.ac.uk' }
+    ou { 'COM' }
+    dn { nil }
+    sn { 'Willis' }
+    givenname { 'Adam' }
+    account_type { 'student - ug' }
   end
 end

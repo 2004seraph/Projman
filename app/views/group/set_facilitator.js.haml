@@ -1,0 +1,5 @@
+:plain
+  var team_id = #{@team_id};
+  var section = $('.project-teams-team-container#project_team_container_' + team_id)
+  var facilitatorText = section.find('.facilitator-text')
+  facilitatorText.text("Facilitator: #{@facilitator_email}")

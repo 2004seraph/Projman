@@ -1,0 +1,14 @@
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
+    - 'bin/**/*'
+
+Documentation:
+  Enabled: false
+MethodLength:
+  Exclude:
+    - 'db/migrate/**/*'
+
+require:
+#  - rubocop-rspec_rails
+  - rubocop-rails

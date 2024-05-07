@@ -1,37 +1,60 @@
-- project_name = CourseProject.find(project_id).name
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-%nav.staff-project-view-navbar.mb-3
-  .navbar-nav.d-flex.justify-content-between
-    %li.nav-item.d-flex.align-items-center
-      .fs-2.fw-semi-bold= project_name
-    .vertical-divider
-    %li.nav-item{ class: request.path == teams_project_path(project_id) ? 'active' : '' }
-      = link_to teams_project_path(project_id), class: 'btn btn-light' do
-        Teams    
-    %li.nav-item{ class: request.path == project_progress_form_index_path(project_id) ? 'active' : '' }
-      = link_to project_progress_form_index_path(project_id), class: 'btn btn-light' do
-        Progress
-    %li.nav-item{ class: request.path == project_mark_scheme_index_path(project_id) ? 'active' : '' }
-      = link_to project_mark_scheme_index_path(project_id), class: 'btn btn-light' do
-        Mark Scheme
-    %li.nav-item{ class: request.path == '/emails' ? 'active' : '' }
-      %button.btn.btn-light Emails
+- project = CourseProject.find(project_id)
 
-%hr.divider
+.left-sidebar
+  %span
+    .fs-4.fw-light Status: #{ViewHelper.unparamaterize project.status}
+    - if project.status == 'draft'
+      %i.fs-6.fw-light (Not visible to students yet)
+    - else
+      %i.fs-6.fw-light (Visible to students)
+
+  %hr.divider
+
+  %nav.staff-project-view-navbar.mb-3
+    .navbar-nav.flex-column
+      %li.nav-item.side-nav-bar{ class: request.path == project_teams_path(project_id) ? 'active' : '' }
+        = link_to project_teams_path(project_id), class: 'btn btn-light' do
+          Teams
+      %li.nav-item.side-nav-bar{ class: request.path == project_progress_form_index_path(project_id) ? 'active' : '' }
+        = link_to project_progress_form_index_path(project_id), class: 'btn btn-light' do
+          Progress
+      %li.nav-item.side-nav-bar{ class: request.path == project_mark_scheme_index_path(project_id) ? 'active' : '' }
+        = link_to project_mark_scheme_index_path(project_id), class: 'btn btn-light' do
+          Mark Scheme
+      %li.nav-item{ class: request.path == '/emails' ? 'active' : '' }
+        %button.btn.btn-light Emails
+
+.vertical-divider
 
 :javascript
   document.addEventListener('DOMContentLoaded', function() {
-  const navItems = document.querySelectorAll('.nav-item');
+  const navItems = document.querySelectorAll('.nav-item.side-nav-bar');
 
     navItems.forEach(function(item) {
-      item.addEventListener('click', function() {
-        // Remove the active class from all nav items
-        navItems.forEach(function(item) {
-          item.classList.remove('active');
-        });
+      const baseUrl = item.querySelector('a').pathname;
 
-        // Add the active class to the clicked nav item
-        this.classList.add('active');
-      });
+      console.log(baseUrl);
+
+      console.log(window.location.pathname.startsWith(baseUrl))
+
+    // Check if the current URL matches the base URL
+      if (window.location.pathname.startsWith(baseUrl)) {
+        item.classList.add('active');
+      } else {
+
+      // Add click event listener to each nav item
+        item.addEventListener('click', function() {
+          // Remove the active class from all nav items
+          navItems.forEach(function(item) {
+            item.classList.remove('active');
+          });
+
+          // Add the active class to the clicked nav item
+          this.classList.add('active');
+        });
+      }
     });
   });

@@ -1,6 +1,8 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 - unique_id = "teams_display_#{SecureRandom.hex(4)}"
 
-// TODO: Dropdown for project selection and filters for team view
 .card.mb-2.accordion-element
   %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
    href: "##{unique_id}",
@@ -9,7 +11,7 @@
    "aria-expanded" => "true",
    "aria-controls" => unique_id}
 
-    %h2.fs-4= "Teams"
+    .fs-4= "Teams"
     %i.bi.bi-caret-right-fill
 
   .collapse.show{id: unique_id}
@@ -29,17 +31,20 @@
             %hr.dropdown-divider
 
             - @assigned_projects.each do |project|
+              // Project names could contain ', therefore escape this character when inserting into js.
               %a.dropdown-item{ onclick: "update_project_filter('#{project.name.gsub("'", "\\\\'")}')" }
                 =project.name
 
       %hr.divider
 
       %div#teams-display
-        - @assigned_facilitators.flat_map(&:groups).sort_by{|g| "#{g.course_project.name} #{g.name}"}.each do |group|
-          .navigation-list-item
-            = link_to facilitator_team_facilitators_path(team_id: group.id) do
-              %h6.p-1
-                = "#{group.assigned_facilitator.course_project.name} - #{group.name}"
+        // Display all groups by project
+        - @assigned_facilitators.group_by{|af| af.course_project}.each do |project, facilitators|
+          - facilitators.flat_map(&:groups).each do |group|
+            .navigation-list-item
+              = link_to facilitator_team_facilitators_path(team_id: group.id) do
+                %h6.p-1
+                  = "#{group.course_project.name} - #{group.name}"
 
   :javascript
     function update_team_list() {

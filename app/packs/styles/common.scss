@@ -1,3 +1,6 @@
+// This file is a part of Projman, a group project orchestrator and management system,
+// made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 // FILE FOR COMMON SCSS ELEMENT THAT WILL BE USED AROUND THE PROJECT
 
 .display-none{
@@ -8,30 +11,6 @@
     display: flex;
     justify-content: flex-end;
 }
-
-// .common-button{
-//     text-decoration: none;
-//     color: inherit;
-//     font-size: calc(0.6rem + 0.9vw);
-//     display: flex;
-
-//     border: 2px solid #000;
-//     border-radius: calc(0.3rem + 0.45vw);
-//     transition-duration: 0.1s;
-//     padding: 0.2rem 1rem 0.2rem 0.5rem;
-
-//     .bi{
-//         padding-right: calc(0.2rem + 0.2vw);
-//     }
-// }
-// .common-button:hover{
-//     border-color:var(--sheffield-purple);
-//     background-color: var(--sheffield-purple);
-//     color: var(--primary-colour);
-// }
-// .common-button.smaller{
-//     font-size: calc(0.3rem + 0.6vw);
-// }
 
 .fill-green{
     color:var(--green);
@@ -143,6 +122,11 @@
     overflow-y: auto;
 }
 
+#chat-box-container {
+    max-height: 450px; /* Adjust this value as needed */
+    overflow-y: auto;
+}
+
 .scrollable {
     overflow-y: auto;
 }
@@ -150,4 +134,18 @@
 .icon-pad {
     padding-left: 10px;
     color: var(--sheffield-purple);
+}
+
+.icon-pad-nav {
+    padding-left: 3px;
+    padding-right: 0;
+    margin-right: 0;
+    color: var(--sheffield-purple);
+}
+
+.vertical-divider{
+    display: flex;
+    width: 2px;
+    background-color: lightgrey;
+    margin: 2px 10px 2px 0px;
 }

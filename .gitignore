@@ -51,7 +51,7 @@ package-lock.json
 *.swp
 *.*~
 *.sublime-*
-.vscode
+# .vscode # removed, ask Sam
 .idea
 .rspec-examples
 

@@ -1,6 +1,8 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 .hidden-partial-container{ id: "hidden-partial-container-#{issue.id}"}
   - unique_id = "collapseIssue_#{issue.id}" # Generate a unique ID using SecureRandom
-  - issue_data = JSON.parse(issue.json_data)
   - course_project = CourseProject.find_by(id: Group.find_by(id: issue.group.id).course_project_id)
   - course_module = CourseModule.find_by(id: course_project.course_module_id)
   - issue_responses = issue.event_responses
@@ -12,44 +14,47 @@
       "data-accordion-toggle" => "",
       "aria-expanded" => "false",
       "aria-controls" => unique_id,
-      id: "card-header-#{issue.id}"} 
+      id: "card-header-#{issue.id}"}
       .d-flex.align-items-center
         %span.me-3.fs-6.fw-light #{issue.created_at.strftime("%d/%m/%Y %H:%M")}
-        %h3.m-0.fs-5.fw-medium #{issue_data['title']}
+        %h3.m-0.fs-5.fw-medium #{issue.json_data['title']}
         %span
-          - if !issue.completed?
-            - if current_user.is_staff? && issue.event_responses.empty?
-              %i.bi.bi-exclamation-diamond-fill.icon-pad
-            - elsif current_user.is_staff? && issue.event_responses.last.student_id.present?
-              %i.bi.bi-exclamation-diamond-fill.icon-pad
-            - elsif current_user.is_staff? && (issue_data['reopened_by'] != "" && issue_data['reopened_by'] != current_user.staff.email)
-              %i.bi.bi-exclamation-diamond-fill.icon-pad
-            - elsif !current_user.is_staff? && !issue.event_responses.empty? && issue.event_responses.last.staff_id.present? && issue_data['reopened_by'] == ""
-              %i.bi.bi-exclamation-diamond-fill.icon-pad
-            -elsif !current_user.is_staff? && (issue_data['reopened_by'] != "" && issue_data['reopened_by'] != current_user.student.username)
-              %i.bi.bi-exclamation-diamond-fill.icon-pad
-            //when deployed this to change above elsif to commented line
-            //- elsif !current_user.is_student? && !issue.event_responses.empty? && issue.event_responses.last.staff_id.present?
+          // Adds notification icon if needed
+          - if issue.notification?(current_user)
+            %i.bi.bi-exclamation-diamond-fill.icon-pad
       %i.bi.bi-caret-right-fill
     .collapse{id: unique_id}
       .card-body.pt-1.pb-1
+        // Renders the issue
         .d-flex.align-items-center.justify-content-between.pt-2.pb-2
-          .fs-6 Posted by: #{issue_data['author']}
+          .fs-6 Posted by: #{issue.json_data['author']}
           .fs-6 #{course_module.code} - #{course_project.name}
         .fs-6 Issue:
         .issue-text.border.p-2.mb-2
-          .fs-6 #{issue_data['content']}
+          .fs-6 #{issue.json_data['content']}
         %hr.divider
+        // Renders all the issue responses
         -issue_responses.each do |response|
-          - response_data =  JSON.parse(response.json_data)
-          .issue-text.border.p-2.mt-2
-            .fs-6 #{response_data['content']}
           .d-flex.align-items-center.justify-content-between.pb-2
-            .fw-light{ style: "font-size: 14px;" } From: #{response_data['author']}
-            .fw-light{ style: "font-size: 14px;" } #{DateTime.parse(response_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
-        <!- if current_user.isStaff?>
+            - if (current_user.is_staff? && response.staff_id == current_user.staff.id) || (current_user.is_student? && response.student_id == current_user.student.id)
+              .d-flex.w-100.justify-content-end
+                .w-75
+                  .issue-text.border.p-2{ style: "background-color: lavender;" }
+                    .fs-6 #{response.json_data['content']}
+                  .d-flex.align-items-center.justify-content-between.pb-2
+                    .fw-light{ style: "font-size: 14px;" } From: #{response.json_data['author']}
+                    .fw-light{ style: "font-size: 14px;" } #{DateTime.parse(response.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
+            - else
+              .d-flex.w-100.justify-content-start
+                .w-75
+                  .issue-text.border.p-2{ style: "background-color: #f0f0f0;" }
+                    .fs-6 #{response.json_data['content']}
+                  .d-flex.align-items-center.justify-content-between.pb-2
+                    .fw-light{ style: "font-size: 14px;" } From: #{response.json_data['author']}
+                    .fw-light{ style: "font-size: 14px;" } #{DateTime.parse(response.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
         - if !issue.completed
           %hr.divider
+          // Form for sending a response to the issue
           = form_with(url: "/issues/issue-response", method: "post", local: false, id: "response-form-#{issue.id}") do |form|
             %input{ type: "hidden", name: "issue_id", value: "#{issue.id}"}
             %input{ type: "hidden", name: "author", value: "#{@current_user.givenname} #{@current_user.sn}"}
@@ -69,7 +74,7 @@
         - if issue.completed
           .d-flex.justify-content-end.mb-2
             %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#reopenIssueModal-#{issue.id}", id: "reopen-#{issue.id}"}
-              Reopen 
+              Reopen
 
     .modal.fade{id: "resolveIssueModal-#{issue.id}", tabindex: "-1", role: "dialog", aria: {labelledby: "resolveIssueModalLabel", hidden: "true"}}
       .modal-dialog.modal-dialog-centered

@@ -1,3 +1,8 @@
+# frozen_string_literal: true
+
+# This file is a part of Projman, a group project orchestrator and management system,
+# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 class AddLdapInfoAndCleanUpUsers < ActiveRecord::Migration[7.0]
   def change
     User.reset_column_information
@@ -17,7 +22,7 @@ class AddLdapInfoAndCleanUpUsers < ActiveRecord::Migration[7.0]
     add_index :users, :email
 
     # Cache the ldap attributes
-    missing_columns = %w(uid mail ou dn sn givenname account_type) - existing_columns
+    missing_columns = %w[uid mail ou dn sn givenname account_type] - existing_columns
     missing_columns.each do |column_name|
       add_column :users, column_name, :string
     end
@@ -25,7 +30,8 @@ class AddLdapInfoAndCleanUpUsers < ActiveRecord::Migration[7.0]
     reversible do |dir|
       dir.up do
         # Remove devise fields we don't need
-        unnecessary_columns = %w(reset_password_token reset_password_sent_at remember_created_at encrypted_password) & existing_columns
+        unnecessary_columns = %w[reset_password_token reset_password_sent_at remember_created_at
+                                 encrypted_password] & existing_columns
         unnecessary_columns.each do |column_name|
           remove_column :users, column_name
         end

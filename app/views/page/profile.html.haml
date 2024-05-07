@@ -1,15 +1,18 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 .separating-section
   %h2.fs-3 Personal Information
 
   %hr.divider
 
-  %strong.m-0.fs-5.fw-medium Surname: 
+  %strong.m-0.fs-5.fw-medium Surname:
   %i.fs-5= current_user.sn
   %p
-  %strong.m-0.fs-5.fw-medium Forename(s): 
+  %strong.m-0.fs-5.fw-medium Forename(s):
   %i.fs-5= current_user.givenname
   %p
-  %strong.m-0.fs-5.fw-medium Email: 
+  %strong.m-0.fs-5.fw-medium Email:
   %i.fs-5= current_user.email
   %p
   - if current_user.is_student?

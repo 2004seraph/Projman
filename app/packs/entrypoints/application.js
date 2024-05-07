@@ -1,3 +1,6 @@
+// This file is a part of Projman, a group project orchestrator and management system,
+// made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 import Rails from "@rails/ujs";
 import $ from 'jquery';
 import 'jquery'
@@ -15,6 +18,7 @@ import '../scripts/custom-functions';
 
 import '../scripts/project/project_creation_control';
 import '../scripts/student/module_students_control';
+import '../scripts/teams/teams_control';
 
 window.$ = $
 

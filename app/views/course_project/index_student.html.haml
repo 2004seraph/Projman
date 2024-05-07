@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 -# Load all projects tied to the user
 -# Students see all their projects and alert markers
 
@@ -22,7 +25,7 @@
                                     - if milestone.json_data["Comment"].length > 0
                                         %strong Comment:
                                         = milestone.json_data["Comment"]
-    - else 
+    - else
         .d-flex.justify-content-center
             %i.fs-6.fw-light No Activity
 
@@ -37,6 +40,8 @@
                 %h3
                     #{project.course_module.code} #{project.course_module.name} - #{project.name}
                     .sub-status
+                        - if project.project_notification?(current_user, current_user.student.groups.find_by(course_project_id: project.id))
+                            %i.bi.bi-exclamation-diamond-fill.icon-pad.p-3
                         #{ViewHelper.unparamaterize project.status}
                         -#Change colour according to deadlines or status????
                         %i.bi.bi-circle-fill.fill-green

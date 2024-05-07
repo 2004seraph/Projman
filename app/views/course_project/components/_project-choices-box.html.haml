@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 - unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
 
 .card.issue-card.mb-2.accordion-element
@@ -31,24 +34,24 @@
 :javascript
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('project-choices-form');
-    const selects = form.querySelectorAll('select'); 
+    const selects = form.querySelectorAll('select');
     const selectedValues = {};
 
     selects.forEach(function(select) {
       select.addEventListener('change', function() {
-        const selectedValue = this.value; 
+        const selectedValue = this.value;
         selectedValues[this.id] = selectedValue;
 
         selects.forEach(function(otherSelect) {
-          if (otherSelect !== select) { 
-            const options = otherSelect.options; 
+          if (otherSelect !== select) {
+            const options = otherSelect.options;
             for (let i = 0; i < options.length; i++) {
               if (options[i].value === "") {
-                options[i].style.display = ''; 
-              } else if (options[i].value === selectedValue || Object.values(selectedValues).includes(options[i].value)) { 
-                options[i].style.display = 'none'; 
+                options[i].style.display = '';
+              } else if (options[i].value === selectedValue || Object.values(selectedValues).includes(options[i].value)) {
+                options[i].style.display = 'none';
               } else {
-                options[i].style.display = ''; 
+                options[i].style.display = '';
               }
             }
           }
@@ -57,13 +60,13 @@
     });
 
     document.getElementById('project-choices-form').addEventListener('submit', function(event) {
-      event.preventDefault(); 
-      
-      const form = this; 
-      const formData = new FormData(form); 
+      event.preventDefault();
+
+      const form = this;
+      const formData = new FormData(form);
       formData.append('milestone_id', #{@proj_choices_form.id})
-  
-      fetch(form.action, { 
+
+      fetch(form.action, {
         method: form.method,
         headers: {
           'X-CSRF-Token': document.querySelector("meta[name='csrf-token']").getAttribute("content")

@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 :plain
   var divider = $('#issues-section');
   var updatedPartialHTML = "#{j(render(partial: 'issues-section', locals: { issue: Event.find(params["issue_id"]) }))}";
@@ -5,7 +8,7 @@
 
   if (#{params["status"]} == open) {
     var collapseElement = $('#issue-card-#{params["issue_id"]} .collapse');
-    collapseElement.addClass('show');   
+    collapseElement.addClass('show');
     $('#card-header-#{params["issue_id"]}').attr('aria-expanded', 'true');
     var elementToScrollTo = document.getElementById('hidden-partial-container-#{params["issue_id"]}');
     elementToScrollTo.scrollIntoView();
@@ -13,3 +16,12 @@
 
   $("#flexSwitchCheckOpen").prop("checked", true);
   $("#flexSwitchCheckResolved").prop("checked", true);
+
+  var issuesBtn = $('#issues-btn')
+  var notificationNeeded = #{current_user.issue_notification?}
+
+  if (notificationNeeded) {
+    issuesBtn.html('<a href="<%= j issues_url %>" class="btn btn-light">Issues <i class="bi bi-exclamation-diamond-fill icon-pad-nav"></i></a>');
+  } else {
+    issuesBtn.html('<a href="<%= j issues_url %>" class="btn btn-light">Issues</a>');
+  }

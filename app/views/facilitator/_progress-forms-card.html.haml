@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 - ran_num = "#{SecureRandom.hex(5)}"  # Generate a unique ID
 - unique_id = "accordion-card-" + ran_num
 - unique_id_collapse = "accordion-collapse-card-" + ran_num
@@ -13,17 +16,15 @@
   .collapse.show{id: unique_id_collapse}
     .card-body
       %h5= "Completed"
-      - @progress_forms_submitted.each do |pf| 
+      - @progress_forms_submitted.each do |pf|
         .navigation-list-item
-          - formatted_deadline = pf.deadline.strftime("%d/%m/%Y %H:%M")
-          = link_to progress_form_facilitators_url(release_date: formatted_deadline) do
-            %h6.p-1= formatted_deadline
+          = link_to progress_form_facilitators_url(milestone_id: pf.id) do
+            %h6.p-1= pf.deadline.strftime("%d/%m/%Y %H:%M")
 
       %hr.divider
+
       %h5= "To Do"
-      - @progress_forms_todo.each do |pf| 
+      - @progress_forms_todo.each do |pf|
         .navigation-list-item
-          - formatted_deadline = pf.deadline.strftime("%d/%m/%Y %H:%M")
-          = link_to progress_form_facilitators_url(release_date: formatted_deadline) do
-            %h6.p-1= formatted_deadline
-      
+          = link_to progress_form_facilitators_url(milestone_id: pf.id) do
+            %h6.p-1= pf.deadline.strftime("%d/%m/%Y %H:%M")

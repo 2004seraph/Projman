@@ -1,7 +1,9 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 :plain
   var currentIssue = $('#hidden-partial-container-#{params["issue_id"]}');
   var previousIssue = currentIssue.prev();
-  console.log(previousIssue);
   currentIssue.remove();
   var newPartialHTML = "#{j(render(partial: 'issue-box', locals: { issue: Event.find(params["issue_id"]) }))}";
   $(previousIssue).after(newPartialHTML);
@@ -12,17 +14,38 @@
 
   if ("#{params[:selected_order]}" == "Created At") {
     var collapseElement = $('#issue-card-#{params["issue_id"]} .collapse');
-    collapseElement.addClass('show');   
+    collapseElement.addClass('show');
     $('#card-header-#{params["issue_id"]}').attr('aria-expanded', 'true');
   } else {
     var collapseElement = $('#issue-card-#{params["issue_id"]} .collapse');
-    collapseElement.addClass('show');   
+    collapseElement.addClass('show');
     $('#card-header-#{params["issue_id"]}').attr('aria-expanded', 'true');
     var elementToScrollTo = document.getElementById('hidden-partial-container-#{params["issue_id"]}');
     elementToScrollTo.scrollIntoView();
   }
 
-  $("#flexSwitchCheckOpen").prop("checked", true);
-  $("#flexSwitchCheckResolved").prop("checked", true);
+  var openIssueSection = $('#open-issues-section');
+  var resolvedIssueSection = $('#resolved-issues-section');
+  var openToggleStatus = $('#flexSwitchCheckOpen').prop('checked');
+  var resolvedToggleStatus = $('#flexSwitchCheckResolved').prop('checked');
 
-  
+  if (openToggleStatus) {
+    openIssueSection.removeClass('display-none');
+  } else {
+      openIssueSection.addClass('display-none');
+  }
+
+  if (resolvedToggleStatus) {
+    resolvedIssueSection.removeClass('display-none');
+  } else {
+      resolvedIssueSection.addClass('display-none');
+  }
+
+  var issuesBtn = $('#issues-btn');
+  var notificationNeeded = #{current_user.issue_notification?};
+
+  if (notificationNeeded) {
+    issuesBtn.html('<a href="#{issues_url}" class="btn btn-light">Issues <i class="bi bi-exclamation-diamond-fill icon-pad-nav"></i></a>');
+  } else {
+    issuesBtn.html('<a href="#{issues_url}" class="btn btn-light">Issues</a>');
+  };

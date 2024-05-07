@@ -1,0 +1,29 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
+// Partial to display all marking sections assigned to the current user
+- unique_id = "marking_display_#{SecureRandom.hex(4)}"
+
+.card.mb-2.accordion-element
+  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
+   href: "##{unique_id}",
+   role: "button",
+   "data-accordion-toggle" => "",
+   "aria-expanded" => "true",
+   "aria-controls" => unique_id}
+
+    .fs-4.ml-2= "Assigned Sections"
+    %i.bi.bi-caret-right-fill
+
+  .collapse.show{id: unique_id}
+    .card-body
+      - unless @mark_schemes.nil? || @mark_schemes.empty?
+        - @mark_schemes.each do |ms|
+          - ms.json_data["sections"]&.each_with_index do |section, i|
+            - if section["assessors"]&.keys&.include?(current_user.email)
+              .navigation-list-item
+                = link_to new_marking_path(milestone_id: ms.id, section_index: i) do
+                  %h6.p-1= "#{ms.course_project.name} - #{section["title"]}"
+
+      - else
+        %h6 You have not been assigned any marking yet.

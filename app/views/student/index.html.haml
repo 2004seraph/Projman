@@ -1,8 +1,14 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 .separating-section
   .d-flex.align-items-center.justify-content-between
     %h2.fs-3
       Students
   %hr.divider
+
+  - if session[:module_student].present?
+    - module_student = session[:module_student]
 
   = render 'components/accordion/container' do
     - cm = retrieve_courses
@@ -23,13 +29,15 @@
 
   = render 'components/modal-search-multiple',
     modal_id: 'addStudentsModal',
+    autocomplete_method: 'students/search_students',
     title: 'Add Students',
     prompt: 'Input students name',
     form_input_id: 'new-module-student-name',
     form_input_name: 'module_student_name',
-    current_selection_text: session[:current_selection],
+    current_selection_text: 'current selection',
     list_group_id: 'student-selection-group',
     confirm_text: 'Confirm',
     confirm_onclick_function: "",
-    add_to_selection_url: 'students/update_selection'
-
+    add_to_selection_url: 'students/update_selection',
+    submission_url: 'students/confirm_selection',
+    on_open_action_url: 'students/clear_selection'

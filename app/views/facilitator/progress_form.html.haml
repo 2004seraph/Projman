@@ -1,24 +1,18 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 %h1 Progress Form
 
 %hr
 
-// TODO: I am aware this is extremely bad and I should not really be pulling in a partial from a different view folder,
-//       unless I name that folder shared or something... maybe need to sort out routes. But if i make the facilitator
-//       progress form stuff under the same route, how do i differentiate between module lead and facilitator views...
-
-// TODO: Make a cancel button to not save changes? Should just be a simple redirect
-
 #progress-form-partial-container
-  = render partial: "progress_form/progress_form", locals: {progress_form: @progress_form.json_data, progress_response: @progress_response.json_data, group: @current_group, facilitator: true, editing_form: false}
+  = render partial: "progress_form/progress_form", locals: {progress_form: @progress_form.json_data, progress_response: @progress_response&.json_data, group: @current_group, facilitator: true, editing_form: false}
 
 %a.btn.btn-success.mb-2{onclick: "saveProgressForm()"} Save
 %a.btn.btn-danger.mb-2{onclick: "window.location.href = '#{facilitator_team_facilitators_path(team_id: @current_group.id)}';"} Discard
 
 :javascript
   function saveProgressForm() {
-    // TODO: This should make it less scuffed..... and can actually use form with etc
-    // TODO: https://stackoverflow.com/questions/14047533/create-a-json-object-from-rails-form
-
     // Take attendance
     var attendance = [];
     document.querySelectorAll(".absent-checkbox").forEach(function(element) {
@@ -43,7 +37,7 @@
         "Content-Type": "application/json",
         "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
       },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         "attendance": attendance,
         "question_responses": question_responses
       })
@@ -51,12 +45,11 @@
     .then(response => response.json())
     .then(data => {
       if (data["status"] === "error") {
-        alert("Something went wrong...");
+        alert(data["message"]);
       }
       else {
         window.location.href = data["redirect"];
       }
     })
     .catch(error => console.error('Error when updating progress form milestone response:', error));
-    
   }

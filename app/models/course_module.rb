@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: course_modules
@@ -18,6 +20,10 @@
 #
 #  fk_rails_...  (staff_id => staffs.id)
 #
+
+# This file is a part of Projman, a group project orchestrator and management system,
+# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 class CourseModule < ApplicationRecord
   has_and_belongs_to_many :students
   has_many :course_projects, dependent: :destroy

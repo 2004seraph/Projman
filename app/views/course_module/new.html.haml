@@ -1,36 +1,39 @@
-.separating-section
-  %h2
-    Create Module 
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-= form_for @new_module, url: {action: "create"}, multipart: true, html: { id: 'new_module_form', method: :post } do |f|
-  -# MODULE CODE
-  .mb-3
-    .input-group
-      = f.label :code, "Module Code", class: "input-group-text fs-4 fw-semibold mb-0" 
-      = f.text_field :code, class: "form-control fs-5 fw-semibold", id: "course_module_code", placeholder: "Code", required: true
-    %h1.fs-6.fw-normal.fst-italic= "The Module Code must not be currently in use in the system - it must be unique."  
-  
-  -# MODULE NAME
-  .mb-3
-    .input-group
-      = f.label :name, "Module Name", class: "input-group-text fs-4 fw-semibold mb-0" 
-      = f.text_field :name, class: "form-control fs-5 fw-semibold", id: "course_module_name", placeholder: "Name", required: true
-  
-  -# MODULE LEADER
-  .mb-3
-    .input-group
-      = f.label :staff_id, "Module Leader", class: "input-group-text fs-4 fw-semibold mb-0" 
-      %input.form-control.fs-5.fw-semibold{ type: "email", id: "new_module_lead_email", name: "new_module_lead_email",placeholder: "E-mail", autocomplete: "off", required: true}
-      %input.form-control.fs-5.fw-semibold{ type: "email", id: "new_module_lead_email_confirmation", name: "new_module_lead_email_confirmation",placeholder: "Confirm E-mail", autocomplete: "off", required: true}
-    %h1.fs-6.fw-normal.fst-italic= "Input the Module Leader's '@sheffield.ac.uk' e-mail address - if they do not have an account on the system, one will be created for them."  
-  
-  -# STUDENT CSV UPLOAD
-  .mb-3
-    .input-group
-      = f.label :student_csv, "Module Student List (.csv)", class: "input-group-text fs-4 fw-semibold mb-0" 
-      %input.form-control.fs-5.fw-semibold{ type: "file", id: "student_csv", name: "student_csv",accept: "text/csv", autocomplete: "off", required: true}
-    %h1.fs-6.fw-normal.fst-italic= "Upload as a '.csv' file containing data for the chosen Module Code."  
+.separating-section
+  %h2.fs-3
+    Create Module
+
   %hr.divider
-  
-  -# SUBMIT
-  %button.btn.btn-primary{ type: "submit" }= "Submit"
+
+  = form_for @new_module, url: {action: "create"}, multipart: true, html: { id: 'new_module_form', method: :post } do |f|
+    -# MODULE CODE
+    .mb-3
+      .input-group
+        = f.label :code, "Module Code", class: "input-group-text fs-4 fw-semibold mb-0"
+        = f.text_field :code, class: "form-control fs-5 fw-semibold", id: "course_module_code", placeholder: "Unique Code", required: true
+
+    -# MODULE NAME
+    .mb-3
+      .input-group
+        = f.label :name, "Module Name", class: "input-group-text fs-4 fw-semibold mb-0"
+        = f.text_field :name, class: "form-control fs-5 fw-semibold", id: "course_module_name", placeholder: "Name", required: true
+
+    -# MODULE LEADER
+    .mb-3
+      .input-group
+        = f.label :staff_id, "Module Leader", class: "input-group-text fs-4 fw-semibold mb-0"
+        %input.form-control.fs-5.fw-semibold{ type: "email", id: "new_module_lead_email", name: "new_module_lead_email",placeholder: "University of Sheffield E-mail", autocomplete: "off", required: true}
+        %input.form-control.fs-5.fw-semibold{ type: "email", id: "new_module_lead_email_confirmation", name: "new_module_lead_email_confirmation",placeholder: "Confirm E-mail", autocomplete: "off", required: true}
+
+    -# STUDENT CSV UPLOAD
+    .mb-3
+      %h1.fs-6.fw-normal.fst-italic= "[OPTIONAL]"
+      .input-group
+        = f.label :student_csv, "Module Student List (.csv)", class: "input-group-text fs-4 fw-semibold mb-0"
+        %input.form-control.fs-5.fw-semibold{ type: "file", id: "student_csv", name: "student_csv",accept: "text/csv", autocomplete: "off"}
+    %hr.divider
+
+    -# SUBMIT
+    %button.btn.btn-primary{ type: "submit" }= "Save"

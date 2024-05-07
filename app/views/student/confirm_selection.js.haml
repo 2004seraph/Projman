@@ -1,0 +1,6 @@
+// This file is a part of Projman, a group project orchestrator and management system,
+// made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
+- @students_added.each do |student_email|
+    var newPartialHTML = "#{j(render(partial: 'components/group-item-simple', locals: { item_text: student_email, deletion_action_url: 'student/clear_student' }))}";
+    $("#project-facilitators-list").append(newPartialHTML);

@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 - unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
 
 .card.issue-card.mb-2.accordion-element
@@ -8,7 +11,7 @@
    "aria-expanded" => "false",
    "aria-controls" => unique_id}
     .d-flex.align-items-center
-      %h3.m-0.fs-5.fw-medium Team Information 
+      %h3.m-0.fs-5.fw-medium Team Information
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id}
     .card-body.pt-1.pb-1
@@ -16,4 +19,3 @@
         %h1.fs-6.fw-semibold #{@team_names[i]}
         %h1.fs-6.fw-normal.fst-italic #{@team_emails[i]}
         %hr.divider
-        

@@ -1,18 +1,63 @@
+// This file is a part of Projman, a group project orchestrator and management system,
+// made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 import $ from 'jquery';
 import 'bootstrap';
 
 $(function() {
+
+    var projectPrefMinDate = ""
+    var teamPrefMinDate = ""
+
+    var projectPrefDateInput = $('#project-preference-form-deadline-row #project-preference-form-deadline')
+    var teamPrefDateInput = $('#teammate-preference-form-deadline-row #teammate-preference-form-deadline')
+    if (projectPrefDateInput.prop('min') !== undefined) {
+        projectPrefMinDate = projectPrefDateInput.prop('min');
+    }
+    if (teamPrefDateInput.prop('min') !== undefined) {
+        teamPrefMinDate = teamPrefDateInput.prop('min');
+    }
 
     function runChecks() {
 
         var projectChoicesChecked = $('#project-choices-enable').is(':checked');
         var teamAllocationMethodValue = $('#team-allocation-method').val();
 
+        var projectPrefDateInput = $('#project-preference-form-deadline-row #project-preference-form-deadline')
+        var teamPrefDateInput = $('#teammate-preference-form-deadline-row #teammate-preference-form-deadline')
+
+        if(!projectChoicesChecked){        
+            // Min attribute exists, get value and then delete it
+            if (projectPrefDateInput.prop('min') !== undefined) {
+                projectPrefMinDate = projectPrefDateInput.prop('min');
+                projectPrefDateInput.removeAttr('min');
+            }
+        }
+        else{
+            // set or add min attribute to the min value
+            projectPrefDateInput.prop('min', projectPrefMinDate);
+        }
+
+        if(teamAllocationMethodValue !== "preference_form_based"){
+            //Min attribute exists, get value and then delete it
+            if (teamPrefDateInput.prop('min') !== undefined) {
+                teamPrefMinDate = teamPrefDateInput.prop('min');
+                teamPrefDateInput.removeAttr('min');
+            }
+        }
+        else{
+            // set or add min attribute to the min value
+            teamPrefDateInput.prop('min', teamPrefMinDate);
+        }
+
         $('#project-choices .card-body').toggleClass('display-none', !projectChoicesChecked);
         $('#project-preference-form-deadline-row').toggleClass('display-none', !projectChoicesChecked);
+        
 
         $('#team-preference-form-settings').toggleClass('display-none', (teamAllocationMethodValue !== "preference_form_based"));
         $('#teammate-preference-form-deadline-row').toggleClass('display-none', (teamAllocationMethodValue !== "preference_form_based"));
+
+
     }
 
     runChecks();
@@ -38,18 +83,18 @@ $(function() {
         if (!milestoneName) {
             return;
         }
-    
+
         var modal = $('#milestone-email-modal');
         var submitButton = modal.find('button[type="submit"]');
         var modalValue = modal.find('input[type="hidden"].hidden-modal-value');
         var emailInput = modal.find('#milestone-email-input');
         var advanceInput = modal.find('#milestone-email-modal-advance-day-picker');
-    
+
         modalValue.val(milestoneName);
         submitButton.prop('disabled', true);
         //Clear Inputs
         emailInput.val('');
-    
+
         //Send AJAX to request email data
         $.ajax({
             url: '/projects/get_milestone_data',
@@ -97,17 +142,17 @@ $(function() {
         if (!milestoneName) {
             return;
         }
-    
+
         var modal = $('#milestone-comment-modal');
         var submitButton = modal.find('button[type="submit"]');
         var modalValue = modal.find('input[type="hidden"].hidden-modal-value');
         var commentInput = modal.find('#milestone-comment-input');
-    
+
         modalValue.val(milestoneName);
         submitButton.prop('disabled', true);
         //Clear Inputs
         commentInput.val('');
-    
+
         //Send AJAX to request email data
         $.ajax({
             url: '/projects/get_milestone_data',

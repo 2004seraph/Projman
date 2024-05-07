@@ -1,3 +1,6 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 - unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
 
 .card.issue-card.mb-2.accordion-element
@@ -15,15 +18,14 @@
       - if @mark_scheme.nil?
         No mark scheme has been created for this project yet.
 
-      - else 
+      - else
         - sections = @mark_scheme.json_data["sections"]
         - unless sections.nil?
           - sections.each_with_index do |section, i|
             %br
             %h4= "Section #{i + 1}: #{section['title']}"
-            
+
             %hr.divider
             %h6= "Max Marks: #{section['max_marks']}"
             %p{style: "white-space: pre-line;"}= section["description"]
-            
-            
+

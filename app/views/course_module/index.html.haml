@@ -1,10 +1,13 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 -# Load all modules in the database
 
 .separating-section
     .d-flex.align-items-center.justify-content-between
         %h2.fs-3
             Modules
-            
+
         - if @show_create_button
             = link_to new_module_path, class: 'btn btn-primary' do
                 %i.bi.bi-plus-square-fill

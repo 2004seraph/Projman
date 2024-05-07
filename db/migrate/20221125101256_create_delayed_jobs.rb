@@ -1,3 +1,8 @@
+# frozen_string_literal: true
+
+# This file is a part of Projman, a group project orchestrator and management system,
+# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 class CreateDelayedJobs < ActiveRecord::Migration[7.0]
   def self.up
     create_table :delayed_jobs do |table|
@@ -13,7 +18,7 @@ class CreateDelayedJobs < ActiveRecord::Migration[7.0]
       table.timestamps null: true
     end
 
-    add_index :delayed_jobs, [:priority, :run_at], name: "delayed_jobs_priority"
+    add_index :delayed_jobs, %i[priority run_at], name: 'delayed_jobs_priority'
   end
 
   def self.down

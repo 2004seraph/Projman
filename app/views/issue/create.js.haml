@@ -1,10 +1,13 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
 :plain
   $('#reportIssueModal').modal('hide');
-  
+
   document.getElementById('title').value = '';
   document.getElementById('description').value = '';
 
   $('#success-message').show();
-  setTimeout(function() { 
-    $('#success-message').hide(); 
+  setTimeout(function() {
+    $('#success-message').hide();
   }, 3000);

@@ -1,3 +1,5 @@
+// This file is a part of Projman, a group project orchestrator and management system,
+// made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 import $ from 'jquery';
 
@@ -8,7 +10,7 @@ $(function() {
         var listItem = $(this).closest('.list-group-item-partial');
         var form_action = listItem.attr('form_action');
         var itemText = listItem.find('input[item_text]').val();
-    
+
         // Make the AJAX request
         $.ajax({
             url: form_action, // Get the form action URL
