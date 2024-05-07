@@ -45,6 +45,8 @@ Rails.application.routes.draw do
       get '/teams', to: 'group#index', on: :member
       post 'facilitator_emails', on: :member
       post 'set_facilitator', on: :member
+      post 'current_subproject', on: :member
+      post 'set_subproject', on: :member
     end
 
     resources :progress_form, controller: :progress_form do

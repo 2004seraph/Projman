@@ -8,6 +8,7 @@
     - @teams.each do |team|
       = render 'teams-accordion-card', team: team
 
+-# Modal for choosing team facilitator
 .modal.fade.modal-select-multiple{ id: "facilitators_modal", tabindex: "-1", "aria-labelledby": "facilitators_modal", "aria-hidden": "true"}
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
     .modal-content
@@ -22,6 +23,7 @@
         %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Close
         %button.btn.btn-primary#set-facilitator-btn{ type: "button", "data-bs-dismiss": "modal" } Save
 
+-# Modal to display if there are no facilitators on the project yet
 .modal.fade{ id: "no_facilitators_modal", tabindex: "-1", "aria-labelledby": "no_facilitators_modal", "aria-hidden": "true"}
   .modal-dialog.modal-dialog-centered
     .modal-content
@@ -34,3 +36,20 @@
 
       .modal-footer
         %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } OK
+
+-# Modal for choosing project choice
+.modal.fade.modal-select-multiple{ id: "project-choices-modal", tabindex: "-1", "aria-labelledby": "project-choices-modal", "aria-hidden": "true"}
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      .modal-header
+        %input{ type: "hidden", name: "team_id", value: "" }
+        %h1.modal-title.fs-5 Select Project Choice
+        %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+
+      .modal-body.pt-1.pb-1
+        - @current_project.subprojects&.each do |subproject|
+          = render 'project_choice_option', id: subproject.id, name: subproject.id, choice_name: subproject.name
+
+      .modal-footer
+        %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Close
+        %button.btn.btn-primary#set-project-choice-btn{ type: "button", "data-bs-dismiss": "modal" } Save

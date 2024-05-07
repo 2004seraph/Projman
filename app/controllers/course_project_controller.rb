@@ -40,7 +40,7 @@ class CourseProjectController < ApplicationController
 
   def new
     staff_id = Staff.where(email: current_user.email).first
-    @min_date = DateTime.now.strftime('%Y-%m-%dT%H:%M')
+    @min_date = "#{DateTime.now.strftime('%Y-%m-%d')}T00:00"
 
     modules_hash = if current_user.is_admin?
                      CourseModule.all.order(:code).pluck(:code, :name).to_h

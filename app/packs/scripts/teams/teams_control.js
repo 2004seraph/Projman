@@ -7,6 +7,8 @@ import $ from 'jquery';
 import 'bootstrap';
 
 $(function() {
+
+  // FACILITATOR STUFF
   $('#project-teams-container').on('click', '.edit-facilitator-btn', function(event) {
     var teamContainer = $(this).closest('.project-teams-team-container');
     var team_id = teamContainer.find('input[type="hidden"][name="team_id"]').val();
@@ -105,6 +107,104 @@ $(function() {
       type: 'POST',
       data: {
         facilitator_email: facilitatorToAdd
+      },
+      headers: {
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+      },
+      success: function(){
+        
+      },
+      error: function(xhr, status, error) {
+        console.log(error)
+      }
+    });
+  });
+
+  // PROJECT CHOICE STUFF
+  $('#project-teams-container').on('click', '.edit-project-choice-btn', function(event) {
+    var teamContainer = $(this).closest('.project-teams-team-container');
+    var team_id = teamContainer.find('input[type="hidden"][name="team_id"]').val();
+    var projectChoicesModal = $('#project-choices-modal')
+
+    function initialiseProjectChoicesModal(currentProjectChoice){
+      var modalBody = projectChoicesModal.find('.modal-body')
+      projectChoicesModal.find('input[type="hidden"][name="team_id"]').val(team_id)
+      projectChoicesModal.modal('show')
+      var projectChoiceOption = projectChoicesModal.find('.modal-body .project-choice-option')
+      projectChoiceOption.each(function(index, option){
+        var input = $(option).find('input').first();
+        var nameLabel = $(option).find('label').first();
+        var nameText = nameLabel.text().trim();
+
+        // Check if the text content matches current facilitator email
+        if (nameText === currentProjectChoice) {
+          input.prop('checked', true).trigger('change');
+        }
+        else{
+          input.prop('checked', false).trigger('change');
+        }
+      })
+    }
+
+    $.ajax({
+      url: 'teams/' + team_id + '/current_subproject',
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        team_id: team_id
+      },
+      headers: {
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+      },
+      success: function(response) {
+        console.log(response.current_subproject_name)
+        var currentProjectChoiceName = response.current_subproject_name
+        projectChoicesModal.modal('show')
+        initialiseProjectChoicesModal(currentProjectChoiceName)
+      },
+      error: function(xhr, status, error) {
+        console.log(error)
+      }
+    });
+  });
+  $('#project-choices-modal').on('click', '.project-choice-option label', function(event){
+    event.preventDefault();
+    event.stopPropagation();
+    var clickedLabel = event.target
+    var input = $(clickedLabel).siblings('input');
+    if(!input.prop('checked')){
+      // uncheck all others
+      var allOptions = $('#project-choices-modal .project-choice-option input[type="checkbox"')
+      allOptions.each(function(index, option){
+        var option = $(option);
+        option.prop('checked', false).trigger('change');
+      })
+
+      // check the clicked input
+      input.prop('checked', true).trigger('change');
+    }
+  });
+  $('#project-choices-modal').on('click', '#set-project-choice-btn', function(event){
+
+    var projectChoicesModal = $('#project-choices-modal')
+    var team_id = projectChoicesModal.find('input[type="hidden"][name="team_id"]').val()
+    var projectChoiceOptions = projectChoicesModal.find('.modal-body .project-choice-option')
+    var projectChoiceToSet = ""
+    projectChoiceOptions.each(function(index, option){
+      var input = $(option).find('input').first();
+
+      if(input.prop('checked')){
+        var nameLabel = $(option).find('label').first();
+        projectChoiceToSet = nameLabel.text().trim();
+        return false; // break jquery loop
+      }
+    })
+
+    $.ajax({
+      url: 'teams/' + team_id + '/set_subproject',
+      type: 'POST',
+      data: {
+        subproject_name: projectChoiceToSet
       },
       headers: {
         'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')

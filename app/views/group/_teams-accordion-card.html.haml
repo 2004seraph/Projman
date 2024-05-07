@@ -16,12 +16,16 @@
     .d-flex.align-items-center.gap-3{ style: "flex: 1;" }
       %table{ style: "flex: 1;" }
         %tbody
-          %tr.d-flex
-            %td{ style: "flex: 1;" }
+          %tr.d-flex.justify-content-between.row
+            %td.col-2
               .fs-5.m-0.p-0 #{team.name}
-            %td.d-flex.gap-2{ style: "flex: 3;" }
+            %td.d-flex.gap-2.col
               .fs-5.m-0.p-0.facilitator-text
                 Facilitator: #{team.assigned_facilitator.nil? ? "Not assigned" : team.assigned_facilitator.get_email} 
+            - if @current_project.subprojects.present?
+              %td.d-flex.gap-2.col
+                .fs-5.m-0.p-0.f.project-choice-text
+                  Project: #{team.subproject.nil? ? "Not assigned" : team.subproject.name}
 
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id_collapse}
@@ -31,6 +35,10 @@
         = button_tag '', type: 'button', class: "btn btn-light fs-6 edit-facilitator-btn", style: "height: auto;" do
           %i.bi.bi-pencil-square
           Edit Facilitator
+        - if @current_project.subprojects.present?
+          = button_tag '', type: 'button', class: "btn btn-light fs-6 edit-project-choice-btn", style: "height: auto;" do
+            %i.bi.bi-pencil-square
+            Edit Project Choice
 
         .d-flex.justify-content-between
           -# %h3.fs-6 Group Members
