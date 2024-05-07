@@ -5,9 +5,7 @@
 
 #project-teams-container
   = render 'components/accordion/container' do
-    - puts "re rendering teams"
     - @teams.each do |team|
-      - puts team.assigned_facilitator.get_email
       = render 'teams-accordion-card', team: team
 
 .modal.fade.modal-select-multiple{ id: "facilitators_modal", tabindex: "-1", "aria-labelledby": "facilitators_modal", "aria-hidden": "true"}
