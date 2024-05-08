@@ -55,7 +55,7 @@
                 %tr.selectable-row
                   %td
                     %input.form-check-input{type: "checkbox", value: ""}
-                  %td= student.preferred_name
+                  %td= "#{student.preferred_name + " " + student.surname}"
                   %td= student.email
                   %td= student.ucard_number
 

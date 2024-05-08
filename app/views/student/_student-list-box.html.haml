@@ -6,8 +6,7 @@
       #{ button_tag ' Email Class', type: 'button', class: "btn btn-secondary fs-8 bi-envelope-at mr-4", style: "height: auto;" }
       #{ button_tag ' Email Selected Students', type: 'button', class: "btn btn-primary disabled fs-8 bi-envelope-at mr-4", style: "height: auto;" }
     .d-flex.justify-content-end{ style: "flex: 1;" }
-      %button.btn.btn-secondary.me-2{type: "button", class: "remove-students-btn", "data-bs-toggle": "modal",
-        "data-bs-target": "#removeStudentsModal"}
+      %button.btn.btn-secondary.me-2{type: "button", class: "remove-students-btn"}
         %i.bi.bi-trash-fill
         Remove
       %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal",
@@ -25,13 +24,4 @@
         %tbody
           - x = get_student_by_module(remove_after_indent(title))
           - for i in 0...x.size do
-            %tr.selectable-row
-              %td
-                %input.form-check-input{type: "checkbox", value: "", checked: false}
-              %td
-                = x[i].preferred_name
-                = x[i].surname
-              %td
-                = x[i].email
-              %td
-                = x[i].ucard_number
+            = render 'student_selectable_row', student: x[i]

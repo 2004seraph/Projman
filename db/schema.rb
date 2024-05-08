@@ -241,8 +241,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
 
   add_foreign_key "assigned_facilitators", "course_projects"
   add_foreign_key "course_modules", "staffs"
-  add_foreign_key "course_modules_students", "course_modules"
-  add_foreign_key "course_modules_students", "students"
+  add_foreign_key "course_modules_students", "course_modules", on_delete: :cascade
+  add_foreign_key "course_modules_students", "students", on_delete: :cascade
   add_foreign_key "course_projects", "course_modules"
   add_foreign_key "event_responses", "events"
   add_foreign_key "events", "groups"

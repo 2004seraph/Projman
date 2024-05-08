@@ -65,7 +65,7 @@ class Ability
     return unless user.is_staff?
 
     # A staff can view students view
-    can [:read], Student
+    can %i[read index update_selection search_students confirm_selection clear_selection clear_student remove_students_from_module], Student
 
     # a staff can only view the modules they lead, not change them.
     can [:read], CourseModule, staff_id: user.staff.id
