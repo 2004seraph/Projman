@@ -12,4 +12,14 @@ class PageController < ApplicationController
   def profile
     authorize! :read, :page
   end
+
+  def request_title_change
+    admin = Staff.where(admin: true).first
+
+    requested_title = params[:requested_title]
+
+    ProfileMailer.notify_admin_title_change_request(admin.email, current_user, requested_title).deliver_now
+
+    render "page/profile"
+  end
 end

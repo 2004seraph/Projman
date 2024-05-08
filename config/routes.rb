@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   root 'course_project#index'
 
   get '/profile', to: 'page#profile'
+  post '/profile/request-title-change', to: 'page#request_title_change'
   get '/mailing', to: 'page#mailing'
 
   resources :projects, controller: :course_project do

@@ -14,7 +14,7 @@ class Ability
     # you must log in to do anything on the entire site.
     return if user.blank?
 
-    can [:read], :page
+    can [:read, :request_title_change], :page
     can %i[read create issue_response update_selection update_status], :issue
 
     # Rails.logger.debug "################################"

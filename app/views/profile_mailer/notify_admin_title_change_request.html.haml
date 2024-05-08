@@ -1,0 +1,21 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
+!!!
+%html
+  %head
+    %title Title Change Request
+  %body
+    %p #{@user.student.preferred_name} #{@user.sn} has requested a title change.
+    %p Current Title: #{@user.student.title}
+    %p Requested Title: #{@requested_title}
+
+    %hr
+
+    %h3 Student Information:
+    %p Name: #{@user.student.preferred_name} #{@user.sn}
+    %p Email: #{@user.email}
+    %p UCard Number: #{@user.student.ucard_number}
+    %p Department: #{@user.ou}
+
+    
