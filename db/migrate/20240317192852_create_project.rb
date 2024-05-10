@@ -9,6 +9,7 @@ class CreateProject < ActiveRecord::Migration[7.0]
                 %w[
                   draft
                   preparation
+                  review
                   live
                   completed
                   archived
