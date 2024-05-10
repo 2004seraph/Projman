@@ -136,8 +136,8 @@ class ProgressFormController < ApplicationController
     # To save the form there must be at least one question
     if session[:new_progress_form]["questions"].empty?
       return render json: {
-        status:  "error",
-        message: "Must have at least one question!"
+        status: 'error',
+        message: 'no_questions'
       }
     end
 
@@ -173,6 +173,16 @@ class ProgressFormController < ApplicationController
         }
       end
 
+      # Can't update released forms
+      if milestone.deadline <= DateTime.current
+        
+        return render json: {
+          status: 'already_released',
+          message: 'Cannot update a released progress form.',
+          redirect: project_progress_form_index_path
+        }
+      end
+
       # Update milestone data
       milestone.json_data = session[:new_progress_form]
       milestone.deadline = formatted_deadline
@@ -201,6 +211,13 @@ class ProgressFormController < ApplicationController
     # Try find and delete a record if editing
     if params[:id]
       milestone = get_progress_forms_for_project.select { |m| m.id == params[:id].to_i }.first
+
+      # Can't delete released forms
+      if milestone.deadline <= DateTime.current
+        flash.alert = 'Cannot delete a released form.'
+        redirect_to project_progress_form_index_path
+        return
+      end
 
       # If we don't find a milestone to delete, there is no error because its already 'deleted'
       milestone&.destroy

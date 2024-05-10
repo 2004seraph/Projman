@@ -326,6 +326,43 @@ class MarkSchemeController < ApplicationController
     render partial: "marking_table"
   end
 
+  def export_mark_scheme_with_results  
+    mark_scheme = get_mark_scheme
+
+    return if mark_scheme.nil?
+    
+    csv_data = CSV.generate(headers: true) do |csv|
+      # Write headers
+      csv << ["Team Name", "Section Title", "Marks Given", "Reason", "Assessor"]
+      
+      # Write data
+      mark_scheme.milestone_responses.each do |mr| 
+        data = mr.json_data
+        
+        team = Group.find(data["group_id"].to_i)
+
+        data["sections"].each do |section_title, section_data|
+          # Must convert empty values to nil here otherwise they are wrote to the csv as ""
+          marks_given = section_data["marks_given"].empty? ? nil : section_data["marks_given"]
+          reason = section_data["reason"].empty? ? nil : section_data["reason"]
+          assessor = section_data["assessor"].empty? ? nil : section_data["assessor"]
+          
+          csv << [
+            team.name, 
+            section_title, 
+            marks_given, 
+            reason, 
+            assessor
+          ]
+        end
+      end
+    end
+    
+    # Send the data as an attachment to download
+    filename = "#{mark_scheme.course_project.name}-marking.csv".gsub(' ', '-')
+    send_data csv_data, filename: filename, type: 'text/csv'
+  end
+
   private
     def hash_to_json(h)
       # Helper to convert a hash to a json, useful so accessing the data is consistently by strings,

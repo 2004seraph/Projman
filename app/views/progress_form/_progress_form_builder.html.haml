@@ -34,7 +34,7 @@
       = form_with(url: "add_question", method: :post, local: false, id: "add-question-form") do |form|
         .modal-body
           .form-group
-            = form.text_area :question, class: "form-control", required: true, placeholder: "What is the weather like today?", required: true, id: "question-text-area"
+            = form.text_area :question, class: "form-control", required: true, placeholder: "What is the weather like today?", id: "question-text-area"
             %small.text-danger.d-none#question-text-area-error Question cannot be empty
 
         .modal-footer
@@ -44,6 +44,8 @@
   %i.bi.bi-plus-circle-fill
   Add new question
 
+%small.text-danger.d-none#questions-error Must add a question
+
 .d-flex.pb-3
   %div
     %button.btn.btn-success.mt-2#save-button{type: "button"}
@@ -51,7 +53,7 @@
       Save
 
   %div.ms-1
-    = form_with(url: "delete_form", method: :post, local: true, id: "change-title-form") do |form|
+    = form_with(url: "delete_form", method: :post, local: true, id: "delete-form") do |form|
       = button_tag type: "submit", class: "btn btn-danger mt-2", id: "delete-button" do
         %i.bi.bi-trash
         Delete
@@ -80,6 +82,8 @@
 
     // Save form events
     const saveBtn = document.getElementById("save-button");
+    const createQuestionButton = document.getElementById("create-question-button");
+    const questionsError = document.getElementById("questions-error");
     saveBtn.addEventListener("click", function(e) {
       // Show any basic data validation errors
       let dataInvalid = false;
@@ -101,7 +105,7 @@
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+          "X-CSRF-Token": document.head.querySelector("meta[name=csrf-token]")?.content
         },
         body: JSON.stringify({
           "release_date": releaseDateInput.value,
@@ -110,13 +114,33 @@
       })
       .then(response => response.json())
       .then(json => {
-        if (json["status"] == "success") {
+        if (json["status"] === "success") {
           window.location.href = json["redirect"];
         }
         else {
-          alert(json["message"]);
+          if (json["message"] === "no_questions") {
+            createQuestionButton.classList.remove("btn-outline-primary");
+            createQuestionButton.classList.add("btn-outline-danger");
+
+            questionsError.classList.remove("d-none");
+          }
+          else {
+            alert(json["message"]);
+          }
+
+          if (json["status"] === "already_released") {
+            window.location.href = json["redirect"];
+          }
         }
       })
       .catch(error => console.error("Error when trying to save form:", error));
+    });
+
+    document.getElementById("add-question-form").addEventListener("submit", function(e) {
+      // When we submit the form, we add a question, so remove any no questions errors.
+      questionsError.classList.add("d-none");
+
+      createQuestionButton.classList.add("btn-outline-primary");
+      createQuestionButton.classList.remove("btn-outline-danger");
     });
   });

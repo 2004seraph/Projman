@@ -13,6 +13,11 @@
     %i.bi.bi-box-arrow-up-right
     View Marks For Teams
 
+- unless @mark_scheme.nil?
+    = link_to export_mark_scheme_with_results_project_mark_scheme_index_path, method: :post, class: "btn btn-primary" do
+        %i.bi.bi-box-arrow-up-right
+        Export Marking as CSV
+
 %hr.divider
 
 .fs-4.semi-bold Assign assessors to sections
