@@ -16,7 +16,8 @@
   .collapse{id: unique_id}
     .card-body.pt-1.pb-1
       - if @mark_scheme.nil?
-        No mark scheme has been created for this project yet.
+        .d-flex.justify-content-center
+          %i.fs-6.fw-light No Mark Scheme Available
 
       - else
         - sections = @mark_scheme.json_data["sections"]

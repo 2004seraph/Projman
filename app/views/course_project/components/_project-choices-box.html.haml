@@ -3,31 +3,20 @@
 
 - unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
 
-.card.issue-card.mb-2.accordion-element
-  %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
-   href: "##{unique_id}",
-   role: "button",
-   "data-accordion-toggle" => "",
-   "aria-expanded" => "false",
-   "aria-controls" => unique_id}
-    .d-flex.align-items-center
-      %h3.m-0.fs-5.fw-medium Project Choices Form
-    %i.bi.bi-caret-right-fill
-  .collapse{id: unique_id}
-    .card-body.pt-1.pb-1
-      = form_with(model: @milestone_response, url: "/projects/#{@current_project.id}/milestone_responses", method: "post", local: true, id: "project-choices-form") do |form|
-        .form-group
-          %h1
-          %h1.fs-5.fw-semibold Rank the Project Choices
-          %hr.divider
-          - @choices.size.times do |i|
-            %h1.fs-5.fw-semibold Choice #{i+1}
-            = form.select "choice_#{i+1}".to_sym, @choices, { class: "form-control", required: true, include_blank: true }
-            %h1
-          %hr.divider
-          %button.btn.btn-primary.btn-sm{ type: "submit" } Submit
-          %h1
-
+%h3.m-0.fs-5.fw-medium Project Choices Form
+= form_with(model: @milestone_response, url: "/projects/#{@current_project.id}/milestone_responses", method: "post", local: true, id: "project-choices-form") do |form|
+  .form-group
+    %h1
+    %h1.fs-5.fw-semibold Rank the Project Choices
+    %hr.divider
+    - @choices.size.times do |i|
+      %h1.fs-5.fw-semibold Choice #{i+1}
+      = form.select "choice_#{i+1}".to_sym, @choices, { class: "form-control", required: true, include_blank: true }
+      %h1
+    %hr.divider
+    %button.btn.btn-primary.btn-sm{ type: "submit" } Submit
+    %h1
+    
 #success-message.alert.alert-success{style: "display: none;"}
   Project Choices submitted successfully!
 

@@ -23,7 +23,7 @@ describe 'Managing modules' do
 
     attach_file 'student_csv', Rails.root.join('spec/data/COM1002.csv').to_s
 
-    click_on 'Submit'
+    click_on 'Save'
 
     expect(page).to have_content 'Module was successfully created.'
     expect(page).to have_content 'COM1002 Introduction'

@@ -481,6 +481,108 @@ module DatabaseHelper
     teams.shuffle
   end
 
+  ##
+  # Takes a list of students, splits them into the given group size according to:
+  # - Project Choices
+  # - Gender
+  # - Domicile
+  # and returns the 2-D array of groups.
+  def project_choices_group_allocation(team_size, student_list, proj_choice_milestone)
+    shuffled_students = student_list.shuffle
+    num_teams = (student_list.size / team_size).floor
+    teams = []
+
+    # Get all subproject options
+    subproject_preferences = {}
+    proj_choice_milestone.course_project.subprojects.each do |subproject|
+      subproject_preferences[subproject] = []
+    end
+
+    # Get student's first options and remove them from the student list
+    proj_choice_milestone.milestone_responses.each do |response|
+      subproject_preferences[Subproject.find(response.json_data["1"])] << Student.find(response.student_id)
+      shuffled_students.delete(Student.find(response.student_id))
+    end
+
+    # Initialize teams
+    num_teams.times do |i|
+      teams[i] = []
+    end
+
+    # Populate teams with sub-project groups
+    i = 0
+    proj_choice_milestone.course_project.subprojects.each do |subproject|
+      if subproject_preferences[subproject].size >= team_size
+        # To keep team_size constant through the next algorithm
+        rem = subproject_preferences[subproject].size % team_size
+        rem.times do
+          shuffled_students << subproject_preferences[subproject].pop
+        end
+        random_with_heuristics_allocation(team_size, subproject_preferences[subproject]).each do |team|
+          i = 0 if i == num_teams
+          teams[i] += team
+          i += 1
+        end
+      else
+        i = 0 if i == num_teams
+        teams[i] += subproject_preferences[subproject]
+        i += 1
+      end
+      subproject_preferences.delete(subproject)
+    end
+
+    # Fill in teams with students chosen via heuristics
+    num_teams.times do |i|
+      team = teams[i]
+      while team.size < team_size
+
+        if team.size.even?
+          # Add a random student
+          team << shuffled_students.pop
+          next
+        end
+
+        previous_student = team.last
+        titles = TITLES.find { |specific_titles| specific_titles.include?(previous_student.title) }
+
+        # Add a full title and domicile match if found
+        full_matches = shuffled_students.select do |student|
+          titles.include?(student.title) && student.fee_status == previous_student.fee_status
+        end
+        unless full_matches.empty?
+          team << full_matches.first
+          shuffled_students.delete(full_matches.first)
+          next
+        end
+
+        # Add a half title and domicile match if found
+        half_matches = shuffled_students.select do |student|
+          titles.include?(student.title) || student.fee_status == previous_student.fee_status
+        end
+        unless half_matches.empty?
+          team << half_matches.first
+          shuffled_students.delete(half_matches.first)
+          next
+        end
+
+        # Add another random student
+        team << shuffled_students.pop
+
+      end
+    end
+
+    # Allocate remaining students (if any) to random groups
+    i = 0
+    while shuffled_students.any?
+      i = 0 if i == num_teams
+
+      teams[i] << shuffled_students.pop
+      i += 1
+    end
+
+    teams.shuffle
+  end
+
   def assign_projects_to_individuals(course_project)
     subproject_popularity = {}
 
