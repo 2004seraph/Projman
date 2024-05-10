@@ -4,18 +4,18 @@
 #
 # Table name: course_projects
 #
-#  id                  :bigint           not null, primary key
-#  avoided_teammates   :integer          default(0)
-#  markscheme_json     :json
-#  name                :string           default("Unnamed Project"), not null
-#  preferred_teammates :integer          default(0)
-#  project_allocation  :enum             not null
-#  status              :enum             default("draft"), not null
-#  team_allocation     :enum
-#  team_size           :integer          not null
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  course_module_id    :bigint           not null
+#  id                        :bigint           not null, primary key
+#  avoided_teammates         :integer          default(0)
+#  markscheme_json           :json
+#  name                      :string           default("Unnamed Project"), not null
+#  preferred_teammates       :integer          default(0)
+#  status                    :enum             default("draft"), not null
+#  team_allocation           :enum
+#  team_size                 :integer          not null
+#  teams_from_project_choice :boolean          default(FALSE), not null
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  course_module_id          :bigint           not null
 #
 # Indexes
 #
@@ -48,12 +48,6 @@ class CourseProject < ApplicationRecord
     live: 'live',
     completed: 'completed',
     archived: 'archived'
-  }
-
-  enum :project_allocation, {
-    # random_project_allocation: 'random',
-    single_preference_project_allocation: 'single_preference_submission',
-    team_preference_project_allocation: 'team_average_preference'
   }
 
   enum :team_allocation, {
@@ -194,10 +188,6 @@ class CourseProject < ApplicationRecord
     errors.add(:main, 'Project name cannot be empty') if name.blank?
     if errors[:main].blank? && CourseProject.where(name:, course_module_id:).where.not(id:).exists?
       errors.add(:main, 'There exists a project on this module with the same name')
-    end
-
-    if project_allocation.blank? || !project_allocation.in?(CourseProject.project_allocations)
-      errors.add(:project_choices, 'Invalid project allocation mode selected')
     end
 
     errors.add(:team_config, 'Invalid team size entry') if team_size.nil?

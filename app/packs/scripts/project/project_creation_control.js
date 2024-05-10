@@ -26,6 +26,8 @@ $(function() {
         var projectPrefDateInput = $('#project-preference-form-deadline-row #project-preference-form-deadline')
         var teamPrefDateInput = $('#teammate-preference-form-deadline-row #teammate-preference-form-deadline')
 
+        var teamsBasedOnProjectChoice = $('#teamsBasedOnProjectChoiceSwitch').is(':checked')
+
         if(!projectChoicesChecked){        
             // Min attribute exists, get value and then delete it
             if (projectPrefDateInput.prop('min') !== undefined) {
@@ -52,10 +54,14 @@ $(function() {
 
         $('#project-choices .card-body').toggleClass('display-none', !projectChoicesChecked);
         $('#project-preference-form-deadline-row').toggleClass('display-none', !projectChoicesChecked);
+        if(!projectChoicesChecked && teamsBasedOnProjectChoice){
+            teamsBasedOnProjectChoice = false
+            $('#teamsBasedOnProjectChoiceSwitch').prop('checked', false).trigger('change');
+        }
         
-
-        $('#team-preference-form-settings').toggleClass('display-none', (teamAllocationMethodValue !== "preference_form_based"));
-        $('#teammate-preference-form-deadline-row').toggleClass('display-none', (teamAllocationMethodValue !== "preference_form_based"));
+        $('#team-allocation-method-row').toggleClass('display-none', teamsBasedOnProjectChoice)
+        $('#team-preference-form-settings').toggleClass('display-none', (teamsBasedOnProjectChoice || teamAllocationMethodValue !== "preference_form_based"));
+        $('#teammate-preference-form-deadline-row').toggleClass('display-none', (teamsBasedOnProjectChoice || teamAllocationMethodValue !== "preference_form_based"));
 
 
     }
@@ -70,6 +76,9 @@ $(function() {
         runChecks();
     });
     $(document).on('change', '#project-allocation-method', function() {
+        runChecks();
+    });
+    $(document).on('change', '#teamsBasedOnProjectChoiceSwitch', function() {
         runChecks();
     });
 

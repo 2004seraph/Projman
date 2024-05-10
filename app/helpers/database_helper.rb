@@ -43,7 +43,6 @@ module DatabaseHelper
       preferred_teammates: 1,
       avoided_teammates: 2,
       team_allocation_mode: 'random_team_allocation',
-      project_allocation_mode: 'team_preference_project_allocation',
 
       project_deadline: DateTime.now + 1.minute,
       project_pref_deadline: DateTime.now + 1.minute,
@@ -65,7 +64,6 @@ module DatabaseHelper
     project = CourseProject.find_or_create_by(
       course_module: CourseModule.find_by(code: settings[:module_code]),
       name: settings[:name],
-      project_allocation: settings[:project_allocation_mode],
       team_size: settings[:team_size],
       team_allocation: settings[:team_allocation_mode],
       preferred_teammates: settings[:preferred_teammates],
@@ -98,24 +96,6 @@ module DatabaseHelper
       course_project_id: project.id
     )
     DatabaseHelper.print_validation_errors(project_deadline_milestone)
-
-    if project.project_allocation
-      proj_pref_json_data = {
-        'Name' => 'Project Preference Deadline',
-        'isDeadline' => true,
-        'Comment' => '',
-        'Email' => { "Content": 'Project preference upcoming!', "Advance": 0 }
-      }
-      proj_pref_milestone = Milestone.create(
-        json_data: proj_pref_json_data,
-        deadline: settings[:project_pref_deadline],
-        system_type: 'project_preference_deadline',
-        user_generated: true,
-        milestone_type: 'student',
-        course_project_id: project.id
-      )
-      DatabaseHelper.print_validation_errors(proj_pref_milestone)
-    end
 
     if project.team_allocation != 'random_team_allocation'
       team_pref_json_data = {

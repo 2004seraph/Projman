@@ -53,20 +53,18 @@ class CourseProjectController < ApplicationController
       redirect_to session[:redirect_url] # previous page, or `action: :index` if you prefer
     end
 
-    project_allocation_modes_hash = CourseProject.project_allocations
     team_allocation_modes_hash = CourseProject.team_allocations
     milestone_types_hash = Milestone.milestone_types
 
     session[:project_data] = {
       errors: {},
       modules_hash:,
-      project_allocation_modes_hash:,
       team_allocation_modes_hash:,
       milestone_types_hash:,
 
       selected_module: '',
       project_name: '',
-      selected_project_allocation_mode: '',
+      teams_from_project_choice: false,
       project_choices: [],
       team_size: 4,
       selected_team_allocation_mode: '',
@@ -97,7 +95,6 @@ class CourseProjectController < ApplicationController
       redirect_to session[:redirect_url] # previous page, or `action: :index` if you prefer
     end
 
-    project_allocation_modes_hash = CourseProject.project_allocations
     team_allocation_modes_hash = CourseProject.team_allocations
     milestone_types_hash = Milestone.milestone_types
 
@@ -150,13 +147,12 @@ class CourseProjectController < ApplicationController
     session[:project_data] = {
       errors: {},
       modules_hash:,
-      project_allocation_modes_hash:,
       team_allocation_modes_hash:,
       milestone_types_hash:,
 
       selected_module: CourseModule.find(project[:course_module_id])[:code],
       project_name: project[:name],
-      selected_project_allocation_mode: project[:project_allocation],
+      teams_from_project_choice: project[:teams_from_project_choice],
       project_choices:,
       team_size: project[:team_size],
       selected_team_allocation_mode: project[:team_allocation],
@@ -333,8 +329,8 @@ class CourseProjectController < ApplicationController
     end
 
     # Project Choices
+    project_data[:teams_from_project_choice] = params.key?(:teams_from_project_choice)
     project_data[:project_choices_enabled] = params.key?(:project_choices_enable)
-    project_data[:selected_project_allocation_mode] = params[:project_allocation_method]
     errors[:project_choices] = []
 
     if project_data[:project_choices].size <= 1 && project_data[:project_choices_enabled]
@@ -359,6 +355,15 @@ class CourseProjectController < ApplicationController
     errors[:timings] = []
 
     errors[:timings] << 'Please set project deadline' if project_data[:project_deadline].blank?
+
+    if !project_data[:project_choices_enabled]
+      project_data[:teams_from_project_choice] = false
+    end
+
+    if project_data[:project_choices_enabled] && project_data[:teams_from_project_choice]
+      project_data[:selected_team_allocation_mode] = 'random_team_allocation'
+    end
+
     if project_data[:selected_team_allocation_mode] != 'random_team_allocation' && project_data[:teammate_preference_form_deadline].blank?
       errors[:timings] << 'Please set team preference form deadline'
     end
@@ -435,7 +440,7 @@ class CourseProjectController < ApplicationController
       course_module: CourseModule.find_by(code: project_data[:selected_module]),
       name: project_data[:project_name],
       # project_choices_json: project_data[:project_choices_enabled] ? project_data[:project_choices].to_json : "[]",
-      project_allocation: project_data[:selected_project_allocation_mode].to_sym,
+      teams_from_project_choice: project_data[:teams_from_project_choice],
       team_size: project_data[:team_size],
       team_allocation: project_data[:selected_team_allocation_mode].to_sym,
       preferred_teammates: project_data[:preferred_teammates],
@@ -575,7 +580,7 @@ class CourseProjectController < ApplicationController
       # Run sorting algorithm for student groups
       students_grouped = []
 
-      if project_data[:selected_team_allocation_mode] == 'random_team_allocation'
+      if project_data[:selected_team_allocation_mode] == 'random_team_allocation' && !project_data[:teams_from_project_choice]
         students_grouped = DatabaseHelper.random_group_allocation(team_size, module_students)
       end
 
@@ -646,8 +651,8 @@ class CourseProjectController < ApplicationController
     end
 
     # Project Choices
+    project_data[:teams_from_project_choice] = params.key?(:teams_from_project_choice)
     project_data[:project_choices_enabled] = params.key?(:project_choices_enable)
-    project_data[:selected_project_allocation_mode] = params[:project_allocation_method]
     errors[:project_choices] = []
 
     if project_data[:project_choices].size <= 1 && project_data[:project_choices_enabled]
@@ -670,6 +675,14 @@ class CourseProjectController < ApplicationController
     project_data[:project_preference_form_deadline] = params['milestone_Project Preference Form Deadline_date']
 
     errors[:timings] = []
+
+    if !project_data[:project_choices_enabled]
+      project_data[:teams_from_project_choice] = false
+    end
+
+    if project_data[:project_choices_enabled] && project_data[:teams_from_project_choice]
+      project_data[:selected_team_allocation_mode] = 'random_team_allocation'
+    end
 
     errors[:timings] << 'Please set project deadline' if project_data[:project_deadline].blank?
     if project_data[:selected_team_allocation_mode] != 'random_team_allocation' && project_data[:teammate_preference_form_deadline].blank?
@@ -748,12 +761,13 @@ class CourseProjectController < ApplicationController
     initial_module = project.course_module_id
     initial_team_size = project.team_size
     initial_team_allocation = project.team_allocation
+    intially_teams_from_project_choice = project.teams_from_project_choice
 
     # Update Project Details
     unless project.update(
       course_module: CourseModule.find_by(code: project_data[:selected_module]),
       name: project_data[:project_name],
-      project_allocation: project_data[:selected_project_allocation_mode].to_sym,
+      teams_from_project_choice: project_data[:teams_from_project_choice],
       team_size: project_data[:team_size],
       team_allocation: project_data[:selected_team_allocation_mode].to_sym,
       preferred_teammates: project_data[:preferred_teammates],
@@ -956,13 +970,27 @@ class CourseProjectController < ApplicationController
     end
     no_errors = errors.all? { |_, v| v.empty? }
 
-    # remake groups if:
-    # mode changed to random
-    # or if mode is random, and team size or module changes
-    if no_errors && ((project.team_allocation != initial_team_allocation && project.team_allocation == 'random_team_allocation') ||
-         (project.team_allocation == 'random_team_allocation' && (project.team_size != initial_team_size || project.course_module_id != initial_module)))
+    # delete groups if they exist if:
+    # teams_from_project_choice toggled ON
+    # or team allocation mode changed from random to non random
+    if no_errors &&
+       (project.teams_from_project_choice && !intially_teams_from_project_choice) ||
+       (project.team_allocation != initial_team_allocation && project.team_allocation != 'random_team_allocation')
+      project.groups&.destroy_all
+    end
 
-      project.groups.destroy_all
+    # remake groups if NOT teams_from_project_choice AND:
+    # mode changed to random
+    # or if mode stays random, but team size or module changes
+
+    # THIS IS ALL TO BE DELETED, REMAKING GROUPS AUTOMATICALLY IS DUMB: Jakub to Jakub
+
+    if no_errors && !project.teams_from_project_choice &&
+       ((project.team_allocation != initial_team_allocation && project.team_allocation == 'random_team_allocation') ||
+       ((project.team_allocation == initial_team_allocation && project.team_allocation == 'random_team_allocation') &&
+        (project.team_size != initial_team_size || project.course_module_id != initial_module)))
+
+      project.groups&.destroy_all
 
       module_students = CourseModule.find_by(code: project_data[:selected_module]).students
       team_size = project_data[:team_size].to_i

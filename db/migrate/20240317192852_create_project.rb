@@ -20,12 +20,6 @@ class CreateProject < ActiveRecord::Migration[7.0]
                   preference_form_based
                 ]
 
-    create_enum :project_choice_allocation,
-                %w[
-                  single_preference_submission
-                  team_average_preference
-                ]
-
     create_table :course_projects do |t|
       t.references :course_module, null: false, foreign_key: true
 
@@ -37,7 +31,7 @@ class CreateProject < ActiveRecord::Migration[7.0]
       t.integer :preferred_teammates, default: 0
       t.integer :avoided_teammates, default: 0
 
-      t.column :project_allocation, :project_choice_allocation, null: false
+      t.boolean :teams_from_project_choice, null: false, default: false
       # removed in favour of the subprojects relation
       # t.json :project_choices_json, default: "{}"
 

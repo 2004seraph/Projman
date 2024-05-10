@@ -20,7 +20,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
   create_enum "group_event_type", ["generic", "milestone", "chat", "issue"]
   create_enum "milestone_milestone_type", ["for_each_student", "for_each_staff", "for_each_team"]
   create_enum "milestone_system_type", ["teammate_preference_deadline", "project_preference_deadline", "project_deadline", "mark_scheme"]
-  create_enum "project_choice_allocation", ["single_preference_submission", "team_average_preference"]
   create_enum "project_status", ["draft", "preparation", "live", "completed", "archived"]
   create_enum "project_team_allocation", ["random", "preference_form_based"]
   create_enum "student_fee_status", ["home", "overseas"]
@@ -63,7 +62,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
     t.enum "team_allocation", enum_type: "project_team_allocation"
     t.integer "preferred_teammates", default: 0
     t.integer "avoided_teammates", default: 0
-    t.enum "project_allocation", null: false, enum_type: "project_choice_allocation"
+    t.boolean "teams_from_project_choice", default: false, null: false
     t.json "markscheme_json", default: "{}"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

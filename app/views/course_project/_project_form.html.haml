@@ -42,6 +42,12 @@
             - errors[:project_choices].each do |error|
               %span= error
           %hr
+      .form-check.form-switch.form-check.me-3
+        %input.form-check-input{ type: "checkbox", role: "switch", id: "teamsBasedOnProjectChoiceSwitch", name: "teams_from_project_choice", checked: project_data[:teams_from_project_choice]}
+        %label.form-check-label{ for: "teamsBasedOnProjectChoiceSwitch" }
+          Assign groups based off of project choice preference
+      %small.mb-3 Selecting this means that project preferences will be collected by individual students first, then teams will be made by grouping people by which project choice they chose
+      %hr
 
       %ul.list-group.list-group-flush.mb-2#project-choices-list
         - project_data[:project_choices].each do |name|
@@ -51,15 +57,6 @@
         "data-bs-target": "#add-project-choice-modal"}
         %i.bi.bi-plus
         Add
-
-      .row.align-items-center
-        .col
-          %label.col-form-label.fs-6.me-3{for: "project-allocation-method"} Group consensus mode
-        .col-8
-          %select.form-select.form-select-sm{id: "project-allocation-method", name: "project_allocation_method", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
-            - project_data[:project_allocation_modes_hash].each do |value, string|
-              %option{value: value, selected: (project_data[:selected_project_allocation_mode].present? ? project_data[:selected_project_allocation_mode] == value : value == project_data[:project_allocation_modes_hash].keys.first)}
-                = "#{ViewHelper.unparamaterize(string)}"
 
   -# TEAM CONFIGURATION
   .card#team-configuration.mb-3
@@ -80,7 +77,7 @@
           .input-group.mb-2{style: "width:fit-content"}
             %input.form-control.form-control-sm{ type: "number", id: "team-size", name:"team_size", min: "1", value: project_data[:team_size]}
 
-      .row.align-items-center
+      .row.align-items-center{id: "team-allocation-method-row"}
         .col
           %label.col-form-label.fs-6.me-3{for: "team-allocation-method"} Team Allocation Mode
         .col-8

@@ -161,7 +161,6 @@ DatabaseHelper.create_course_project(
     project_choices: ['Choice 1', 'Choice 2'],
     team_size: 4,
     team_allocation_mode: 'random_team_allocation',
-    project_allocation_mode: 'team_preference_project_allocation',
 
     project_deadline: DateTime.now + 3.minute,
     project_pref_deadline: DateTime.now + 2.minute,
