@@ -329,7 +329,7 @@ class MarkSchemeController < ApplicationController
     render partial: "marking_table"
   end
 
-  def export_mark_scheme_with_results  
+  def export_mark_scheme_with_results
     mark_scheme = get_mark_scheme
 
     return if mark_scheme.nil?
@@ -367,6 +367,8 @@ class MarkSchemeController < ApplicationController
   end
 
   def import_mark_scheme
+    # Uses the given csv file to generate a mark scheme milestone
+
     unless params[:mark_scheme_csv].present?
       @error = "Must select a mark scheme to import."
 
