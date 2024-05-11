@@ -126,6 +126,7 @@
 
       .modal-body
         %h1.fs-6.fw-normal.fst-italic= "This will clear the current student list and replace it with new students."
+        %h1.fs-6.fw-normal.fst-italic= "* This could take up to 2 minutes."
         = form_tag module_path,  method: :patch, multipart: true, id: 'student_form' do
           .form-group
             %input.form-control.fs-5.fw-semibold{ type: "file", id: "new_module_student_list", name: "new_module_student_list", autocomplete: "off", accept: "text/csv", required: true}

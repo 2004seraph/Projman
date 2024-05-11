@@ -46,7 +46,7 @@ class CourseModuleController < ApplicationController
     @lead = Staff.find_or_create_by(email: @lead)
 
     # Checks that the student_csv is compatible with the created module
-    unless @student_csv.nil?
+    unless params[:student_csv].nil?
       @student_csv = CSV.read(params[:student_csv].tempfile)
       unless @student_csv[1][12] == params[:course_module][:code]
         redirect_to new_module_path,
