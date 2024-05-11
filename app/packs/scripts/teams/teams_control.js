@@ -217,4 +217,34 @@ $(function() {
       }
     });
   });
+
+  // Adding Student to Team
+  $('#project-teams-container').on('click', '.add-student-btn', function() {
+    var teamContainer = $(this).closest('.project-teams-team-container');
+    var team_id = teamContainer.find('input[type="hidden"][name="team_id"]').val();
+    var addStudentModal = $('#add-student-modal')
+    addStudentModal.find('input[type="hidden"][name="team_id"]').val(team_id)
+    $('#no-student-found-error').addClass('display-none');
+  })
+  $('#add-student-modal').on('click', '#add-student-to-team-btn', function() {
+    var addStudentModal = $('#add-student-modal')
+    var team_id = addStudentModal.find('input[type="hidden"][name="team_id"]').val()
+    var student_email = addStudentModal.find('#add-students-to-team-search').val().trim()
+    var addStudentModal = $('#add-student-modal')
+    $.ajax({
+      url: 'teams/' + team_id + '/add_student_to_team',
+      type: 'POST',
+      data: {
+        student_email: student_email
+      },
+      headers: {
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+      },
+      success: function(response){
+      },
+      error: function(xhr, status, error) {
+        console.log(error)
+      }
+    });
+  })
 })

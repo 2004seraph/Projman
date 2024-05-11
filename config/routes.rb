@@ -48,6 +48,8 @@ Rails.application.routes.draw do
       post 'set_facilitator', on: :member
       post 'current_subproject', on: :member
       post 'set_subproject', on: :member
+      get 'search_module_students', on: :collection
+      post 'add_student_to_team', on: :member
     end
 
     resources :progress_form, controller: :progress_form do

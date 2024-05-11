@@ -104,4 +104,46 @@ class GroupController < ApplicationController
 
     respond_to(&:js) if no_errors
   end
+
+  def search_module_students
+    query = params[:query]
+    course_module = CourseModule.find_by(code: session[:module_data][:module_code])
+
+    @results = Student.where('email LIKE ?', "%#{query}%")
+                      .where(id: course_module.students.pluck(:id))
+                      .limit(8)
+                      .distinct
+    render json: @results.pluck(:email)
+  end
+
+  def add_student_to_team
+    team_id = params[:id]
+    team = Group.find_by(id: team_id)
+    project = team&.course_project
+    student = project.course_module.students&.find_by(email: params[:student_email])
+
+    @student = student
+    @team_id = team_id
+
+    puts "ADDING TO TEAM #{team.name}"
+
+    if student
+      # check if they are in a group on this project. if so, remove them
+      project&.groups&.each do |group|
+        next unless group.students&.include?(student)
+
+        puts "REMVOING FORM #{group.name}"
+        group.students.delete(student)
+        @removed_student_from_group = group.id
+        break
+      end
+      # add them to the team
+      team.students << student
+      if team.valid?
+        team.save
+      end
+    end
+    
+    respond_to(&:js)
+  end
 end

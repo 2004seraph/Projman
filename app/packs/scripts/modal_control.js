@@ -9,8 +9,12 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.addEventListener('show.bs.modal', function () {
 
             // CLEAR INPUT FIELDS
-            var inputFields = modal.querySelectorAll('input[type="text"], textarea');
+            var inputFields = modal.querySelectorAll('input[type="text"], textarea, input[type="search"]');
             var confirmButton = modal.querySelector('.btn.btn-primary[type="submit"]');
+
+            if(!confirmButton){
+                confirmButton = modal.querySelector('.confirm-action-btn');
+            }
             inputFields.forEach(function(inputField) {
                 inputField.value = ''; // Clear the input field
                 confirmButton.disabled = true;
@@ -50,6 +54,10 @@ document.addEventListener('DOMContentLoaded', function () {
             var confirmButton = modal.querySelector('.btn.btn-primary[type="submit"]');
             var listGroup = modal.querySelector('.list-group');
 
+            if(!confirmButton){
+                confirmButton = modal.querySelector('.confirm-action-btn');
+            }
+
             // Function to enable confirm button based on list group children
             function toggleConfirmButton() {
                 confirmButton.disabled = true
@@ -76,8 +84,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (modal.hasAttribute('data-disallow-confirm-empty-input')) {
-            var inputFields = modal.querySelectorAll('input[type="text"], textarea');
+            var inputFields = modal.querySelectorAll('input[type="text"], textarea, input[type="search"]');
             var confirmButton = modal.querySelector('.btn.btn-primary[type="submit"]');
+
+            if(!confirmButton){
+                confirmButton = modal.querySelector('.confirm-action-btn');
+            }
 
             if (inputFields.length > 0 && confirmButton) {
                 confirmButton.disabled = true;

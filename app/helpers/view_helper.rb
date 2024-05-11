@@ -31,4 +31,8 @@ module ViewHelper
   def get_module_code(code)
     session[:module_data][:module_code] = code
   end
+
+  def set_session_module_code(code)
+    session[:module_data][:module_code] = code
+  end
 end

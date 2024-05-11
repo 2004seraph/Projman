@@ -52,13 +52,12 @@
               %th{scope: "col"} UCard Number
             %tbody
               - team.students.each do |student|
-                %tr.selectable-row
-                  %td
-                    %input.form-check-input{type: "checkbox", value: ""}
-                  %td= "#{student.preferred_name + " " + student.surname}"
-                  %td= student.email
-                  %td= student.ucard_number
+                = render 'student_selectable_row', student: student
 
-        = button_tag 'Add Students +', type: 'button', class: "btn btn-primary", style: "height: auto;"
+        = button_tag type: 'button', class: "btn btn-primary me-2 add-student-btn", style: "height: auto;", data: { bs_toggle: "modal", bs_target: "#add-student-modal", onclick: set_session_module_code(@current_project.course_module.code) } do
+          %i.bi.bi-person-fill-add
+          Add Student
 
-        = button_tag 'Remove Selected Students', type: 'button', class: "btn btn-secondary fs-8", style: "height: auto;"
+        = button_tag type: 'button', class: "btn btn-secondary fs-8", style: "height: auto;" do
+          %i.bi.bi-person-fill-dash
+          Remove Selected Students
