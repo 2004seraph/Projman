@@ -13,13 +13,14 @@
         .container#activity-feed-container
             .row
                 .scrollable
-                    - @milestones.each do |milestone|
+                    -# Orders all milestones (between projects) in closest to deadline order
+                    - @milestones.sort_by(&:deadline).each do |milestone|
                         .card.mb-2
                             .card-body.pb-2.pt-2
                                 %h5.card-title= "#{milestone.course_module.code} #{milestone.course_project.name} - #{milestone.json_data["Name"]}"
                                 %p.card-text.mb-1
                                 %strong Due in:
-                                = "#{(milestone.deadline - DateTime.now).to_i} days"
+                                = "#{(milestone.deadline.to_date - DateTime.now.to_date).to_i} days"
                                 %br
                                 - unless milestone.json_data["Comment"].nil?
                                     - if milestone.json_data["Comment"].length > 0
@@ -31,17 +32,43 @@
 
     %br
     %h2
-        Projects
+        Live Projects
     %hr.divider
 
-    - @projects.each do |project|
-        = link_to project_url(project.id), class: "project-link", id: "project-button-#{project.id}" do
-            .project-button
-                %h3
-                    #{project.course_module.code} #{project.course_module.name} - #{project.name}
-                    .sub-status
-                        - if project.project_notification?(current_user, current_user.student.groups.find_by(course_project_id: project.id))
-                            %i.bi.bi-exclamation-diamond-fill.icon-pad.p-3
-                        #{ViewHelper.unparamaterize project.status}
-                        -#Change colour according to deadlines or status????
-                        %i.bi.bi-circle-fill.fill-green
+    -if @live_projects.size > 0
+        - @live_projects.each do |project|
+            - if project.status == "review"
+                .project-button-review
+                    %h3
+                        #{project.course_module.code} #{project.course_module.name} - #{project.name}
+                        .sub-status
+                            %i.fs-6.fst-italic Under Review
+            - else
+                = link_to project_url(project.id), class: "project-link", id: "project-button-#{project.id}" do
+                    .project-button
+                        %h3
+                            #{project.course_module.code} #{project.course_module.name} - #{project.name}
+                            .sub-status
+                                - if project.project_notification?(current_user, current_user.student.groups.find_by(course_project_id: project.id))   
+                                    %i.bi.bi-exclamation-diamond-fill.icon-pad.p-3
+                                %i.fs-6.fst-italic #{ViewHelper.unparamaterize project.status}
+                                -#Change colour according to deadlines or status
+                                %i.bi.bi-circle-fill.fill-green
+    -else
+        .d-flex.justify-content-center
+            %i.fs-6.fw-light No Live Projects
+    
+    %br
+    %h2
+        Completed Projects
+    %hr.divider
+
+    -if @comp_projects.size > 0
+        - @comp_projects.each do |project|
+            = link_to project_url(project.id), class: "project-link", id: "project-button-#{project.id}" do
+                .project-button
+                    %h3
+                        #{project.course_module.code} #{project.course_module.name} - #{project.name}
+    -else
+        .d-flex.justify-content-center
+            %i.fs-6.fw-light No Completed Projects

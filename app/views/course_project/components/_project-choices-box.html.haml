@@ -3,11 +3,14 @@
 
 - unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
 
-%h3.m-0.fs-5.fw-medium Project Choices Form
+#proj-success-message.alert.alert-success{style: "display: none;"}
+  Project Choices submitted successfully!
+
 = form_with(model: @milestone_response, url: "/projects/#{@current_project.id}/milestone_responses", method: "post", local: true, id: "project-choices-form") do |form|
+  %h3.m-0.fs-5.fw-medium Project Choices Form
+  %h1
+  %h1.fs-6.fw-normal.fst-italic Rank the Project Choices
   .form-group
-    %h1
-    %h1.fs-5.fw-semibold Rank the Project Choices
     %hr.divider
     - @choices.size.times do |i|
       %h1.fs-5.fw-semibold Choice #{i+1}
@@ -16,9 +19,6 @@
     %hr.divider
     %button.btn.btn-primary.btn-sm{ type: "submit" } Submit
     %h1
-    
-#success-message.alert.alert-success{style: "display: none;"}
-  Project Choices submitted successfully!
 
 :javascript
   document.addEventListener('DOMContentLoaded', function() {
@@ -64,16 +64,15 @@
       })
       .then(response => {
         if (response.ok) {
+
+          form.style.display = 'none';
           form.reset();
-          document.getElementById('success-message').style.display = 'block';
+          document.getElementById('proj-success-message').style.display = 'block';
           setTimeout(function() {
-            document.getElementById('success-message').style.display = 'none';
+            document.getElementById('proj-success-message').style.display = 'none';
+            window.location.reload();
           }, 3000);
 
-          const issueCardElement = document.querySelector('.issue-card');
-          if (issueCardElement) {
-          issueCardElement.style.display = 'none';
-          }
         } else {
           console.error('Error:', response.statusText);
         }

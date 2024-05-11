@@ -29,9 +29,11 @@ class CourseProjectController < ApplicationController
       @course_modules = current_user.staff.course_modules.length
       render 'index_module_leader'
     else
-      @projects = current_user.student.course_projects
+      @live_projects = current_user.student.course_projects.where(status: ["preparation", "review", "live"])
+      @comp_projects = current_user.student.course_projects.where(status: "completed")
+
       @milestones = []
-      @projects.each do |project|
+      @live_projects.each do |project|
         @milestones += project.milestones
       end
       render 'index_student'
@@ -1061,7 +1063,7 @@ class CourseProjectController < ApplicationController
       redirect_to action: :teams
     else
 
-      # Get independent project information (project name, leader, milestones, preference form)
+      # Get independent project information
       @current_project = CourseProject.find(params[:id])
       linked_module = @current_project.course_module
       @proj_name = "#{linked_module.code} #{linked_module.name} - #{@current_project.name}"
@@ -1096,7 +1098,21 @@ class CourseProjectController < ApplicationController
         # Should the preference form be shown
         first_response = MilestoneResponse.where(milestone_id: @pref_form.id,
                                                  student_id: current_user.student.id).empty?
-        @show_pref_form = (@current_project.status == 'student_preference') && first_response
+        @show_pref_form = (@current_project.status == 'preparation') && first_response
+      end
+
+      # Project Choices Form
+      @show_proj_form = false
+
+      unless @proj_choices_form.nil?
+
+        @choices = @current_project.subprojects.pluck('name')
+        # Should the project choice form be shown
+        first_response = MilestoneResponse.where(milestone_id: @proj_choices_form.id,
+                                                 student_id: current_user.student.id).empty?
+        in_group = current_user.student.groups.find_by(course_project: @current_project).present?
+
+        @show_proj_form = (@current_project.status == 'preparation') && first_response && (in_group || @current_project.teams_from_project_choice)
       end
 
       # Get group-dependent project information
@@ -1104,33 +1120,9 @@ class CourseProjectController < ApplicationController
         @show_group_information = false
       else
         @show_group_information = true
+
         group = current_user.student.groups.find_by(course_project: @current_project)
         @group_name = group.name
-
-        # Project Choices Form
-        @show_proj_form = false
-
-        unless @current_project.project_allocation == 'random_project_allocation' || @current_project.project_allocation.nil?
-          @choices = @current_project.subprojects.pluck('name')
-
-          # Should the project choice form be shown
-          personal_response = MilestoneResponse.where(
-            milestone: @proj_choices_form,
-            student: current_user.student
-          ).empty?
-
-          group_response = true
-          if @current_project.project_allocation == 'single_preference_project_allocation'
-            group.students.each do |teammate|
-              unless MilestoneResponse.where(milestone: @proj_choices_form, student: teammate).empty?
-                group_response = false
-              end
-            end
-          end
-
-          @show_proj_form = (@current_project.status == 'team_preference') && personal_response && group_response
-
-        end
 
         # Get team information
         @team_names = []
@@ -1151,7 +1143,6 @@ class CourseProjectController < ApplicationController
                                  Staff.find(facilitator.staff_id).email
                                end
         end
-
       end
 
       # Get mark scheme if created

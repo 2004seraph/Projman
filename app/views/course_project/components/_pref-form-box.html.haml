@@ -3,12 +3,14 @@
 
 - unique_id = "collapseIssue_#{SecureRandom.hex(4)}" # Generate a unique ID using SecureRandom
 
-%h3.m-0.fs-5.fw-medium Teammate Preference Form
-%h1
-%h1.fs-6.fw-normal.fst-italic= "Please enter the students preferred name and surname."
-%h1.fs-6.fw-normal.fst-italic= "If the student does not appear in the dropdown - make sure you are using the correct name."
-%hr.divider
+#pref-success-message.alert.alert-success{style: "display: none;"}
+  Preference Form submitted successfully!
+
 = form_with(model: @milestone_response,url: "/projects/#{@current_project.id}/milestone_responses", method: "post", local: true, id: "preference-form") do |form|
+  %h3.m-0.fs-5.fw-medium Teammate Preference Form
+  %h1
+  %h1.fs-6.fw-normal.fst-italic= "Please enter the students preferred name and surname."
+  %hr.divider
   .form-group
     - hidden_fields = {"project_id" => params[:id]}
     %h1.fs-5.fw-semibold Preferred Teammates
@@ -20,7 +22,8 @@
           hidden_fields: hidden_fields
       %h1
     %hr.divider
-    %h1.fs-5.fw-semibold Avoided Teammates
+    %h1.fs-5.fw-semibold Avoided Teammates *
+    %h1.fs-6.fw-normal.fst-italic= "Avoided teammates are not required."
     - @no_mates.times do |j|
       = render 'components/search-with-dropdown',
           form_input_id: "avoided_teammate_#{j}".to_sym,
@@ -31,9 +34,6 @@
     %hr.divider
     %button.btn.btn-primary.btn-sm{ type: "submit" } Submit
     %h1
-    
-#success-message.alert.alert-success{style: "display: none;"}
-  Preference Form submitted successfully!
 
 :javascript
   document.addEventListener('DOMContentLoaded', function() {
@@ -53,16 +53,15 @@
       })
       .then(response => {
         if (response.ok) {
+
+          form.style.display = 'none';
           form.reset();
-          document.getElementById('success-message').style.display = 'block';
+          document.getElementById('pref-success-message').style.display = 'block';
           setTimeout(function() {
-            document.getElementById('success-message').style.display = 'none';
+            document.getElementById('pref-success-message').style.display = 'none';
+            window.location.reload();
           }, 3000);
 
-          const issueCardElement = document.querySelector('.issue-card');
-          if (issueCardElement) {
-          issueCardElement.style.display = 'none';
-          }
         } else {
           console.error('Error:', response.statusText);
         }

@@ -88,6 +88,27 @@
     background-color: var(--secondary-colour-hover);
 }
 
+.project-button-review{
+    width:100%;
+    background-color: white;
+    margin: 1.4vh 0;
+    padding: 2rem 1rem;
+    border-radius: 1rem;
+    border-color: var(--secondary-colour);
+
+    h3{
+        font-weight:400;
+        margin:0;
+        font-size: calc(1.1rem + 0.3vw);
+        display:flex;
+        justify-content: space-between;
+    }
+
+    .sub-status{
+        font-size: calc(0.9rem + 0.3vw);
+    }
+}
+
 #backToTopButton{
     position: fixed;
     bottom: 20px;

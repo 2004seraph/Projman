@@ -44,10 +44,13 @@ class MilestoneResponseController < ApplicationController
     teammates = []
     params.each do |param_key, value|
       next unless param_key.to_s.start_with?(key.to_s)
+      next if value.nil?
 
       f_name = value.strip.split(' ')[0]
       l_name = value.strip.split(' ')[1]
-      teammates << Student.where(preferred_name: f_name, surname: l_name).first.id
+      unless Student.where(preferred_name: f_name, surname: l_name).first.nil?
+        teammates << Student.where(preferred_name: f_name, surname: l_name).first.id
+      end
     end
     teammates
   end
