@@ -5,18 +5,29 @@
 
 .fs-3.semi-bold Mark Scheme
 
-%a.btn.btn-primary{type: "button", href: "mark_scheme/new"}
-    %i.bi.bi-box-arrow-up-right
-    View/Edit Marking Document
-
-%a.btn.btn-primary{type: "button", href: "mark_scheme/show"}
-    %i.bi.bi-box-arrow-up-right
-    View Marks For Teams
-
-- unless @mark_scheme.nil?
-    = link_to export_mark_scheme_with_results_project_mark_scheme_index_path, method: :post, class: "btn btn-primary" do
+%div.mt-2
+    %a.btn.btn-primary{type: "button", href: "mark_scheme/new"}
         %i.bi.bi-box-arrow-up-right
-        Export Marking as CSV
+        View/Edit Marking Document
+
+    %a.btn.btn-primary{type: "button", href: "mark_scheme/show"}
+        %i.bi.bi-box-arrow-up-right
+        View Marks For Teams
+
+%div.mt-2
+    %a.btn.btn-primary{
+        type: "button",
+        id: "import-mark-scheme-button",
+        "data-bs-toggle": "modal",
+        "data-bs-target": "#import-mark-scheme-modal"}
+        %i.bi.bi-box-arrow-down
+        Import Mark Scheme
+
+
+    - unless @mark_scheme.nil?
+        = link_to export_mark_scheme_with_results_project_mark_scheme_index_path, method: :post, class: "btn btn-primary" do
+            %i.bi.bi-box-arrow-up
+            Export Marking as CSV
 
 %hr.divider
 
@@ -71,6 +82,52 @@
 
                 .col-auto.ml-auto
                     %button.btn.btn-primary{ type: "submit", id: "assign-teams-button", onclick: "assignTeams();"}= "Assign"
+
+// Import mark scheme csv modal
+.modal.fade{ id: "import-mark-scheme-modal", tabindex: "-1", "aria-labelledby": "addassign-teams-modal", 
+             "aria-hidden": "true"}
+    .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+        .modal-content
+            .modal-header
+                %h1.modal-title.fs-5= "Import a Mark Scheme CSV"
+                %button.btn-close#import-mark-scheme-close-button{ "aria-label": "Close", 
+                                                            "data-bs-dismiss": "modal", type: "button" }
+
+            = form_with url: import_mark_scheme_project_mark_scheme_index_path, multipart: true, local: false do |form|
+                .modal-body
+                    -# Custom styled file upload
+                    %label.btn.btn-primary.me-3
+                        %i.bi.bi-upload
+                        Upload
+                        
+                        = file_field_tag :mark_scheme_csv, id: "mark-scheme-input", accept: '.csv', style: "display: none;", onchange: 'updateSelectedMarkSchemeCSV(this);'
+
+                    %span#mark-scheme-csv-file-text
+                        No file chosen
+
+                    %i.bi.bi-trash#remove-file-button{type:"button", style:"display: none;", onclick:"removeSelectedMarkSchemeCSV()"}
+
+                    %hr.divider
+
+                    -# Display overwrite mark scheme warning
+                    .alert.alert-warning.d-flex.justify-content-left.align-items-baseline
+                        %i.bi.bi-exclamation-triangle-fill.me-2
+                        %h5.fs-5 This will overwrite the existing mark scheme and any related marking!
+
+                    .alert.alert-success.d-flex.justify-content-left.align-items-baseline
+                        %i.bi.bi-info-circle.me-2
+                        %h5.fs-5 The .csv file must be in the format: 'title, description, max_marks'
+
+                    -# Error display
+                    .alert.alert-danger.d-flex.justify-content-left.align-items-baseline.d-none#import-error-container
+                        %i.bi.bi-exclamation-diamond-fill.me-2
+                        %h5.fs-5#import-error-message Error message
+                        
+                .modal-footer.d-flex.justify-content-between
+                    .col-auto.ml-auto
+                        = submit_tag "Import", class: "btn btn-primary"
+
+
 
 
 :javascript
@@ -208,3 +265,24 @@
         })
         .catch(error => console.error("Error when trying to auto assign teams to assessor:", error));
     }
+
+    function updateSelectedMarkSchemeCSV(input) {
+        // This allows for the file input button to be styled, trade-off is setting the selected file name manually. 
+        var fileName = input.files[0]?.name;
+
+        if (!fileName) {
+            return;
+        }
+
+        if (fileName.endsWith(".csv")) {
+            document.getElementById("mark-scheme-csv-file-text").innerText = fileName;
+           document.getElementById("remove-file-button").style.display = 'inline-block';
+        }
+    }
+
+    function removeSelectedMarkSchemeCSV() {
+        // Remove the currently selected csv
+        document.getElementById("mark-scheme-input").value = null;
+        document.getElementById("mark-scheme-csv-file-text").innerText = "No file chosen";
+        document.getElementById("remove-file-button").style.display = "none";
+    } 

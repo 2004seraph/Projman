@@ -155,9 +155,12 @@ class MarkSchemeController < ApplicationController
     if @assessor_email.present?
       if session[:assessor_selection].nil?
         session[:assessor_selection] = [@assessor_email]
-      else
+      elsif !(session[:assessor_selection].to_a.include?(@assessor_email))
         session[:assessor_selection] << @assessor_email
+      else
+        @assessor_email = nil
       end
+    
     end
 
     if request.xhr?
@@ -361,6 +364,54 @@ class MarkSchemeController < ApplicationController
     # Send the data as an attachment to download
     filename = "#{mark_scheme.course_project.name}-marking.csv".gsub(' ', '-')
     send_data csv_data, filename: filename, type: 'text/csv'
+  end
+
+  def import_mark_scheme
+    unless params[:mark_scheme_csv].present?
+      @error = "Must select a mark scheme to import."
+
+    else
+      mark_scheme_csv = CSV.new(params[:mark_scheme_csv].tempfile)
+      
+      @mark_scheme_json = hash_to_json({"sections": []})
+
+      mark_scheme_csv.each do |row|
+        title = row[0]
+        description = row[1]
+        max_marks = row[2]
+        
+        unless title.present? && description.present? && /\A\d+\z/.match(max_marks)
+          @error = "Invalid CSV format."
+          break
+        end
+
+        @mark_scheme_json['sections'] << hash_to_json({ title: title, description: description, max_marks: max_marks })
+      end
+    end
+
+    unless @error.present?
+      # Mark scheme json succesfully parsed, so destroy existing milestone to destroy responses as well
+      # TODO: When I edit a mark scheme should I also be destroying the responses to it? Or just the responses where
+      #       something has been changed?
+      get_mark_scheme&.destroy
+      
+      # Create a new milestone
+      milestone = Milestone.new(
+        json_data: hash_to_json(@mark_scheme_json),
+        deadline: Date.current.strftime('%Y-%m-%d'),  # Deadline isn't used for mark schemes
+        milestone_type: :team,                        # Marks will be given per team
+        course_project_id: params[:project_id],
+        system_type: :marking_deadline
+      )
+
+      @error = "Failed to import mark scheme." unless milestone.save
+    end
+
+    if request.xhr?
+      respond_to(&:js)
+    else
+      render :new
+    end
   end
 
   private

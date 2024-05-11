@@ -88,6 +88,7 @@ Rails.application.routes.draw do
       post 'auto_assign_teams' => 'mark_scheme#auto_assign_teams', on: :collection
       get 'search_assessors' => 'mark_scheme#search_assessors', on: :collection
       post "export_mark_scheme_with_results" => "mark_scheme#export_mark_scheme_with_results", on: :collection
+      post "import_mark_scheme" => "mark_scheme#import_mark_scheme", on: :collection
 
       post "show_new", on: :collection
     end
