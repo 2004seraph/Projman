@@ -4,9 +4,11 @@
 = render partial: 'course_project/components/project_info_header', locals: { project_id: @current_project.id }
 
 #project-teams-container
-  .d-flex.mb-2.justify-content-end
-    %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#remakeTeamsModal", id: "remake-teams"}
-      Remake Teams
+
+  - if @current_project.show_remake_teams_button?
+    .d-flex.mb-2.justify-content-end
+      %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#remakeTeamsModal", id: "remake-teams"}
+        Remake Teams
 
   .container#teams-list-container
     = render "teams_list", teams: @teams, current_project: @current_project
