@@ -58,6 +58,6 @@
           %i.bi.bi-person-fill-add
           Add Student
 
-        = button_tag type: 'button', class: "btn btn-secondary fs-8", style: "height: auto;" do
+        = button_tag type: 'button', class: "btn btn-secondary remove-students-btn fs-8", style: "height: auto;", data: { onclick: set_session_module_code(@current_project.course_module.code)} do
           %i.bi.bi-person-fill-dash
           Remove Selected Students

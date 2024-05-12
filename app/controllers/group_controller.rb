@@ -143,7 +143,28 @@ class GroupController < ApplicationController
         team.save
       end
     end
-    
+
     respond_to(&:js)
+  end
+
+  def remove_students_from_team
+    student_emails = params[:emails]
+    removed_student_emails = []
+    p = CourseProject.find_by(id: params[:project_id])
+    g = p&.groups&.find_by(id: params[:id])
+    unless g.nil?
+      student_emails.each do |email|
+        s = g.students&.find_by(email:)
+        next if g&.nil?
+
+        g.students.delete(s)
+        removed_student_emails << email
+      end
+    end
+
+    response_json = {
+      removed_student_emails:
+    }
+    render json: response_json
   end
 end

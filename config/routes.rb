@@ -52,6 +52,7 @@ Rails.application.routes.draw do
       post 'set_subproject', on: :member
       get 'search_module_students', on: :collection
       post 'add_student_to_team', on: :member
+      post 'remove_students_from_team', on: :member
     end
 
     resources :progress_form, controller: :progress_form do

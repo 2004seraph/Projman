@@ -247,4 +247,68 @@ $(function() {
       }
     });
   })
+
+  // Removing students
+  var studentsInTeamContainer = $('.project-teams-team-container')
+  var emails = []
+  studentsInTeamContainer.each(function(){
+    var team_id = $(this).find('input[type="hidden"][name="team_id"]').val();
+    var selectableRowContainer = $(this).find('.selectable-row-container').first()
+    var removeBtn = $(this).find('.remove-students-btn').first()
+
+    // collect emails from rows
+    removeBtn.on('click', function(event){
+        emails = []
+        event.preventDefault()
+        event.stopPropagation()
+
+        var selectedRows = selectableRowContainer.getSelectedRows()
+        //extract emails
+        selectedRows.forEach(function(row) {
+            var email = $(row).children('td').eq(2).text().trim();
+            emails.push(email)
+        });
+        if (emails.length == 0){
+            $('#no_students_selected_modal').modal('show')
+        }
+        else{
+            var removeStudentsModal = $('#remove_students_modal').modal('show')
+            removeStudentsModal.find('input[type="hidden"][name="team_id"]').val(team_id)
+            var modalBody = removeStudentsModal.find('.modal-body').first();
+            var studentListArea = modalBody.find('.student-list-area').first()
+            studentListArea.html(emails.join("<br>"));
+        }
+    })
+  })
+
+  $('#remove_students_modal #confirmRemoveStudents').on('click', function(){
+    // send all emails to controller to get students removed
+    var team_id = $('#remove_students_modal input[type="hidden"][name="team_id"]').val()
+    $.ajax({
+      url: 'teams/' + team_id + '/remove_students_from_team',
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        emails: emails
+      },
+      headers: {
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+      },
+      success: function(response) {
+        var removed_emails = response.removed_student_emails
+        var studentsSelectableRowsContainer = $("#project_team_container_" + team_id + " .card-body table")
+        var selectableRows = studentsSelectableRowsContainer.find('.selectable-row')
+        selectableRows.each(function(index, row) {
+          var email = $(row).children('td').eq(2).text().trim();
+          if(removed_emails.includes(email)){
+            row.remove();
+          }
+        });
+          
+      },
+      error: function(xhr, status, error) {
+        console.error(xhr.responseText);
+      }
+    });
+  })
 })

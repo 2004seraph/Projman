@@ -81,7 +81,8 @@ class Ability
       current_subproject
       set_subproject
       search_module_students
-      add_student_to_team], Group, course_module: { staff_id: user.staff.id }
+      add_student_to_team
+      remove_students_from_team], Group, course_module: { staff_id: user.staff.id }
 
     # a staff can create projects
     # a staff can only view and edit projects they lead.
