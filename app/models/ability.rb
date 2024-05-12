@@ -93,6 +93,7 @@ class Ability
       remove_milestone_email
       set_milestone_email_data
       set_milestone_comment
+      remake_teams
     ], CourseProject
     can %i[read edit update teams], CourseProject, course_module: { staff_id: user.staff.id }
 

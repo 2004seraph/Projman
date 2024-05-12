@@ -1,0 +1,4 @@
+= render 'components/accordion/container' do
+  - logger.debug("!!!!!!!!!!!!!!!!!!!!!!!! #{teams.length}")
+  - teams.each do |team|
+    = render 'group/teams-accordion-card', team: team

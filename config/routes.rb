@@ -42,6 +42,8 @@ Rails.application.routes.draw do
 
     post ':group_id/send-chat-message', to: 'course_project#send_chat_message', on: :collection
 
+    post 'remake_teams', on: :member
+
     resources :teams, controller: :group do
       get '/teams', to: 'group#index', on: :member
       post 'facilitator_emails', on: :member

@@ -1,0 +1,5 @@
+:plain
+  var teamsList = $('#teams-list-container')
+  console.log("#{j @project_groups}");
+  var newPartialHTML = "#{j(render('group/teams_list', teams: @project_groups ))}";
+  teamsList.html(newPartialHTML)
