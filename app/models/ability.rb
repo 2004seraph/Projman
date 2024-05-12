@@ -3,7 +3,6 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
 class Ability
   include CanCan::Ability
 
@@ -14,7 +13,7 @@ class Ability
     # you must log in to do anything on the entire site.
     return if user.blank?
 
-    can [:read, :request_title_change], :page
+    can %i[read request_title_change], :page
     can %i[read create issue_response update_selection update_status], :issue
 
     # Rails.logger.debug "################################"
@@ -65,7 +64,8 @@ class Ability
     return unless user.is_staff?
 
     # A staff can view students view
-    can %i[read index update_selection search_students confirm_selection clear_selection clear_student remove_students_from_module], Student
+    can %i[read index update_selection search_students confirm_selection clear_selection clear_student remove_students_from_module],
+        Student
 
     # a staff can only view the modules they lead, not change them.
     can [:read], CourseModule, staff_id: user.staff.id
@@ -82,7 +82,8 @@ class Ability
       set_subproject
       search_module_students
       add_student_to_team
-      remove_students_from_team], Group, course_module: { staff_id: user.staff.id }
+      remove_students_from_team
+    ], Group, course_module: { staff_id: user.staff.id }
 
     # a staff can create projects
     # a staff can only view and edit projects they lead.

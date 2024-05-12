@@ -4,14 +4,14 @@ class GroupController < ApplicationController
   load_and_authorize_resource
 
   def index
-    puts "INDEX ACTION"
+    Rails.logger.debug 'INDEX ACTION'
     @current_project = CourseProject.find(params[:project_id])
-    puts @current_project
+    Rails.logger.debug @current_project
     @teams = []
     return if @current_project.nil?
 
     @teams = @current_project.groups.order(id: :asc)
-    puts @teams.pluck(:assigned_facilitator_id)
+    Rails.logger.debug @teams.pluck(:assigned_facilitator_id)
     render 'group/index'
   end
 
@@ -27,15 +27,17 @@ class GroupController < ApplicationController
 
     if project_facilitators.present?
       project_facilitators.each do |f|
-        rendered_partial = render_to_string(partial: 'group/facilitator_option', locals: { id: f.id, name: f.id, email: f.email })
+        rendered_partial = render_to_string(partial: 'group/facilitator_option',
+                                            locals:  { id: f.id,
+name: f.id, email: f.email })
         response_partials << rendered_partial
       end
     end
 
     json_response = {
       facilitator_emails: project_facilitators.present? ? project_facilitators.pluck(:email) : [],
-      team_facilitator: group_facilitator&.email,
-      partials: response_partials
+      team_facilitator:   group_facilitator&.email,
+      partials:           response_partials
     }
     render json: json_response
   end
@@ -53,10 +55,10 @@ class GroupController < ApplicationController
       g = project.groups&.find(team_id)
       if Staff.exists?(email: facilitator_email)
         staff_id = Staff.find_by(email: facilitator_email).id
-        g&.assigned_facilitator_id = project.assigned_facilitators&.find_by(staff_id: staff_id)&.id
+        g&.assigned_facilitator_id = project.assigned_facilitators&.find_by(staff_id:)&.id
       elsif Student.exists?(email: facilitator_email)
         student_id = Student.find_by(email: facilitator_email).id
-        g&.assigned_facilitator_id = project.assigned_facilitators&.find_by(student_id: student_id)&.id
+        g&.assigned_facilitator_id = project.assigned_facilitators&.find_by(student_id:)&.id
       end
       if g.valid?
         g.save!
@@ -125,23 +127,21 @@ class GroupController < ApplicationController
     @student = student
     @team_id = team_id
 
-    puts "ADDING TO TEAM #{team.name}"
+    Rails.logger.debug "ADDING TO TEAM #{team.name}"
 
     if student
       # check if they are in a group on this project. if so, remove them
       project&.groups&.each do |group|
         next unless group.students&.include?(student)
 
-        puts "REMVOING FORM #{group.name}"
+        Rails.logger.debug "REMVOING FORM #{group.name}"
         group.students.delete(student)
         @removed_student_from_group = group.id
         break
       end
       # add them to the team
       team.students << student
-      if team.valid?
-        team.save
-      end
+      team.save if team.valid?
     end
 
     respond_to(&:js)

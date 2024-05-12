@@ -8,81 +8,81 @@ require 'database_helper'
 require 'csv'
 
 sam = Student.find_or_create_by({
-                                  username: 'aca21sgt',
-                                  preferred_name: 'Sam',
-                                  forename: 'Sam',
-                                  title: 'Mx',
-                                  ucard_number: '777777777',
-                                  email: 'sgttaseff1@sheffield.ac.uk',
-                                  fee_status: :home
-                                })
+  username:       'aca21sgt',
+  preferred_name: 'Sam',
+  forename:       'Sam',
+  title:          'Mx',
+  ucard_number:   '777777777',
+  email:          'sgttaseff1@sheffield.ac.uk',
+  fee_status:     :home
+})
 DatabaseHelper.print_validation_errors(sam)
 Staff.find_or_create_by({ email: 'sgttaseff1@sheffield.ac.uk', admin: true })
 # DatabaseHelper.print_validation_errors(sam_staff)
 
 Student.find_or_create_by({
-                            username: 'aca21jlh',
-                            preferred_name: 'Josh',
-                            forename: 'Joshua',
-                            surname: 'Henson',
-                            title: 'Mr',
-                            ucard_number: '123456789',
-                            email: 'jhenson2@sheffield.ac.uk',
-                            fee_status: :home
-                          })
+  username:       'aca21jlh',
+  preferred_name: 'Josh',
+  forename:       'Joshua',
+  surname:        'Henson',
+  title:          'Mr',
+  ucard_number:   '123456789',
+  email:          'jhenson2@sheffield.ac.uk',
+  fee_status:     :home
+})
 DatabaseHelper.create_staff('jhenson2@sheffield.ac.uk')
 DatabaseHelper.create_student({
   username: 'aca21jlh',
   forename: 'Joshua',
-  surname: 'Henson',
-  title: 'Mr',
-  email: 'jhenson2@sheffield.ac.uk',
+  surname:  'Henson',
+  title:    'Mr',
+  email:    'jhenson2@sheffield.ac.uk'
 })
 
 Student.find_or_create_by({
-                            username: 'ack21jb',
-                            preferred_name: 'Jakub',
-                            forename: 'Jakub',
-                            title: 'Mr',
-                            ucard_number: '001793100',
-                            email: 'jbala1@sheffield.ac.uk',
-                            fee_status: :home
-                          })
+  username:       'ack21jb',
+  preferred_name: 'Jakub',
+  forename:       'Jakub',
+  title:          'Mr',
+  ucard_number:   '001793100',
+  email:          'jbala1@sheffield.ac.uk',
+  fee_status:     :home
+})
 DatabaseHelper.create_staff('jbala1@sheffield.ac.uk')
 
 oliver = Student.find_or_create_by({
-                                     username: 'aca22op',
-                                     preferred_name: 'Oliver',
-                                     forename: 'Oliver',
-                                     surname: 'Pickford',
-                                     title: 'Mr',
-                                     ucard_number: '001796094',
-                                     email: 'opickford1@sheffield.ac.uk',
-                                     fee_status: :home
-                                   })
+  username:       'aca22op',
+  preferred_name: 'Oliver',
+  forename:       'Oliver',
+  surname:        'Pickford',
+  title:          'Mr',
+  ucard_number:   '001796094',
+  email:          'opickford1@sheffield.ac.uk',
+  fee_status:     :home
+})
 # DatabaseHelper.create_staff("opickford1@sheffield.ac.uk")
 
 nahyan = Student.find_or_create_by({
-                                     username: 'acb21nk',
-                                     preferred_name: 'Nahyan',
-                                     forename: 'Nahyan',
-                                     surname: 'Khan',
-                                     title: 'Mr',
-                                     ucard_number: '001790710',
-                                     email: 'nkhan10@sheffield.ac.uk',
-                                     fee_status: :home
-                                   })
+  username:       'acb21nk',
+  preferred_name: 'Nahyan',
+  forename:       'Nahyan',
+  surname:        'Khan',
+  title:          'Mr',
+  ucard_number:   '001790710',
+  email:          'nkhan10@sheffield.ac.uk',
+  fee_status:     :home
+})
 # DatabaseHelper.create_staff("nkhan10@sheffield.ac.uk")
 
 adam = Student.find_or_create_by({
-                                   username: 'acc22aw',
-                                   preferred_name: 'Adam',
-                                   forename: 'Adam',
-                                   title: 'Mr',
-                                   ucard_number: '001787692',
-                                   email: 'awillis4@sheffield.ac.uk',
-                                   fee_status: :home
-                                 })
+  username:       'acc22aw',
+  preferred_name: 'Adam',
+  forename:       'Adam',
+  title:          'Mr',
+  ucard_number:   '001787692',
+  email:          'awillis4@sheffield.ac.uk',
+  fee_status:     :home
+})
 
 Rails.logger.debug ''
 
@@ -155,24 +155,24 @@ DatabaseHelper.provision_module_class(
 # }))
 DatabaseHelper.create_course_project(
   {
-    module_code: 'COM2009',
-    name: 'Turtlebot Project',
-    status: 'draft',
-    project_choices: ['Choice 1', 'Choice 2'],
-    team_size: 4,
-    team_allocation_mode: 'random_team_allocation',
+    module_code:           'COM2009',
+    name:                  'Turtlebot Project',
+    status:                'draft',
+    project_choices:       ['Choice 1', 'Choice 2'],
+    team_size:             4,
+    team_allocation_mode:  'random_team_allocation',
 
-    project_deadline: DateTime.now + 3.minute,
-    project_pref_deadline: DateTime.now + 2.minute,
-    team_pref_deadline: DateTime.now + 1.minute,
+    project_deadline:      DateTime.now + 3.minutes,
+    project_pref_deadline: DateTime.now + 2.minutes,
+    team_pref_deadline:    DateTime.now + 1.minute,
 
-    milestones: [
+    milestones:            [
       {
-        "Name": 'Milestone 1',
+        "Name":     'Milestone 1',
         "Deadline": DateTime.now + 1.minute,
-        "Email": { "Content": 'This is an email', "Advance": 0 },
-        "Comment": 'This is a comment',
-        "Type": 'team'
+        "Email":    { "Content": 'This is an email', "Advance": 0 },
+        "Comment":  'This is a comment',
+        "Type":     'team'
       }
     ]
   }

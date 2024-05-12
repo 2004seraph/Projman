@@ -22,12 +22,12 @@ RSpec.feature 'Project Creation', type: :feature do
       Staff.find_by(email: 'awillis4@sheffield.ac.uk')
     )
     CourseProject.find_or_create_by({
-                                      course_module: CourseModule.find_by(code: 'COM8888'),
-                                      name: 'Test Project 1',
-                                      # project_allocation: :single_preference_project_allocation,
-                                      team_allocation: :random_team_allocation,
-                                      team_size: 8
-                                    })
+      course_module:   CourseModule.find_by(code: 'COM8888'),
+      name:            'Test Project 1',
+      # project_allocation: :single_preference_project_allocation,
+      team_allocation: :random_team_allocation,
+      team_size:       8
+    })
 
     # Capybara.current_driver = :selenium
   end

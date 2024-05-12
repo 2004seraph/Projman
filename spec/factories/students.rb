@@ -71,7 +71,7 @@ FactoryBot.define do
       # student attribs
       title { 'Mr' }
       preferred_name { 'Adam' }
-      middle_names { "" }
+      middle_names { '' }
 
       ucard_number { '001787692' }
       fee_status { :home }
@@ -91,14 +91,14 @@ FactoryBot.define do
       # Set the student attribute of the user to the built student object
       user.student = Student.create(
         preferred_name: evaluator.preferred_name,
-        forename: evaluator.givenname,
-        middle_names: evaluator.middle_names,
-        surname: evaluator.sn,
-        username: evaluator.username,
-        title: evaluator.title,
-        fee_status: evaluator.fee_status,
-        ucard_number: evaluator.ucard_number,
-        email: evaluator.email
+        forename:       evaluator.givenname,
+        middle_names:   evaluator.middle_names,
+        surname:        evaluator.sn,
+        username:       evaluator.username,
+        title:          evaluator.title,
+        fee_status:     evaluator.fee_status,
+        ucard_number:   evaluator.ucard_number,
+        email:          evaluator.email
       )
 
       user.save

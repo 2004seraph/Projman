@@ -18,5 +18,5 @@ Layout/HashAlignment:
   EnforcedColonStyle: table
   EnforcedHashRocketStyle: table
 
-Layout/HashIndentation:
-  EnforcedStyle: key
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent

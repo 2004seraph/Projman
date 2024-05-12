@@ -3,7 +3,6 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
 class MilestoneMailer < ApplicationMailer
   def reminder_email(milestone)
     @project = milestone.course_project
@@ -25,7 +24,7 @@ class MilestoneMailer < ApplicationMailer
 
     @project.students.each do |s|
       mail(
-        to: s.email,
+        to:      s.email,
         subject: "[Reminder] #{@project.course_module.code} - #{@project.name}: #{milestone.json_data['Name']}, due in #{@time_remaining}"
       )
     end

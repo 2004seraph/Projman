@@ -48,11 +48,11 @@ class IssueController < ApplicationController
   #   and shows a success message if successful.
   def create
     json_data = {
-      title: params[:title],
-      content: params[:description],
-      author: params[:author],
+      title:       params[:title],
+      content:     params[:description],
+      author:      params[:author],
       reopened_by: '',
-      updated: false
+      updated:     false
     }
 
     current_project_id = params[:project_id]
@@ -78,8 +78,8 @@ class IssueController < ApplicationController
     @selected_order = params[:selected_order]
 
     json_data = {
-      content: params[:response],
-      author: params[:author],
+      content:   params[:response],
+      author:    params[:author],
       timestamp: Time.zone.now
     }
 

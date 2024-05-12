@@ -16,6 +16,7 @@ class CreateAssignedFacilitator < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_belongs_to :groups, :assigned_facilitator, foreign_key: { to_table: :assigned_facilitators, on_delete: :nullify }
+    add_belongs_to :groups, :assigned_facilitator,
+                   foreign_key: { to_table: :assigned_facilitators, on_delete: :nullify }
   end
 end

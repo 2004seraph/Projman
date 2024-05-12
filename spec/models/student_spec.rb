@@ -39,12 +39,12 @@
 require 'rails_helper'
 
 RSpec.describe Student, type: :model do
-  context "Should accept" do
-    it "with a valid generated class list" do
-      new_module = CourseModule.create ({
-        code: "COM3420",
-        name: "Software Hut",
-        staff: Staff.find_by(email: "emma_norling@sheffield.ac.uk")
+  context 'Should accept' do
+    it 'with a valid generated class list' do
+      CourseModule.create({
+        code:  'COM3420',
+        name:  'Software Hut',
+        staff: Staff.find_by(email: 'emma_norling@sheffield.ac.uk')
       })
 
       csv_data = FactoryBot.build(:csv_data)

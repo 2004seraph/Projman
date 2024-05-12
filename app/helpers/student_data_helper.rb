@@ -3,7 +3,6 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
 require 'csv'
 require 'faker'
 
@@ -46,9 +45,9 @@ module StudentDataHelper
   # string to lowercase, if this does not map to the correct field
   # in the database, you can declare an explicit mapping below.
   EXPLICIT_CSV_TO_FIELD_LINK = {
-    "Known As": 'preferred_name',
+    "Known As":         'preferred_name',
     "Student Username": 'username',
-    "Ucard No": 'ucard_number'
+    "Ucard No":         'ucard_number'
   }.freeze
 
   # if any CSV cells require transforming the data
@@ -57,10 +56,10 @@ module StudentDataHelper
     fee_status: lambda { |s, _|
       s.force_encoding('UTF-8').parameterize.to_sym
     },
-    username: lambda { |s, _|
+    username:   lambda { |s, _|
       s.upcase
     },
-    email: lambda { |s, _|
+    email:      lambda { |s, _|
       s.downcase
     }
     # surname: lambda { |s, username|

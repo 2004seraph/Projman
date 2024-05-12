@@ -84,7 +84,6 @@ describe 'Managing modules' do
     end
 
     specify 'I can edit the module name' do
-
       # save_and_open_page
 
       click_on 'change_students'

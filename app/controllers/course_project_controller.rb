@@ -3,7 +3,6 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
 require 'json'
 
 class CourseProjectController < ApplicationController
@@ -29,8 +28,8 @@ class CourseProjectController < ApplicationController
       @course_modules = current_user.staff.course_modules.length
       render 'index_module_leader'
     else
-      @live_projects = current_user.student.course_projects.where(status: ["preparation", "review", "live"])
-      @comp_projects = current_user.student.course_projects.where(status: "completed")
+      @live_projects = current_user.student.course_projects.where(status: %w[preparation review live])
+      @comp_projects = current_user.student.course_projects.where(status: 'completed')
 
       @milestones = []
       @live_projects.each do |project|
@@ -59,26 +58,28 @@ class CourseProjectController < ApplicationController
     milestone_types_hash = Milestone.milestone_types
 
     session[:project_data] = {
-      errors: {},
+      errors:                        {},
       modules_hash:,
       team_allocation_modes_hash:,
       milestone_types_hash:,
 
-      selected_module: '',
-      project_name: '',
-      teams_from_project_choice: false,
-      project_choices: [],
-      team_size: 4,
+      selected_module:               '',
+      project_name:                  '',
+      teams_from_project_choice:     false,
+      project_choices:               [],
+      team_size:                     4,
       selected_team_allocation_mode: '',
-      preferred_teammates: 2,
-      avoided_teammates: 2,
-      project_milestones: [{ "Name": 'Project Deadline', "Date": '', "Type": 'team', "system_type": "project_deadline", "Comment": '' },
-                           { "Name": 'Teammate Preference Form Deadline', "Date": '', "Type": 'student', "system_type": "teammate_preference_deadline", "Comment": '' },
-                           { "Name": 'Project Preference Form Deadline', "Date": '', "Type": 'team', "system_type": "project_preference_deadline", "Comment": '' }],
-      project_facilitators: [],
+      preferred_teammates:           2,
+      avoided_teammates:             2,
+      project_milestones:            [{ "Name": 'Project Deadline', "Date": '', "Type": 'team', "system_type": 'project_deadline', "Comment": '' },
+                                      { "Name": 'Teammate Preference Form Deadline', "Date": '', "Type": 'student',
+           "system_type": 'teammate_preference_deadline', "Comment": '' },
+                                      { "Name": 'Project Preference Form Deadline', "Date": '', "Type": 'team',
+           "system_type": 'project_preference_deadline', "Comment": '' }],
+      project_facilitators:          [],
 
-      facilitator_selection: [],
-      project_choices_enabled: true
+      facilitator_selection:         [],
+      project_choices_enabled:       true
     }
   end
 
@@ -120,11 +121,11 @@ class CourseProjectController < ApplicationController
 
       json_data = milestone_data[:json_data]
       milestone = {
-        "Name": json_data['Name'],
-        "Date": "#{parsed_date}T#{parsed_time}",
-        "Type": milestone_data[:milestone_type],
+        "Name":        json_data['Name'],
+        "Date":        "#{parsed_date}T#{parsed_time}",
+        "Type":        milestone_data[:milestone_type],
         "system_type": milestone_data[:system_type],
-        "Comment": json_data['Comment']
+        "Comment":     json_data['Comment']
       }
       milestone['Email'] = json_data['Email'] if json_data.key?('Email')
       project_milestones_parsed << milestone
@@ -147,28 +148,28 @@ class CourseProjectController < ApplicationController
     end
 
     session[:project_data] = {
-      errors: {},
+      errors:                            {},
       modules_hash:,
       team_allocation_modes_hash:,
       milestone_types_hash:,
 
-      selected_module: CourseModule.find(project[:course_module_id])[:code],
-      project_name: project[:name],
-      teams_from_project_choice: project[:teams_from_project_choice],
+      selected_module:                   CourseModule.find(project[:course_module_id])[:code],
+      project_name:                      project[:name],
+      teams_from_project_choice:         project[:teams_from_project_choice],
       project_choices:,
-      team_size: project[:team_size],
-      selected_team_allocation_mode: project[:team_allocation],
-      preferred_teammates: project[:preferred_teammates],
-      avoided_teammates: project[:avoided_teammates],
-      project_milestones: project_milestones_parsed,
+      team_size:                         project[:team_size],
+      selected_team_allocation_mode:     project[:team_allocation],
+      preferred_teammates:               project[:preferred_teammates],
+      avoided_teammates:                 project[:avoided_teammates],
+      project_milestones:                project_milestones_parsed,
       project_deadline:,
       teammate_preference_form_deadline: team_pref_deadline,
-      project_preference_form_deadline: proj_pref_deadline,
+      project_preference_form_deadline:  proj_pref_deadline,
 
       project_facilitators:,
 
-      facilitator_selection: [],
-      project_choices_enabled: project_choices.length.positive?
+      facilitator_selection:             [],
+      project_choices_enabled:           project_choices.length.positive?
     }
   end
 
@@ -202,7 +203,7 @@ class CourseProjectController < ApplicationController
     unless session[:project_data][:project_milestones].any? do |milestone|
              milestone[:Name] == @project_milestone_name
            end
-      session[:project_data][:project_milestones] << { "Name": @project_milestone_name, "Date": '', "Type": '', 
+      session[:project_data][:project_milestones] << { "Name": @project_milestone_name, "Date": '', "Type": '',
                                                        "system_type": nil, "Comment": '' }
       project_milestone_unique = true
     end
@@ -358,9 +359,7 @@ class CourseProjectController < ApplicationController
 
     errors[:timings] << 'Please set project deadline' if project_data[:project_deadline].blank?
 
-    if !project_data[:project_choices_enabled]
-      project_data[:teams_from_project_choice] = false
-    end
+    project_data[:teams_from_project_choice] = false unless project_data[:project_choices_enabled]
 
     if project_data[:project_choices_enabled] && project_data[:teams_from_project_choice]
       project_data[:selected_team_allocation_mode] = 'random_team_allocation'
@@ -396,7 +395,7 @@ class CourseProjectController < ApplicationController
 
       # Find the corresponding milestone in the milestones hash and update its "Type" value
       next unless (milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == milestone_name })
-      next if !milestone[:system_type].nil?
+      next unless milestone[:system_type].nil?
 
       milestone[:Type] = value
       unless defined?(value) && value.present? && Milestone.milestone_types.key?(value)
@@ -407,15 +406,15 @@ class CourseProjectController < ApplicationController
 
     # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
     if project_data[:selected_team_allocation_mode] == 'random_team_allocation' &&
-        (milestone = session[:project_data][:project_milestones].find do |m|
-          m[:Name] == 'Teammate Preference Form Deadline'
-        end)
+       (milestone = session[:project_data][:project_milestones].find do |m|
+         m[:Name] == 'Teammate Preference Form Deadline'
+       end)
       milestone[:Date] = ''
     end
     if !project_data[:project_choices_enabled] &&
-        (milestone = session[:project_data][:project_milestones].find do |m|
-          m[:Name] == 'Project Preference Form Deadline'
-        end)
+       (milestone = session[:project_data][:project_milestones].find do |m|
+         m[:Name] == 'Project Preference Form Deadline'
+       end)
       milestone[:Date] = ''
     end
 
@@ -439,15 +438,15 @@ class CourseProjectController < ApplicationController
     no_errors = errors.all? { |_, v| v.empty? }
     # Creating Project Model
     new_project = CourseProject.new(
-      course_module: CourseModule.find_by(code: project_data[:selected_module]),
-      name: project_data[:project_name],
+      course_module:             CourseModule.find_by(code: project_data[:selected_module]),
+      name:                      project_data[:project_name],
       # project_choices_json: project_data[:project_choices_enabled] ? project_data[:project_choices].to_json : "[]",
       teams_from_project_choice: project_data[:teams_from_project_choice],
-      team_size: project_data[:team_size],
-      team_allocation: project_data[:selected_team_allocation_mode].to_sym,
-      preferred_teammates: project_data[:preferred_teammates],
-      avoided_teammates: project_data[:avoided_teammates],
-      status: :draft
+      team_size:                 project_data[:team_size],
+      team_allocation:           project_data[:selected_team_allocation_mode].to_sym,
+      preferred_teammates:       project_data[:preferred_teammates],
+      avoided_teammates:         project_data[:avoided_teammates],
+      status:                    :draft
     )
 
     if new_project.valid? && no_errors
@@ -467,8 +466,8 @@ class CourseProjectController < ApplicationController
       if project_data[:project_choices_enabled]
         project_data[:project_choices].each do |project_choice|
           subproject = Subproject.new(
-            name: project_choice,
-            json_data: '{}',
+            name:              project_choice,
+            json_data:         '{}',
             course_project_id: new_project.id
           )
           subprojects << subproject
@@ -505,17 +504,17 @@ class CourseProjectController < ApplicationController
         # puts parsed_date
 
         json_data = {
-          'Name' => milestone_data[:Name],
+          'Name'    => milestone_data[:Name],
           'Comment' => milestone_data[:Comment]
         }
         json_data['Email'] = milestone_data[:Email] if milestone_data.key?(:Email)
 
         milestone = Milestone.new(
           json_data:,
-          deadline: "#{date} #{time}",
-          system_type: milestone_data[:system_type],
-          user_generated: true,
-          milestone_type: milestone_data[:Type],
+          deadline:          "#{date} #{time}",
+          system_type:       milestone_data[:system_type],
+          user_generated:    true,
+          milestone_type:    milestone_data[:Type],
           course_project_id: new_project.id
         )
 
@@ -678,9 +677,7 @@ class CourseProjectController < ApplicationController
 
     errors[:timings] = []
 
-    if !project_data[:project_choices_enabled]
-      project_data[:teams_from_project_choice] = false
-    end
+    project_data[:teams_from_project_choice] = false unless project_data[:project_choices_enabled]
 
     if project_data[:project_choices_enabled] && project_data[:teams_from_project_choice]
       project_data[:selected_team_allocation_mode] = 'random_team_allocation'
@@ -730,15 +727,15 @@ class CourseProjectController < ApplicationController
 
     # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
     if project_data[:selected_team_allocation_mode] == 'random_team_allocation' &&
-        (milestone = session[:project_data][:project_milestones].find do |m|
-          m[:Name] == 'Teammate Preference Form Deadline'
-        end)
+       (milestone = session[:project_data][:project_milestones].find do |m|
+         m[:Name] == 'Teammate Preference Form Deadline'
+       end)
       milestone[:Date] = ''
     end
     if !project_data[:project_choices_enabled] &&
-        (milestone = session[:project_data][:project_milestones].find do |m|
-          m[:Name] == 'Project Preference Form Deadline'
-        end)
+       (milestone = session[:project_data][:project_milestones].find do |m|
+         m[:Name] == 'Project Preference Form Deadline'
+       end)
       milestone[:Date] = ''
     end
 
@@ -760,21 +757,21 @@ class CourseProjectController < ApplicationController
     end
     errors[:facilitators_not_found] = facilitators_not_found
 
-    initial_module = project.course_module_id
-    initial_team_size = project.team_size
+    project.course_module_id
+    project.team_size
     initial_team_allocation = project.team_allocation
     intially_teams_from_project_choice = project.teams_from_project_choice
 
     # Update Project Details
     unless project.update(
-      course_module: CourseModule.find_by(code: project_data[:selected_module]),
-      name: project_data[:project_name],
+      course_module:             CourseModule.find_by(code: project_data[:selected_module]),
+      name:                      project_data[:project_name],
       teams_from_project_choice: project_data[:teams_from_project_choice],
-      team_size: project_data[:team_size],
-      team_allocation: project_data[:selected_team_allocation_mode].to_sym,
-      preferred_teammates: project_data[:preferred_teammates],
-      avoided_teammates: project_data[:avoided_teammates],
-      status: :draft
+      team_size:                 project_data[:team_size],
+      team_allocation:           project_data[:selected_team_allocation_mode].to_sym,
+      preferred_teammates:       project_data[:preferred_teammates],
+      avoided_teammates:         project_data[:avoided_teammates],
+      status:                    :draft
     )
       project.errors.messages.each do |section, section_errors|
         section_errors.each do |error|
@@ -800,8 +797,8 @@ class CourseProjectController < ApplicationController
         subprojects = []
         subprojects_to_add.each do |project_choice|
           subproject = Subproject.new(
-            name: project_choice,
-            json_data: '{}',
+            name:              project_choice,
+            json_data:         '{}',
             course_project_id: project.id
           )
           subprojects << subproject
@@ -862,7 +859,7 @@ class CourseProjectController < ApplicationController
         milestone_name = milestone[:json_data]['Name']
         milestone_data = project_data[:project_milestones].find { |m| m[:Name] == milestone_name }
         milestone.json_data = {
-          'Name' => milestone_name,
+          'Name'    => milestone_name,
           'Comment' => milestone_data[:Comment]
         }
         milestone.json_data['Email'] = milestone_data[:Email] if milestone_data.key?(:Email)
@@ -895,17 +892,17 @@ class CourseProjectController < ApplicationController
         date, time = date_time_string.split('T')
 
         json_data = {
-          'Name' => milestone_data[:Name],
+          'Name'    => milestone_data[:Name],
           'Comment' => milestone_data[:Comment]
         }
         json_data['Email'] = milestone_data[:Email] if milestone_data.key?(:Email)
 
         milestone = Milestone.new(
           json_data:,
-          deadline: "#{date} #{time}",
-          system_type: milestone_data[:system_type],
-          user_generated: true,
-          milestone_type: milestone_data[:Type],
+          deadline:          "#{date} #{time}",
+          system_type:       milestone_data[:system_type],
+          user_generated:    true,
+          milestone_type:    milestone_data[:Type],
           course_project_id: project.id
         )
 
@@ -1029,7 +1026,7 @@ class CourseProjectController < ApplicationController
 
         # Should the preference form be shown
         first_response = MilestoneResponse.where(milestone_id: @pref_form.id,
-                                                 student_id: current_user.student.id).empty?
+                                                 student_id:   current_user.student.id).empty?
         @show_pref_form = (@current_project.status == 'preparation') && first_response
       end
 
@@ -1041,7 +1038,7 @@ class CourseProjectController < ApplicationController
         @choices = @current_project.subprojects.pluck('name')
         # Should the project choice form be shown
         first_response = MilestoneResponse.where(milestone_id: @proj_choices_form.id,
-                                                 student_id: current_user.student.id).empty?
+                                                 student_id:   current_user.student.id).empty?
         in_group = current_user.student.groups.find_by(course_project: @current_project).present?
 
         @show_proj_form = (@current_project.status == 'preparation') && first_response && (in_group || @current_project.teams_from_project_choice)
@@ -1118,8 +1115,8 @@ class CourseProjectController < ApplicationController
     @chat_messages = @current_group.events.where(event_type: :chat).order(created_at: :asc)
 
     json_data = {
-      content: params[:message],
-      author: params[:author],
+      content:   params[:message],
+      author:    params[:author],
       timestamp: Time.zone.now
     }
 
@@ -1128,7 +1125,7 @@ class CourseProjectController < ApplicationController
                                 staff_id: current_user.staff.id)
     elsif current_user.is_student?
       @chat_message = Event.new(event_type: :chat, json_data:, group_id: @current_group.id,
-        student_id: current_user.student.id)
+                                student_id: current_user.student.id)
     end
 
     return unless @chat_message.save
@@ -1145,7 +1142,7 @@ class CourseProjectController < ApplicationController
 
     project.groups&.destroy_all
 
-    module_test = CourseModule.find(project.course_module_id)
+    CourseModule.find(project.course_module_id)
     module_students = CourseModule.find(project.course_module_id).students
     logger.debug("!!!!!!!!!!!!!!!!!! #{project.team_allocation}")
     team_size = project.team_size.to_i
@@ -1154,14 +1151,17 @@ class CourseProjectController < ApplicationController
     team_count = 0
 
     if project.teams_from_project_choice
-      proj_choice_milestone = Milestone.find_by(system_type: :project_preference_deadline, course_project_id: project.id)
+      proj_choice_milestone = Milestone.find_by(system_type:       :project_preference_deadline,
+                                                course_project_id: project.id)
 
-      students_grouped = DatabaseHelper.project_choices_group_allocation(team_size, module_students, proj_choice_milestone)
-    elsif project.team_allocation == "preference_form_based"
+      students_grouped = DatabaseHelper.project_choices_group_allocation(team_size, module_students,
+                                                                         proj_choice_milestone)
+    elsif project.team_allocation == 'preference_form_based'
       pref_form_milestone = Milestone.find_by(system_type: :teammate_preference_deadline, course_project_id: project.id)
 
-      students_grouped = DatabaseHelper.preference_form_group_allocation(team_size, module_students, pref_form_milestone)
-    elsif project.team_allocation == "random_team_allocation"
+      students_grouped = DatabaseHelper.preference_form_group_allocation(team_size, module_students,
+                                                                         pref_form_milestone)
+    elsif project.team_allocation == 'random_team_allocation'
       students_grouped = DatabaseHelper.random_with_heuristics_allocation(team_size, module_students)
     end
 

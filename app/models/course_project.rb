@@ -42,17 +42,17 @@ class CourseProject < ApplicationRecord
   validate :creation_validation
 
   enum :status, {
-    draft: 'draft',
+    draft:       'draft',
     preparation: 'preparation',
-    review: 'review',
-    live: 'live',
-    completed: 'completed',
-    archived: 'archived'
+    review:      'review',
+    live:        'live',
+    completed:   'completed',
+    archived:    'archived'
   }
 
   enum :team_allocation, {
     random_team_allocation: 'random',
-    preference_form_based: 'preference_form_based'
+    preference_form_based:  'preference_form_based'
   }
 
   def completion_deadline
@@ -80,16 +80,16 @@ class CourseProject < ApplicationRecord
   end
 
   def show_remake_teams_button?
-    proj_pref = Milestone.find_by(system_type: :project_preference_deadline, course_project_id: self.id)
-    pref_form = Milestone.find_by(system_type: :teammate_preference_deadline, course_project_id: self.id)
+    proj_pref = Milestone.find_by(system_type: :project_preference_deadline, course_project_id: id)
+    pref_form = Milestone.find_by(system_type: :teammate_preference_deadline, course_project_id: id)
 
-    if (self.team_allocation == "random_team_allocation" && self.teams_from_project_choice == false) ||
-       (self.team_allocation == "random_team_allocation" && self.teams_from_project_choice == true && proj_pref && proj_pref.deadline < Time.now) ||
-       (self.team_allocation == "preference_form_based" && pref_form && pref_form.deadline < Time.now)
+    if (team_allocation == 'random_team_allocation' && teams_from_project_choice == false) ||
+       (team_allocation == 'random_team_allocation' && teams_from_project_choice == true && proj_pref && proj_pref.deadline < Time.zone.now) ||
+       (team_allocation == 'preference_form_based' && pref_form && pref_form.deadline < Time.zone.now)
 
-      return true
+      true
     else
-      return false
+      false
     end
   end
 
@@ -101,13 +101,13 @@ class CourseProject < ApplicationRecord
     logger = Logger.new(Rails.root.join('log/course_project.lifecycle_job.log'))
     logger.debug('--- LIFECYCLE PASS')
 
-    if !DatabaseHelper.database_exists?
-      logger.debug("Database is not present, suspending job run")
+    unless DatabaseHelper.database_exists?
+      logger.debug('Database is not present, suspending job run')
       Sentry.capture_message('Database is not present, suspending job run', level: :warn)
       return false
     end
 
-    CourseProject.where.not(status: [:draft, :completed, :archived]).each do |c|
+    CourseProject.where.not(status: %i[draft completed archived]).find_each do |c|
       logger.debug "### Processing #{c.name}"
 
       if (c.team_size == 1) || c.team_allocation.nil?
@@ -118,16 +118,17 @@ class CourseProject < ApplicationRecord
           DatabaseHelper.assign_projects_to_individuals c
         end
       else
-        #group project -> group assignment needed, potentially also project assignment
+        # group project -> group assignment needed, potentially also project assignment
         if c.teammate_preference_deadline
           if c.teammate_preference_deadline.deadline < DateTime.now && !c.teammate_preference_deadline.executed
             logger.debug "\tAssigning groups using team mate preferences"
 
             # make groups
-            group_matrix = DatabaseHelper.preference_form_group_allocation c.team_size, c.students, c.teammate_preference_deadline
+            group_matrix = DatabaseHelper.preference_form_group_allocation c.team_size, c.students,
+                                                                           c.teammate_preference_deadline
             group_matrix.each_with_index do |teammate_list, index|
               g = Group.find_or_create_by({
-                name: "Team #{index + 1}",
+                name:           "Team #{index + 1}",
                 course_project: c
               })
               g.students = teammate_list
@@ -136,7 +137,7 @@ class CourseProject < ApplicationRecord
             c.reload
 
             # assign facilitators
-            groups_per_fac = (c.groups.length.to_f / c.assigned_facilitators.length.to_f).ceil
+            groups_per_fac = (c.groups.length.to_f / c.assigned_facilitators.length).ceil
             facilitators = c.assigned_facilitators
             c.groups.each_slice(groups_per_fac).with_index do |chunk, index|
               chunk.each do |g|

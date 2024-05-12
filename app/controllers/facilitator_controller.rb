@@ -3,7 +3,6 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
 class FacilitatorController < ApplicationController
   authorize_resource :milestone_response
 
@@ -11,8 +10,6 @@ class FacilitatorController < ApplicationController
     # Get assigned groups
     @assigned_facilitators = get_assigned_facilitators
     set_assigned_projects
-
-    
   end
 
   def update_teams_list
@@ -95,11 +92,11 @@ class FacilitatorController < ApplicationController
     # Create new response if none to update
     if @progress_response.nil?
       @progress_response = MilestoneResponse.new(
-        json_data: {
-          group_id: @current_group.id,
-          attendance: params[:attendance],
+        json_data:    {
+          group_id:           @current_group.id,
+          attendance:         params[:attendance],
           question_responses: params[:question_responses],
-          facilitator_repr: get_facilitator_repr(
+          facilitator_repr:   get_facilitator_repr(
             get_assigned_facilitators.where(course_project_id: @current_group.course_project_id).first
           )
         },

@@ -40,8 +40,8 @@ class User < ApplicationRecord
   attr_accessor :student, :staff
 
   def is_student?
-    is_student = Student.where(email: email).exists?
-    is_student |= account_type && account_type.include?('student')
+    is_student = Student.where(email:).exists?
+    is_student |= account_type&.include?('student')
     is_student |= !student.nil?
     is_student
   end
@@ -54,8 +54,8 @@ class User < ApplicationRecord
     #   true
     # end
 
-    is_staff = Staff.where(email: email).exists?
-    is_staff |= account_type && account_type.include?('staff')
+    is_staff = Staff.where(email:).exists?
+    is_staff |= account_type&.include?('staff')
     is_staff |= !staff.nil?
     is_staff
   end
@@ -99,6 +99,6 @@ class User < ApplicationRecord
              end
     end
 
-    return false
+    false
   end
 end

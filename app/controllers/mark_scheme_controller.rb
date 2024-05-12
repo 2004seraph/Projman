@@ -3,7 +3,6 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
 class MarkSchemeController < ApplicationController
   load_and_authorize_resource :milestone_response
 
@@ -26,8 +25,8 @@ class MarkSchemeController < ApplicationController
     mark_scheme = get_mark_scheme
     if mark_scheme.nil?
       session[:mark_scheme] = hash_to_json({
-                                             "sections": []
-                                           })
+        "sections": []
+      })
     else
       redirect_to edit_project_mark_scheme_path(id: mark_scheme.id)
     end
@@ -52,10 +51,10 @@ class MarkSchemeController < ApplicationController
 
     # Render a new section, if i re-rendered the whole mark scheme, it would reset the textareas and inputs.
     render partial: 'section', locals: {
-      section_index: session[:mark_scheme]['sections'].length - 1,
-      section_title: params[:section_title],
+      section_index:       session[:mark_scheme]['sections'].length - 1,
+      section_title:       params[:section_title],
       section_description: '',
-      max_marks: 0
+      max_marks:           0
     }
   end
 
@@ -80,7 +79,7 @@ class MarkSchemeController < ApplicationController
     # Everything is taken from the inputs, the session is only used for rendering stuff.
     if params[:sections].empty?
       return render json: {
-        status: 'error',
+        status:  'error',
         message: 'Must have at least one section!'
       }
     end
@@ -89,7 +88,7 @@ class MarkSchemeController < ApplicationController
     params[:sections].each do |section|
       if section['max_marks'] !~ /\A\d+\z/
         return render json: {
-          status: 'error',
+          status:  'error',
           message: 'Max marks must be a positive whole number.'
         }
       end
@@ -107,11 +106,11 @@ class MarkSchemeController < ApplicationController
     # Create or update milestone to represent the form
     if milestone.nil?
       milestone = Milestone.new(
-        json_data: session[:mark_scheme],
-        deadline: Date.current.strftime('%Y-%m-%d'), # Deadline isn't used here
-        milestone_type: :team, # Marks will be given per team
+        json_data:         session[:mark_scheme],
+        deadline:          Date.current.strftime('%Y-%m-%d'), # Deadline isn't used here
+        milestone_type:    :team, # Marks will be given per team
         course_project_id: params[:project_id],
-        system_type: :marking_deadline
+        system_type:       :marking_deadline
       )
     else
       milestone.json_data = session[:mark_scheme]
@@ -121,15 +120,15 @@ class MarkSchemeController < ApplicationController
     # Handle save failure
     unless milestone.save
       return render json: {
-        status: 'error',
+        status:  'error',
         message: 'Failed to save milestone when save mark scheme.'
       }
     end
 
     # Can't redirect from ajax here, so must do it from js
     render json: {
-      status: 'success',
-      message: 'Saved mark scheme',
+      status:   'success',
+      message:  'Saved mark scheme',
       redirect: project_mark_scheme_index_path
     }
   end
@@ -140,7 +139,7 @@ class MarkSchemeController < ApplicationController
 
     query = '' if query.nil?
 
-    @results = Staff.select do |s| s.email.include?(query.downcase) end
+    @results = Staff.select { |s| s.email.include?(query.downcase) }
     render json: @results.map(&:email)
   end
 
@@ -149,9 +148,7 @@ class MarkSchemeController < ApplicationController
     session[:current_section_index] = params[:section_index]
 
     # Handle invalid email by just not adding to selected
-    if Staff.where(email: params[:section_assessor_email]).first.nil?
-      return
-    end
+    return if Staff.where(email: params[:section_assessor_email]).first.nil?
 
     @assessor_email = params[:section_assessor_email]
 
@@ -177,9 +174,7 @@ class MarkSchemeController < ApplicationController
     mark_scheme = milestone.json_data
 
     # Initialise assessors if necessary
-    if mark_scheme['sections'][section_index]['assessors'].nil?
-      mark_scheme['sections'][section_index]['assessors'] = {}
-    end
+    mark_scheme['sections'][section_index]['assessors'] = {} if mark_scheme['sections'][section_index]['assessors'].nil?
 
     # Populate new assessor emails into mark scheme milestone json data
     session[:assessor_selection].each do |assessor|

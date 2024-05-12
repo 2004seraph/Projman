@@ -58,21 +58,21 @@ module Project
       g.system_tests         :rspec
       g.integration_tool     :rspec
       g.test_framework       :rspec,
-                             request_specs: false,
-                             view_specs: false,
-                             routing_specs: false,
-                             helper_specs: false,
+                             request_specs:    false,
+                             view_specs:       false,
+                             routing_specs:    false,
+                             helper_specs:     false,
                              controller_specs: false
     end
 
     # Email Config
     config.action_mailer.smtp_settings = {
-      address: 'mailhost.shef.ac.uk',
-      port: 587,
+      address:              'mailhost.shef.ac.uk',
+      port:                 587,
       enable_starttls_auto: true,
-      openssl_verify_mode: OpenSSL::SSL::VERIFY_PEER,
+      openssl_verify_mode:  OpenSSL::SSL::VERIFY_PEER,
       openssl_verify_depth: 3,
-      ca_file: '/etc/ssl/certs/ca-certificates.crt'
+      ca_file:              '/etc/ssl/certs/ca-certificates.crt'
     }
 
     config.action_dispatch.rescue_responses.merge!('CanCan::AccessDenied' => :unauthorized)

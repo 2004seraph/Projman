@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 FactoryBot.define do
   # ALL THE FIELDS IN THE transient BLOCK CAN BE OVERRIDDEN WITH FactoryBot.create(:standard_staff_user, .. <attribs> ..)
@@ -20,7 +21,8 @@ FactoryBot.define do
     account_type { 'student - ug' }
 
     after(:build) do |user, evaluator|
-      FactoryBot.create(:standard_student_user, email: evaluator.email, username: evaluator.username, sn: evaluator.sn, givenname: evaluator.givenname)
+      FactoryBot.create(:standard_student_user, email: evaluator.email, username: evaluator.username, sn: evaluator.sn,
+givenname: evaluator.givenname)
 
       user.email = evaluator.email
       user.mail = evaluator.email

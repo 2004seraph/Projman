@@ -3,7 +3,6 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
 class ProgressFormController < ApplicationController
   authorize_resource :milestone_response
 
@@ -29,7 +28,7 @@ class ProgressFormController < ApplicationController
     # NOTE: Will not work without parse and to_json because its loaded from db as json
     #       so this just keeps it always as json.
     session[:new_progress_form] = JSON.parse({
-      "questions": [],
+      "questions":  [],
       "attendance": true
     }.to_json)
 
@@ -98,14 +97,14 @@ class ProgressFormController < ApplicationController
 
     render partial: 'progress_form',
            locals:
-        {
-          progress_form: JSON.parse(session[:new_progress_form].to_json),
-          release_date: session[:progress_form_deadline],
-          progress_response: nil,
-          group: 'None',
-          facilitator: false,
-          editing_form: true # Force editable because release date might not be set yet
-        }
+                    {
+                      progress_form:     JSON.parse(session[:new_progress_form].to_json),
+                      release_date:      session[:progress_form_deadline],
+                      progress_response: nil,
+                      group:             'None',
+                      facilitator:       false,
+                      editing_form:      true # Force editable because release date might not be set yet
+                    }
   end
 
   def change_title
@@ -137,7 +136,7 @@ class ProgressFormController < ApplicationController
     # To save the form there must be at least one question
     if session[:new_progress_form]['questions'].empty?
       return render json: {
-        status: 'error',
+        status:  'error',
         message: 'Must have at least one question!'
       }
     end
@@ -161,15 +160,15 @@ class ProgressFormController < ApplicationController
     # Create or update milestone to represent the form
     if milestone.nil?
       milestone = Milestone.new(
-        json_data: session[:new_progress_form],
-        deadline: formatted_deadline,
-        milestone_type: :team,
+        json_data:         session[:new_progress_form],
+        deadline:          formatted_deadline,
+        milestone_type:    :team,
         course_project_id: session[:current_project_id]
       )
     else
       if creating_new
         return render json: {
-          status: 'error',
+          status:  'error',
           message: 'Cannot save progress form with duplicate release date.'
         }
       end
@@ -185,15 +184,15 @@ class ProgressFormController < ApplicationController
     # Handle save failure
     unless milestone.save
       return render json: {
-        status: 'error',
+        status:  'error',
         message: 'Failed to save progress form.'
       }
     end
 
     # Can't redirect_to from ajax so return path to redirect
     render json: {
-      status: 'success',
-      message: 'Saved form',
+      status:   'success',
+      message:  'Saved form',
       redirect: project_progress_form_index_path
     }
   end
@@ -239,13 +238,13 @@ class ProgressFormController < ApplicationController
     # Return the html for the new progress form
     render partial: 'progress_form', locals:
       {
-        progress_form_id: @progress_form.id,
-        progress_form: @progress_form.json_data,
-        release_date: @progress_form.deadline,
+        progress_form_id:  @progress_form.id,
+        progress_form:     @progress_form.json_data,
+        release_date:      @progress_form.deadline,
         progress_response: @progress_response.nil? ? nil : @progress_response.json_data,
         group:,
-        facilitator: false,
-        editing_form: false
+        facilitator:       false,
+        editing_form:      false
       }
   end
 

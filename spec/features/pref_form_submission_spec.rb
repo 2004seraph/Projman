@@ -21,13 +21,13 @@ describe 'Preference Form Submission' do
   context 'User cannot see preference form' do
     specify 'When project team allocation is not preferenced_team_allocation' do
       CourseProject.find_or_create_by({
-                                        course_module: CourseModule.find_by(code: 'COM9999'),
-                                        name: 'Test Project 1',
-                                        # project_allocation: :single_preference_project_allocation,
-                                        status: :preparation,
-                                        team_allocation: :random_team_allocation,
-                                        team_size: 8
-                                      })
+        course_module:   CourseModule.find_by(code: 'COM9999'),
+        name:            'Test Project 1',
+        # project_allocation: :single_preference_project_allocation,
+        status:          :preparation,
+        team_allocation: :random_team_allocation,
+        team_size:       8
+      })
 
       visit 'projects'
       click_on 'COM9999 Test Module 1 - Test Project 1'

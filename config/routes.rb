@@ -118,7 +118,7 @@ Rails.application.routes.draw do
     post '/update_progress_form_response' => 'facilitator#update_progress_form_response', on: :collection
   end
 
-  resources :markings, controller: :marking do 
+  resources :markings, controller: :marking do
     post '/save' => 'marking#save', on: :collection
   end
 

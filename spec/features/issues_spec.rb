@@ -18,12 +18,12 @@ RSpec.feature 'Issue Creation', type: :feature do
     )
 
     CourseProject.find_or_create_by({
-                                      course_module: CourseModule.find_by(code: 'COM9999'),
-                                      name: 'Test Project 1',
-                                      # project_allocation: :single_preference_project_allocation,
-                                      team_allocation: :random_team_allocation,
-                                      team_size: 8
-                                    })
+      course_module:   CourseModule.find_by(code: 'COM9999'),
+      name:            'Test Project 1',
+      # project_allocation: :single_preference_project_allocation,
+      team_allocation: :random_team_allocation,
+      team_size:       8
+    })
 
     # Capybara.current_driver = :selenium
   end
@@ -33,11 +33,11 @@ RSpec.feature 'Issue Creation', type: :feature do
   describe 'Student can report an issue for a project', js: true do
     before(:each) do
       group = Group.find_or_create_by({
-                                        name: 'Team 1',
-                                        assigned_facilitator: AssignedFacilitator.find_by(staff: Staff.find_by(email: 'jbala1@sheffield.ac.uk'),
-                                                                                          course_project: CourseProject.find_by(name: 'Test Project 1')),
-                                        course_project: CourseProject.find_by(name: 'Test Project 1')
-                                      })
+        name:                 'Team 1',
+        assigned_facilitator: AssignedFacilitator.find_by(staff:          Staff.find_by(email: 'jbala1@sheffield.ac.uk'),
+                                                          course_project: CourseProject.find_by(name: 'Test Project 1')),
+        course_project:       CourseProject.find_by(name: 'Test Project 1')
+      })
 
       student_user.student.enroll_module 'COM9999'
       group.students << student_user.student

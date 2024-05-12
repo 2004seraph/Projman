@@ -3,7 +3,6 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
 class PageController < ApplicationController
   authorize_resource class: false, except: :profile
 
@@ -20,6 +19,6 @@ class PageController < ApplicationController
 
     ProfileMailer.notify_admin_title_change_request(admin.email, current_user, requested_title).deliver_now
 
-    render "page/profile"
+    render 'page/profile'
   end
 end
