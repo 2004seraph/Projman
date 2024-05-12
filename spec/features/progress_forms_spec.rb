@@ -21,12 +21,20 @@ RSpec.feature 'Progress Form Creation', type: :feature do
     )
 
     project = CourseProject.find_or_create_by({
-                                      course_module: CourseModule.find_by(code: 'COM9999'),
-                                      name: 'Test Project 1',
-                                      project_allocation: :single_preference_project_allocation,
-                                      team_allocation: :random_team_allocation,
-                                      team_size: 8
-                                    })
+      course_module: CourseModule.find_by(code: 'COM9999'),
+      name: 'Test Project 1',
+      team_size: 8,
+      team_allocation: :random_team_allocation,
+      status: :live
+    })
+
+    #project = CourseProject.find_or_create_by({
+                                    #  course_module: CourseModule.find_by(code: 'COM9999'),
+                                    #  name: 'Test Project 1',
+                                    #  project_allocation: :single_preference_project_allocation,
+                                    #  team_allocation: :random_team_allocation,
+                                    #  team_size: 8
+                                    #})
 
     # Create a group with 5 random teammates and facilitator
     group = Group.find_or_create_by({
@@ -233,6 +241,14 @@ RSpec.feature 'Progress Form Creation', type: :feature do
     end
 
     specify "I can fill in a progress form for a team I'm not assigned to" do 
+      # Remove the team's facilitator temporarily
+      group.assigned_facilitator = nil
+
+      sleep 5
+      
+
+
+
     end
 
     specify "I can edit a progress form response" do 
