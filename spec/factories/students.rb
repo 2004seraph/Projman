@@ -57,13 +57,64 @@ FactoryBot.define do
     end
   end
 
-  factory :standard_student, class: Student do
-    username { 'acc22aw' }
-    preferred_name { 'Adam' }
-    forename { 'Adam' }
-    title { 'Mr' }
-    ucard_number { '001787692' }
-    email { 'awillis4@sheffield.ac.uk' }
-    fee_status { :home }
+  # ALL THE FIELDS IN THE transient BLOCK CAN BE OVERRIDDEN WITH FactoryBot.create(:standard_student_user, .. <attribs> ..)
+  factory :standard_student_user, class: User do
+    transient do
+      # shared between user and student
+      email { 'awillis4@sheffield.ac.uk' }
+      username { 'acc22aw' }
+
+      # user attribs
+      givenname { 'Adam' }
+      sn { 'Willis' }
+
+      # student attribs
+      title { 'Mr' }
+      preferred_name { 'Adam' }
+      middle_names { "" }
+
+      ucard_number { '001787692' }
+      fee_status { :home }
+    end
+
+    ou { 'COM' }
+    dn { nil }
+    account_type { 'student - ug' }
+
+    after(:build) do |user, evaluator|
+      user.email = evaluator.email
+      user.mail = evaluator.email
+
+      user.username = evaluator.username
+      user.uid = evaluator.username
+
+      # Set the student attribute of the user to the built student object
+      user.student = Student.create(
+        preferred_name: evaluator.preferred_name,
+        forename: evaluator.givenname,
+        middle_names: evaluator.middle_names,
+        surname: evaluator.sn,
+        username: evaluator.username,
+        title: evaluator.title,
+        fee_status: evaluator.fee_status,
+        ucard_number: evaluator.ucard_number,
+        email: evaluator.email
+      )
+
+      user.save
+    end
   end
+
+  # The below factory does not create a valid User object that we can use
+  # in the login_as function, see above for a valid example
+
+  # factory :standard_student, class: User do
+  #   email { 'awillis4@sheffield.ac.uk' }
+  #   username { 'acc22aw' }
+  #   preferred_name { 'Adam' }
+  #   forename { 'Adam' }
+  #   title { 'Mr' }
+  #   ucard_number { '001787692' }
+  #   fee_status { :home }
+  # end
 end

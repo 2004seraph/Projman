@@ -12,3 +12,11 @@ MethodLength:
 require:
 #  - rubocop-rspec_rails
   - rubocop-rails
+
+
+Layout/HashAlignment:
+  EnforcedColonStyle: table
+  EnforcedHashRocketStyle: table
+
+Layout/HashIndentation:
+  EnforcedStyle: key

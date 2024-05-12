@@ -6,11 +6,9 @@
 require 'rails_helper'
 
 describe 'Managing modules' do
-  let!(:user) { FactoryBot.create(:standard_student_user) }
-  let!(:student) { FactoryBot.create(:standard_student) }
-  let!(:staff) { Staff.find_or_create_by(email: user.email, admin: true) }
+  let!(:staff_user) { FactoryBot.create(:standard_staff_user, admin: true) }
 
-  before { login_as user }
+  before { login_as staff_user }
 
   specify 'I can add a module' do
     visit '/modules'
@@ -86,6 +84,9 @@ describe 'Managing modules' do
     end
 
     specify 'I can edit the module name' do
+
+      # save_and_open_page
+
       click_on 'change_students'
 
       attach_file 'new_module_student_list', Rails.root.join('spec/data/COM1002.csv').to_s

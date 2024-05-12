@@ -48,21 +48,29 @@ class ApplicationController < ActionController::Base
     return unless user_signed_in?
 
     username = current_user.username
-    current_user.account_type
-    email = current_user.email
+      # if current_user.respond_to? :username
+      #   current_user.username
+      # else
+      #   if current_user
+      # end
+    # current_user.account_type
 
     if current_user.is_student?
       if Student.exists?(username:)
         current_user.student = Student.find_by(username:)
-        # Also populate the staff field if this student has a staff entry
-        current_user.staff = Staff.find_by(email:) if Staff.exists?(email:)
-      else
-        reset_session
-        redirect_to new_user_session_path, alert: 'User not found in the database. Please try again.'
+        # email = current_user.student.email
+        # # Also populate the staff field if this student has a staff entry
+        # current_user.staff = Staff.find_by(email:) if Staff.exists?(email:)
+      # else
+      #   reset_session
+      #   redirect_to new_user_session_path, alert: AuthHelper::UNAUTHORIZED_MSG
       end
-    elsif current_user.is_staff?
-      current_user.staff = Staff.find_or_create_by(email:)
-    else
+    end
+    if current_user.is_staff?
+      current_user.staff = Staff.find_or_create_by(email: current_user.email)
+    end
+
+    if !(current_user.is_staff? || current_user.is_student?)
       reset_session
       redirect_to new_user_session_path, alert: AuthHelper::UNAUTHORIZED_MSG
     end

@@ -212,6 +212,8 @@ module DatabaseHelper
   end
 
   def create_staff(email)
+    # the line below looks broken, but the linting made it this way
+    # it seems ruby will just see they have the same label
     x = Staff.find_or_create_by(email:)
     DatabaseHelper.print_validation_errors(x)
     x
@@ -497,7 +499,7 @@ module DatabaseHelper
       teams[i] = []
     end
 
-    # Get all subproject options and initialize hashes 
+    # Get all subproject options and initialize hashes
     subproject_preferences = {}
     subproject_teams_hash = {}
     proj_choice_milestone.course_project.subprojects.each do |subproject|

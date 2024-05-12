@@ -6,9 +6,7 @@
 require 'rails_helper'
 
 RSpec.feature 'Project Creation', type: :feature do
-  let!(:user) { FactoryBot.create(:standard_student_user) }
-  let!(:student) { FactoryBot.create(:standard_student) } # without this line, cant log in?
-  let!(:staff) { Staff.find_or_create_by(email: user.email) }
+  let!(:staff_user) { FactoryBot.create(:standard_staff_user) }
 
   before(:all) do
     DatabaseHelper.create_staff('awillis4@sheffield.ac.uk')
@@ -26,7 +24,7 @@ RSpec.feature 'Project Creation', type: :feature do
     CourseProject.find_or_create_by({
                                       course_module: CourseModule.find_by(code: 'COM8888'),
                                       name: 'Test Project 1',
-                                      project_allocation: :single_preference_project_allocation,
+                                      # project_allocation: :single_preference_project_allocation,
                                       team_allocation: :random_team_allocation,
                                       team_size: 8
                                     })
@@ -44,7 +42,7 @@ RSpec.feature 'Project Creation', type: :feature do
       it 'hides the Project Choices panel if it is currently visible' do
         Capybara.ignore_hidden_elements = false
 
-        login_as user
+        login_as staff_user
         visit '/projects/new'
         find('#project-choices-enable').uncheck
         expect(page).to have_css('#project-choices .card-body.display-none')
@@ -57,7 +55,7 @@ RSpec.feature 'Project Creation', type: :feature do
   describe 'User gets shown deadline for the teammate preference form, and the preference form settings' do
     context 'when they set the team allocation mode to preference form' do
       it 'Shows teammate preference form deadline and settings' do
-        login_as user
+        login_as staff_user
         visit '/projects/new'
         select('Preference form based', from: 'team_allocation_method')
         expect(page).to have_css('#team-preference-form-settings')
@@ -71,7 +69,7 @@ RSpec.feature 'Project Creation', type: :feature do
 
   describe 'Creation form gets filled with correct fields' do
     before(:each) do
-      login_as user
+      login_as staff_user
       visit '/projects/new'
     end
     context 'when the page is first loaded' do
@@ -234,7 +232,7 @@ RSpec.feature 'Project Creation', type: :feature do
 
   describe 'User tries to create a new project with invalid parameters' do
     before(:each) do
-      login_as user
+      login_as staff_user
       visit '/projects/new'
     end
     after(:each) do
@@ -340,7 +338,7 @@ RSpec.feature 'Project Creation', type: :feature do
 
   describe 'User can succesfully create a new project with valid parameters' do
     before(:each) do
-      login_as user
+      login_as staff_user
       visit '/projects/new'
     end
     after(:each) do
@@ -394,7 +392,7 @@ RSpec.feature 'Project Creation', type: :feature do
           find('.btn-primary', visible: :all).click
         end
         fill_in 'project_name', with: 'New Project'
-        select('Team average preference', from: 'project_allocation_method')
+        # select('Team average preference', from: 'project_allocation_method')
         fill_in 'team_size', with: 6
         fill_in 'milestone_Project Deadline_date', with: '28/06/2099T00:00'
         fill_in 'milestone_Project Preference Form Deadline_date', with: '28/06/2099T00:00'
@@ -420,7 +418,7 @@ RSpec.feature 'Project Creation', type: :feature do
           find('.btn-primary', visible: :all).click
         end
         fill_in 'project_name', with: 'New Project'
-        select('Team average preference', from: 'project_allocation_method')
+        # select('Team average preference', from: 'project_allocation_method')
         fill_in 'team_size', with: 6
         select('Preference form based', from: 'team_allocation_method')
         fill_in 'preferred_teammates', with: 1

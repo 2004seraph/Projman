@@ -40,16 +40,24 @@ class User < ApplicationRecord
   attr_accessor :student, :staff
 
   def is_student?
-    account_type.include?('student')
+    is_student = Student.where(email: email).exists?
+    is_student |= account_type && account_type.include?('student')
+    is_student |= !student.nil?
+    is_student
   end
 
   def is_staff?
-    # if the staff field is populated, manually override
-    if staff.nil?
-      account_type.include?('staff')
-    else
-      true
-    end
+    # # if the staff field is populated, manually override
+    # if staff.nil?
+    #   account_type.include?('staff')
+    # else
+    #   true
+    # end
+
+    is_staff = Staff.where(email: email).exists?
+    is_staff |= account_type && account_type.include?('staff')
+    is_staff |= !staff.nil?
+    is_staff
   end
 
   def is_facilitator?
