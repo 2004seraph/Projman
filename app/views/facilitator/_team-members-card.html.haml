@@ -10,8 +10,8 @@
     href: "##{unique_id_collapse}",
     "aria-expanded" => "true"}
 
-    %h2.fs-4= "Members"
-    %h2.fs-4= "Facilitator: " + @current_group_facilitator_repr
+    %h3.m-0.fs-5.fw-medium Members
+    %h3.m-0.fs-5.fw-medium= "Facilitator: " + @current_group_facilitator_repr
     %i.bi.bi-caret-right-fill
 
   .collapse.show{id: unique_id_collapse}

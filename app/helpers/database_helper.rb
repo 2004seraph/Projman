@@ -490,23 +490,25 @@ module DatabaseHelper
   def project_choices_group_allocation(team_size, student_list, proj_choice_milestone)
     shuffled_students = student_list.shuffle
     num_teams = (student_list.size / team_size).floor
-    teams = []
 
-    # Get all subproject options
+    # Initialize teams
+    teams = []
+    num_teams.times do |i|
+      teams[i] = []
+    end
+
+    # Get all subproject options and initialize hashes 
     subproject_preferences = {}
+    subproject_teams_hash = {}
     proj_choice_milestone.course_project.subprojects.each do |subproject|
       subproject_preferences[subproject] = []
+      subproject_teams_hash[subproject.id] = []
     end
 
     # Get student's first options and remove them from the student list
     proj_choice_milestone.milestone_responses.each do |response|
       subproject_preferences[Subproject.find(response.json_data["1"])] << Student.find(response.student_id)
       shuffled_students.delete(Student.find(response.student_id))
-    end
-
-    # Initialize teams
-    num_teams.times do |i|
-      teams[i] = []
     end
 
     # Populate teams with sub-project groups
@@ -521,11 +523,13 @@ module DatabaseHelper
         random_with_heuristics_allocation(team_size, subproject_preferences[subproject]).each do |team|
           i = 0 if i == num_teams
           teams[i] += team
+          subproject_teams_hash[subproject.id] << i
           i += 1
         end
       else
         i = 0 if i == num_teams
         teams[i] += subproject_preferences[subproject]
+        subproject_teams_hash[subproject.id] << i
         i += 1
       end
       subproject_preferences.delete(subproject)
@@ -575,12 +579,40 @@ module DatabaseHelper
     i = 0
     while shuffled_students.any?
       i = 0 if i == num_teams
-
       teams[i] << shuffled_students.pop
       i += 1
     end
 
-    teams.shuffle
+    # Translate teams to group hash
+    to_delete = []
+    subproject_teams_hash.each do |subproject, team_indexes|
+      team_array = []
+      team_indexes.each do |team|
+        team_array << teams[team]
+        to_delete << teams[team]
+      end
+      subproject_teams_hash[subproject] = team_array
+    end
+    to_delete.each do |team|
+      teams.delete(team)
+    end
+
+    # Give remaining teams the least popular subproject
+    teams.each do |team|
+      # Find least popular subproject
+      least_popular = subproject_teams_hash.keys.first
+      smallest = subproject_teams_hash.values.first.size
+      subproject_teams_hash.each do |subproject, teams_list|
+        if teams_list.size < smallest
+          smallest = teams_list.size
+          least_popular = subproject
+        end
+      end
+
+      subproject_teams_hash[least_popular] << team
+    end
+
+    subproject_teams_hash
   end
 
   def assign_projects_to_individuals(course_project)

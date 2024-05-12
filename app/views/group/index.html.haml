@@ -4,9 +4,14 @@
 = render partial: 'course_project/components/project_info_header', locals: { project_id: @current_project.id }
 
 #project-teams-container
-  = render 'components/accordion/container' do
-    - @teams.each do |team|
-      = render 'teams-accordion-card', team: team
+
+  - if @current_project.show_remake_teams_button?
+    .d-flex.mb-2.justify-content-end
+      %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#remakeTeamsModal", id: "remake-teams"}
+        Remake Teams
+
+  .container#teams-list-container
+    = render "teams_list", teams: @teams, current_project: @current_project
 
 -# Modal for choosing team facilitator
 .modal.fade.modal-select-multiple{ id: "facilitators_modal", tabindex: "-1", "aria-labelledby": "facilitators_modal", "aria-hidden": "true"}
@@ -75,3 +80,33 @@
       .modal-footer
         %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Close
         %button.btn.btn-primary.confirm-action-btn#add-student-to-team-btn{ type: "button"} Add
+        
+.modal.fade.modal-select-multiple{ id: "remakeTeamsModal", tabindex: "-1", "aria-labelledby": "remakeTeamsModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      .modal-header
+        %h1.modal-title.fs-5= "Remake Teams"
+        %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+      .modal-body.d-flex.justify-content-center
+        %h1.fs-6.fw-normal.fst-italic= "Are you sure you want to remake teams?"
+      .modal-footer
+        %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Cancel
+        = form_with(url: remake_teams_project_path(id: @current_project.id), method: :post, local: false, remote: true) do |form|
+          = form.submit("Confirm", class: "btn btn-primary", "data-bs-dismiss": "modal", id: "confirm-button")
+
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+    // Find the confirm button
+    var confirmButton = document.getElementById('confirm-button');
+
+    // Add event listener to the confirm button
+    confirmButton.addEventListener('click', function() {
+      // Find the teams-list-container
+      var teamsListContainer = document.getElementById('teams-list-container');
+
+      var newPartialHTML = "#{j(render('loading'))}";
+
+      // Replace its content with the loading symbol and message
+      teamsListContainer.innerHTML = newPartialHTML;
+    });
+  });

@@ -7,15 +7,18 @@
 
 .card.mb-2
   %a.card-header.d-flex.justify-content-between.align-items-center{"data-bs-toggle" => "collapse",
-    href: "##{unique_id_collapse}",
-    "aria-expanded" => "true"}
+      href: "##{unique_id_collapse}",
+      role: "button",
+      "data-accordion-toggle" => "",
+      "aria-expanded" => "false",
+      "aria-controls" => unique_id_collapse}
 
-    %h2.fs-4= "Progress Meetings"
+    %h3.m-0.fs-5.fw-medium Progress Meetings
     %i.bi.bi-caret-right-fill
 
-  .collapse.show{id: unique_id_collapse}
+  .collapse{id: unique_id_collapse}
     .card-body
-      %h5= "Completed"
+      %m-0.fs-5= "Completed"
       - @progress_forms_submitted.each do |pf|
         .navigation-list-item
           = link_to progress_form_facilitators_url(milestone_id: pf.id) do
@@ -23,8 +26,8 @@
 
       %hr.divider
 
-      %h5= "To Do"
+      %m-0.fs-5= "To Do"
       - @progress_forms_todo.each do |pf|
         .navigation-list-item
           = link_to progress_form_facilitators_url(milestone_id: pf.id) do
-            %h6.p-1= pf.deadline.strftime("%d/%m/%Y %H:%M")
+            %p-1.fs-6= pf.deadline.strftime("%d/%m/%Y %H:%M")

@@ -1,11 +1,12 @@
 -# This file is a part of Projman, a group project orchestrator and management system,
 -# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-%h1= "#{@current_group.assigned_facilitator.course_project.name} - #{@current_group.name}"
+%h2.fs-3= "#{@current_group.assigned_facilitator.course_project.name} - #{@current_group.name}"
 %hr.divider
 
 = render 'team-members-card'
 
+= render 'progress-forms-card'
+
 = render partial: 'course_project/components/team-chat-box'
 
-= render 'progress-forms-card'

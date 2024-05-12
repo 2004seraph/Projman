@@ -1204,4 +1204,80 @@ class CourseProjectController < ApplicationController
 
     respond_to(&:js)
   end
+
+  def remake_teams
+    project = CourseProject.find(params[:id])
+
+    project.groups&.destroy_all
+
+    module_test = CourseModule.find(project.course_module_id)
+    module_students = CourseModule.find(project.course_module_id).students
+    logger.debug("!!!!!!!!!!!!!!!!!! #{project.team_allocation}")
+    team_size = project.team_size.to_i
+    groups = []
+    current_group = nil
+    team_count = 0
+
+    if project.teams_from_project_choice
+      proj_choice_milestone = Milestone.find_by(system_type: :project_preference_deadline, course_project_id: project.id)
+
+      students_grouped = DatabaseHelper.project_choices_group_allocation(team_size, module_students, proj_choice_milestone)
+    elsif project.team_allocation == "preference_form_based"
+      pref_form_milestone = Milestone.find_by(system_type: :teammate_preference_deadline, course_project_id: project.id)
+
+      students_grouped = DatabaseHelper.preference_form_group_allocation(team_size, module_students, pref_form_milestone)
+    elsif project.team_allocation == "random_team_allocation"
+      students_grouped = DatabaseHelper.random_with_heuristics_allocation(team_size, module_students)
+    end
+
+    project.reload
+    facilitators = project.assigned_facilitators
+    facilitators_count = facilitators.length
+    current_facilitator_index = 0
+    if facilitators_count.positive?
+      groups_per_facilitator = (students_grouped.length.to_f / facilitators_count).ceil.to_i
+    end
+    students_grouped.each do |student_subarray|
+      # Create a new group for each slice of students
+      current_group = Group.new
+      team_count += 1
+      current_group.name = "Team #{team_count}"
+      current_group.course_project_id = project.id
+
+      if facilitators_count.positive?
+        current_group.assigned_facilitator = facilitators[current_facilitator_index]
+        current_facilitator_index += 1 if (team_count % groups_per_facilitator).zero?
+      end
+
+      # Add students to the current group
+      student_subarray.each do |student|
+        current_group.students << student
+      end
+
+      # Add the current group to the list of groups
+      groups << current_group
+    end
+
+    # Save each group using save!
+    groups.each do |group|
+      if group.valid?
+        group.save
+      else
+        group.errors.messages.each do |attribute, messages|
+          messages.each do |message|
+            unless errors[:main].include?("Group error: #{attribute} : #{message}")
+              errors[:main] << "Group error: #{attribute} : #{message}"
+            end
+          end
+        end
+      end
+    end
+
+    @current_project = project
+    @project_groups = project.groups
+
+    return unless request.xhr?
+
+    respond_to(&:js)
+  end
 end
