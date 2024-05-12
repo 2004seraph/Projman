@@ -2,6 +2,11 @@ AllCops:
   Exclude:
     - 'vendor/**/*'
     - 'bin/**/*'
+    - 'node_modules/**/*'
+    - 'tmp/**/*'
+    - 'log/**/*'
+    - 'doc/**/*'
+    - 'coverage/**/*'
 
 Documentation:
   Enabled: false
@@ -13,6 +18,11 @@ require:
 #  - rubocop-rspec_rails
   - rubocop-rails
 
+inherit_gem:
+  rubocop-rails_config: config/rails.yml
+
+Layout/IndentationWidth:
+  Width: 2
 
 Layout/HashAlignment:
   EnforcedColonStyle: table
@@ -20,3 +30,6 @@ Layout/HashAlignment:
 
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
+
+Layout/IndentationConsistency:
+  EnforcedStyle: indented_internal_methods

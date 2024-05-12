@@ -36,15 +36,15 @@
 #  index_students_on_ucard_number  (ucard_number) UNIQUE
 #  index_students_on_username      (username) UNIQUE
 #
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Student, type: :model do
-  context 'Should accept' do
-    it 'with a valid generated class list' do
+  context "Should accept" do
+    it "with a valid generated class list" do
       CourseModule.create({
-        code:  'COM3420',
-        name:  'Software Hut',
-        staff: Staff.find_by(email: 'emma_norling@sheffield.ac.uk')
+        code:  "COM3420",
+        name:  "Software Hut",
+        staff: Staff.find_by(email: "emma_norling@sheffield.ac.uk")
       })
 
       csv_data = FactoryBot.build(:csv_data)

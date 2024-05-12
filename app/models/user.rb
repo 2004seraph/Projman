@@ -41,7 +41,7 @@ class User < ApplicationRecord
 
   def is_student?
     is_student = Student.where(email:).exists?
-    is_student |= account_type&.include?('student')
+    is_student |= account_type&.include?("student")
     is_student |= !student.nil?
     is_student
   end
@@ -55,7 +55,7 @@ class User < ApplicationRecord
     # end
 
     is_staff = Staff.where(email:).exists?
-    is_staff |= account_type&.include?('staff')
+    is_staff |= account_type&.include?("staff")
     is_staff |= !staff.nil?
     is_staff
   end
@@ -79,11 +79,12 @@ class User < ApplicationRecord
   end
 
   def issue_notification?
-    issues = if is_staff?
-               staff.issues
-             else
-               student.events.where(event_type: :issue)
-             end
+    issues =
+      if is_staff?
+        staff.issues
+      else
+        student.events.where(event_type: :issue)
+      end
 
     issues.any? { |issue| issue.notification?(self) }
   end
@@ -95,8 +96,8 @@ class User < ApplicationRecord
       projects = student.course_projects
 
       return projects.any? do |project|
-               project.project_notification?(self, student.groups.find_by(course_project_id: project.id))
-             end
+        project.project_notification?(self, student.groups.find_by(course_project_id: project.id))
+      end
     end
 
     false

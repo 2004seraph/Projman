@@ -11,10 +11,10 @@ class CourseModuleController < ApplicationController
   # GET /modules
   def index
     @admin_modules = if current_user.is_admin?
-                       CourseModule.all
-                     else
-                       CourseModule.where(staff_id: current_user.staff)
-                     end
+      CourseModule.all
+    else
+      CourseModule.where(staff_id: current_user.staff)
+    end
 
     @show_create_button = current_user.is_admin?
   end
@@ -28,7 +28,7 @@ class CourseModuleController < ApplicationController
   def create
     # Checks for unique module code
     unless CourseModule.where(code: (params[:course_module][:code]).strip).empty?
-      redirect_to new_module_path, alert: 'The Module Code is already in use.'
+      redirect_to new_module_path, alert: "The Module Code is already in use."
       return
     end
 
@@ -37,7 +37,7 @@ class CourseModuleController < ApplicationController
 
     @confirmation = params[:new_module_lead_email_confirmation]
     unless @lead == @confirmation
-      redirect_to new_module_path, alert: 'Unsuccesful - E-mail addresses did not match.'
+      redirect_to new_module_path, alert: "Unsuccesful - E-mail addresses did not match."
       return
     end
 
@@ -59,9 +59,9 @@ class CourseModuleController < ApplicationController
                                    staff_id: @lead.id)
     if @new_module.save
       Student.bootstrap_class_list(params[:student_csv].read) unless @student_csv.nil?
-      redirect_to '/modules', notice: 'Module was successfully created.'
+      redirect_to "/modules", notice: "Module was successfully created."
     else
-      redirect_to new_module_path, alert: 'Creation unsuccesful.'
+      redirect_to new_module_path, alert: "Creation unsuccesful."
     end
   end
 
@@ -69,8 +69,8 @@ class CourseModuleController < ApplicationController
   def show
     @students = @current_module.students
     @module_lead = @current_module.staff
-    @updated = @current_module.updated_at.strftime('%H:%M %d/%m/%Y')
-    @created = @current_module.created_at.strftime('%H:%M %d/%m/%Y')
+    @updated = @current_module.updated_at.strftime("%H:%M %d/%m/%Y")
+    @created = @current_module.created_at.strftime("%H:%M %d/%m/%Y")
 
     @show_edit_buttons = current_user.is_admin?
   end
@@ -87,9 +87,9 @@ class CourseModuleController < ApplicationController
       @current_module.update_attribute(:name, @new_name)
 
       if @current_module.valid?
-        redirect_to modules_path, notice: 'Module Name updated successfully.'
+        redirect_to modules_path, notice: "Module Name updated successfully."
       else
-        redirect_to modules_path, alert: 'Update unsuccessful - Invalid name.'
+        redirect_to modules_path, alert: "Update unsuccessful - Invalid name."
       end
     end
 
@@ -98,7 +98,7 @@ class CourseModuleController < ApplicationController
 
       # Checks for correct e-mail confirmation
       unless @new_lead == @confirmation
-        redirect_to modules_path, alert: 'Update unsuccesful - E-mail addresses did not match.'
+        redirect_to modules_path, alert: "Update unsuccesful - E-mail addresses did not match."
         return
       end
 
@@ -108,9 +108,9 @@ class CourseModuleController < ApplicationController
       @current_module.update_attribute(:staff_id, @new_lead.id)
 
       if @current_module.valid?
-        redirect_to modules_path, notice: 'Module Leader updated successfully.'
+        redirect_to modules_path, notice: "Module Leader updated successfully."
       else
-        redirect_to modules_path, alert: 'Update unsuccesful - Invalid e-mail.'
+        redirect_to modules_path, alert: "Update unsuccesful - Invalid e-mail."
       end
     end
 
@@ -128,16 +128,15 @@ class CourseModuleController < ApplicationController
     # Removes old student list and adds new one
     @current_module.students.clear
     Student.bootstrap_class_list(@new_student_list.read)
-    redirect_to modules_path, notice: 'Student List updated successfully.'
+    redirect_to modules_path, notice: "Student List updated successfully."
   end
 
   private
+    def set_module
+      @current_module = CourseModule.find(params[:id])
+    end
 
-  def set_module
-    @current_module = CourseModule.find(params[:id])
-  end
-
-  def module_params
-    params.require(:course_module).permit(:code, :name, :staff_id, :student_csv)
-  end
+    def module_params
+      params.require(:course_module).permit(:code, :name, :staff_id, :student_csv)
+    end
 end

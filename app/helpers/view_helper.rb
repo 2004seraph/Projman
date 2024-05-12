@@ -7,13 +7,13 @@ module ViewHelper
   module_function
 
   def unparamaterize(str)
-    str.tr('_', ' ').humanize
+    str.tr("_", " ").humanize
   end
 
   def remove_after_indent(str)
-    x = ''
+    x = ""
     (0...str.length).each do |i|
-      return x if str[i] == ' '
+      return x if str[i] == " "
 
       x += str[i]
     end

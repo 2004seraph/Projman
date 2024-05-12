@@ -7,7 +7,7 @@ module StandardHelper
   module_function
 
   def str_to_int(string)
-    Integer(string || '')
+    Integer(string || "")
   rescue ArgumentError
     1
   end

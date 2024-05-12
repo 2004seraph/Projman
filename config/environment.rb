@@ -4,7 +4,7 @@
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 # Load the Rails application.
-require_relative 'application'
+require_relative "application"
 
 # Initialize the Rails application.
 Rails.application.initialize!

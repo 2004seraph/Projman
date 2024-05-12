@@ -4,7 +4,7 @@ class GroupController < ApplicationController
   load_and_authorize_resource
 
   def index
-    Rails.logger.debug 'INDEX ACTION'
+    Rails.logger.debug "INDEX ACTION"
     @current_project = CourseProject.find(params[:project_id])
     Rails.logger.debug @current_project
     @teams = []
@@ -12,7 +12,7 @@ class GroupController < ApplicationController
 
     @teams = @current_project.groups.order(id: :asc)
     Rails.logger.debug @teams.pluck(:assigned_facilitator_id)
-    render 'group/index'
+    render "group/index"
   end
 
   def facilitator_emails
@@ -27,7 +27,7 @@ class GroupController < ApplicationController
 
     if project_facilitators.present?
       project_facilitators.each do |f|
-        rendered_partial = render_to_string(partial: 'group/facilitator_option',
+        rendered_partial = render_to_string(partial: "group/facilitator_option",
                                             locals:  { id: f.id,
 name: f.id, email: f.email })
         response_partials << rendered_partial
@@ -111,7 +111,7 @@ name: f.id, email: f.email })
     query = params[:query]
     course_module = CourseModule.find_by(code: session[:module_data][:module_code])
 
-    @results = Student.where('email LIKE ?', "%#{query}%")
+    @results = Student.where("email LIKE ?", "%#{query}%")
                       .where(id: course_module.students.pluck(:id))
                       .limit(8)
                       .distinct

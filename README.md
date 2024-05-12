@@ -40,11 +40,11 @@ DatabaseHelper.create_staff("your_email@sheffield.ac.uk")
 
 # keep in mind your username and email must be unique to be added to the database
 DatabaseHelper.create_student({
-  username: 'YourMuseUsername',
-  forename: 'YourName',
-  surname: 'YourSurname',
-  title: 'Ms',
-  email: 'your_email@sheffield.ac.uk'
+  username: "YourMuseUsername",
+  forename: "YourName",
+  surname:  "YourSurname",
+  title:    "Ms",
+  email:    "your_email@sheffield.ac.uk"
 })
 ```
 

@@ -39,13 +39,13 @@
 #  index_students_on_ucard_number  (ucard_number) UNIQUE
 #  index_students_on_username      (username) UNIQUE
 #
-require 'student_data_helper'
+require "student_data_helper"
 
 FactoryBot.define do
   # Returns a raw CSV string of student dummy data
   factory :csv_data, class: String do
     transient do
-      default_module { 'COM3420' }
+      default_module { "COM3420" }
       num_records { 234 }
     end
 
@@ -61,25 +61,25 @@ FactoryBot.define do
   factory :standard_student_user, class: User do
     transient do
       # shared between user and student
-      email { 'awillis4@sheffield.ac.uk' }
-      username { 'acc22aw' }
+      email { "awillis4@sheffield.ac.uk" }
+      username { "acc22aw" }
 
       # user attribs
-      givenname { 'Adam' }
-      sn { 'Willis' }
+      givenname { "Adam" }
+      sn { "Willis" }
 
       # student attribs
-      title { 'Mr' }
-      preferred_name { 'Adam' }
-      middle_names { '' }
+      title { "Mr" }
+      preferred_name { "Adam" }
+      middle_names { "" }
 
-      ucard_number { '001787692' }
+      ucard_number { "001787692" }
       fee_status { :home }
     end
 
-    ou { 'COM' }
+    ou { "COM" }
     dn { nil }
-    account_type { 'student - ug' }
+    account_type { "student - ug" }
 
     after(:build) do |user, evaluator|
       user.email = evaluator.email

@@ -42,17 +42,17 @@ class CourseProject < ApplicationRecord
   validate :creation_validation
 
   enum :status, {
-    draft:       'draft',
-    preparation: 'preparation',
-    review:      'review',
-    live:        'live',
-    completed:   'completed',
-    archived:    'archived'
+    draft:       "draft",
+    preparation: "preparation",
+    review:      "review",
+    live:        "live",
+    completed:   "completed",
+    archived:    "archived"
   }
 
   enum :team_allocation, {
-    random_team_allocation: 'random',
-    preference_form_based:  'preference_form_based'
+    random_team_allocation: "random",
+    preference_form_based:  "preference_form_based"
   }
 
   def completion_deadline
@@ -83,9 +83,9 @@ class CourseProject < ApplicationRecord
     proj_pref = Milestone.find_by(system_type: :project_preference_deadline, course_project_id: id)
     pref_form = Milestone.find_by(system_type: :teammate_preference_deadline, course_project_id: id)
 
-    if (team_allocation == 'random_team_allocation' && teams_from_project_choice == false) ||
-       (team_allocation == 'random_team_allocation' && teams_from_project_choice == true && proj_pref && proj_pref.deadline < Time.zone.now) ||
-       (team_allocation == 'preference_form_based' && pref_form && pref_form.deadline < Time.zone.now)
+    if (team_allocation == "random_team_allocation" && teams_from_project_choice == false) ||
+       (team_allocation == "random_team_allocation" && teams_from_project_choice == true && proj_pref && proj_pref.deadline < Time.zone.now) ||
+       (team_allocation == "preference_form_based" && pref_form && pref_form.deadline < Time.zone.now)
 
       true
     else
@@ -98,12 +98,12 @@ class CourseProject < ApplicationRecord
     # DO NOT RUN THIS IN ANY APP CODE
     # THIS IS A CRON JOB, IT IS RAN BY THE OS
 
-    logger = Logger.new(Rails.root.join('log/course_project.lifecycle_job.log'))
-    logger.debug('--- LIFECYCLE PASS')
+    logger = Logger.new(Rails.root.join("log/course_project.lifecycle_job.log"))
+    logger.debug("--- LIFECYCLE PASS")
 
     unless DatabaseHelper.database_exists?
-      logger.debug('Database is not present, suspending job run')
-      Sentry.capture_message('Database is not present, suspending job run', level: :warn)
+      logger.debug("Database is not present, suspending job run")
+      Sentry.capture_message("Database is not present, suspending job run", level: :warn)
       return false
     end
 
@@ -167,11 +167,11 @@ class CourseProject < ApplicationRecord
         #   [for_each_team] push deadline passed to event feed
         next if m.executed
 
-        if m.json_data['Email'] && !(m.json_data['Email']['Sent']) && (m.deadline - StandardHelper.str_to_int(m.json_data['Email']['Advance']) <= DateTime.now)
+        if m.json_data["Email"] && !(m.json_data["Email"]["Sent"]) && (m.deadline - StandardHelper.str_to_int(m.json_data["Email"]["Advance"]) <= DateTime.now)
           logger.debug "\tSending advance email for #{m.json_data}"
           logger.debug "\t\tType: #{m.milestone_type}"
 
-          m.json_data['Email']['Sent'] = true
+          m.json_data["Email"]["Sent"] = true
 
           # send reminder email with json_data["Name"] and json_data["Comment"], as well as the number of days left
           MilestoneMailer.reminder_email(m).deliver_later
@@ -198,46 +198,45 @@ class CourseProject < ApplicationRecord
   end
 
   private
+    def creation_validation
+      errors.add(:main, "Project name cannot be empty") if name.blank?
+      if errors[:main].blank? && CourseProject.where(name:, course_module_id:).where.not(id:).exists?
+        errors.add(:main, "There exists a project on this module with the same name")
+      end
 
-  def creation_validation
-    errors.add(:main, 'Project name cannot be empty') if name.blank?
-    if errors[:main].blank? && CourseProject.where(name:, course_module_id:).where.not(id:).exists?
-      errors.add(:main, 'There exists a project on this module with the same name')
+      errors.add(:team_config, "Invalid team size entry") if team_size.nil?
+      if team_allocation.blank? || !team_allocation.in?(CourseProject.team_allocations)
+        errors.add(:team_config, "Invalid team allocation mode selected")
+      end
+      errors.add(:team_config, "Team size must be greater than 0") if team_size.present? && team_size <= 0
+
+      errors.add(:team_pref, "Invalid preferred teammates entry") if preferred_teammates.nil?
+      errors.add(:team_pref, "Invalid avoided teammates entry") if avoided_teammates.nil?
+      if errors[:team_pref].blank? && team_allocation == "preference_form_based" && (preferred_teammates + avoided_teammates).zero?
+        errors.add(:team_pref, "Preferred and Avoided teammates cannot both be 0")
+      end
     end
 
-    errors.add(:team_config, 'Invalid team size entry') if team_size.nil?
-    if team_allocation.blank? || !team_allocation.in?(CourseProject.team_allocations)
-      errors.add(:team_config, 'Invalid team allocation mode selected')
+    # automatic method generation to get each of the system milestone types by their enum value name on a project model
+    def method_missing(method_name, *args, &block)
+      if method_name.to_s.end_with?("_deadline")
+        system_type = method_name
+        find_milestone_by_system_type(system_type)
+      else
+        super
+      end
     end
-    errors.add(:team_config, 'Team size must be greater than 0') if team_size.present? && team_size <= 0
 
-    errors.add(:team_pref, 'Invalid preferred teammates entry') if preferred_teammates.nil?
-    errors.add(:team_pref, 'Invalid avoided teammates entry') if avoided_teammates.nil?
-    if errors[:team_pref].blank? && team_allocation == 'preference_form_based' && (preferred_teammates + avoided_teammates).zero?
-      errors.add(:team_pref, 'Preferred and Avoided teammates cannot both be 0')
+    def respond_to_missing?(method_name, include_private = false)
+      method_name.to_s.end_with?("_deadline") || super
     end
-  end
 
-  # automatic method generation to get each of the system milestone types by their enum value name on a project model
-  def method_missing(method_name, *args, &block)
-    if method_name.to_s.end_with?('_deadline')
-      system_type = method_name
-      find_milestone_by_system_type(system_type)
-    else
-      super
+    def find_milestone_by_system_type(system_type)
+      milestones.each do |m|
+        return m if m.system_type == system_type.to_s
+      end
+      nil
     end
-  end
-
-  def respond_to_missing?(method_name, include_private = false)
-    method_name.to_s.end_with?('_deadline') || super
-  end
-
-  def find_milestone_by_system_type(system_type)
-    milestones.each do |m|
-      return m if m.system_type == system_type.to_s
-    end
-    nil
-  end
 end
 
 # CourseProject.lifecycle_job

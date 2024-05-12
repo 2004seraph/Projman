@@ -7,17 +7,17 @@ class MilestoneMailer < ApplicationMailer
   def reminder_email(milestone)
     @project = milestone.course_project
 
-    @days_left = milestone.json_data['Email']['Advance']
+    @days_left = milestone.json_data["Email"]["Advance"]
     @date = milestone.deadline
     @time_remaining = @days_left.to_s +
                       if @days_left.to_i == 1
-                        'day'
+                        "day"
                       else
-                        'days'
+                        "days"
                       end
 
-    @milestone_name = milestone.json_data['Name'] || 'Project milestone'
-    @milestone_comment = milestone.json_data['Comment'] || ''
+    @milestone_name = milestone.json_data["Name"] || "Project milestone"
+    @milestone_comment = milestone.json_data["Comment"] || ""
 
     @project_url = "projects/#{@project.id}"
     @url = "#{root_url}#{@project_url}"

@@ -46,14 +46,14 @@ class MarkSchemeController < ApplicationController
 
   def add_section
     # Assessors would be a list of the assessor emails and then the marking is split evenly.
-    section = { title: params[:section_title], description: '', max_marks: 0 }
-    session[:mark_scheme]['sections'] << hash_to_json(section)
+    section = { title: params[:section_title], description: "", max_marks: 0 }
+    session[:mark_scheme]["sections"] << hash_to_json(section)
 
     # Render a new section, if i re-rendered the whole mark scheme, it would reset the textareas and inputs.
-    render partial: 'section', locals: {
-      section_index:       session[:mark_scheme]['sections'].length - 1,
+    render partial: "section", locals: {
+      section_index:       session[:mark_scheme]["sections"].length - 1,
       section_title:       params[:section_title],
-      section_description: '',
+      section_description: "",
       max_marks:           0
     }
   end
@@ -61,35 +61,35 @@ class MarkSchemeController < ApplicationController
   def delete_section
     # Find the section with the matching title and remove it
     target_index = -1
-    session[:mark_scheme]['sections'].each_with_index do |section, i|
-      if params['section_title'] == section['title']
+    session[:mark_scheme]["sections"].each_with_index do |section, i|
+      if params["section_title"] == section["title"]
         target_index = i
         next
       end
     end
 
-    return render json: { status: 'error', message: 'Failed to find matching section to remove.' } if target_index == -1
+    return render json: { status: "error", message: "Failed to find matching section to remove." } if target_index == -1
 
-    session[:mark_scheme]['sections'].delete_at(target_index)
+    session[:mark_scheme]["sections"].delete_at(target_index)
 
-    render json: { status: 'success' }
+    render json: { status: "success" }
   end
 
   def save
     # Everything is taken from the inputs, the session is only used for rendering stuff.
     if params[:sections].empty?
       return render json: {
-        status:  'error',
-        message: 'Must have at least one section!'
+        status:  "error",
+        message: "Must have at least one section!"
       }
     end
 
     # Ensure max marks are valid or return error
     params[:sections].each do |section|
-      if section['max_marks'] !~ /\A\d+\z/
+      if !/\A\d+\z/.match?(section["max_marks"])
         return render json: {
-          status:  'error',
-          message: 'Max marks must be a positive whole number.'
+          status:  "error",
+          message: "Max marks must be a positive whole number."
         }
       end
     end
@@ -98,37 +98,37 @@ class MarkSchemeController < ApplicationController
 
     # Update section data without resetting assigned assessors
     params[:sections].each_with_index do |section, i|
-      session[:mark_scheme]['sections'][i]['title'] = section['title']
-      session[:mark_scheme]['sections'][i]['description'] = section['description']
-      session[:mark_scheme]['sections'][i]['max_marks'] = section['max_marks']
+      session[:mark_scheme]["sections"][i]["title"] = section["title"]
+      session[:mark_scheme]["sections"][i]["description"] = section["description"]
+      session[:mark_scheme]["sections"][i]["max_marks"] = section["max_marks"]
     end
 
     # Create or update milestone to represent the form
     if milestone.nil?
       milestone = Milestone.new(
         json_data:         session[:mark_scheme],
-        deadline:          Date.current.strftime('%Y-%m-%d'), # Deadline isn't used here
+        deadline:          Date.current.strftime("%Y-%m-%d"), # Deadline isn't used here
         milestone_type:    :team, # Marks will be given per team
         course_project_id: params[:project_id],
         system_type:       :marking_deadline
       )
     else
       milestone.json_data = session[:mark_scheme]
-      milestone.deadline = Date.current.strftime('%Y-%m-%d') # Deadline isn't used here
+      milestone.deadline = Date.current.strftime("%Y-%m-%d") # Deadline isn't used here
     end
 
     # Handle save failure
     unless milestone.save
       return render json: {
-        status:  'error',
-        message: 'Failed to save milestone when save mark scheme.'
+        status:  "error",
+        message: "Failed to save milestone when save mark scheme."
       }
     end
 
     # Can't redirect from ajax here, so must do it from js
     render json: {
-      status:   'success',
-      message:  'Saved mark scheme',
+      status:   "success",
+      message:  "Saved mark scheme",
       redirect: project_mark_scheme_index_path
     }
   end
@@ -137,7 +137,7 @@ class MarkSchemeController < ApplicationController
     # Return all possible assessors for the current project, given the search criteria.
     query = params[:query]
 
-    query = '' if query.nil?
+    query = "" if query.nil?
 
     @results = Staff.select { |s| s.email.include?(query.downcase) }
     render json: @results.map(&:email)
@@ -174,18 +174,18 @@ class MarkSchemeController < ApplicationController
     mark_scheme = milestone.json_data
 
     # Initialise assessors if necessary
-    mark_scheme['sections'][section_index]['assessors'] = {} if mark_scheme['sections'][section_index]['assessors'].nil?
+    mark_scheme["sections"][section_index]["assessors"] = {} if mark_scheme["sections"][section_index]["assessors"].nil?
 
     # Populate new assessor emails into mark scheme milestone json data
     session[:assessor_selection].each do |assessor|
-      unless mark_scheme['sections'][section_index]['assessors'].include?(assessor)
-        mark_scheme['sections'][section_index]['assessors'][assessor] = []
+      unless mark_scheme["sections"][section_index]["assessors"].include?(assessor)
+        mark_scheme["sections"][section_index]["assessors"][assessor] = []
       end
     end
 
     # Update the mark scheme
     milestone.json_data = mark_scheme
-    flash.alert = 'Failed to assign assessors to mark scheme.' unless milestone.save
+    flash.alert = "Failed to assign assessors to mark scheme." unless milestone.save
 
     # Re-render the view for assessors
     @mark_scheme = milestone.json_data
@@ -209,11 +209,11 @@ class MarkSchemeController < ApplicationController
 
   def remove_assessor_from_section
     mark_scheme = get_mark_scheme
-    mark_scheme.json_data['sections'][params[:section_index]]['assessors'].delete(params[:email])
+    mark_scheme.json_data["sections"][params[:section_index]]["assessors"].delete(params[:email])
 
-    flash.alert = 'Failed to unassign assessor from section.' unless mark_scheme.save
+    flash.alert = "Failed to unassign assessor from section." unless mark_scheme.save
 
-    render partial: 'section_assessors', locals: { mark_scheme: mark_scheme.json_data }
+    render partial: "section_assessors", locals: { mark_scheme: mark_scheme.json_data }
   end
 
   def get_assignable_teams
@@ -224,7 +224,7 @@ class MarkSchemeController < ApplicationController
 
     mark_scheme = get_mark_scheme
 
-    section = mark_scheme.json_data['sections'][params[:section_index]]
+    section = mark_scheme.json_data["sections"][params[:section_index]]
 
     # Save params for submit modal
     session[:current_section_index] = params[:section_index]
@@ -235,7 +235,7 @@ class MarkSchemeController < ApplicationController
       groups_to_show[group.name] = { id: group.id, already_assigned: false }
     end
 
-    section['assessors'].each do |assessor, team_ids|
+    section["assessors"].each do |assessor, team_ids|
       team_ids.each do |team_id|
         team = Group.find(team_id)
         if assessor == params[:email]
@@ -257,19 +257,19 @@ class MarkSchemeController < ApplicationController
     mark_scheme = milestone.json_data
 
     # Get all the team ids that are taken, so we don't assign twice, incase someone inspects element.
-    taken_teams = mark_scheme['sections'][section_index]['assessors'].reject do |email, _|
+    taken_teams = mark_scheme["sections"][section_index]["assessors"].reject do |email, _|
       email == session[:current_assessor_email]
     end.values.flatten
 
     new_teams = params[:team_ids] - taken_teams
-    mark_scheme['sections'][section_index]['assessors'][session[:current_assessor_email]] = new_teams
+    mark_scheme["sections"][section_index]["assessors"][session[:current_assessor_email]] = new_teams
 
     milestone.json_data = mark_scheme
 
-    flash.alert = 'Failed to assign teams to assessor.' unless milestone.save
+    flash.alert = "Failed to assign teams to assessor." unless milestone.save
 
     # Re-render the section to update table row
-    render partial: 'section_assessors', locals: { mark_scheme: milestone.json_data }
+    render partial: "section_assessors", locals: { mark_scheme: milestone.json_data }
   end
 
   def auto_assign_teams
@@ -279,9 +279,9 @@ class MarkSchemeController < ApplicationController
     milestone = get_mark_scheme
     mark_scheme = milestone.json_data
 
-    assessors = mark_scheme['sections'][section_index]['assessors']
+    assessors = mark_scheme["sections"][section_index]["assessors"]
 
-    return render partial: 'section_assessors', locals: { mark_scheme: milestone.json_data } if assessors.blank?
+    return render partial: "section_assessors", locals: { mark_scheme: milestone.json_data } if assessors.blank?
 
     # Split the teams between the assessors evenly
     group_ids = CourseProject.find(session[:current_project_id]).groups.flat_map(&:id)
@@ -291,18 +291,18 @@ class MarkSchemeController < ApplicationController
 
     assessors = {}
 
-    mark_scheme['sections'][section_index]['assessors'].keys.each_with_index do |assessor, i|
+    mark_scheme["sections"][section_index]["assessors"].keys.each_with_index do |assessor, i|
       assessors[assessor] = groups_split[i]
     end
 
     # Update the mark scheme
-    mark_scheme['sections'][section_index]['assessors'] = assessors
+    mark_scheme["sections"][section_index]["assessors"] = assessors
     milestone.json_data = mark_scheme
 
-    flash.alert = 'Failed to automatically assign teams for section.' unless milestone.save
+    flash.alert = "Failed to automatically assign teams for section." unless milestone.save
 
     # Rerender the section to update table row
-    render partial: 'section_assessors', locals: { mark_scheme: milestone.json_data }
+    render partial: "section_assessors", locals: { mark_scheme: milestone.json_data }
   end
 
   def show
@@ -320,25 +320,24 @@ class MarkSchemeController < ApplicationController
     @mark_scheme = get_mark_scheme
 
     unless group.nil?
-      @marks = @mark_scheme.milestone_responses.select { |ms| ms.json_data['group_id'] == group.id }.first
+      @marks = @mark_scheme.milestone_responses.select { |ms| ms.json_data["group_id"] == group.id }.first
     end
 
-    render partial: 'marking_table'
+    render partial: "marking_table"
   end
 
   private
+    def hash_to_json(h)
+      # Helper to convert a hash to a json, useful so accessing the data is consistently by strings,
+      # like if it was loaded from the database.
+      JSON.parse(h.to_json)
+    end
 
-  def hash_to_json(h)
-    # Helper to convert a hash to a json, useful so accessing the data is consistently by strings,
-    # like if it was loaded from the database.
-    JSON.parse(h.to_json)
-  end
-
-  def get_mark_scheme
-    # Only one mark scheme per project
-    Milestone.select do |m|
-      m.system_type == 'marking_deadline' &&
-        m.course_project_id == session[:current_project_id]
-    end.first
-  end
+    def get_mark_scheme
+      # Only one mark scheme per project
+      Milestone.select do |m|
+        m.system_type == "marking_deadline" &&
+          m.course_project_id == session[:current_project_id]
+      end.first
+    end
 end

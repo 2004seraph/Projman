@@ -5,7 +5,7 @@
 
 class CreateStudent < ActiveRecord::Migration[7.0]
   def change
-    enable_extension 'citext'
+    enable_extension "citext"
 
     #  Integer enum: home = 0, overseas = 1
     create_enum :student_fee_status, %w[home overseas]
@@ -14,8 +14,8 @@ class CreateStudent < ActiveRecord::Migration[7.0]
       # id primary key column is implicit
       t.string :preferred_name, null: false, limit: 24
       t.string :forename,       null: false, limit: 24
-      t.string :middle_names,   default: '', limit: 64
-      t.string :surname,        default: '', limit: 24
+      t.string :middle_names,   default: "", limit: 64
+      t.string :surname,        default: "", limit: 24
 
       t.citext :username,       null: false, index: { unique: { case_sensitive: false } }  # seems to depend on the number of middle names
       t.string :title,          null: false, limit: 4
@@ -23,7 +23,7 @@ class CreateStudent < ActiveRecord::Migration[7.0]
       t.string :ucard_number,   null: false, limit: 9, index: { unique: true }
 
       t.citext :email,          null: false, index: { unique: { case_sensitive: false } }  # technical limit of email addresses
-      t.string :personal_tutor, default: '', limit: 64
+      t.string :personal_tutor, default: "", limit: 64
 
       t.timestamps
     end

@@ -4,10 +4,10 @@
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 ## Application deployment configuration
-set :server,      'QA_SERVER'
-set :user,        'QA_USER'
+set :server,      "QA_SERVER"
+set :user,        "QA_USER"
 set :deploy_to,   -> { "/srv/services/#{fetch(:user)}" }
-set :branch,      'qa'
+set :branch,      "qa"
 set :application, fetch(:user)
 
 ## Server configuration
@@ -19,7 +19,7 @@ namespace :deploy do
     on primary :db do
       within current_path do
         with rails_env: fetch(:stage) do
-          execute :rake, 'db:seed'
+          execute :rake, "db:seed"
         end
       end
     end

@@ -5,20 +5,20 @@ FactoryBot.define do
 
   factory :standard_staff_user, class: User do
     transient do
-      email { 'awillis4@sheffield.ac.uk' }
-      username { 'acc22aw' }
+      email { "awillis4@sheffield.ac.uk" }
+      username { "acc22aw" }
       admin { false }
 
-      sn { 'Willis' }
-      givenname { 'Adam' }
+      sn { "Willis" }
+      givenname { "Adam" }
     end
 
-    uid { 'acc22aw' }
-    mail { 'awillis4@sheffield.ac.uk' }
+    uid { "acc22aw" }
+    mail { "awillis4@sheffield.ac.uk" }
 
-    ou { 'COM' }
+    ou { "COM" }
     dn { nil }
-    account_type { 'student - ug' }
+    account_type { "student - ug" }
 
     after(:build) do |user, evaluator|
       FactoryBot.create(:standard_student_user, email: evaluator.email, username: evaluator.username, sn: evaluator.sn,

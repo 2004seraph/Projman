@@ -31,7 +31,7 @@ class StudentController < ApplicationController
     query = params[:query]
     course_module = CourseModule.find_by(code: session[:module_data][:module_code])
 
-    @results = Student.where('email LIKE ?', "%#{query}%")
+    @results = Student.where("email LIKE ?", "%#{query}%")
                       .where.not(id: course_module.students.pluck(:id))
                       .limit(8)
                       .distinct

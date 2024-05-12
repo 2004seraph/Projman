@@ -3,7 +3,7 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-require 'auth_helper'
+require "auth_helper"
 
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
 
   before_action :store_location, unless: :devise_controller?
   def store_location
-    return unless user_initiated_page_request? && request.path != '/users/sign_in'
+    return unless user_initiated_page_request? && request.path != "/users/sign_in"
 
     session[:redirect_url] = session[:previous_url]
     session[:previous_url] = request.fullpath
@@ -72,10 +72,9 @@ class ApplicationController < ActionController::Base
   end
 
   private
-
-  def update_headers_to_disable_caching
-    response.headers['Cache-Control'] = 'no-cache, no-cache="set-cookie", no-store, private, proxy-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '-1'
-  end
+    def update_headers_to_disable_caching
+      response.headers["Cache-Control"] = 'no-cache, no-cache="set-cookie", no-store, private, proxy-revalidate'
+      response.headers["Pragma"] = "no-cache"
+      response.headers["Expires"] = "-1"
+    end
 end

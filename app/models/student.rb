@@ -40,8 +40,8 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-require 'csv'
-require 'student_data_helper'
+require "csv"
+require "student_data_helper"
 
 class Student < ApplicationRecord
   include EpiCas::DeviseHelper
@@ -56,9 +56,9 @@ class Student < ApplicationRecord
   has_many :assigned_facilitators, dependent: :destroy
   has_many :milestone_responses
 
-  enum :fee_status, { home: 'home', overseas: 'overseas' }
+  enum :fee_status, { home: "home", overseas: "overseas" }
 
-  @text_validation_regex = Regexp.new '[A-zÀ-ú\' -.]*'
+  @text_validation_regex = Regexp.new "[A-zÀ-ú' -.]*"
 
   @email_validation_regex = Regexp.new '(?:[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])' # :nodoc:
 
@@ -185,28 +185,27 @@ class Student < ApplicationRecord
   end
 
   private
-
-  def remove_all_enrollments
-    course_modules.each do |c|
-      unenroll_module(c)
-    end
-  end
-
-  # a static method to convert CSV header names to the correct database field name
-  def self.csv_header_to_field(header_name_string)
-    explicit_header_mappings = StudentDataHelper::EXPLICIT_CSV_TO_FIELD_LINK
-    if explicit_header_mappings.key?(header_name_string.to_sym)
-      explicit_header_mappings[header_name_string.to_sym]
-    else
-      header_name_string.parameterize.underscore
-    end
-  end
-
-  def self.translate_csv_value(field_symbol, value_string, username)
-    if StudentDataHelper::CSV_VALUE_TRANSLATIONS.key?(field_symbol)
-      return StudentDataHelper::CSV_VALUE_TRANSLATIONS[field_symbol].call(value_string, username)
+    def remove_all_enrollments
+      course_modules.each do |c|
+        unenroll_module(c)
+      end
     end
 
-    value_string
-  end
+    # a static method to convert CSV header names to the correct database field name
+    def self.csv_header_to_field(header_name_string)
+      explicit_header_mappings = StudentDataHelper::EXPLICIT_CSV_TO_FIELD_LINK
+      if explicit_header_mappings.key?(header_name_string.to_sym)
+        explicit_header_mappings[header_name_string.to_sym]
+      else
+        header_name_string.parameterize.underscore
+      end
+    end
+
+    def self.translate_csv_value(field_symbol, value_string, username)
+      if StudentDataHelper::CSV_VALUE_TRANSLATIONS.key?(field_symbol)
+        return StudentDataHelper::CSV_VALUE_TRANSLATIONS[field_symbol].call(value_string, username)
+      end
+
+      value_string
+    end
 end

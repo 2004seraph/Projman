@@ -19,6 +19,6 @@ class PageController < ApplicationController
 
     ProfileMailer.notify_admin_title_change_request(admin.email, current_user, requested_title).deliver_now
 
-    render 'page/profile'
+    render "page/profile"
   end
 end

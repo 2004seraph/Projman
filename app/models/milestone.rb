@@ -36,16 +36,16 @@ class Milestone < ApplicationRecord
   validates :deadline,        presence: true
 
   enum :milestone_type, {
-    student: 'for_each_student',
-    staff:   'for_each_staff',
-    team:    'for_each_team'
+    student: "for_each_student",
+    staff:   "for_each_staff",
+    team:    "for_each_team"
   }
 
   enum :system_type, {
-    teammate_preference_deadline: 'teammate_preference_deadline',
-    project_preference_deadline:  'project_preference_deadline',
-    project_completion_deadline:  'project_deadline',
-    marking_deadline:             'mark_scheme'
+    teammate_preference_deadline: "teammate_preference_deadline",
+    project_preference_deadline:  "project_preference_deadline",
+    project_completion_deadline:  "project_deadline",
+    marking_deadline:             "mark_scheme"
   }
 
   def push_milestone_to_teams?(reminder = false)
@@ -54,9 +54,9 @@ class Milestone < ApplicationRecord
 
       course_project.groups.each do |g|
         json = {
-          'Name'    => json_data['Name'],
-          'Content' => json_data['Content'],
-          'Urgency' =>
+          "Name"    => json_data["Name"],
+          "Content" => json_data["Content"],
+          "Urgency" =>
                        if [:project_completion_deadline].include? system_type
                          2 # Most urgent
                        elsif reminder

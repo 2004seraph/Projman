@@ -24,8 +24,8 @@ class CreateProject < ActiveRecord::Migration[7.0]
     create_table :course_projects do |t|
       t.references :course_module, null: false, foreign_key: true
 
-      t.string :name, null: false, default: 'Unnamed Project'
-      t.column :status, :project_status, null: false, default: 'draft'
+      t.string :name, null: false, default: "Unnamed Project"
+      t.column :status, :project_status, null: false, default: "draft"
 
       t.integer :team_size, null: false
       t.column :team_allocation, :project_team_allocation, null: true
@@ -36,7 +36,7 @@ class CreateProject < ActiveRecord::Migration[7.0]
       # removed in favour of the subprojects relation
       # t.json :project_choices_json, default: "{}"
 
-      t.json :markscheme_json, default: '{}'
+      t.json :markscheme_json, default: "{}"
 
       t.timestamps
     end
