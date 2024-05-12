@@ -5,7 +5,7 @@
 
 class CreateMilestone < ActiveRecord::Migration[7.0]
   def change
-    create_enum :milestone_milestone_type, %w[for_each_student for_each_staff for_each_team]
+    create_enum :milestone_milestone_type, %w[for_each_student for_each_team] # for_each_staff
     create_enum :milestone_system_type,
                 %w[teammate_preference_deadline project_preference_deadline project_deadline mark_scheme]
 

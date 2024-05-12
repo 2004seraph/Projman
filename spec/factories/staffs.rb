@@ -1,5 +1,25 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: staffs
+#
+#  id                  :bigint           not null, primary key
+#  admin               :boolean          default(FALSE), not null
+#  current_sign_in_at  :datetime
+#  current_sign_in_ip  :string
+#  email               :citext           not null
+#  last_sign_in_at     :datetime
+#  last_sign_in_ip     :string
+#  remember_created_at :datetime
+#  sign_in_count       :integer          default(0), not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#
+# Indexes
+#
+#  index_staffs_on_email  (email) UNIQUE
+#
 FactoryBot.define do
   # ALL THE FIELDS IN THE transient BLOCK CAN BE OVERRIDDEN WITH FactoryBot.create(:standard_staff_user, .. <attribs> ..)
 
@@ -18,11 +38,11 @@ FactoryBot.define do
 
     ou { "COM" }
     dn { nil }
-    account_type { "student - ug" }
+    account_type { "staff" }
 
     after(:build) do |user, evaluator|
-      FactoryBot.create(:standard_student_user, email: evaluator.email, username: evaluator.username, sn: evaluator.sn,
-givenname: evaluator.givenname)
+      # implicitly create a student user to act as the concrete "backend" account
+      # FactoryBot.create(:standard_student_user, email: evaluator.email, username: evaluator.username, sn: evaluator.sn, givenname: evaluator.givenname)
 
       user.email = evaluator.email
       user.mail = evaluator.email

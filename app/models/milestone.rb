@@ -37,7 +37,7 @@ class Milestone < ApplicationRecord
 
   enum :milestone_type, {
     student: "for_each_student",
-    staff:   "for_each_staff",
+    # staff:   "for_each_staff",
     team:    "for_each_team"
   }
 

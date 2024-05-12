@@ -12,7 +12,7 @@ Rails.application.routes.draw do
 
   get "/profile", to: "page#profile"
   post "/profile/request-title-change", to: "page#request_title_change"
-  get "/mailing", to: "page#mailing"
+  get "/mail", to: "page#mail"
 
   resources :projects, controller: :course_project do
     resource :milestone_responses, only: [:create], controller: :milestone_response

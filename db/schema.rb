@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -12,20 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_240_417_140_249) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
-  create_enum "group_event_type", %w[generic milestone chat issue]
-  create_enum "milestone_milestone_type", %w[for_each_student for_each_staff for_each_team]
-  create_enum "milestone_system_type",
-              %w[teammate_preference_deadline project_preference_deadline project_deadline mark_scheme]
-  create_enum "project_status", %w[draft preparation review live completed archived]
-  create_enum "project_team_allocation", %w[random preference_form_based]
-  create_enum "student_fee_status", %w[home overseas]
+  create_enum "group_event_type", ["generic", "milestone", "chat", "issue"]
+  create_enum "milestone_milestone_type", ["for_each_student", "for_each_team"]
+  create_enum "milestone_system_type", ["teammate_preference_deadline", "project_preference_deadline", "project_deadline", "mark_scheme"]
+  create_enum "project_status", ["draft", "preparation", "review", "live", "completed", "archived"]
+  create_enum "project_team_allocation", ["random", "preference_form_based"]
+  create_enum "student_fee_status", ["home", "overseas"]
 
   create_table "assigned_facilitators", force: :cascade do |t|
     t.bigint "student_id"
@@ -35,7 +32,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_417_140_249) do
     t.datetime "updated_at", null: false
     t.index ["course_project_id"], name: "index_assigned_facilitators_on_course_project_id"
     t.index ["staff_id"], name: "index_assigned_facilitators_on_staff_id"
-    t.index %w[student_id staff_id course_project_id], name: "module_assignment", unique: true
+    t.index ["student_id", "staff_id", "course_project_id"], name: "module_assignment", unique: true
     t.index ["student_id"], name: "index_assigned_facilitators_on_student_id"
   end
 
@@ -53,7 +50,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_417_140_249) do
     t.bigint "student_id", null: false
     t.bigint "course_module_id", null: false
     t.index ["course_module_id"], name: "index_course_modules_students_on_course_module_id"
-    t.index %w[student_id course_module_id], name: "modules_students_index", unique: true
+    t.index ["student_id", "course_module_id"], name: "modules_students_index", unique: true
     t.index ["student_id"], name: "index_course_modules_students_on_student_id"
   end
 
@@ -84,7 +81,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_417_140_249) do
     t.string "queue"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.index %w[priority run_at], name: "delayed_jobs_priority"
+    t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
   create_table "event_responses", force: :cascade do |t|
@@ -129,7 +126,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_417_140_249) do
   create_table "groups_students", id: false, force: :cascade do |t|
     t.bigint "student_id", null: false
     t.bigint "group_id", null: false
-    t.index %w[student_id group_id], name: "index_groups_students_on_student_id_and_group_id"
+    t.index ["student_id", "group_id"], name: "index_groups_students_on_student_id_and_group_id"
   end
 
   create_table "milestone_responses", force: :cascade do |t|

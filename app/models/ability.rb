@@ -63,6 +63,8 @@ class Ability
     # staff permissions
     return unless user.is_staff?
 
+    can %i[mail], :page
+
     # A staff can view students view
     can %i[read index update_selection search_students confirm_selection clear_selection clear_student remove_students_from_module],
         Student
