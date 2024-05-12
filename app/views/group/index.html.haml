@@ -80,7 +80,7 @@
       .modal-footer
         %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Close
         %button.btn.btn-primary.confirm-action-btn#add-student-to-team-btn{ type: "button"} Add
-        
+
 .modal.fade.modal-select-multiple{ id: "remakeTeamsModal", tabindex: "-1", "aria-labelledby": "remakeTeamsModal", "aria-hidden": "true", "data-disallow-confirm-empty-input": "" }
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
     .modal-content
@@ -91,7 +91,7 @@
         %h1.fs-6.fw-normal.fst-italic= "Are you sure you want to remake teams?"
       .modal-footer
         %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Cancel
-        = form_with(url: remake_teams_project_path(id: @current_project.id), method: :post, local: false, remote: true) do |form|
+        = form_with(url: remake_teams_project_path(id: @current_project.id), method: :post, local: true, remote: false) do |form|
           = form.submit("Confirm", class: "btn btn-primary", "data-bs-dismiss": "modal", id: "confirm-button")
 
 :javascript

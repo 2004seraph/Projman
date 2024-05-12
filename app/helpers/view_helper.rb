@@ -29,10 +29,12 @@ module ViewHelper
   end
 
   def get_module_code(code)
+    session[:module_data] = {} if session[:module_data].nil?
     session[:module_data][:module_code] = code
   end
 
   def set_session_module_code(code)
+    session[:module_data] = {} if session[:module_data].nil?
     session[:module_data][:module_code] = code
   end
 end

@@ -52,7 +52,7 @@
               %th{scope: "col"} UCard Number
             %tbody
               - team.students.each do |student|
-                = render 'student_selectable_row', student: student
+                = render 'group/student_selectable_row', student: student
 
         = button_tag type: 'button', class: "btn btn-primary me-2 add-student-btn", style: "height: auto;", data: { bs_toggle: "modal", bs_target: "#add-student-modal", onclick: set_session_module_code(@current_project.course_module.code) } do
           %i.bi.bi-person-fill-add

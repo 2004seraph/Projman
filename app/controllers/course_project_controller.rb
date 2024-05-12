@@ -1208,6 +1208,9 @@ class CourseProjectController < ApplicationController
   def remake_teams
     project = CourseProject.find(params[:id])
 
+    errors = {}
+    errors[:main] = {}
+
     project.groups&.destroy_all
 
     module_test = CourseModule.find(project.course_module_id)
@@ -1272,12 +1275,6 @@ class CourseProjectController < ApplicationController
         end
       end
     end
-
-    @current_project = project
-    @project_groups = project.groups
-
-    return unless request.xhr?
-
-    respond_to(&:js)
+    redirect_to project_teams_path(project_id: project.id)
   end
 end
