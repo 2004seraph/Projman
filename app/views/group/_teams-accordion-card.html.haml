@@ -17,6 +17,16 @@
       %table{ style: "flex: 1;" }
         %tbody
           %tr.d-flex.justify-content-between.row
+            - violation_level = team.find_allocation_violations
+            - if violation_level == 3
+              .team-violations-container{ text: "Severe Team Allocation Violations" }
+                %i.bi.bi-circle-fill.fill-red
+            - elsif violation_level == 2
+              .team-violations-container{ text: "Moderate Team Allocation Violations" }
+                %i.bi.bi-circle-fill.fill-yellow
+            - else
+              .team-violations-container{ text: "No Team Allocation Violations" }
+                %i.bi.bi-circle-fill.fill-green
             %td.col-2
               .fs-5.m-0.p-0 #{team.name}
             %td.d-flex.gap-2.col
@@ -50,6 +60,7 @@
               %th{scope: "col"} Name
               %th{scope: "col"} Email
               %th{scope: "col"} UCard Number
+              %th{scope: "col"} 
             %tbody
               - team.students.each do |student|
                 %tr.selectable-row
@@ -58,7 +69,45 @@
                   %td= "#{student.preferred_name + " " + student.surname}"
                   %td= student.email
                   %td= student.ucard_number
+                  %td
+                    - violations_hash = student.find_preference_violations(team)
+                    .student-violations-container{ text: violations_hash.values.first }
+                      - if violations_hash.keys.first == 3
+                        %i.bi.bi-circle-fill.fill-red
+                      - elsif violations_hash.keys.first == 2
+                        %i.bi.bi-circle-fill.fill-yellow
+                      - else
+                        %i.bi.bi-circle-fill.fill-green
 
-        = button_tag 'Add Students +', type: 'button', class: "btn btn-primary", style: "height: auto;"
+        = button_tag 'Add Students', type: 'button', class: "btn btn-primary", style: "height: auto;"
 
         = button_tag 'Remove Selected Students', type: 'button', class: "btn btn-secondary fs-8", style: "height: auto;"
+
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+    var hoverTextContainers = document.querySelectorAll('.team-violations-container');
+
+    hoverTextContainers.forEach(function(container) {
+      var hoverText = container.getAttribute('text');
+      container.removeAttribute('text');
+
+      var text = document.createElement('span');
+      text.classList.add('team-violations-text');
+      text.textContent = hoverText;
+      container.appendChild(text);
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var hoverTextContainers = document.querySelectorAll('.student-violations-container');
+
+    hoverTextContainers.forEach(function(container) {
+      var hoverText = container.getAttribute('text');
+      container.removeAttribute('text');
+
+      var text = document.createElement('span');
+      text.classList.add('student-violations-text');
+      text.textContent = hoverText;
+      container.appendChild(text);
+    });
+  });

@@ -5,9 +5,10 @@
   .d-flex.justify-content-between
     %h2.fs-3 Personal Information
 
-    %button.btn.btn-primary.btn-m{type: "button", "data-bs-toggle": "modal",
-       "data-bs-target": "#changeGenderModal"}
-      Request Title Change
+    - if current_user.is_student?
+      %button.btn.btn-primary.btn-m{type: "button", "data-bs-toggle": "modal",
+         "data-bs-target": "#changeGenderModal"}
+        Request Title Change
 
   %hr.divider
 
@@ -46,7 +47,7 @@
           %h1.fs-6.fw-normal.fst-italic= "An email will be sent to an admin. They will get back you shortly."
           .form-group
             = form.label :requested_title, "Select Title:"
-            = form.select :requested_title, options_for_select(["Mr", "Miss", "Ms", "Mx"]), {}, class: "form-control"
+            = form.select :requested_title, options_for_select(["Mr", "Miss", "Ms", "Mrs", "Mx", "Dr", "Prof"]), {}, class: "form-control"
         .modal-footer
           %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Cancel
           = form.submit("Confirm", class: "btn btn-primary", "data-bs-dismiss": "modal")
