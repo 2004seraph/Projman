@@ -5,7 +5,7 @@
   = yield
 
   -# MAIN CONTENT
-  .mb-3
+  %div{class: "mb-3 #{"locked" if project_data[:status] != 'draft'}"}
     - if errors.present?
       .container-fluid.d-flex.flex-column.fs-6.text-danger.mb-3
         Please fix all errors
@@ -29,7 +29,7 @@
 
 
   -# PROJECT CHOICES
-  .card#project-choices.mb-3
+  .card#project-choices{class: "mb-3 #{"locked" if project_data[:status] != 'draft'}"}
     .card-header.d-flex.align-items-center
       %input.form-check-input.p-2.me-2.mt-0#project-choices-enable{type: "checkbox", value: "",
       checked: project_data[:project_choices_enabled], name: "project_choices_enable", data: { url: toggle_project_choices_projects_path }}
@@ -59,7 +59,7 @@
         Add
 
   -# TEAM CONFIGURATION
-  .card#team-configuration.mb-3
+  .card#team-configuration{class: "mb-3 #{"locked" if project_data[:status] != 'draft'}"}
     .card-header
       %h2.fs-4.m-0 Team Configuration
 
@@ -88,7 +88,7 @@
 
 
   -# TEAM PREFERENCE FORM SETTINGS
-  .card#team-preference-form-settings.mb-3
+  .card#team-preference-form-settings{class: "mb-3 #{"locked" if project_data[:status] != 'draft'}"}
     .card-header
       %h2.fs-4.m-0 Team Preference Form Settings
 
@@ -201,13 +201,3 @@
         "data-bs-target": "#add-student-project-facilitators-modal"}
         %i.bi.bi-plus
         Add Student
-
-  .card#mark-scheme.mb-3
-    .card-header.d-flex.align-items-center
-      %h2.fs-4.m-0 Mark Scheme
-
-    .card-body.pb-3.d-flex.justify-content-center.align-items-center
-      %label.btn.btn-primary.btn-lg{for: "mark-scheme"}
-        %i.bi.bi-upload
-        Upload
-        %input{type: "file", id: "mark-scheme", accept: ".csv", style: "display: none;"}
