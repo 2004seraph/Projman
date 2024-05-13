@@ -61,6 +61,15 @@ class Group < ApplicationRecord
     course_project.reload
   end
 
+  def find_allocation_violations
+    violation_level = 1
+    self.students.each do |team_member|
+      violations = team_member.find_preference_violations(self)
+      violation_level = violations.keys.first if violations.keys.first >= violation_level
+    end
+    violation_level
+  end
+
   private
     def students_must_be_enrolled_on_the_same_module(student)
       error_msg = "Students must be part of the same module as this group's project"

@@ -130,7 +130,7 @@ class FacilitatorController < ApplicationController
     end
 
     def set_assigned_projects
-      @assigned_projects = get_assigned_facilitators.flat_map(&:course_project)
+      @assigned_projects = get_assigned_facilitators.flat_map(&:course_project).uniq
     end
 
     def set_current_group

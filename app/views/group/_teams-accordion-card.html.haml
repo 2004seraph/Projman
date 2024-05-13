@@ -17,6 +17,16 @@
       %table{ style: "flex: 1;" }
         %tbody
           %tr.d-flex.justify-content-between.row
+            - violation_level = team.find_allocation_violations
+            - if violation_level == 3
+              .team-violations-container{ text: "Severe Team Allocation Violations" }
+                %i.bi.bi-circle-fill.fill-red
+            - elsif violation_level == 2
+              .team-violations-container{ text: "Moderate Team Allocation Violations" }
+                %i.bi.bi-circle-fill.fill-yellow
+            - else
+              .team-violations-container{ text: "No Team Allocation Violations" }
+                %i.bi.bi-circle-fill.fill-green
             %td.col-2
               .fs-5.m-0.p-0 #{team.name}
             %td.d-flex.gap-2.col
@@ -50,6 +60,7 @@
               %th{scope: "col"} Name
               %th{scope: "col"} Email
               %th{scope: "col"} UCard Number
+              %th{scope: "col"} 
             %tbody
               - team.students.each do |student|
                 = render 'group/student_selectable_row', student: student

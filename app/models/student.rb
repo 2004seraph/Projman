@@ -184,7 +184,156 @@ class Student < ApplicationRecord
     [true, student]
   end
 
+  TITLES = { 'Masculine' => ['Mr'], 'Female' => ['Miss', 'Ms', 'Mrs'], 'Ambiguous' => ['Mx', 'Dr', 'Prof'] }.freeze
+
+  def find_preference_violations(team)
+    proj = CourseProject.find(team.course_project_id)
+
+    # Check for heuristic singletons
+    gender = false
+    domicile = false
+
+    team.students.each do |teammate|
+      next if teammate == self
+
+      if teammate.fee_status == self.fee_status
+        domicile = true
+      end
+
+      title_type = nil
+      teammate_title_type = nil
+      TITLES.each do |key, titles|
+        title_type = key if titles.include?(self.title)
+        teammate_title_type = key if titles.include?(teammate.title)
+      end
+
+      if title_type == 'Ambiguous' || title_type == teammate_title_type
+        gender = true
+      end
+    end
+
+    # Check for subproject first choices
+    subproj = nil
+
+    if proj.subprojects.present? && !team.subproject_id.nil?
+      proj_form_milestone = proj.milestones.where(system_type: :project_preference_deadline).first
+      proj_form_response = self.milestone_responses.where(milestone_id: proj_form_milestone.id).first
+
+      subproj = if proj_form_response.nil?
+                  true
+                else
+                  proj_form_response.json_data['1'] == team.subproject_id
+                end
+    end
+
+    # Check for preferred/avoided teammates violations
+    preferred = nil
+    avoided = nil
+
+    if proj.team_allocation == 'preference_form_based'
+      pref_form_milestone = proj.milestones.where(system_type: :teammate_preference_deadline).first
+      pref_form_response = self.milestone_responses.where(milestone_id: pref_form_milestone.id).first
+
+      if pref_form_response.nil?
+        preferred = true
+        avoided = true
+      else
+
+        preferred = false
+        avoided = true
+
+        team.students.each do |teammate|
+          next if teammate == self
+
+          if pref_form_response.json_data['preferred'].include?(teammate.id)
+            preferred = true
+          end
+
+          if pref_form_response.json_data['avoided'].include?(teammate.id)
+            avoided = false
+          end
+        end
+      end
+    end
+
+    build_violations_string(proj, preferred, avoided, subproj, gender, domicile)
+  end
+
   private
+
+    def build_violations_string(proj, preferred, avoided, subproj, gender, domicile)
+      violations_hash = {}
+
+      # Severe violations
+
+      unless preferred.nil? || preferred
+        pref_form_milestone = proj.milestones.where(system_type: :teammate_preference_deadline).first
+        pref_form_response = self.milestone_responses.where(milestone_id: pref_form_milestone.id).first
+
+        str = 'Preferred Teammate(s):'
+        pref_form_response.json_data['preferred'].each do |id|
+          student = proj.students.find(id)
+          str += "\n#{student.preferred_name} #{student.surname}"
+        end
+        violations_hash[3] = str
+
+        return violations_hash
+      end
+
+      unless avoided.nil? || avoided
+        pref_form_milestone = proj.milestones.where(system_type: :teammate_preference_deadline).first
+        pref_form_response = self.milestone_responses.where(milestone_id: pref_form_milestone.id).first
+
+        str = 'Avoided Teammate(s):'
+        pref_form_response.json_data['avoided'].each do |id|
+          student = proj.students.find(id)
+          str += "\n#{student.preferred_name} #{student.surname}"
+        end
+        violations_hash[3] = str
+
+        return violations_hash
+      end
+
+      # Moderate violations
+
+      unless subproj.nil? || subproj
+        proj_form_milestone = proj.milestones.where(system_type: :project_preference_deadline).first
+        proj_form_response = self.milestone_responses.where(milestone_id: proj_form_milestone.id).first
+
+        str = 'Subproject Choices:'
+        proj_form_response.json_data.each do |rank, choice|
+          subproj = proj.subprojects.find(choice)
+          str += "\n#{rank}. #{subproj.name}"
+        end
+        violations_hash[2] = str
+
+        return violations_hash
+      end
+
+      unless gender
+
+        title_type = nil
+        TITLES.each do |key, titles|
+          title_type = key if titles.include?(self.title)
+        end
+        violations_hash[2] = "Only student with a #{title_type} title."
+
+        return violations_hash
+      end
+
+      unless domicile
+
+        violations_hash[2] = "Only student with #{self.fee_status} status."
+
+        return violations_hash
+      end
+
+      # No violations
+      violations_hash[1] = 'No student allocation violation.'
+
+      violations_hash
+    end
+
     def remove_all_enrollments
       course_modules.each do |c|
         unenroll_module(c)
