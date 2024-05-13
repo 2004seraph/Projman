@@ -34,11 +34,11 @@ class EventResponse < ApplicationRecord
   belongs_to :student, optional: true
 
   after_create lambda { |event_response|
-                 event_response.send_issue_response_email if event_response.event.event_type == 'issue'
+                 event_response.send_issue_response_email if event_response.event.event_type == "issue"
                }
 
   def send_issue_response_email
-    Rails.logger.debug 'test method being hit'
+    Rails.logger.debug "test method being hit"
     issue = Event.find(event_id)
     group = Group.find(issue.group_id)
     course_project = CourseProject.find(group.course_project_id)

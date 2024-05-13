@@ -3,8 +3,7 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
-require 'auth_helper'
+require "auth_helper"
 
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
@@ -22,7 +21,7 @@ class ApplicationController < ActionController::Base
 
   before_action :store_location, unless: :devise_controller?
   def store_location
-    return unless user_initiated_page_request? && request.path != '/users/sign_in'
+    return unless user_initiated_page_request? && request.path != "/users/sign_in"
 
     session[:redirect_url] = session[:previous_url]
     session[:previous_url] = request.fullpath
@@ -48,31 +47,34 @@ class ApplicationController < ActionController::Base
     return unless user_signed_in?
 
     username = current_user.username
-    current_user.account_type
-    email = current_user.email
+    # if current_user.respond_to? :username
+    #   current_user.username
+    # else
+    #   if current_user
+    # end
+    # current_user.account_type
 
-    if current_user.is_student?
-      if Student.exists?(username:)
-        current_user.student = Student.find_by(username:)
-        # Also populate the staff field if this student has a staff entry
-        current_user.staff = Staff.find_by(email:) if Staff.exists?(email:)
-      else
-        reset_session
-        redirect_to new_user_session_path, alert: 'User not found in the database. Please try again.'
-      end
-    elsif current_user.is_staff?
-      current_user.staff = Staff.find_or_create_by(email:)
-    else
-      reset_session
-      redirect_to new_user_session_path, alert: AuthHelper::UNAUTHORIZED_MSG
+    if current_user.is_student? && Student.exists?(username:)
+      current_user.student = Student.find_by(username:)
+      # email = current_user.student.email
+      # # Also populate the staff field if this student has a staff entry
+      # current_user.staff = Staff.find_by(email:) if Staff.exists?(email:)
+      # else
+      #   reset_session
+      #   redirect_to new_user_session_path, alert: AuthHelper::UNAUTHORIZED_MSG
     end
+    current_user.staff = Staff.find_or_create_by(email: current_user.email) if current_user.is_staff?
+
+    return if current_user.is_staff? || current_user.is_student?
+
+    reset_session
+    redirect_to new_user_session_path, alert: AuthHelper::UNAUTHORIZED_MSG
   end
 
   private
-
-  def update_headers_to_disable_caching
-    response.headers['Cache-Control'] = 'no-cache, no-cache="set-cookie", no-store, private, proxy-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '-1'
-  end
+    def update_headers_to_disable_caching
+      response.headers["Cache-Control"] = 'no-cache, no-cache="set-cookie", no-store, private, proxy-revalidate'
+      response.headers["Pragma"] = "no-cache"
+      response.headers["Expires"] = "-1"
+    end
 end

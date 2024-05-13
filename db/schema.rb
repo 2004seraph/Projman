@@ -18,7 +18,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "group_event_type", ["generic", "milestone", "chat", "issue"]
-  create_enum "milestone_milestone_type", ["for_each_student", "for_each_staff", "for_each_team"]
+  create_enum "milestone_milestone_type", ["for_each_student", "for_each_team"]
   create_enum "milestone_system_type", ["teammate_preference_deadline", "project_preference_deadline", "project_deadline", "mark_scheme"]
   create_enum "project_status", ["draft", "preparation", "review", "live", "completed", "archived"]
   create_enum "project_team_allocation", ["random", "preference_form_based"]

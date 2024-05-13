@@ -8,12 +8,12 @@ class AddLdapInfoAndCleanUpUsers < ActiveRecord::Migration[7.0]
     User.reset_column_information
     existing_columns = User.column_names
 
-    unless existing_columns.include?('username')
+    unless existing_columns.include?("username")
       add_column :users, :username, :string
       add_index :users, :username
     end
 
-    if existing_columns.include?('email')
+    if existing_columns.include?("email")
       # We don't want the unique index on email which is added by devise by default
       remove_index :users, :email
     else

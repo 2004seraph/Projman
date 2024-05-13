@@ -3,18 +3,17 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
 module ViewHelper
   module_function
 
   def unparamaterize(str)
-    str.tr('_', ' ').humanize
+    str.tr("_", " ").humanize
   end
 
   def remove_after_indent(str)
-    x = ''
+    x = ""
     (0...str.length).each do |i|
-      return x if str[i] == ' '
+      return x if str[i] == " "
 
       x += str[i]
     end

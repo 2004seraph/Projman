@@ -3,7 +3,6 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
 module Users
   class SessionsController < Devise::SessionsController
     # before_action :configure_sign_in_params, only: [:create]
@@ -33,15 +32,14 @@ module Users
     def destroy
       super
       reset_session
-      redirect_to root_path, notice: 'Logged out successfully'
+      redirect_to root_path, notice: "Logged out successfully"
     end
 
     protected
-
-    def after_sign_in_path_for(_resource)
-      previous_path = session[:previous_url]
-      session[:previous_url] = nil
-      previous_path || root_path
-    end
+      def after_sign_in_path_for(_resource)
+        previous_path = session[:previous_url]
+        session[:previous_url] = nil
+        previous_path || root_path
+      end
   end
 end

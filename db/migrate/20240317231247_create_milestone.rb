@@ -5,7 +5,7 @@
 
 class CreateMilestone < ActiveRecord::Migration[7.0]
   def change
-    create_enum :milestone_milestone_type, %w[for_each_student for_each_staff for_each_team]
+    create_enum :milestone_milestone_type, %w[for_each_student for_each_team] # for_each_staff
     create_enum :milestone_system_type,
                 %w[teammate_preference_deadline project_preference_deadline project_deadline mark_scheme]
 
@@ -14,7 +14,7 @@ class CreateMilestone < ActiveRecord::Migration[7.0]
 
       t.column    :milestone_type, :milestone_milestone_type, null: false
       t.timestamp :deadline,                                  null: false
-      t.json      :json_data,                                 null: false, default: '{}'
+      t.json      :json_data,                                 null: false, default: "{}"
 
       t.boolean   :user_generated,                            null: false, default: false
 

@@ -180,3 +180,56 @@
     background-color: var(--locked-colour);
     pointer-events: none;
 }
+.team-violations-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.team-violations-container .team-violations-text {
+    visibility: hidden;
+    white-space: nowrap;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 10px 5px 10px;
+    position: absolute;
+    z-index: 1;
+    top: calc(100% - 27px);
+    left: calc(100% + 10px); /* Adjust the distance from the mouse */
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+  
+.team-violations-container:hover .team-violations-text {
+    visibility: visible;
+    opacity: 1;
+    background-color: var(--sheffield-purple);
+}
+
+.student-violations-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.student-violations-container .student-violations-text {
+    visibility: hidden;
+    white-space: pre;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 5px 10px 5px 10px;
+    position: absolute;
+    z-index: 1;
+    top: calc(100% - 27px);
+    right: calc(100% + 10px); /* Adjust the distance from the mouse */
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+  
+.student-violations-container:hover .student-violations-text {
+    visibility: visible;
+    opacity: 1;
+    background-color: var(--sheffield-purple);
+}

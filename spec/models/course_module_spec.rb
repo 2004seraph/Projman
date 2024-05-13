@@ -3,7 +3,6 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
 # == Schema Information
 #
 # Table name: course_modules
@@ -24,7 +23,7 @@
 #
 #  fk_rails_...  (staff_id => staffs.id)
 #
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe CourseModule, type: :model do
   pending "add some examples to (or delete) #{__FILE__}"
