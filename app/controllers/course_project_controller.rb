@@ -910,7 +910,14 @@ class CourseProjectController < ApplicationController
         session_milestone && session_milestone[:Date].present?
       end
 
-      milestones_to_delete.each(&:destroy)
+      milestones_to_delete.each do |milestone|
+        milestone_email = milestone[:json_data]["Email"] if milestone[:json_data].key?("Email")
+        unless milestone_email && milestone_email.key?("Sent") && milestone_email["Sent"] == true
+      
+          # delete only if the email hasnt been sent
+          milestone.destroy
+        end
+      end
 
       # Update existing milestones
       milestones_to_update.each do |milestone|
