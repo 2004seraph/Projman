@@ -17,16 +17,16 @@
       %table{ style: "flex: 1;" }
         %tbody
           %tr.d-flex.justify-content-between.row
-            - violation_level = team.find_allocation_violations
-            - if violation_level == 3
-              .team-violations-container{ text: "Severe Team Allocation Violations" }
-                %i.bi.bi-circle-fill.fill-red
-            - elsif violation_level == 2
-              .team-violations-container{ text: "Moderate Team Allocation Violations" }
-                %i.bi.bi-circle-fill.fill-yellow
-            - else
-              .team-violations-container{ text: "No Team Allocation Violations" }
-                %i.bi.bi-circle-fill.fill-green
+            - team_violations = nil
+            - if @current_project.show_remake_teams_button?
+              - team_violations = team.find_allocation_violations
+              - if team_violations['level'] == 3
+                .team-violations-container{ text: "Severe Team Allocation Violations" }
+                  %i.bi.bi-circle-fill.fill-red
+              - elsif team_violations['level'] == 2
+                .team-violations-container{ text: "Moderate Team Allocation Violations" }
+                  %i.bi.bi-circle-fill.fill-yellow
+              
             %td.col-2
               .fs-5.m-0.p-0 #{team.name}
             %td.d-flex.gap-2.col
@@ -63,7 +63,7 @@
               %th{scope: "col"} 
             %tbody
               - team.students.each do |student|
-                = render 'group/student_selectable_row', student: student, team: team
+                = render 'group/student_selectable_row', student: student, hash: team_violations
 
         = button_tag type: 'button', class: "btn btn-primary me-2 add-student-btn", style: "height: auto;", data: { bs_toggle: "modal", bs_target: "#add-student-modal", onclick: set_session_module_code(@current_project.course_module.code) } do
           %i.bi.bi-person-fill-add

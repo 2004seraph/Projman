@@ -6,8 +6,12 @@
 #project-teams-container
 
   - if @current_project.show_remake_teams_button?
-    .d-flex.mb-2.justify-content-end
-      %button.btn.btn-primary{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#remakeTeamsModal", id: "remake-teams"}
+    .d-flex.mb-2.align-items-center.justify-content-end
+      #noViolations.student-violations-container{ text: "No Team Allocation Violations" }
+        %i.bi.bi-check-circle-fill.fill-green.custom-icon
+      #someViolations.student-violations-container{ text: "Team Allocation Violations Present" }
+        %i.bi.bi-exclamation-triangle-fill.fill-yellow.custom-icon
+      %button.btn.btn-primary.px-2{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#remakeTeamsModal", id: "remake-teams"}
         Remake Teams
 
   .container#teams-list-container
@@ -125,6 +129,23 @@
           = form.submit("Confirm", class: "btn btn-primary", "data-bs-dismiss": "modal", id: "confirm-remake-button")
 
 :javascript
+
+  function countViolations() {
+    var selector = '.team-violations-container'; 
+    var elements = document.querySelectorAll(selector);
+    return elements.length;
+  }
+  var violationCount = countViolations();
+  var noViolationsElement = document.getElementById('noViolations');
+  var someViolationsElement = document.getElementById('someViolations');
+  if (violationCount == 0) {
+    noViolationsElement.style.display = 'inline';
+    someViolationsElement.style.display = 'none';
+  } else {
+    someViolationsElement.style.display = 'inline';
+    noViolationsElement.style.display = 'none';
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     // Find the confirm button
     var confirmRemakeButton = document.getElementById('confirm-remake-button');
@@ -138,5 +159,19 @@
 
       // Replace its content with the loading symbol and message
       teamsListContainer.innerHTML = newPartialHTML;
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var hoverTextContainers = document.querySelectorAll('.student-violations-container');
+
+    hoverTextContainers.forEach(function(container) {
+      var hoverText = container.getAttribute('text');
+      container.removeAttribute('text');
+
+      var text = document.createElement('span');
+      text.classList.add('student-violations-text');
+      text.textContent = hoverText;
+      container.appendChild(text);
     });
   });

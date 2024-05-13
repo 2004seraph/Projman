@@ -160,10 +160,14 @@ class Student < ApplicationRecord
     [true, student]
   end
 
-  TITLES = { 'Masculine' => ['Mr'], 'Female' => ['Miss', 'Ms', 'Mrs'], 'Ambiguous' => ['Mx', 'Dr', 'Prof'] }.freeze
+  TITLES = { 'Masculine'=>['Mr'], 'Female'=>['Miss', 'Ms', 'Mrs'], 'Ambiguous'=>['Mx', 'Dr', 'Prof'] }.freeze
 
   def find_preference_violations(team)
     proj = CourseProject.find(team.course_project_id)
+
+    if proj.team_size == 1
+      return build_violations_string(proj, true, true, true, true, true)
+    end
 
     # Check for heuristic singletons
     gender = false

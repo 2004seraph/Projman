@@ -6,14 +6,13 @@
   %td= student.email
   %td= student.ucard_number
   %td
-    - violations_hash = student.find_preference_violations(team)
-    .student-violations-container{ text: violations_hash.values.first }
-      - if violations_hash.keys.first == 3
-        %i.bi.bi-circle-fill.fill-red
-      - elsif violations_hash.keys.first == 2
-        %i.bi.bi-circle-fill.fill-yellow
-      - else
-        %i.bi.bi-circle-fill.fill-green
+    - unless hash.nil?
+      - violations_hash = hash[student.id]
+      .student-violations-container{ text: violations_hash.values.first }
+        - if violations_hash.keys.first == 3
+          %i.bi.bi-circle-fill.fill-red
+        - elsif violations_hash.keys.first == 2
+          %i.bi.bi-circle-fill.fill-yellow
 
 :javascript
   document.addEventListener('DOMContentLoaded', function() {

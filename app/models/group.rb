@@ -62,12 +62,19 @@ class Group < ApplicationRecord
   end
 
   def find_allocation_violations
+    member_violations = {}
     violation_level = 1
+
     self.students.each do |team_member|
       violations = team_member.find_preference_violations(self)
+      member_violations[team_member.id] = violations
+
       violation_level = violations.keys.first if violations.keys.first >= violation_level
     end
-    violation_level
+
+    member_violations['level'] = violation_level
+    puts(member_violations)
+    member_violations
   end
 
   private

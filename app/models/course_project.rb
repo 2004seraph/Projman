@@ -84,7 +84,7 @@ class CourseProject < ApplicationRecord
     pref_form = Milestone.find_by(system_type: :teammate_preference_deadline, course_project_id: id)
 
     if (team_allocation == "random_team_allocation" && teams_from_project_choice == false) ||
-       (team_allocation == "random_team_allocation" && teams_from_project_choice == true && proj_pref && proj_pref.deadline < Time.zone.now) ||
+       (teams_from_project_choice == true && proj_pref && proj_pref.deadline < Time.zone.now) ||
        (team_allocation == "preference_form_based" && pref_form && pref_form.deadline < Time.zone.now)
 
       true
