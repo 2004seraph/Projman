@@ -52,24 +52,9 @@ class ApplicationController < ActionController::Base
   def load_current_user
     return unless user_signed_in?
 
-    username = current_user.username
-    # if current_user.respond_to? :username
-    #   current_user.username
-    # else
-    #   if current_user
-    # end
-    # current_user.account_type
-
-    if current_user.is_student? && Student.exists?(username:)
-      current_user.student = Student.find_by(username:)
-      # email = current_user.student.email
-      # # Also populate the staff field if this student has a staff entry
-      # current_user.staff = Staff.find_by(email:) if Staff.exists?(email:)
-      # else
-      #   reset_session
-      #   redirect_to new_user_session_path, alert: AuthHelper::UNAUTHORIZED_MSG
-    end
-    current_user.staff = Staff.find_or_create_by(email: current_user.email) if current_user.is_staff?
+    email = current_user.email
+    current_user.student = Student.find_by(email: email) if current_user.is_student?
+    current_user.staff = Staff.find_or_create_by(email: email) if current_user.is_staff?
 
     return if current_user.is_staff? || current_user.is_student?
 
