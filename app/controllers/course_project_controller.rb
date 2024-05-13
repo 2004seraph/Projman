@@ -371,7 +371,7 @@ class CourseProjectController < ApplicationController
 
     project_data[:teams_from_project_choice] = false unless project_data[:project_choices_enabled]
 
-    if project_data[:project_choices_enabled] && project_data[:teams_from_project_choice]
+    if (project_data[:project_choices_enabled] && project_data[:teams_from_project_choice]) || project_data[:team_size] == 1
       project_data[:selected_team_allocation_mode] = nil
     end
 
@@ -595,7 +595,7 @@ class CourseProjectController < ApplicationController
       # Run sorting algorithm for student groups
       students_grouped = []
 
-      if project_data[:selected_team_allocation_mode] == "random_team_allocation" && !project_data[:teams_from_project_choice]
+      if (project_data[:selected_team_allocation_mode] == "random_team_allocation" && !project_data[:teams_from_project_choice]) || project_data[:team_size] == 1
         students_grouped = DatabaseHelper.random_group_allocation(team_size, module_students)
       end
 
@@ -711,8 +711,8 @@ class CourseProjectController < ApplicationController
 
     project_data[:teams_from_project_choice] = false unless project_data[:project_choices_enabled]
 
-    if project_data[:project_choices_enabled] && project_data[:teams_from_project_choice]
-      project_data[:selected_team_allocation_mode] = "random_team_allocation"
+    if (project_data[:project_choices_enabled] && project_data[:teams_from_project_choice]) || project_data[:team_size] == 1
+      project_data[:selected_team_allocation_mode] = nil
     end
 
     project_deadline = nil

@@ -51,6 +51,8 @@ $(function() {
             console.log(teamPrefMinDate)
         }
 
+        var teamSize = $('#team-size').val()
+
         $('#project-choices .card-body').toggleClass('display-none', !projectChoicesChecked);
         $('#project-preference-form-deadline-row').toggleClass('display-none', !projectChoicesChecked);
         if(!projectChoicesChecked && teamsBasedOnProjectChoice){
@@ -58,9 +60,9 @@ $(function() {
             $('#teamsBasedOnProjectChoiceSwitch').prop('checked', false).trigger('change');
         }
         
-        $('#team-allocation-method-row').toggleClass('display-none', teamsBasedOnProjectChoice)
-        $('#team-preference-form-settings').toggleClass('display-none', (teamsBasedOnProjectChoice || teamAllocationMethodValue !== "preference_form_based"));
-        $('#teammate-preference-form-deadline-row').toggleClass('display-none', (teamsBasedOnProjectChoice || teamAllocationMethodValue !== "preference_form_based"));
+        $('#team-allocation-method-row').toggleClass('display-none', teamsBasedOnProjectChoice || teamSize == 1)
+        $('#team-preference-form-settings').toggleClass('display-none', (teamsBasedOnProjectChoice || teamAllocationMethodValue !== "preference_form_based" || teamSize == 1));
+        $('#teammate-preference-form-deadline-row').toggleClass('display-none', (teamsBasedOnProjectChoice || teamAllocationMethodValue !== "preference_form_based" || teamSize == 1));
 
 
     }
@@ -80,6 +82,10 @@ $(function() {
     $(document).on('change', '#teamsBasedOnProjectChoiceSwitch', function() {
         runChecks();
     });
+
+    $(document).on('change', '#team-size', function(){
+        runChecks();
+    })
 
     // Emailing Modal Control
     $(document).on('click', '#timings .milestone-row button.milestone-email-btn', function(event) {
