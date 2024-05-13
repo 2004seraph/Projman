@@ -5,3 +5,27 @@
   %td= "#{student.preferred_name + " " + student.surname}"
   %td= student.email
   %td= student.ucard_number
+  %td
+    - violations_hash = student.find_preference_violations(team)
+    .student-violations-container{ text: violations_hash.values.first }
+      - if violations_hash.keys.first == 3
+        %i.bi.bi-circle-fill.fill-red
+      - elsif violations_hash.keys.first == 2
+        %i.bi.bi-circle-fill.fill-yellow
+      - else
+        %i.bi.bi-circle-fill.fill-green
+
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+    var hoverTextContainers = document.querySelectorAll('.student-violations-container');
+
+    hoverTextContainers.forEach(function(container) {
+      var hoverText = container.getAttribute('text');
+      container.removeAttribute('text');
+
+      var text = document.createElement('span');
+      text.classList.add('student-violations-text');
+      text.textContent = hoverText;
+      container.appendChild(text);
+    });
+  });

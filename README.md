@@ -2,6 +2,8 @@
 
 A group project orchestrator and management system, developed for the University of Sheffield as part of Software Hut \[COM3420\].
 
+This project has had several bulk styling commits, to get valid `git blame` output, please refer to using the `.git-blame-ignore-revs` file in our project root.
+
 ## Usage
 
 This system requires:

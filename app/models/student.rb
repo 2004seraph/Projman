@@ -79,30 +79,6 @@ class Student < ApplicationRecord
 
   before_destroy :remove_all_enrollments, prepend: true
 
-  def self.ldap_sync
-    # DO NOT RUN THIS IN ANY APP CODE
-    # THIS IS A CRON JOB, IT IS RAN BY THE OS
-
-    Student.all.find_each do |s|
-      first_name_lookup = DatabaseHelper.get_student_first_name s
-      if first_name_lookup == s.username
-        s.destroy
-      elsif first_name_lookup != s.forename
-        s.preferred_name = first_name_lookup if s.forename == s.preferred_name
-        s.forename = first_name_lookup
-        s.save
-      end
-
-      last_name_lookup = DatabaseHelper.get_student_last_name s
-      if last_name_lookup == s.username
-        s.destroy
-      elsif last_name_lookup != s.surname
-        s.surname = last_name_lookup
-        s.save
-      end
-    end
-  end
-
   def enroll_module(module_code)
     c = CourseModule.find_by(code: module_code)
     if c && !c.students.find_by(username:)
@@ -356,5 +332,30 @@ class Student < ApplicationRecord
       end
 
       value_string
+    end
+
+
+    def self.ldap_sync
+      # DO NOT RUN THIS IN ANY APP CODE
+      # THIS IS A CRON JOB, IT IS RAN BY THE OS
+
+      Student.all.find_each do |s|
+        first_name_lookup = DatabaseHelper.get_student_first_name s
+        if first_name_lookup == s.username
+          s.destroy
+        elsif first_name_lookup != s.forename
+          s.preferred_name = first_name_lookup if s.forename == s.preferred_name
+          s.forename = first_name_lookup
+          s.save
+        end
+
+        last_name_lookup = DatabaseHelper.get_student_last_name s
+        if last_name_lookup == s.username
+          s.destroy
+        elsif last_name_lookup != s.surname
+          s.surname = last_name_lookup
+          s.save
+        end
+      end
     end
 end

@@ -63,7 +63,7 @@
               %th{scope: "col"} 
             %tbody
               - team.students.each do |student|
-                = render 'group/student_selectable_row', student: student
+                = render 'group/student_selectable_row', student: student, team: team
 
         = button_tag type: 'button', class: "btn btn-primary me-2 add-student-btn", style: "height: auto;", data: { bs_toggle: "modal", bs_target: "#add-student-modal", onclick: set_session_module_code(@current_project.course_module.code) } do
           %i.bi.bi-person-fill-add
@@ -72,3 +72,18 @@
         = button_tag type: 'button', class: "btn btn-secondary remove-students-btn fs-8", style: "height: auto;", data: { onclick: set_session_module_code(@current_project.course_module.code)} do
           %i.bi.bi-person-fill-dash
           Remove Selected Students
+
+:javascript
+  document.addEventListener('DOMContentLoaded', function() {
+    var hoverTextContainers = document.querySelectorAll('.team-violations-container');
+
+    hoverTextContainers.forEach(function(container) {
+      var hoverText = container.getAttribute('text');
+      container.removeAttribute('text');
+
+      var text = document.createElement('span');
+      text.classList.add('team-violations-text');
+      text.textContent = hoverText;
+      container.appendChild(text);
+    });
+  });

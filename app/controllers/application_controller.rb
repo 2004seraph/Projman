@@ -32,7 +32,13 @@ class ApplicationController < ActionController::Base
     AuthHelper.log_exception exception, session
 
     if user_initiated_page_request?
-      redirect_to session[:redirect_url], alert: AuthHelper::UNAUTHORIZED_MSG
+      redirect_target =
+        if session[:redirect_url]
+          session[:redirect_url]
+        else
+          root_path
+        end
+      redirect_to redirect_target, alert: AuthHelper::UNAUTHORIZED_MSG
     else
       # fail fast if it was not a get request
       throw exception
