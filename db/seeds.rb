@@ -157,14 +157,14 @@ DatabaseHelper.create_course_project(
   {
     module_code:           "COM2009",
     name:                  "Turtlebot Project",
-    status:                "preparation",
+    status:                "live",
     project_choices:       ["Choice 1", "Choice 2"],
     team_size:             4,
     team_allocation_mode:  "random_team_allocation",
 
-    project_deadline:      DateTime.now + 3.minutes,
-    project_pref_deadline: DateTime.now + 2.minutes,
-    team_pref_deadline:    DateTime.now + 1.minute,
+    project_deadline:      DateTime.now + 2.minutes,
+    project_pref_deadline: DateTime.now,# + 2.minutes,
+    team_pref_deadline:    DateTime.now,# + 1.minute,
 
     milestones:            [
       {
