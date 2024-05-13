@@ -156,13 +156,22 @@ class CourseProject < ApplicationRecord
     end
 
 
+    class JobLogger
+      def initialize(logger)
+        @logger = logger
+      end
+      def debug(msg)
+        puts msg
+        @logger.debug(msg)
+      end
+    end
 
     def self.lifecycle_job
       # !/home/seraph/Documents/University/SoftwareHut/project/bin/rails runner
       # DO NOT RUN THIS IN ANY APP CODE
       # THIS IS A CRON JOB, IT IS RAN BY THE OS
 
-      logger = Logger.new(Rails.root.join("log/course_project.lifecycle_job.log"))
+      logger = JobLogger.new(Logger.new(Rails.root.join("log/course_project.lifecycle_job.log")))
       logger.debug("--- LIFECYCLE PASS")
 
       unless DatabaseHelper.database_exists?
@@ -212,6 +221,7 @@ class CourseProject < ApplicationRecord
             DatabaseHelper.assign_projects_to_groups c
           end
         end
+
         c.reload
 
         c.milestones.all.find_each do |m|
@@ -232,24 +242,25 @@ class CourseProject < ApplicationRecord
 
             # send reminder email with json_data["Name"] and json_data["Comment"], as well as the number of days left
             MilestoneMailer.reminder_email(m).deliver_later
-            m.push_milestone_to_teams? reminder: true
-            m.save
+            m.push_milestone_to_teams? true, logger
+            # logger.debug "end"
             m.reload
           end
           next unless m.deadline < DateTime.now
 
           logger.debug "\tMilestone #{m.json_data} executed"
-          m.push_milestone_to_teams?
+          m.push_milestone_to_teams? false, logger
           m.update executed: true
           m.save
         end
+
+        c.reload
 
         next unless c.completion_deadline < DateTime.now
 
         logger.debug "\tProject complete"
         c.update status: :completed
         c.save
-        c.reload
       end
       true
     end

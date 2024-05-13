@@ -48,16 +48,18 @@ class Milestone < ApplicationRecord
     marking_deadline:             "mark_scheme"
   }
 
-  def push_milestone_to_teams?(reminder = false)
-    if milestone_type == :team
+  def push_milestone_to_teams?(reminder, logger)
+    if milestone_type == "team"
       # create events
+      # logger.debug("teams: #{course_project.groups.count}")
 
       course_project.groups.each do |g|
         json = {
           "Name"    => json_data["Name"],
-          "Content" => json_data["Content"],
+          "Comment" => json_data["Comment"],
+          "Reminder" => reminder,
           "Urgency" =>
-                       if [:project_completion_deadline].include? system_type
+                       if ["project_deadline"].include? system_type
                          2 # Most urgent
                        elsif reminder
                          1 # Warning
@@ -65,7 +67,10 @@ class Milestone < ApplicationRecord
                          0 # Notification
                        end
         }
-        g.events << Event.create({ event_type: :milestone, json_data: json })
+        # logger.debug("MILESTONE ACTION: #{json_data["Name"]} - #{x.valid?} - #{x.persisted?}")
+        g.events << Event.create({ event_type: :milestone, json_data: json, group: g })
+        g.save
+        g.reload
       end
 
       return true
