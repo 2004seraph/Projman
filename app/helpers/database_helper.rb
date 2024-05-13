@@ -82,7 +82,6 @@ module DatabaseHelper
 
     project_deadline_json_data = {
       "Name"       => "Project Deadline",
-      "isDeadline" => true,
       "Comment"    => "",
       "Email"      => { "Content": "Project Deadline upcoming!", "Advance": 0 }
     }
@@ -99,7 +98,6 @@ module DatabaseHelper
     if project.team_allocation != "random_team_allocation"
       team_pref_json_data = {
         "Name"       => "Teammate Preference Deadline",
-        "isDeadline" => true,
         "Comment"    => "",
         "Email"      => { "Content": "Teammate preference upcoming!", "Advance": 0 }
       }
@@ -117,7 +115,6 @@ module DatabaseHelper
     settings[:milestones].each do |milestone|
       json_data = {
         "Name"       => milestone[:Name],
-        "isDeadline" => false,
         "Comment"    => milestone[:Comment]
       }
       json_data["Email"] = milestone[:Email] if milestone.key?(:Email)

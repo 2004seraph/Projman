@@ -51,6 +51,16 @@ class Group < ApplicationRecord
     end
   end
 
+  def make(course_project, teammate_list)
+    g = Group.find_or_create_by({
+      name:           "Team #{course_project.groups.count + 1}",
+      course_project: course_project
+    })
+    g.students = teammate_list
+    g.save
+    course_project.reload
+  end
+
   private
     def students_must_be_enrolled_on_the_same_module(student)
       error_msg = "Students must be part of the same module as this group's project"

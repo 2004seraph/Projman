@@ -93,111 +93,28 @@ class CourseProject < ApplicationRecord
     end
   end
 
-  def self.lifecycle_job
-    # !/home/seraph/Documents/University/SoftwareHut/project/bin/rails runner
-    # DO NOT RUN THIS IN ANY APP CODE
-    # THIS IS A CRON JOB, IT IS RAN BY THE OS
+  def assign_facilitators_to_groups
+    groups_per_fac = (groups.length.to_f / assigned_facilitators.length).ceil
 
-    logger = Logger.new(Rails.root.join("log/course_project.lifecycle_job.log"))
-    logger.debug("--- LIFECYCLE PASS")
-
-    unless DatabaseHelper.database_exists?
-      logger.debug("Database is not present, suspending job run")
-      Sentry.capture_message("Database is not present, suspending job run", level: :warn)
-      return false
-    end
-
-    CourseProject.where.not(status: %i[draft completed archived]).find_each do |c|
-      logger.debug "### Processing #{c.name}"
-
-      if (c.team_size == 1) || c.team_allocation.nil?
-        # individual project -> no group assignment
-        if c.project_preference_deadline && (c.project_preference_deadline.deadline < DateTime.now && !c.project_preference_deadline.executed)
-          # assign projects to individuals, if not responded, use least popular project
-          logger.debug "\tAssigning projects to individuals using project preference"
-          DatabaseHelper.assign_projects_to_individuals c
-        end
-      else
-        # group project -> group assignment needed, potentially also project assignment
-        if c.teammate_preference_deadline
-          if c.teammate_preference_deadline.deadline < DateTime.now && !c.teammate_preference_deadline.executed
-            logger.debug "\tAssigning groups using team mate preferences"
-
-            # make groups
-            group_matrix = DatabaseHelper.preference_form_group_allocation c.team_size, c.students,
-                                                                           c.teammate_preference_deadline
-            group_matrix.each_with_index do |teammate_list, index|
-              g = Group.find_or_create_by({
-                name:           "Team #{index + 1}",
-                course_project: c
-              })
-              g.students = teammate_list
-              g.save
-            end
-            c.reload
-
-            # assign facilitators
-            groups_per_fac = (c.groups.length.to_f / c.assigned_facilitators.length).ceil
-            facilitators = c.assigned_facilitators
-            c.groups.each_slice(groups_per_fac).with_index do |chunk, index|
-              chunk.each do |g|
-                g.assigned_facilitator = facilitators[index]
-                g.save
-              end
-            end
-            c.save
-            c.reload
-          end
-          c.reload
-        end
-        if c.project_preference_deadline && (c.project_preference_deadline.deadline < DateTime.now && !c.project_preference_deadline.executed)
-          # assign projects to groups, if not responded, use least popular project
-          logger.debug "\tAssigning projects to groups using group consensus"
-          DatabaseHelper.assign_projects_to_groups c
-        end
+    groups.each_slice(groups_per_fac).with_index do |chunk, index|
+      chunk.each do |g|
+        g.assigned_facilitator = assigned_facilitators[index]
+        g.save
       end
-
-      c.milestones.all.find_each do |m|
-        # check its email field
-        #   check if pre-reminder deadline is passed
-        #     send email to relevent recipients
-        #     [for_each_team] push reminder to event feed
-        # check if its deadline is passed
-        #   send email to relevent recipients, no actually
-        #   [for_each_team] push deadline passed to event feed
-        next if m.executed
-
-        if m.json_data["Email"] && !(m.json_data["Email"]["Sent"]) && (m.deadline - StandardHelper.str_to_int(m.json_data["Email"]["Advance"]) <= DateTime.now)
-          logger.debug "\tSending advance email for #{m.json_data}"
-          logger.debug "\t\tType: #{m.milestone_type}"
-
-          m.json_data["Email"]["Sent"] = true
-
-          # send reminder email with json_data["Name"] and json_data["Comment"], as well as the number of days left
-          MilestoneMailer.reminder_email(m).deliver_later
-          m.push_milestone_to_teams? reminder: true
-          m.save
-          m.reload
-        end
-        next unless m.deadline < DateTime.now
-
-        logger.debug "\tMilestone #{m.json_data} executed"
-        m.push_milestone_to_teams?
-        m.update executed: true
-        m.save
-      end
-
-      next unless c.completion_deadline < DateTime.now
-
-      logger.debug "\tProject complete"
-      c.update status: :completed
-      c.save
-      c.reload
     end
-    true
+    save
+    reload
   end
 
   private
+
+    def make_groups(group_matrix)
+      group_matrix.each_with_index do |teammate_list, index|
+        Group.make self, teammate_list
+      end
+      assign_facilitators_to_groups
+    end
+
     def creation_validation
       errors.add(:main, "Project name cannot be empty") if name.blank?
       if errors[:main].blank? && CourseProject.where(name:, course_module_id:).where.not(id:).exists?
@@ -236,6 +153,105 @@ class CourseProject < ApplicationRecord
         return m if m.system_type == system_type.to_s
       end
       nil
+    end
+
+
+
+    def self.lifecycle_job
+      # !/home/seraph/Documents/University/SoftwareHut/project/bin/rails runner
+      # DO NOT RUN THIS IN ANY APP CODE
+      # THIS IS A CRON JOB, IT IS RAN BY THE OS
+
+      logger = Logger.new(Rails.root.join("log/course_project.lifecycle_job.log"))
+      logger.debug("--- LIFECYCLE PASS")
+
+      unless DatabaseHelper.database_exists?
+        logger.debug("Database is not present, suspending job run")
+        Sentry.capture_message("Database is not present, suspending job run", level: :warn)
+        return false
+      end
+
+      CourseProject.where.not(status: %i[draft completed archived]).find_each do |c|
+        logger.debug "### Processing #{c.name}"
+
+        if c.team_allocation.nil?
+
+          if c.teams_from_project_choice
+            # GEC style project
+            if c.project_preference_deadline && (c.project_preference_deadline.deadline < DateTime.now && !c.project_preference_deadline.executed)
+              # assign groups based off of project preference
+              logger.debug "\tAssigning groups using project preferences"
+
+              group_matrix = DatabaseHelper.project_choices_group_allocation c.team_size, c.students, c.project_preference_deadline
+              c.make_groups group_matrix
+            end
+
+          else
+            # individual project: [project assignment]/[NOTHING]
+            if c.project_preference_deadline && (c.project_preference_deadline.deadline < DateTime.now && !c.project_preference_deadline.executed)
+              # assign projects to individuals, if not responded, use least popular project
+              logger.debug "\tAssigning projects to individuals using project preference"
+              DatabaseHelper.assign_projects_to_individuals c
+            end
+          end
+
+        elsif c.team_allocation == "preference_form_based"
+          # standard project: team mate preference -> [group project preference]/[DONE]
+          if c.teammate_preference_deadline
+            if c.teammate_preference_deadline.deadline < DateTime.now && !c.teammate_preference_deadline.executed
+              logger.debug "\tAssigning groups using team mate preferences"
+
+              group_matrix = DatabaseHelper.preference_form_group_allocation c.team_size, c.students,
+                                                                             c.teammate_preference_deadline
+              c.make_groups group_matrix
+            end
+          end
+          if c.project_preference_deadline && (c.project_preference_deadline.deadline < DateTime.now && !c.project_preference_deadline.executed)
+            # assign projects to groups, if not responded, use least popular project
+            logger.debug "\tAssigning projects to groups using group consensus"
+            DatabaseHelper.assign_projects_to_groups c
+          end
+        end
+        c.reload
+
+        c.milestones.all.find_each do |m|
+          # check its email field
+          #   check if pre-reminder deadline is passed
+          #     send email to relevent recipients
+          #     [for_each_team] push reminder to event feed
+          # check if its deadline is passed
+          #   send email to relevent recipients, no actually
+          #   [for_each_team] push deadline passed to event feed
+          next if m.executed
+
+          if m.json_data["Email"] && !(m.json_data["Email"]["Sent"]) && (m.deadline - StandardHelper.str_to_int(m.json_data["Email"]["Advance"]) <= DateTime.now)
+            logger.debug "\tSending advance email for #{m.json_data}"
+            logger.debug "\t\tType: #{m.milestone_type}"
+
+            m.json_data["Email"]["Sent"] = true
+
+            # send reminder email with json_data["Name"] and json_data["Comment"], as well as the number of days left
+            MilestoneMailer.reminder_email(m).deliver_later
+            m.push_milestone_to_teams? reminder: true
+            m.save
+            m.reload
+          end
+          next unless m.deadline < DateTime.now
+
+          logger.debug "\tMilestone #{m.json_data} executed"
+          m.push_milestone_to_teams?
+          m.update executed: true
+          m.save
+        end
+
+        next unless c.completion_deadline < DateTime.now
+
+        logger.debug "\tProject complete"
+        c.update status: :completed
+        c.save
+        c.reload
+      end
+      true
     end
 end
 

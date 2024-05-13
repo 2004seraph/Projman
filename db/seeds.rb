@@ -17,7 +17,7 @@ sam = Student.find_or_create_by({
   fee_status:     :home
 })
 DatabaseHelper.print_validation_errors(sam)
-Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: true })
+# Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: true })
 # DatabaseHelper.print_validation_errors(sam_staff)
 
 Student.find_or_create_by({
@@ -91,7 +91,7 @@ robotics_class = DatabaseHelper.provision_module_class(
   "Robotics",
   Staff.find_or_create_by(email: "jhenson2@sheffield.ac.uk")
 )
-# sam.enroll_module "COM2009"
+sam.enroll_module "COM2009"
 # josh.enroll_module "COM2009"
 # jakub.enroll_module "COM2009"
 adam.enroll_module "COM2009"
@@ -157,7 +157,7 @@ DatabaseHelper.create_course_project(
   {
     module_code:           "COM2009",
     name:                  "Turtlebot Project",
-    status:                "draft",
+    status:                "preparation",
     project_choices:       ["Choice 1", "Choice 2"],
     team_size:             4,
     team_allocation_mode:  "random_team_allocation",
