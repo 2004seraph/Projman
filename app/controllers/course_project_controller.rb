@@ -1175,14 +1175,6 @@ class CourseProjectController < ApplicationController
     render json: @results.map { |student| "#{student.preferred_name} #{student.surname}" }
   end
 
-  def teams
-    # @current_project = CourseProject.find(params[:id])
-    # @teams = []
-    # return if @current_project.nil?
-
-    # @teams = @current_project.groups
-  end
-
   def send_chat_message
     @current_group = Group.find(params[:group_id])
 

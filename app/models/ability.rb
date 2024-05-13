@@ -109,7 +109,7 @@ class Ability
       set_milestone_comment
       remake_teams
     ], CourseProject
-    can %i[read edit update teams], CourseProject, course_module: { staff_id: user.staff.id }
+    can %i[read edit update], CourseProject, course_module: { staff_id: user.staff.id }
 
     return unless user.staff.admin
 

@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 class GroupController < ApplicationController
-  load_and_authorize_resource
+  skip_authorization_check only: [:index]
+  load_and_authorize_resource except: [:index]
 
   def index
-    Rails.logger.debug "INDEX ACTION"
     @current_project = CourseProject.find(params[:project_id])
+    authorize! :read, @current_project
+
+    Rails.logger.debug "INDEX ACTION"
     Rails.logger.debug @current_project
     @teams = []
     return if @current_project.nil?
