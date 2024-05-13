@@ -40,16 +40,24 @@ class User < ApplicationRecord
   attr_accessor :student, :staff
 
   def is_student?
-    account_type.include?('student')
+    is_student = Student.where(email:).exists?
+    is_student |= account_type&.include?("student")
+    is_student |= !student.nil?
+    is_student
   end
 
   def is_staff?
-    # if the staff field is populated, manually override
-    if staff.nil?
-      account_type.include?('staff')
-    else
-      true
-    end
+    # # if the staff field is populated, manually override
+    # if staff.nil?
+    #   account_type.include?('staff')
+    # else
+    #   true
+    # end
+
+    is_staff = Staff.where(email:).exists?
+    is_staff |= account_type&.include?("staff")
+    is_staff |= !staff.nil?
+    is_staff
   end
 
   def is_facilitator?
@@ -71,11 +79,12 @@ class User < ApplicationRecord
   end
 
   def issue_notification?
-    issues = if is_staff?
-               staff.issues
-             else
-               student.events.where(event_type: :issue)
-             end
+    issues =
+      if is_staff?
+        staff.issues
+      else
+        student.events.where(event_type: :issue)
+      end
 
     issues.any? { |issue| issue.notification?(self) }
   end
@@ -87,10 +96,10 @@ class User < ApplicationRecord
       projects = student.course_projects
 
       return projects.any? do |project|
-               project.project_notification?(self, student.groups.find_by(course_project_id: project.id))
-             end
+        project.project_notification?(self, student.groups.find_by(course_project_id: project.id))
+      end
     end
 
-    return false
+    false
   end
 end

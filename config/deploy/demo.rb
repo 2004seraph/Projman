@@ -4,10 +4,10 @@
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 ## Application deployment configuration
-set :server,      'epi-stu-hut-demo1.shef.ac.uk'
-set :user,        'demo.team05'
+set :server,      "epi-stu-hut-demo1.shef.ac.uk"
+set :user,        "demo.team05"
 set :deploy_to,   -> { "/srv/services/#{fetch(:user)}" }
-set :branch,      'demo'
+set :branch,      "demo"
 set :application, fetch(:user)
 
 ## Server configuration
@@ -19,7 +19,7 @@ namespace :deploy do
     on primary :db do
       within current_path do
         with rails_env: fetch(:stage) do
-          execute :rake, 'db:seed'
+          execute :rake, "db:seed"
         end
       end
     end

@@ -1,5 +1,9 @@
 # put commit hashes here to exclude them from git blame
 # this is for bulk formatting changes, etc.
 
-# First project-wide rubocop run
+# Project-wide rubocop runs
 703af10b8c658bb276179068706f8c6a35c8e7b1
+
+b98b41f390e9ab1cd9cc93cd5727013b1e5f19c8
+
+bd7eee1d65d944ed274db2fd0ed144e6bd933b6f

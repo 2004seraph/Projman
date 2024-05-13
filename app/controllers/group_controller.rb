@@ -4,15 +4,15 @@ class GroupController < ApplicationController
   load_and_authorize_resource
 
   def index
-    puts "INDEX ACTION"
+    Rails.logger.debug "INDEX ACTION"
     @current_project = CourseProject.find(params[:project_id])
-    puts @current_project
+    Rails.logger.debug @current_project
     @teams = []
     return if @current_project.nil?
 
     @teams = @current_project.groups.order(id: :asc)
-    puts @teams.pluck(:assigned_facilitator_id)
-    render 'group/index'
+    Rails.logger.debug @teams.pluck(:assigned_facilitator_id)
+    render "group/index"
   end
 
   def facilitator_emails
@@ -27,15 +27,17 @@ class GroupController < ApplicationController
 
     if project_facilitators.present?
       project_facilitators.each do |f|
-        rendered_partial = render_to_string(partial: 'group/facilitator_option', locals: { id: f.id, name: f.id, email: f.email })
+        rendered_partial = render_to_string(partial: "group/facilitator_option",
+                                            locals:  { id: f.id,
+name: f.id, email: f.email })
         response_partials << rendered_partial
       end
     end
 
     json_response = {
       facilitator_emails: project_facilitators.present? ? project_facilitators.pluck(:email) : [],
-      team_facilitator: group_facilitator&.email,
-      partials: response_partials
+      team_facilitator:   group_facilitator&.email,
+      partials:           response_partials
     }
     render json: json_response
   end
@@ -53,10 +55,10 @@ class GroupController < ApplicationController
       g = project.groups&.find(team_id)
       if Staff.exists?(email: facilitator_email)
         staff_id = Staff.find_by(email: facilitator_email).id
-        g&.assigned_facilitator_id = project.assigned_facilitators&.find_by(staff_id: staff_id)&.id
+        g&.assigned_facilitator_id = project.assigned_facilitators&.find_by(staff_id:)&.id
       elsif Student.exists?(email: facilitator_email)
         student_id = Student.find_by(email: facilitator_email).id
-        g&.assigned_facilitator_id = project.assigned_facilitators&.find_by(student_id: student_id)&.id
+        g&.assigned_facilitator_id = project.assigned_facilitators&.find_by(student_id:)&.id
       end
       if g.valid?
         g.save!
@@ -103,5 +105,66 @@ class GroupController < ApplicationController
     end
 
     respond_to(&:js) if no_errors
+  end
+
+  def search_module_students
+    query = params[:query]
+    course_module = CourseModule.find_by(code: session[:module_data][:module_code])
+
+    @results = Student.where("email LIKE ?", "%#{query}%")
+                      .where(id: course_module.students.pluck(:id))
+                      .limit(8)
+                      .distinct
+    render json: @results.pluck(:email)
+  end
+
+  def add_student_to_team
+    team_id = params[:id]
+    team = Group.find_by(id: team_id)
+    project = team&.course_project
+    student = project.course_module.students&.find_by(email: params[:student_email])
+
+    @student = student
+    @team_id = team_id
+
+    Rails.logger.debug "ADDING TO TEAM #{team.name}"
+
+    if student
+      # check if they are in a group on this project. if so, remove them
+      project&.groups&.each do |group|
+        next unless group.students&.include?(student)
+
+        Rails.logger.debug "REMVOING FORM #{group.name}"
+        group.students.delete(student)
+        @removed_student_from_group = group.id
+        break
+      end
+      # add them to the team
+      team.students << student
+      team.save if team.valid?
+    end
+
+    respond_to(&:js)
+  end
+
+  def remove_students_from_team
+    student_emails = params[:emails]
+    removed_student_emails = []
+    p = CourseProject.find_by(id: params[:project_id])
+    g = p&.groups&.find_by(id: params[:id])
+    unless g.nil?
+      student_emails.each do |email|
+        s = g.students&.find_by(email:)
+        next if g&.nil?
+
+        g.students.delete(s)
+        removed_student_emails << email
+      end
+    end
+
+    response_json = {
+      removed_student_emails:
+    }
+    render json: response_json
   end
 end

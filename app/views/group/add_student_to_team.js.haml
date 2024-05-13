@@ -1,0 +1,22 @@
+:plain
+  if (#{!@student.nil?}){
+    $('#no-student-found-error').addClass('display-none');
+    $('#add-student-modal').modal('hide')
+
+    if(#{!@removed_student_from_group.nil?}){
+      var teamContainerToRemoveFrom = $('.project-teams-team-container input[name="team_id"][value="#{@removed_student_from_group}"]').parent();
+      var selectableRowContainer = teamContainerToRemoveFrom.find('.selectable-row-container').first()
+      var firstSelectableRowWithEmail = selectableRowContainer.find('tbody > .selectable-row').filter(function() {
+        return $(this).children('td:eq(2)').text() === "#{@student.email}";
+      }).first();
+      firstSelectableRowWithEmail.remove();
+    }
+
+    var teamContainerToAddTo = $('.project-teams-team-container input[name="team_id"][value="#{@team_id}"]').parent();
+    var selectableRowContainerTableBody = teamContainerToAddTo.find('.selectable-row-container tbody').first()
+    var newPartialHTML = "#{j(render(partial: 'student_selectable_row', locals: { student: @student }))}";
+    selectableRowContainerTableBody.append(newPartialHTML)
+  }
+  else{
+    $('#no-student-found-error').removeClass('display-none');
+  }

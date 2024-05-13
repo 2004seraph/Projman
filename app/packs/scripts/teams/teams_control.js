@@ -217,4 +217,98 @@ $(function() {
       }
     });
   });
+
+  // Adding Student to Team
+  $('#project-teams-container').on('click', '.add-student-btn', function() {
+    var teamContainer = $(this).closest('.project-teams-team-container');
+    var team_id = teamContainer.find('input[type="hidden"][name="team_id"]').val();
+    var addStudentModal = $('#add-student-modal')
+    addStudentModal.find('input[type="hidden"][name="team_id"]').val(team_id)
+    $('#no-student-found-error').addClass('display-none');
+  })
+  $('#add-student-modal').on('click', '#add-student-to-team-btn', function() {
+    var addStudentModal = $('#add-student-modal')
+    var team_id = addStudentModal.find('input[type="hidden"][name="team_id"]').val()
+    var student_email = addStudentModal.find('#add-students-to-team-search').val().trim()
+    var addStudentModal = $('#add-student-modal')
+    $.ajax({
+      url: 'teams/' + team_id + '/add_student_to_team',
+      type: 'POST',
+      data: {
+        student_email: student_email
+      },
+      headers: {
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+      },
+      success: function(response){
+      },
+      error: function(xhr, status, error) {
+        console.log(error)
+      }
+    });
+  })
+
+  // Removing students
+  var studentsInTeamContainer = $('.project-teams-team-container')
+  var emails = []
+  studentsInTeamContainer.each(function(){
+    var team_id = $(this).find('input[type="hidden"][name="team_id"]').val();
+    var selectableRowContainer = $(this).find('.selectable-row-container').first()
+    var removeBtn = $(this).find('.remove-students-btn').first()
+
+    // collect emails from rows
+    removeBtn.on('click', function(event){
+        emails = []
+        event.preventDefault()
+        event.stopPropagation()
+
+        var selectedRows = selectableRowContainer.getSelectedRows()
+        //extract emails
+        selectedRows.forEach(function(row) {
+            var email = $(row).children('td').eq(2).text().trim();
+            emails.push(email)
+        });
+        if (emails.length == 0){
+            $('#no_students_selected_modal').modal('show')
+        }
+        else{
+            var removeStudentsModal = $('#remove_students_modal').modal('show')
+            removeStudentsModal.find('input[type="hidden"][name="team_id"]').val(team_id)
+            var modalBody = removeStudentsModal.find('.modal-body').first();
+            var studentListArea = modalBody.find('.student-list-area').first()
+            studentListArea.html(emails.join("<br>"));
+        }
+    })
+  })
+
+  $('#remove_students_modal #confirmRemoveStudents').on('click', function(){
+    // send all emails to controller to get students removed
+    var team_id = $('#remove_students_modal input[type="hidden"][name="team_id"]').val()
+    $.ajax({
+      url: 'teams/' + team_id + '/remove_students_from_team',
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        emails: emails
+      },
+      headers: {
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+      },
+      success: function(response) {
+        var removed_emails = response.removed_student_emails
+        var studentsSelectableRowsContainer = $("#project_team_container_" + team_id + " .card-body table")
+        var selectableRows = studentsSelectableRowsContainer.find('.selectable-row')
+        selectableRows.each(function(index, row) {
+          var email = $(row).children('td').eq(2).text().trim();
+          if(removed_emails.includes(email)){
+            row.remove();
+          }
+        });
+          
+      },
+      error: function(xhr, status, error) {
+        console.error(xhr.responseText);
+      }
+    });
+  })
 })

@@ -40,7 +40,7 @@ class AssignedFacilitator < ApplicationRecord
     # you set one field or the other, not both, not neither
     return if staff.blank? ^ student.blank?
 
-    errors.add(:base, 'Specify a staff or a student, not both, for an assigned facilitator entry')
+    errors.add(:base, "Specify a staff or a student, not both, for an assigned facilitator entry")
   end
 
   def get_email

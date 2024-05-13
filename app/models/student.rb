@@ -40,8 +40,8 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-require 'csv'
-require 'student_data_helper'
+require "csv"
+require "student_data_helper"
 
 class Student < ApplicationRecord
   include EpiCas::DeviseHelper
@@ -56,9 +56,9 @@ class Student < ApplicationRecord
   has_many :assigned_facilitators, dependent: :destroy
   has_many :milestone_responses
 
-  enum :fee_status, { home: 'home', overseas: 'overseas' }
+  enum :fee_status, { home: "home", overseas: "overseas" }
 
-  @text_validation_regex = Regexp.new '[A-zÀ-ú\' -.]*'
+  @text_validation_regex = Regexp.new "[A-zÀ-ú' -.]*"
 
   @email_validation_regex = Regexp.new '(?:[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])' # :nodoc:
 
@@ -261,100 +261,100 @@ class Student < ApplicationRecord
 
   private
 
-  def build_violations_string(proj, preferred, avoided, subproj, gender, domicile)
-    violations_hash = {}
+    def build_violations_string(proj, preferred, avoided, subproj, gender, domicile)
+      violations_hash = {}
 
-    # Severe violations
+      # Severe violations
 
-    unless preferred.nil? || preferred
-      pref_form_milestone = proj.milestones.where(system_type: :teammate_preference_deadline).first
-      pref_form_response = self.milestone_responses.where(milestone_id: pref_form_milestone.id).first
+      unless preferred.nil? || preferred
+        pref_form_milestone = proj.milestones.where(system_type: :teammate_preference_deadline).first
+        pref_form_response = self.milestone_responses.where(milestone_id: pref_form_milestone.id).first
 
-      str = 'Preferred Teammate(s):'
-      pref_form_response.json_data['preferred'].each do |id|
-        student = proj.students.find(id)
-        str += "\n#{student.preferred_name} #{student.surname}"
+        str = 'Preferred Teammate(s):'
+        pref_form_response.json_data['preferred'].each do |id|
+          student = proj.students.find(id)
+          str += "\n#{student.preferred_name} #{student.surname}"
+        end
+        violations_hash[3] = str
+
+        return violations_hash
       end
-      violations_hash[3] = str
 
-      return violations_hash
-    end
+      unless avoided.nil? || avoided
+        pref_form_milestone = proj.milestones.where(system_type: :teammate_preference_deadline).first
+        pref_form_response = self.milestone_responses.where(milestone_id: pref_form_milestone.id).first
 
-    unless avoided.nil? || avoided
-      pref_form_milestone = proj.milestones.where(system_type: :teammate_preference_deadline).first
-      pref_form_response = self.milestone_responses.where(milestone_id: pref_form_milestone.id).first
+        str = 'Avoided Teammate(s):'
+        pref_form_response.json_data['avoided'].each do |id|
+          student = proj.students.find(id)
+          str += "\n#{student.preferred_name} #{student.surname}"
+        end
+        violations_hash[3] = str
 
-      str = 'Avoided Teammate(s):'
-      pref_form_response.json_data['avoided'].each do |id|
-        student = proj.students.find(id)
-        str += "\n#{student.preferred_name} #{student.surname}"
+        return violations_hash
       end
-      violations_hash[3] = str
 
-      return violations_hash
-    end
+      # Moderate violations
 
-    # Moderate violations
+      unless subproj.nil? || subproj
+        proj_form_milestone = proj.milestones.where(system_type: :project_preference_deadline).first
+        proj_form_response = self.milestone_responses.where(milestone_id: proj_form_milestone.id).first
 
-    unless subproj.nil? || subproj
-      proj_form_milestone = proj.milestones.where(system_type: :project_preference_deadline).first
-      proj_form_response = self.milestone_responses.where(milestone_id: proj_form_milestone.id).first
+        str = 'Subproject Choices:'
+        proj_form_response.json_data.each do |rank, choice|
+          subproj = proj.subprojects.find(choice)
+          str += "\n#{rank}. #{subproj.name}"
+        end
+        violations_hash[2] = str
 
-      str = 'Subproject Choices:'
-      proj_form_response.json_data.each do |rank, choice|
-        subproj = proj.subprojects.find(choice)
-        str += "\n#{rank}. #{subproj.name}"
+        return violations_hash
       end
-      violations_hash[2] = str
 
-      return violations_hash
-    end
+      unless gender
 
-    unless gender
+        title_type = nil
+        TITLES.each do |key, titles|
+          title_type = key if titles.include?(self.title)
+        end
+        violations_hash[2] = "Only student with a #{title_type} title."
 
-      title_type = nil
-      TITLES.each do |key, titles|
-        title_type = key if titles.include?(self.title)
+        return violations_hash
       end
-      violations_hash[2] = "Only student with a #{title_type} title."
 
-      return violations_hash
+      unless domicile
+
+        violations_hash[2] = "Only student with #{self.fee_status} status."
+
+        return violations_hash
+      end
+
+      # No violations
+      violations_hash[1] = 'No student allocation violation.'
+
+      violations_hash
     end
 
-    unless domicile
-
-      violations_hash[2] = "Only student with #{self.fee_status} status."
-
-      return violations_hash
+    def remove_all_enrollments
+      course_modules.each do |c|
+        unenroll_module(c)
+      end
     end
 
-    # No violations
-    violations_hash[1] = 'No student allocation violation.'
-
-    violations_hash
-  end
-
-  def remove_all_enrollments
-    course_modules.each do |c|
-      unenroll_module(c)
-    end
-  end
-
-  # a static method to convert CSV header names to the correct database field name
-  def self.csv_header_to_field(header_name_string)
-    explicit_header_mappings = StudentDataHelper::EXPLICIT_CSV_TO_FIELD_LINK
-    if explicit_header_mappings.key?(header_name_string.to_sym)
-      explicit_header_mappings[header_name_string.to_sym]
-    else
-      header_name_string.parameterize.underscore
-    end
-  end
-
-  def self.translate_csv_value(field_symbol, value_string, username)
-    if StudentDataHelper::CSV_VALUE_TRANSLATIONS.key?(field_symbol)
-      return StudentDataHelper::CSV_VALUE_TRANSLATIONS[field_symbol].call(value_string, username)
+    # a static method to convert CSV header names to the correct database field name
+    def self.csv_header_to_field(header_name_string)
+      explicit_header_mappings = StudentDataHelper::EXPLICIT_CSV_TO_FIELD_LINK
+      if explicit_header_mappings.key?(header_name_string.to_sym)
+        explicit_header_mappings[header_name_string.to_sym]
+      else
+        header_name_string.parameterize.underscore
+      end
     end
 
-    value_string
-  end
+    def self.translate_csv_value(field_symbol, value_string, username)
+      if StudentDataHelper::CSV_VALUE_TRANSLATIONS.key?(field_symbol)
+        return StudentDataHelper::CSV_VALUE_TRANSLATIONS[field_symbol].call(value_string, username)
+      end
+
+      value_string
+    end
 end

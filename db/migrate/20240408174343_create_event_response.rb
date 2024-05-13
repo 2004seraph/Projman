@@ -12,7 +12,7 @@ class CreateEventResponse < ActiveRecord::Migration[7.0]
       t.references :staff, null: true
       t.references :student, null: true
 
-      t.json :json_data, null: false, default: '{}'
+      t.json :json_data, null: false, default: "{}"
 
       t.timestamps
     end

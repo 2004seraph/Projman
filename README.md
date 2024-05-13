@@ -40,11 +40,11 @@ DatabaseHelper.create_staff("your_email@sheffield.ac.uk")
 
 # keep in mind your username and email must be unique to be added to the database
 DatabaseHelper.create_student({
-  username: 'YourMuseUsername',
-  forename: 'YourName',
-  surname: 'YourSurname',
-  title: 'Ms',
-  email: 'your_email@sheffield.ac.uk'
+  username: "YourMuseUsername",
+  forename: "YourName",
+  surname:  "YourSurname",
+  title:    "Ms",
+  email:    "your_email@sheffield.ac.uk"
 })
 ```
 
@@ -55,11 +55,13 @@ After adding yourself to the database, you're ready to test the app.
 - Run the app:
   `RAILS_ENV=development ./BOOT.sh`
 
+- Visit [http://127.0.0.1:3000](http://127.0.0.1:3000)
+
 ### To deploy the app to production
 
 We use Capistrano for our deployments, and interact with the production server via EpiGenesys' `epi_deploy` gem. To deploy the app:
 
-- Ensure there are no changes to commit, that the working tree is clean.
+- Ensure there are no changes to commit, that the working tree is clean. If so, use `git restore .` to undo all of them, or commit them.
 - Run `./DEPLOY.sh`
 
 ## Maintainers

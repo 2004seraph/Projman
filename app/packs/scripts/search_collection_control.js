@@ -36,6 +36,9 @@ $(function() {
                 type: 'GET',
                 dataType: 'json',
                 data: requestData,
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
                 success: function(data) {
                     dropdownElement.empty();
 

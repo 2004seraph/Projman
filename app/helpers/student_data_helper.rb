@@ -3,9 +3,8 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-
-require 'csv'
-require 'faker'
+require "csv"
+require "faker"
 
 module StudentDataHelper
   extend self
@@ -19,48 +18,48 @@ module StudentDataHelper
   def csv_headers
     # Define CSV headers
     [
-      'Surname', 'Forename', 'Middle Names',
-      'Title',
-      'Known As',
-      'Fee Status',
-      'Student Username',
-      'Ucard No',
-      'Email',
-      'Reg. Status',
-      'Programme',
-      'Period',
-      'Module Code',
-      '1st Grade', '2nd Grade', '3rd Grade', '4th Grade',
-      'NFC_Flag', 'HEFCE_Flag', 'Live Registration', 'Attending',
-      'Date of Birth',
-      'Personal Tutor', 'Supervisors'
+      "Surname", "Forename", "Middle Names",
+      "Title",
+      "Known As",
+      "Fee Status",
+      "Student Username",
+      "Ucard No",
+      "Email",
+      "Reg. Status",
+      "Programme",
+      "Period",
+      "Module Code",
+      "1st Grade", "2nd Grade", "3rd Grade", "4th Grade",
+      "NFC_Flag", "HEFCE_Flag", "Live Registration", "Attending",
+      "Date of Birth",
+      "Personal Tutor", "Supervisors"
     ]
   end
 
-  USERNAME_CSV_COLUMN = 'Student Username'
+  USERNAME_CSV_COLUMN = "Student Username"
 
   # the specific CSV field name of the student module enrollment.
-  MODULE_CODE_CSV_COLUMN = 'Module Code'
+  MODULE_CODE_CSV_COLUMN = "Module Code"
 
   # the parser automatically replaces spaces with _ and converts the
   # string to lowercase, if this does not map to the correct field
   # in the database, you can declare an explicit mapping below.
   EXPLICIT_CSV_TO_FIELD_LINK = {
-    "Known As": 'preferred_name',
-    "Student Username": 'username',
-    "Ucard No": 'ucard_number'
+    "Known As":         "preferred_name",
+    "Student Username": "username",
+    "Ucard No":         "ucard_number"
   }.freeze
 
   # if any CSV cells require transforming the data
   # to the correct format for the database
   CSV_VALUE_TRANSLATIONS = {
     fee_status: lambda { |s, _|
-      s.force_encoding('UTF-8').parameterize.to_sym
+      s.force_encoding("UTF-8").parameterize.to_sym
     },
-    username: lambda { |s, _|
+    username:   lambda { |s, _|
       s.upcase
     },
-    email: lambda { |s, _|
+    email:      lambda { |s, _|
       s.downcase
     }
     # surname: lambda { |s, username|
@@ -81,7 +80,7 @@ module StudentDataHelper
     # }
   }.freeze
 
-  def generate_dummy_data_csv_string(class_module_code = 'COM3420', num_records = 100)
+  def generate_dummy_data_csv_string(class_module_code = "COM3420", num_records = 100)
     data = generate_dummy_data(num_records, class_module_code)
     convert_csv_to_text(data, csv_headers)
   end
@@ -94,39 +93,38 @@ module StudentDataHelper
   end
 
   private
+    def generate_dummy_data(num_records, class_module_code)
+      data = []
+      num_records.times do
+        surname = Faker::Name.last_name
+        forename = Faker::Name.first_name
+        middle_names = Array.new(rand(0..2)) { Faker::Name.last_name }.join(" ")
+        title = %w[Mr Ms Mrs Mx Miss].sample
+        known_as = Faker::Name.first_name
+        fee_status = %w[Home Overseas].sample
+        student_username = "AC#{[*'A'..'Z'].sample}#{rand(19..22)}#{forename[0]}#{surname[0]}"
+        ucard_no = Faker::Number.number(digits: 9)
+        email = Faker::Internet.email
+        reg_status = "Fully Registered"
+        programme = %w[COMU05 COMU117 COMU39 COMU101 COMU06 COMU43].sample
+        period = "B"
+        module_code = class_module_code
+        grades = ["-"] * 4
+        nfc_flag = "-"
+        hefce_flag = "Yes"
+        live_registration = "Y"
+        attending = "Y"
+        dob = Faker::Date.birthday(min_age: 16, max_age: 30)
+        personal_tutor = Faker::Name.name
+        supervisors = ""
 
-  def generate_dummy_data(num_records, class_module_code)
-    data = []
-    num_records.times do
-      surname = Faker::Name.last_name
-      forename = Faker::Name.first_name
-      middle_names = Array.new(rand(0..2)) { Faker::Name.last_name }.join(' ')
-      title = %w[Mr Ms Mrs Mx Miss].sample
-      known_as = Faker::Name.first_name
-      fee_status = %w[Home Overseas].sample
-      student_username = "AC#{[*'A'..'Z'].sample}#{rand(19..22)}#{forename[0]}#{surname[0]}"
-      ucard_no = Faker::Number.number(digits: 9)
-      email = Faker::Internet.email
-      reg_status = 'Fully Registered'
-      programme = %w[COMU05 COMU117 COMU39 COMU101 COMU06 COMU43].sample
-      period = 'B'
-      module_code = class_module_code
-      grades = ['-'] * 4
-      nfc_flag = '-'
-      hefce_flag = 'Yes'
-      live_registration = 'Y'
-      attending = 'Y'
-      dob = Faker::Date.birthday(min_age: 16, max_age: 30)
-      personal_tutor = Faker::Name.name
-      supervisors = ''
-
-      data << [
-        surname, forename, middle_names, title, known_as, fee_status, student_username,
-        ucard_no, email, reg_status, programme, period, module_code,
-        *grades, nfc_flag, hefce_flag, live_registration, attending, dob,
-        personal_tutor, supervisors
-      ]
+        data << [
+          surname, forename, middle_names, title, known_as, fee_status, student_username,
+          ucard_no, email, reg_status, programme, period, module_code,
+          *grades, nfc_flag, hefce_flag, live_registration, attending, dob,
+          personal_tutor, supervisors
+        ]
+      end
+      data
     end
-    data
-  end
 end
