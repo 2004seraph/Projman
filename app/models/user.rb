@@ -41,6 +41,7 @@ class User < ApplicationRecord
 
   def is_student?
     is_student = Student.where(email:).exists?
+    return false unless Student.find_by(email:).course_modules.count > 0
     is_student |= account_type&.include?("student")
     is_student |= !student.nil?
     is_student
