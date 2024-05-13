@@ -177,4 +177,16 @@ $(function() {
             }
         });
     });
+
+    //project publish
+    $(document).on('click', '#edit-project-form #confirm-publish-project', function(){
+        var form = $('#edit-project-form')
+        var hiddenStatusParam = $('<input>').attr({
+            type: 'hidden',
+            name: 'status',
+            value: 'preparation'
+        });
+        form.append(hiddenStatusParam)
+        form.trigger('submit')
+    })
 });

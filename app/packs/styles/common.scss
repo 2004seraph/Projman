@@ -176,6 +176,10 @@
     margin: 2px 10px 2px 0px;
 }
 
+.locked :not(button):not(button *) {
+    background-color: var(--locked-colour);
+    pointer-events: none;
+}
 .team-violations-container {
     position: relative;
     display: inline-block;

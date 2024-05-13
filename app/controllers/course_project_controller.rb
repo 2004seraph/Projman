@@ -62,7 +62,7 @@ class CourseProjectController < ApplicationController
       modules_hash:,
       team_allocation_modes_hash:,
       milestone_types_hash:,
-
+      status:                        "draft",
       selected_module:               "",
       project_name:                  "",
       teams_from_project_choice:     false,
@@ -85,9 +85,13 @@ class CourseProjectController < ApplicationController
 
   def edit
     project_id = params[:id]
+    project = CourseProject.find_by(id: project_id)
 
-    project = CourseProject.find(project_id)
-    @min_date = DateTime.parse(project.created_at.to_s).strftime("%Y-%m-%dT%H:%M")
+    if project.status == 'draft'
+      @min_date = "#{DateTime.now.strftime('%Y-%m-%d')}T00:00"
+    else
+      @min_date = DateTime.parse(project.created_at.to_s).strftime('%Y-%m-%dT%H:%M')
+    end
 
     staff_id = Staff.where(email: current_user.email).first
 
@@ -153,6 +157,7 @@ class CourseProjectController < ApplicationController
       team_allocation_modes_hash:,
       milestone_types_hash:,
 
+      status:                            project[:status],
       selected_module:                   CourseModule.find(project[:course_module_id])[:code],
       project_name:                      project[:name],
       teams_from_project_choice:         project[:teams_from_project_choice],
@@ -640,8 +645,20 @@ class CourseProjectController < ApplicationController
   def update
     session[:project_data][:errors] = {}
     errors = session[:project_data][:errors]
+    
+    project = CourseProject.find(params[:id])
+
+    initial_project_status = project.status
 
     project_data = session[:project_data]
+
+    if params.key?(:status)
+      project_data[:new_status] = params[:status]
+    else
+      project_data[:new_status] = initial_project_status
+    end
+
+    puts "STATUS CHANGE TO: #{project_data[:new_status]}"
 
     # Main Data
     project_data[:project_name] = params[:project_name]
@@ -656,8 +673,8 @@ class CourseProjectController < ApplicationController
     project_data[:project_choices_enabled] = params.key?(:project_choices_enable)
     errors[:project_choices] = []
 
-    if project_data[:project_choices].size <= 1 && project_data[:project_choices_enabled]
-      errors[:project_choices] << "Add at least 2 project choices, or disable this section"
+    if project_data[:project_choices].size <= 1 && project_data[:project_choices_enabled] && project.status == 'draft'
+      errors[:project_choices] << 'Add at least 2 project choices, or disable this section'
     end
 
     # Team Config
@@ -690,8 +707,6 @@ class CourseProjectController < ApplicationController
     if project_data[:project_choices_enabled] && project_data[:project_preference_form_deadline].blank?
       errors[:timings] << "Please set project preference form deadline"
     end
-
-    project = CourseProject.find(params[:id])
 
     params.each do |key, value|
       # Check if the key starts with "milestone_"
@@ -746,8 +761,11 @@ class CourseProjectController < ApplicationController
 
       project_creation_date = DateTime.parse(project.created_at.to_s)
       datetime = DateTime.parse(date)
-      if datetime < project_creation_date
-        err = "Milestone dates cannot be set to earlier than the project creation date: #{project_creation_date.readable_inspect.split('+').first}"
+      if project.status != 'draft' && datetime < project_creation_date
+        err = "Milestone dates cannot be set to earlier than the project publish date: #{project_creation_date.readable_inspect.split('+').first}"
+        errors[:timings] << err unless errors[:timings].include? err
+      elsif datetime < DateTime.now
+        err = 'Milestone dates cannot be set to earlier than the current date'
         errors[:timings] << err unless errors[:timings].include? err
       end
     end
@@ -764,14 +782,14 @@ class CourseProjectController < ApplicationController
 
     # Update Project Details
     unless project.update(
-      course_module:             CourseModule.find_by(code: project_data[:selected_module]),
-      name:                      project_data[:project_name],
-      teams_from_project_choice: project_data[:teams_from_project_choice],
-      team_size:                 project_data[:team_size],
-      team_allocation:           project_data[:selected_team_allocation_mode].to_sym,
-      preferred_teammates:       project_data[:preferred_teammates],
-      avoided_teammates:         project_data[:avoided_teammates],
-      status:                    :draft
+      course_module:             project.status == "draft" ? CourseModule.find_by(code: project_data[:selected_module]) : project.course_module,
+      name:                      project.status == "draft" ? project_data[:project_name] : project.name,
+      teams_from_project_choice: project.status == "draft" ? project_data[:teams_from_project_choice] : project.teams_from_project_choice,
+      team_size:                 project.status == "draft" ? project_data[:team_size] : project.team_size,
+      team_allocation:           project.status == "draft" ? project_data[:selected_team_allocation_mode].to_sym : project.team_allocation,
+      preferred_teammates:       project.status == "draft" ? project_data[:preferred_teammates] : project.preferred_teammates,
+      avoided_teammates:         project.status == "draft" ? project_data[:avoided_teammates] : project.avoided_teammates,
+      status:                    project_data[:new_status]
     )
       project.errors.messages.each do |section, section_errors|
         section_errors.each do |error|
@@ -780,12 +798,24 @@ class CourseProjectController < ApplicationController
       end
     end
 
+    project.reload
+    # Reset project's created_at field if it gets published
+    if initial_project_status == 'draft' && project.status != 'draft'
+      unless project.update(created_at: DateTime.now)
+        project.errors.messages.each do |section, section_errors|
+          section_errors.each do |error|
+            (errors[section.to_sym] ||= []) << error
+          end
+        end
+      end
+    end
+
     no_errors = errors.all? { |_, v| v.empty? }
 
     # destroy all subprojects if project choices disabled,
     # otherwise, destroy all subprojects that have been removed
-    # , create any subprojects that have been added
-    if no_errors
+    # , create any subprojects that have been added, IF status is draft
+    if no_errors && project.status == 'draft'
       existing_subprojects = project.subprojects
       if project_data[:project_choices_enabled]
         subprojects_to_delete = existing_subprojects.where.not(name: project_data[:project_choices])
@@ -979,8 +1009,12 @@ class CourseProjectController < ApplicationController
     end
 
     if no_errors
-      flash[:notice] = "Project has been updated successfully"
-      redirect_to action: :edit
+      if initial_project_status == "draft" && project.status != "draft"
+        flash[:notice] = "Project has been published"
+      else
+        flash[:notice] = "Project has been updated successfully"
+      end
+      redirect_to project_path(id: project.id)
     else
       render :edit
     end
@@ -989,7 +1023,7 @@ class CourseProjectController < ApplicationController
   def show
     if current_user.is_staff?
       # staff version of viewing one project
-      redirect_to action: :teams
+      redirect_to project_teams_path(project_id: params[:id])
     else
 
       # Get independent project information

@@ -10,10 +10,39 @@
 = render 'project_form', project_data: project_data, errors: errors, form_url: edit_project_path(params[:id]), form_id: "edit-project-form" do
   %div
     .d-flex.justify-content-end
+      %button.btn.btn-secondary.mb-2.me-2{type: "button", onclick: "window.location='/projects'; return false;"}
+        Discard Changes
       %button.btn.btn-primary.mb-2.me-2#create-project-save-button{type: "submit"}
         Save Changes
-      %button.btn.btn-secondary.mb-2{type: "button", onclick: "window.location='/projects'; return false;"}
-        Discard
+      - if project_data[:status] == "draft"
+        %button.btn.btn-primary.mb-2.me-2#publish-project-button{type: "button", data: { bs_toggle: "modal", bs_target: "#confirm-publish-project-modal"}}
+          %i.bi.bi-check
+          Save and Publish
+
+  - if project_data[:status] == "draft"
+    .modal.fade{ id: "confirm-publish-project-modal", tabindex: "-1", "aria-labelledby": "confirm-publish-project-modal", "aria-hidden": "true" }
+      .modal-dialog.modal-lg.modal-dialog-centered.modal-dialog-scrollable
+        .modal-content
+          .modal-header
+            %h1.modal-title.fs-5 Publish Project
+            %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+
+          .modal-body
+            %p Are you sure you want to publish this project?
+            %p Once published, you will not be able to edit the following: 
+            %ul
+              %li Project Module
+              %li Project Name
+              %li Project Choices
+              %li Team Configuration
+              %li Team Preference Form Settings
+            %hr
+            %p Once published, the project goes into the "Preparation" status, where you will wait for preference form responses to come in.
+            %p At this stage, you will be able to change the project status to "Review", where preference forms will no longer appear for students, and you can make manual changes to the teams.
+
+          .modal-footer.d-flex
+            %button.btn.btn-secondary.me-2{ type: "button", "data-bs-dismiss": "modal" } Close
+            %button.btn.btn-primary#confirm-publish-project{ type: "button", "data-bs-dismiss": "modal"} Publish
 
 = render partial: 'project_form_modals', locals: {project_data: project_data, errors: errors}
 

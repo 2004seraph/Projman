@@ -36,4 +36,5 @@ module ViewHelper
     session[:module_data] = {} if session[:module_data].nil?
     session[:module_data][:module_code] = code
   end
+
 end
