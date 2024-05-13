@@ -129,7 +129,23 @@
           %hr
       %h3.fs-5.mb-2 Deadlines
       .mb-3
-        .row.align-items-center#project-deadline-row.milestone-row.mb-2
+        - project_deadline_milestone = nil
+        - teammate_pref_form_milestone = nil
+        - proj_pref_form_milestone = nil 
+        - project_data[:project_milestones].each do |milestone|
+          - next if milestone[:system_type].nil?
+          - if milestone[:system_type] == "project_completion_deadline"
+            - project_deadline_milestone = milestone
+          - elsif milestone[:system_type] == "teammate_preference_deadline"
+            - teammate_pref_form_milestone = milestone
+          - elsif milestone[:system_type] == "project_preference_deadline"
+            - proj_pref_form_milestone = milestone
+
+        - lock_proj_deadline_milestone = (project_deadline_milestone && project_deadline_milestone.key?("Email") && project_deadline_milestone["Email"].key?("Sent"))
+        - lock_team_pref_milestone = (teammate_pref_form_milestone && teammate_pref_form_milestone.key?("Email") && teammate_pref_form_milestone["Email"].key?("Sent"))
+        - lock_proj_pref_milestone = (proj_pref_form_milestone && proj_pref_form_milestone.key?("Email") && proj_pref_form_milestone["Email"].key?("Sent"))
+
+        .row.align-items-center#project-deadline-row.milestone-row{class: "mb-2 #{"locked" if lock_proj_deadline_milestone}"}
           .col
             %label.col-form-label.fs-6.me-3{for: "project-deadline"} Project Deadline
             %input{ type: "hidden", name: "milestone_Project Deadline", value: "milestone_Project Deadline", class: "hidden-row-value"}
@@ -140,7 +156,7 @@
             %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
             %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
 
-        .row.align-items-center#teammate-preference-form-deadline-row.milestone-row.mb-2
+        .row.align-items-center#teammate-preference-form-deadline-row.milestone-row{class: "mb-2 #{"locked" if lock_team_pref_milestone}"}
           .col
             %label.col-form-label.fs-6.me-3{for: "teammate-preference-form-deadline"} Teammate Preference Form
             %input{ type: "hidden", name: "milestone_Teammate Preference Form Deadline", value: "milestone_Teammate Preference Form Deadline", class: "hidden-row-value"}
@@ -151,7 +167,7 @@
             %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
             %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
 
-        .row.align-items-center#project-preference-form-deadline-row.milestone-row.mb-2
+        .row.align-items-center#project-preference-form-deadline-row.milestone-row{class: "mb-2 #{"locked" if lock_proj_pref_milestone}"}
           .col
             %label.col-form-label.fs-6.me-3{for: "project-preference-form-deadline"} Project Preference Form
             %input{ type: "hidden", name: "milestone_Project Preference Form Deadline", value: "milestone_Project Preference Form Deadline", class: "hidden-row-value"}
@@ -169,7 +185,8 @@
           - milestone_name = milestone[:Name]
           - milestone_date = milestone[:Date]
           - selected_type = milestone[:Type]
-          = render partial: 'components/group-item-milestone', locals: { item_text: milestone_name, name: "milestone_"+milestone_name, selected_type: selected_type, deletion_action_url: remove_project_milestone_projects_path, date_value: milestone_date, min_date: @min_date}
+          - locked = milestone.key?("Email") && milestone["Email"].key?("Sent")
+          = render partial: 'components/group-item-milestone', locals: { locked: locked, item_text: milestone_name, name: "milestone_"+milestone_name, selected_type: selected_type, deletion_action_url: remove_project_milestone_projects_path, date_value: milestone_date, min_date: @min_date}
 
       %button.btn.btn-primary.mb-2{type: "button", "data-bs-toggle": "modal",
         "data-bs-target": "#add-project-milestone-modal"}

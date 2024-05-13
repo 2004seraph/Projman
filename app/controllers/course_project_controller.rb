@@ -307,11 +307,11 @@ class CourseProjectController < ApplicationController
     milestone = session[:project_data][:project_milestones].find { |m| m[:Name] == milestone_name }
 
     # Does it have an email field in the json?
-    if milestone.key?(:Email)
-      milestone[:Email][:Content] = params[:milestone_email_content]
-      milestone[:Email][:Advance] = params[:milestone_email_advance]
+    if milestone.key?("Email")
+      milestone["Email"]["Content"] = params[:milestone_email_content]
+      milestone["Email"]["Advance"] = params[:milestone_email_advance]
     else
-      milestone[:Email] =
+      milestone["Email"] =
         { "Content": params[:milestone_email_content], "Advance": params[:milestone_email_advance] }
     end
   end
@@ -916,18 +916,24 @@ class CourseProjectController < ApplicationController
       milestones_to_update.each do |milestone|
         # get corresponding milestone data
         milestone_name = milestone[:json_data]["Name"]
+        milestone_email = milestone[:json_data]["Email"] if milestone[:json_data].key?("Email")
         milestone_data = project_data[:project_milestones].find { |m| m[:Name] == milestone_name }
         milestone.json_data = {
           "Name"    => milestone_name,
           "Comment" => milestone_data[:Comment]
         }
-        milestone.json_data["Email"] = milestone_data[:Email] if milestone_data.key?(:Email)
-        milestone_data[:Date]
-
-        date_time_string = milestone_data[:Date]
-        date, time = date_time_string.split("T")
-        milestone.deadline = "#{date} #{time}"
-        milestone.milestone_type = milestone_data[:Type]
+        # dont update the email if its already been sent, and dont update deadline or type either
+        if milestone_email && milestone_email.key?("Sent") && milestone_email["Sent"] == true
+          puts "EMAIL ALREADY SENT"
+          milestone.json_data["Email"] = milestone_email if milestone_email
+        else
+          milestone.json_data["Email"] = milestone_data["Email"] if milestone_data.key?("Email")
+          puts "UPDATING EMAIL"
+          date_time_string = milestone_data[:Date]
+          date, time = date_time_string.split("T")
+          milestone.deadline = "#{date} #{time}"
+          milestone.milestone_type = milestone_data[:Type]
+        end
 
         if milestone.valid?
           milestone.save
