@@ -122,7 +122,7 @@ class CourseProject < ApplicationRecord
       end
 
       errors.add(:team_config, "Invalid team size entry") if team_size.nil?
-      if team_allocation.blank? || !team_allocation.in?(CourseProject.team_allocations)
+      if !team_allocation.in?(CourseProject.team_allocations) && !team_allocation.nil?
         errors.add(:team_config, "Invalid team allocation mode selected")
       end
       errors.add(:team_config, "Team size must be greater than 0") if team_size.present? && team_size <= 0

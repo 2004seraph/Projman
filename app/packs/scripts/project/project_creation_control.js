@@ -16,6 +16,7 @@ $(function() {
     }
     if (teamPrefDateInput.prop('min') !== undefined) {
         teamPrefMinDate = teamPrefDateInput.prop('min');
+        console.log(teamPrefMinDate)
     }
 
     function runChecks() {
@@ -29,9 +30,7 @@ $(function() {
         var teamsBasedOnProjectChoice = $('#teamsBasedOnProjectChoiceSwitch').is(':checked')
 
         if(!projectChoicesChecked){        
-            // Min attribute exists, get value and then delete it
             if (projectPrefDateInput.prop('min') !== undefined) {
-                projectPrefMinDate = projectPrefDateInput.prop('min');
                 projectPrefDateInput.removeAttr('min');
             }
         }
@@ -41,15 +40,15 @@ $(function() {
         }
 
         if(teamAllocationMethodValue !== "preference_form_based"){
-            //Min attribute exists, get value and then delete it
             if (teamPrefDateInput.prop('min') !== undefined) {
-                teamPrefMinDate = teamPrefDateInput.prop('min');
                 teamPrefDateInput.removeAttr('min');
+                console.log(teamPrefMinDate)
             }
         }
         else{
             // set or add min attribute to the min value
             teamPrefDateInput.prop('min', teamPrefMinDate);
+            console.log(teamPrefMinDate)
         }
 
         $('#project-choices .card-body').toggleClass('display-none', !projectChoicesChecked);

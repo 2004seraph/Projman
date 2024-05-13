@@ -69,7 +69,7 @@ class CourseProjectController < ApplicationController
       project_choices:               [],
       team_size:                     4,
       selected_team_allocation_mode: "",
-      preferred_teammates:           2,
+      preferred_teammates:           1,
       avoided_teammates:             2,
       project_milestones:            [{ "Name": "Project Deadline", "Date": "", "Type": "team", "system_type": "project_deadline", "Comment": "" },
                                       { "Name": "Teammate Preference Form Deadline", "Date": "", "Type": "student",
@@ -362,15 +362,20 @@ class CourseProjectController < ApplicationController
 
     errors[:timings] = []
 
-    errors[:timings] << "Please set project deadline" if project_data[:project_deadline].blank?
+    project_deadline = nil
+    if project_data[:project_deadline].blank?
+      errors[:timings] << "Please set project deadline"
+    else
+      project_deadline = DateTime.parse(project_data[:project_deadline])
+    end
 
     project_data[:teams_from_project_choice] = false unless project_data[:project_choices_enabled]
 
     if project_data[:project_choices_enabled] && project_data[:teams_from_project_choice]
-      project_data[:selected_team_allocation_mode] = "random_team_allocation"
+      project_data[:selected_team_allocation_mode] = nil
     end
 
-    if project_data[:selected_team_allocation_mode] != "random_team_allocation" && project_data[:teammate_preference_form_deadline].blank?
+    if project_data[:selected_team_allocation_mode] == "preference_form_based" && project_data[:teammate_preference_form_deadline].blank?
       errors[:timings] << "Please set team preference form deadline"
     end
     if project_data[:project_choices_enabled] && project_data[:project_preference_form_deadline].blank?
@@ -410,7 +415,7 @@ class CourseProjectController < ApplicationController
     end
 
     # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
-    if project_data[:selected_team_allocation_mode] == "random_team_allocation" &&
+    if project_data[:selected_team_allocation_mode] != "preference_form_based" &&
        (milestone = session[:project_data][:project_milestones].find do |m|
          m[:Name] == "Teammate Preference Form Deadline"
        end)
@@ -433,6 +438,10 @@ class CourseProjectController < ApplicationController
         err = "Milestone dates cannot be set to earlier than the current date"
         errors[:timings] << err unless errors[:timings].include? err
       end
+      if datetime > project_deadline
+        err = "Milestone dates must be set to earlier than the project deadline"
+        errors[:timings] << err unless errors[:timings].include? err
+      end
     end
 
     facilitators_not_found = project_data[:project_facilitators].reject do |email|
@@ -448,7 +457,7 @@ class CourseProjectController < ApplicationController
       # project_choices_json: project_data[:project_choices_enabled] ? project_data[:project_choices].to_json : "[]",
       teams_from_project_choice: project_data[:teams_from_project_choice],
       team_size:                 project_data[:team_size],
-      team_allocation:           project_data[:selected_team_allocation_mode].to_sym,
+      team_allocation:           project_data[:selected_team_allocation_mode].nil? ? nil : project_data[:selected_team_allocation_mode].to_sym,
       preferred_teammates:       project_data[:preferred_teammates],
       avoided_teammates:         project_data[:avoided_teammates],
       status:                    :draft
@@ -652,6 +661,12 @@ class CourseProjectController < ApplicationController
 
     project_data = session[:project_data]
 
+    if project.status == 'draft'
+      @min_date = "#{DateTime.now.strftime('%Y-%m-%d')}T00:00"
+    else
+      @min_date = DateTime.parse(project.created_at.to_s).strftime('%Y-%m-%dT%H:%M')
+    end
+
     if params.key?(:status)
       project_data[:new_status] = params[:status]
     else
@@ -673,8 +688,8 @@ class CourseProjectController < ApplicationController
     project_data[:project_choices_enabled] = params.key?(:project_choices_enable)
     errors[:project_choices] = []
 
-    if project_data[:project_choices].size <= 1 && project_data[:project_choices_enabled] && project.status == 'draft'
-      errors[:project_choices] << 'Add at least 2 project choices, or disable this section'
+    if project_data[:project_choices].size <= 1 && project_data[:project_choices_enabled] && project.status == "draft"
+      errors[:project_choices] << "Add at least 2 project choices, or disable this section"
     end
 
     # Team Config
@@ -700,8 +715,14 @@ class CourseProjectController < ApplicationController
       project_data[:selected_team_allocation_mode] = "random_team_allocation"
     end
 
-    errors[:timings] << "Please set project deadline" if project_data[:project_deadline].blank?
-    if project_data[:selected_team_allocation_mode] != "random_team_allocation" && project_data[:teammate_preference_form_deadline].blank?
+    project_deadline = nil
+    if project_data[:project_deadline].blank?
+      errors[:timings] << "Please set project deadline"
+    else
+      project_deadline = DateTime.parse(project_data[:project_deadline])
+    end
+
+    if project_data[:selected_team_allocation_mode] == "preference_form_based" && project_data[:teammate_preference_form_deadline].blank?
       errors[:timings] << "Please set team preference form deadline"
     end
     if project_data[:project_choices_enabled] && project_data[:project_preference_form_deadline].blank?
@@ -741,7 +762,7 @@ class CourseProjectController < ApplicationController
     end
 
     # For Preference Form milestones, clear their dates so they are not pushed IF they dont apply to the project
-    if project_data[:selected_team_allocation_mode] == "random_team_allocation" &&
+    if project_data[:selected_team_allocation_mode] != "preference_form_based" &&
        (milestone = session[:project_data][:project_milestones].find do |m|
          m[:Name] == "Teammate Preference Form Deadline"
        end)
@@ -761,11 +782,17 @@ class CourseProjectController < ApplicationController
 
       project_creation_date = DateTime.parse(project.created_at.to_s)
       datetime = DateTime.parse(date)
-      if project.status != 'draft' && datetime < project_creation_date
+      if project.status != "draft" && datetime < project_creation_date
         err = "Milestone dates cannot be set to earlier than the project publish date: #{project_creation_date.readable_inspect.split('+').first}"
         errors[:timings] << err unless errors[:timings].include? err
       elsif datetime < DateTime.now
-        err = 'Milestone dates cannot be set to earlier than the current date'
+        err = "Milestone dates cannot be set to earlier than the current date"
+        errors[:timings] << err unless errors[:timings].include? err
+      end
+      puts datetime
+      puts project_deadline
+      if datetime > project_deadline
+        err = "Milestone dates must be set to earlier than the project deadline"
         errors[:timings] << err unless errors[:timings].include? err
       end
     end
@@ -780,13 +807,15 @@ class CourseProjectController < ApplicationController
     initial_team_allocation = project.team_allocation
     intially_teams_from_project_choice = project.teams_from_project_choice
 
+    team_allocation_method = project_data[:selected_team_allocation_mode].nil? ? nil : project_data[:selected_team_allocation_mode].to_sym
+
     # Update Project Details
     unless project.update(
       course_module:             project.status == "draft" ? CourseModule.find_by(code: project_data[:selected_module]) : project.course_module,
       name:                      project.status == "draft" ? project_data[:project_name] : project.name,
       teams_from_project_choice: project.status == "draft" ? project_data[:teams_from_project_choice] : project.teams_from_project_choice,
       team_size:                 project.status == "draft" ? project_data[:team_size] : project.team_size,
-      team_allocation:           project.status == "draft" ? project_data[:selected_team_allocation_mode].to_sym : project.team_allocation,
+      team_allocation:           project.status == "draft" ? team_allocation_method : project.team_allocation,
       preferred_teammates:       project.status == "draft" ? project_data[:preferred_teammates] : project.preferred_teammates,
       avoided_teammates:         project.status == "draft" ? project_data[:avoided_teammates] : project.avoided_teammates,
       status:                    project_data[:new_status]
@@ -800,7 +829,7 @@ class CourseProjectController < ApplicationController
 
     project.reload
     # Reset project's created_at field if it gets published
-    if initial_project_status == 'draft' && project.status != 'draft'
+    if initial_project_status == "draft" && project.status != "draft"
       unless project.update(created_at: DateTime.now)
         project.errors.messages.each do |section, section_errors|
           section_errors.each do |error|
@@ -815,7 +844,7 @@ class CourseProjectController < ApplicationController
     # destroy all subprojects if project choices disabled,
     # otherwise, destroy all subprojects that have been removed
     # , create any subprojects that have been added, IF status is draft
-    if no_errors && project.status == 'draft'
+    if no_errors && project.status == "draft"
       existing_subprojects = project.subprojects
       if project_data[:project_choices_enabled]
         subprojects_to_delete = existing_subprojects.where.not(name: project_data[:project_choices])
