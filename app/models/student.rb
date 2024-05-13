@@ -160,7 +160,7 @@ class Student < ApplicationRecord
     [true, student]
   end
 
-  TITLES = { 'Masculine'=>['Mr'], 'Female'=>['Miss', 'Ms', 'Mrs'], 'Ambiguous'=>['Mx', 'Dr', 'Prof'] }.freeze
+  TITLES = { 'Masculine'=>['Mr'], 'Feminine'=>['Miss', 'Ms', 'Mrs'], 'Ambiguous'=>['Mx', 'Dr', 'Prof'] }.freeze
 
   def find_preference_violations(team)
     proj = CourseProject.find(team.course_project_id)
