@@ -77,6 +77,27 @@ class Group < ApplicationRecord
     member_violations
   end
 
+  def set_subproject_from_responses
+    proj_form = self.course_project_id.milestones.where(system_type: "project_preference_deadline").first
+    return nil if proj_form.nil?
+
+    popular_projects = {}
+    self.course_project_id.subprojects.each do |subproj|
+      popular_projects[subproj.id] = 0
+    end
+
+    self.students.each do |student|
+      proj_form_response = student.milestone_responses.where(milestone_id: proj_form.id).first
+      next if proj_form_response.nil?
+      
+      proj_form_response.json_data.each do |rank, subproj|
+        popular_projects[subproj] += rank.to_i
+      end
+    end
+
+    self.subproject_id = popular_projects.key(popular_projects.values.min)    
+  end
+
   private
     def students_must_be_enrolled_on_the_same_module(student)
       error_msg = "Students must be part of the same module as this group's project"

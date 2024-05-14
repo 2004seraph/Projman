@@ -113,10 +113,14 @@ class Ability
 
     return unless user.staff.admin
 
+    can %i[read index update_selection search_students confirm_selection clear_selection clear_student remove_students_from_module],
+    Student
+
     # can [:read], :admin
     can [:read], :facilitator 
     can [:read], EventResponse
     can %i[read update], Event
+
     can %i[
       create
       read
@@ -131,6 +135,27 @@ class Ability
       remove_students_from_team
     ], Group
     can %i[create read update destroy], CourseModule
-    can %i[create read edit teams update destroy], CourseProject
+
+    can %i[
+      create
+
+      add_project_choice
+      remove_project_choice
+      add_project_milestone
+      remove_project_milestone
+      clear_facilitator_selection
+      add_to_facilitator_selection
+      remove_from_facilitator_selection
+      add_facilitator_selection
+      remove_facilitator
+      search_facilitators_student
+      search_facilitators_staff
+      get_milestone_data
+      remove_milestone_email
+      set_milestone_email_data
+      set_milestone_comment
+      remake_teams
+    ], CourseProject
+    can %i[read edit update], CourseProject
   end
 end
