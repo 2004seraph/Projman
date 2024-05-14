@@ -1,0 +1,40 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
+- ran_num = "#{SecureRandom.hex(5)}"  # Generate a unique ID
+- unique_id = "accordion-card-" + ran_num
+- unique_id_collapse = "accordion-collapse-card-" + ran_num
+
+.card.mb-2.accordion-element.project-teams-team-container{id: "outstanding-students" }
+  %a.card-header.d-flex.justify-content-between.align-items-center{
+  "data-bs-toggle" => "collapse",
+  href: "##{unique_id_collapse}",
+  role: "button",
+  "data-accordion-toggle" => "",
+  "aria-expanded" => "false",
+  "aria-controls" => unique_id_collapse, id:ran_num}
+    .d-flex.align-items-center.gap-3{ style: "flex: 1;" }
+      %table{ style: "flex: 1;" }
+        %tbody
+          %tr.d-flex.justify-content-between.row
+            .fs-5.m-0.p-0 #{outstanding_students.size} Outstanding Student(s)
+
+    %i.bi.bi-caret-right-fill
+  .collapse{id: unique_id_collapse}
+    .card-body.list-card{id: unique_id}
+      %input{ type: "hidden", name: "outstanding-students", value: "outstanding-students" }
+
+        .d-flex.justify-content-between
+          -# %h3.fs-6 Group Members
+
+        %table.table.selectable-row-container
+          %thead
+            %tr
+              %th{scope: "col"}
+              %th{scope: "col"} Name
+              %th{scope: "col"} Email
+              %th{scope: "col"} Fee Status
+              %th{scope: "col"} 
+            %tbody
+              - outstanding_students.each do |student|
+                = render 'group/student_selectable_row', student: student, hash: nil

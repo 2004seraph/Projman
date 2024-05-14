@@ -235,6 +235,14 @@
 }
 
 .custom-icon {
-    padding: 0px 10px;
-    font-size: 20px;
+    padding: 5px 10px 5px 10px;
+    font-size: 18px;
+}
+
+.hidden-icon {
+    color: #f8f8f8;
+}
+
+.no-rotate {
+    transform: none !important;
 }

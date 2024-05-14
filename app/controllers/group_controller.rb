@@ -14,6 +14,15 @@ class GroupController < ApplicationController
     return if @current_project.nil?
 
     @teams = @current_project.groups.order(id: :asc)
+    
+    student_list = @current_project.students.to_a
+    @teams.each do |team|
+      team.students.each do |student|
+        student_list.reject! { |s| s == student}
+      end
+    end
+    @outstanding_students = student_list
+    
     Rails.logger.debug @teams.pluck(:assigned_facilitator_id)
     render "group/index"
   end

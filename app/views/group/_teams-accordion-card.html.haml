@@ -26,7 +26,9 @@
               - elsif team_violations['level'] == 2
                 .team-violations-container{ text: "Moderate Team Allocation Violations" }
                   %i.bi.bi-circle-fill.fill-yellow
-              
+              -else 
+                %i.bi.bi-circle-fill.hidden-icon
+
             %td.col-2
               .fs-5.m-0.p-0 #{team.name}
             %td.d-flex.gap-2.col
@@ -36,7 +38,9 @@
               %td.d-flex.gap-2.col
                 .fs-5.m-0.p-0.f.project-choice-text
                   Project: #{team.subproject.nil? ? "Not assigned" : team.subproject.name}
-
+    
+    .fs-6.m-0.p-0 #{team.students.size}
+    %i.bi.bi-person.no-rotate
     %i.bi.bi-caret-right-fill
   .collapse{id: unique_id_collapse}
     .card-body.list-card{id: unique_id}
@@ -59,7 +63,7 @@
               %th{scope: "col"}
               %th{scope: "col"} Name
               %th{scope: "col"} Email
-              %th{scope: "col"} UCard Number
+              %th{scope: "col"} Fee Status
               %th{scope: "col"} 
             %tbody
               - team.students.each do |student|

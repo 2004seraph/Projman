@@ -15,7 +15,7 @@
         Remake Teams
 
   .container#teams-list-container
-    = render "teams_list", teams: @teams, current_project: @current_project
+    = render "teams_list", teams: @teams, current_project: @current_project, outstanding_students: @outstanding_students
 
 -# Modal for choosing team facilitator
 .modal.fade.modal-select-multiple{ id: "facilitators_modal", tabindex: "-1", "aria-labelledby": "facilitators_modal", "aria-hidden": "true"}

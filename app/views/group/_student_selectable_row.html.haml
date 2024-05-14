@@ -4,9 +4,9 @@
     %input.form-check-input{type: "checkbox", value: ""}
   %td= "#{student.title + " " + student.preferred_name + " " + student.surname}"
   %td= student.email
-  %td= student.ucard_number
+  %td= student.fee_status
   %td
-    - unless hash.nil? || hash[student.id] == 0
+    - unless hash.nil? || !hash[student.id].is_a?(Hash)
       - violations_hash = hash[student.id]
       .student-violations-container{ text: violations_hash.values.first }
         - if violations_hash.keys.first == 3

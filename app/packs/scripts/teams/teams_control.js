@@ -241,6 +241,7 @@ $(function() {
         'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
       },
       success: function(response){
+        window.location.reload();
       },
       error: function(xhr, status, error) {
         console.log(error)
@@ -304,7 +305,7 @@ $(function() {
             row.remove();
           }
         });
-          
+        window.location.reload();
       },
       error: function(xhr, status, error) {
         console.error(xhr.responseText);
