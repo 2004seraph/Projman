@@ -14,7 +14,7 @@
 
     var teamContainerToAddTo = $('.project-teams-team-container input[name="team_id"][value="#{@team_id}"]').parent();
     var selectableRowContainerTableBody = teamContainerToAddTo.find('.selectable-row-container tbody').first()
-    var newPartialHTML = "#{j(render(partial: 'student_selectable_row', locals: { student: @student }))}";
+    var newPartialHTML = "#{j(render(partial: 'student_selectable_row', locals: { student: @student, team: @team }))}";
     selectableRowContainerTableBody.append(newPartialHTML)
   }
   else{

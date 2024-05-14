@@ -6,4 +6,11 @@
 .d-flex.justify-content-between
   .fs-1.fw-semi-bold= project.name
 
+  .d-flex.pt-3{style: "height: 75%" }
+    - unless params[:action] == 'edit'
+      -# = link_to project_teams_path(project_id), class: 'btn btn-primary' do
+      -#   Back
+      = link_to edit_project_path(project_id), class: 'btn btn-primary' do
+        Edit Project
+
 %hr.divider

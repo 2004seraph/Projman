@@ -1,6 +1,8 @@
 -# This file is a part of Projman, a group project orchestrator and management system,
 -# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
+= render partial: 'course_project/components/project_info_header', locals: { project_id: params[:id] }
+
 - project_data = {}
 - errors = {}
 - if session[:project_data].present?
@@ -10,7 +12,7 @@
 = render 'project_form', project_data: project_data, errors: errors, form_url: edit_project_path(params[:id]), form_id: "edit-project-form" do
   %div
     .d-flex.justify-content-end
-      %button.btn.btn-secondary.mb-2.me-2{type: "button", onclick: "window.location='/projects'; return false;"}
+      %button.btn.btn-secondary.mb-2.me-2{type: "button", onclick: "window.location='/projects/#{params[:id]}/teams'; return false;"}
         Discard Changes
       %button.btn.btn-primary.mb-2.me-2#create-project-save-button{type: "submit"}
         Save Changes
