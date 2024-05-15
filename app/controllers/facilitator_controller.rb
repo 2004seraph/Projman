@@ -28,7 +28,7 @@ class FacilitatorController < ApplicationController
 
     unless params[:projects_filter] == "All" || params[:projects_filter].empty?
       target_project_id = CourseProject.find_by(name: params[:projects_filter]).id
-      @groups = @groups.where(course_project_id: target_project_id)
+      @groups = @groups.select{|g| g.course_project_id == target_project_id}
     end
 
     render partial: 'teams-list-card'
