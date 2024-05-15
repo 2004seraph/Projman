@@ -175,7 +175,6 @@ class ProgressFormController < ApplicationController
 
       # Can't update released forms
       if milestone.deadline <= DateTime.current
-        
         return render json: {
           status: 'already_released',
           message: 'Cannot update a released progress form.',

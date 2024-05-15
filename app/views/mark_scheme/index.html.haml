@@ -6,11 +6,11 @@
 .fs-3.semi-bold Mark Scheme
 
 %div.mt-2
-    %a.btn.btn-primary{type: "button", href: "mark_scheme/new"}
+    %a.btn.btn-primary#new-mark-scheme-button{type: "button", href: new_project_mark_scheme_path}
         %i.bi.bi-box-arrow-up-right
         View/Edit Marking Document
 
-    %a.btn.btn-primary{type: "button", href: "mark_scheme/show"}
+    %a.btn.btn-primary#view-marks-button{type: "button", href: marks_project_mark_scheme_index_path}
         %i.bi.bi-box-arrow-up-right
         View Marks For Teams
 
@@ -23,11 +23,9 @@
         %i.bi.bi-box-arrow-down
         Import Mark Scheme
 
-
-    - unless @mark_scheme.nil?
-        = link_to export_mark_scheme_with_results_project_mark_scheme_index_path, method: :post, class: "btn btn-primary" do
-            %i.bi.bi-box-arrow-up
-            Export Marking as CSV
+    = link_to export_mark_scheme_with_results_project_mark_scheme_index_path, method: :post, id: 'export-button', class: "btn btn-primary #{@mark_scheme.nil? ? 'd-none' : ''}" do
+        %i.bi.bi-box-arrow-up
+        Export Marking as CSV
 
 %hr.divider
 
@@ -41,7 +39,7 @@
 // Add assessors modal
 = render 'components/modal-search-multiple',
     modal_id: 'add-assessor-to-section-modal',
-    autocomplete_method: "mark_scheme/search_assessors",
+    autocomplete_method: search_assessors_project_mark_scheme_index_path,
     title: 'Add Assessor',
     prompt: "Input assessor's email",
     form_input_id: 'add-assessor-to-section-form',
@@ -50,9 +48,9 @@
     list_group_id: 'assessor-selection-group-section',
     confirm_text: 'Confirm',
     confirm_onclick_function: "",
-    add_to_selection_url: "mark_scheme/add_to_assessors_selection",
-    submission_url: "mark_scheme/add_assessors_selection",
-    on_open_action_url: "mark_scheme/clear_assessors_selection",
+    add_to_selection_url: add_to_assessors_selection_project_mark_scheme_index_path,
+    submission_url: add_assessors_selection_project_mark_scheme_index_path,
+    on_open_action_url: clear_assessors_selection_project_mark_scheme_index_path,
     search_hidden_fields: {"section_index": -1}
 
 // Assign teams to assessor model
@@ -96,7 +94,7 @@
             = form_with url: import_mark_scheme_project_mark_scheme_index_path, multipart: true, local: false do |form|
                 .modal-body
                     -# Custom styled file upload
-                    %label.btn.btn-primary.me-3
+                    %label.btn.btn-primary.me-3#upload-csv-button
                         %i.bi.bi-upload
                         Upload
                         
@@ -146,11 +144,11 @@
     }
 
     function removeAssessor(section_index, email) {
-        fetch("mark_scheme/remove_assessor_from_section", {
+        fetch("#{remove_assessor_from_section_project_mark_scheme_index_path}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+                "X-CSRF-Token": document.head.querySelector("meta[name=csrf-token]")?.content
                 },
             body: JSON.stringify({
                 section_index: section_index,
@@ -165,11 +163,11 @@
     }
 
     function populateAssignTeams(section_index, email) {
-        fetch("mark_scheme/get_assignable_teams", {
+        fetch("#{get_assignable_teams_project_mark_scheme_index_path}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+                "X-CSRF-Token": document.head.querySelector("meta[name=csrf-token]")?.content
                 },
             body: JSON.stringify({
                 section_index: section_index,
@@ -220,11 +218,11 @@
             }
         });
 
-        fetch("mark_scheme/assign_teams", {
+        fetch("#{assign_teams_project_mark_scheme_index_path}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+                "X-CSRF-Token": document.head.querySelector("meta[name=csrf-token]")?.content
                 },
             body: JSON.stringify({
                 team_ids: team_ids
@@ -247,11 +245,11 @@
     function autoAssignSection(section_index) {
         updateSectionIndex(section_index);
 
-        fetch("mark_scheme/auto_assign_teams", {
+        fetch("#{auto_assign_teams_project_mark_scheme_index_path}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+                "X-CSRF-Token": document.head.querySelector("meta[name=csrf-token]")?.content
                 },
             body: JSON.stringify({
                 section_index: section_index

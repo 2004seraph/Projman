@@ -90,7 +90,8 @@ Rails.application.routes.draw do
       post "export_mark_scheme_with_results" => "mark_scheme#export_mark_scheme_with_results", on: :collection
       post "import_mark_scheme" => "mark_scheme#import_mark_scheme", on: :collection
 
-      post "show_new", on: :collection
+      get 'marks' => 'mark_scheme#marks', on: :collection
+      post 'show_new', on: :collection
     end
   end
 
@@ -116,12 +117,12 @@ Rails.application.routes.draw do
                                                       on: :collection
 
     # AJAX
-    post "/update_teams_list" => "facilitator#update_teams_list", on: :collection
-    post "/update_progress_form_response" => "facilitator#update_progress_form_response", on: :collection
+    post 'update_teams_list' => 'facilitator#update_teams_list', on: :collection
+    post 'update_progress_form_response' => 'facilitator#update_progress_form_response', on: :collection
   end
 
-  resources :markings, controller: :marking do
-    post "/save" => "marking#save", on: :collection
+  resources :markings, controller: :marking do 
+    post 'save' => 'marking#save', on: :collection
   end
 
   resources :modules, controller: :course_module do

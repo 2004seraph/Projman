@@ -1,0 +1,28 @@
+// This file is a part of Projman, a group project orchestrator and management system,
+// made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
+var sectionsContainer = document.getElementById("sections-container");
+var titleTextArea = document.getElementById("section-title-text-area");
+var errorDisplay = document.getElementById("section-title-text-area-error");
+var modalCloseButton = document.getElementById("add-section-close-button");
+
+- if @error.nil?
+    // Hide error displays
+    titleTextArea.classList.remove("is-invalid");
+    errorDisplay.classList.add("d-none");
+    
+    // Render new content
+    modalCloseButton.click();
+    var partial_html = "#{escape_javascript(render partial: 'section', locals: {section_index: session[:mark_scheme]['sections'].length - 1, section_title: params[:section_title], section_description: '', max_marks: 0})}";
+
+    var temp = document.createElement("div");
+    temp.innerHTML = partial_html.trim();
+    sectionsContainer.appendChild(temp);
+
+    titleTextArea.value = "";
+
+- else
+    // Render errors
+    titleTextArea.classList.add("is-invalid");
+    errorDisplay.classList.remove("d-none");
+    errorDisplay.textContent = "#{escape_javascript(@error)}";

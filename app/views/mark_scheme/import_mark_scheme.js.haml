@@ -1,6 +1,7 @@
 var errorContainer = document.getElementById("import-error-container");
 var errorMessage = document.getElementById("import-error-message");
 var modalClose = document.getElementById("import-mark-scheme-close-button");
+var exportButton = document.getElementById("export-button");
 
 - if @error.nil?
   -# Remove errors 
@@ -11,6 +12,9 @@ var modalClose = document.getElementById("import-mark-scheme-close-button");
   -# Rerender the section to update table row
   var newPartialHTML = "#{j(render(partial: 'section_assessors', locals: {mark_scheme: @mark_scheme_json}))}";
   $("#section-assessors").html(newPartialHTML);
+
+  -# Show the export button if hidden
+  exportButton.classList.remove("d-none");
 
 - else 
   -# Display errors

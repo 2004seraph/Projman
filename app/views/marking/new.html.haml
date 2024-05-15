@@ -108,7 +108,7 @@
         marking[id] = [marks, reason];
       });
 
-      fetch("/markings/save", {
+      fetch("#{save_markings_path}", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

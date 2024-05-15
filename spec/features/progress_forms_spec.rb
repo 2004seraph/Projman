@@ -5,7 +5,7 @@
 
 require 'rails_helper'
 
-RSpec.feature 'Progress Form Creation', type: :feature do
+RSpec.feature 'Managing Progress Forms', type: :feature do
   let!(:user) { FactoryBot.create(:standard_student_user) }
   let!(:student) { FactoryBot.create(:standard_student) } # without this line, cant log in?
   let!(:staff) { Staff.find_or_create_by(email: user.email) }
@@ -27,14 +27,6 @@ RSpec.feature 'Progress Form Creation', type: :feature do
       team_allocation: :random_team_allocation,
       status: :live
     })
-
-    #project = CourseProject.find_or_create_by({
-                                    #  course_module: CourseModule.find_by(code: 'COM9999'),
-                                    #  name: 'Test Project 1',
-                                    #  project_allocation: :single_preference_project_allocation,
-                                    #  team_allocation: :random_team_allocation,
-                                    #  team_size: 8
-                                    #})
 
     # Create a group with 5 random teammates and facilitator
     group = Group.find_or_create_by({
@@ -190,7 +182,7 @@ RSpec.feature 'Progress Form Creation', type: :feature do
     before { 
       login_as user 
 
-      visit "facilitators/" 
+      visit "facilitators/"
 
       # Create a progress form that was released yesterday
       yesterday = (DateTime.current - 1).strftime("%d/%m/%Y %H:%M")
@@ -213,10 +205,17 @@ RSpec.feature 'Progress Form Creation', type: :feature do
 
     specify "I can fill in a progress form for a team I'm assigned to" do 
       # Go to the team page for the first assigned team
-      find('div.navigation-list-item', match: :first).click
+      within('div.navigation-list-item', match: :first) do 
+        first('a').click
+      end
+
+      # Open the progress forms card
+      find('#progress-forms-card-header').click
 
       # Go to the first released progress form
-      find('div.navigation-list-item', match: :first).click
+      within('div.navigation-list-item', match: :first) do 
+        first('a').click
+      end
 
       # Take attendance
       attendance_checkboxes = all('input[type="checkbox"].absent-checkbox')
@@ -233,9 +232,13 @@ RSpec.feature 'Progress Form Creation', type: :feature do
       # Submit response
       find('#saveButton').click
 
-      # Re-open the progress form to check the response has loaded
+      # Open the progress forms card
+      find('#progress-forms-card-header').click
 
-      find('div.navigation-list-item', match: :first).click
+      # Re-open the progress form to check the response has loaded
+      within('div.navigation-list-item', match: :first) do 
+        first('a').click
+      end
       
       expect(page).to have_content("Last updated by: " + user.email)
     end
@@ -243,16 +246,177 @@ RSpec.feature 'Progress Form Creation', type: :feature do
     specify "I can fill in a progress form for a team I'm not assigned to" do 
       # Remove the team's facilitator temporarily
       group.assigned_facilitator = nil
+      group.save
 
-      sleep 5
+      visit "facilitators/"
+
+      # Show non-assigned teams
+      uncheck "filter-checkbox"
+
+      # Click the unassigned team
+      within('div.navigation-list-item', match: :first) do 
+        first('a').click
+      end
+
+      # Open the progress forms card
+      find('#progress-forms-card-header').click
+
+      # Go to the first released progress form
+      within('div.navigation-list-item', match: :first) do 
+        first('a').click
+      end
       
+      # Take attendance
+      attendance_checkboxes = all('input[type="checkbox"].absent-checkbox')
+      attendance_checkboxes[0].check
+      attendance_checkboxes[1].check
 
+      reason_inputs = all('input[type="text"].absent-reason-input')
+      reason_inputs[0].set("Sick")
+      reason_inputs[1].set("Holiday")
+      
+      # Answer the question
+      find('textarea.form-control.question-textarea').set("Good thank you!")
+      
+      # Submit response
+      find('#saveButton').click
 
+      # Open the progress forms card
+      find('#progress-forms-card-header').click
 
+      # Re-open the progress form to check the response has loaded
+      within('div.navigation-list-item', match: :first) do 
+        first('a').click
+      end
+
+      expect(page).to have_content("Last updated by: " + user.email)      
     end
 
     specify "I can edit a progress form response" do 
+      # Go to the team page for the first assigned team
+      within('div.navigation-list-item', match: :first) do 
+        first('a').click
+      end
+
+      # Open the progress forms card
+      find('#progress-forms-card-header').click
+
+      # Go to the first released progress form
+      within('div.navigation-list-item', match: :first) do 
+        first('a').click
+      end
+
+      # Take attendance
+      attendance_checkboxes = all('input[type="checkbox"].absent-checkbox')
+      attendance_checkboxes[0].check
+      attendance_checkboxes[1].check
+
+      reason_inputs = all('input[type="text"].absent-reason-input')
+      reason_inputs[0].set("Sick")
+      reason_inputs[1].set("Holiday")
+      
+      # Answer the question
+      find('textarea.form-control.question-textarea').set("Good thank you!")
+      
+      # Submit response
+      find('#saveButton').click
+
+      # Open the progress forms card
+      find('#progress-forms-card-header').click
+
+      # Re-open the progress form to check the response has loaded
+      within('div.navigation-list-item', match: :first) do 
+        first('a').click
+      end
+      
+      expect(page).to have_content("Last updated by: " + user.email)
+
+      # Edit the response
+      find('textarea.form-control.question-textarea').set("Decent thank you!")
+
+      # Submit response
+      find('#saveButton').click
+
+      # Open the progress forms card
+      find('#progress-forms-card-header').click
+
+      # Re-open the progress form to check the response has loaded
+      within('div.navigation-list-item', match: :first) do 
+        first('a').click
+      end
+      
+      expect(page).to have_content("Decent thank you!")
     end
   end 
+
+  describe 'Viewing progress forms responses', js: true do
+    before { 
+      login_as user 
+
+      # Create a progress form that was released yesterday
+      yesterday = (DateTime.current - 1).strftime("%d/%m/%Y %H:%M")
+
+      milestone = Milestone.new(
+        json_data: JSON.parse({
+            "questions": ["How are you today?", "What is the time?"],
+            "attendance": true,
+            "name": "progress_form"
+          }.to_json),
+        deadline: yesterday,
+        milestone_type: :team,
+        course_project_id: project_id
+      )
+      milestone.save
+
+      MilestoneResponse.new(
+        json_data: {
+          group_id: Group.find_by(name: 'The A Team').id,
+          attendance: [[true, ""], [false, "reason1"], [false, "reason2"], [false, "reason3"], [true, ""]],
+          question_responses: ["Good!", "Idk."],
+          facilitator_repr: "awillis4@sheffield.ac.uk"
+        },
+        milestone_id: milestone.id
+      ).save
+
+      visit "projects/1/progress_form/"
+    }
+
+    let!(:project_id) { CourseProject.find_by(name: 'Test Project 1').id }
+    let!(:group) { Group.find_by(name: 'The A Team') }
+
+
+    specify "I can view a progress form response" do
+      find("#team-selection-button").click
+      
+      # Get all team dropdown links
+      dropdown_links = all('div.dropdown-menu a')
+
+      # Click the last one
+      dropdown_links.last.click
+
+      # Verify questions and response
+      expect(page).to have_content("Last updated by: " + user.email)
+      expect(page).to have_content("Good!")
+      expect(page).to have_content("Idk.")
+
+      # Verify attendance
+      attendance_checkboxes = all('input[type="checkbox"].absent-checkbox')
+      reason_inputs = all('input[type="text"].absent-reason-input')
+
+      expect(page).to have_checked_field(attendance_checkboxes[0][:id])
+
+      expect(page).to have_unchecked_field(attendance_checkboxes[1][:id])
+      expect(page).to have_field(reason_inputs[0][:id], with: 'reason1')
+
+      expect(page).to have_unchecked_field(attendance_checkboxes[2][:id])
+      expect(page).to have_field(reason_inputs[1][:id], with: 'reason2')
+
+      expect(page).to have_unchecked_field(attendance_checkboxes[3][:id])
+      expect(page).to have_field(reason_inputs[2][:id], with: 'reason3')
+
+      expect(page).to have_checked_field(attendance_checkboxes[4][:id])
+    end
+  end
+
 
 end

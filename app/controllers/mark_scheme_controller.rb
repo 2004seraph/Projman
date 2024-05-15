@@ -46,16 +46,22 @@ class MarkSchemeController < ApplicationController
 
   def add_section
     # Assessors would be a list of the assessor emails and then the marking is split evenly.
-    section = { title: params[:section_title], description: "", max_marks: 0 }
-    session[:mark_scheme]["sections"] << hash_to_json(section)
+    section_title = params[:section_title]
 
-    # Render a new section, if i re-rendered the whole mark scheme, it would reset the textareas and inputs.
-    render partial: "section", locals: {
-      section_index:       session[:mark_scheme]["sections"].length - 1,
-      section_title:       params[:section_title],
-      section_description: "",
-      max_marks:           0
-    }
+    if session[:mark_scheme]['sections'].map{|s| s['title']}.include?(section_title)
+      @error = 'Cannot have duplicate section titles.'
+
+    elsif section_title.blank?
+      @error = 'Section title cannot be empty.'
+
+    else
+      section = { title: params[:section_title], description: '', max_marks: 0 }
+      session[:mark_scheme]['sections'] << hash_to_json(section)
+    end
+
+    return unless request.xhr?
+
+    respond_to(&:js)
   end
 
   def delete_section
@@ -308,7 +314,7 @@ class MarkSchemeController < ApplicationController
     render partial: "section_assessors", locals: { mark_scheme: milestone.json_data }
   end
 
-  def show
+  def marks
     session[:current_project_id] = params[:project_id].to_i
 
     @current_project = CourseProject.find(session[:current_project_id])

@@ -31,7 +31,7 @@
       question_responses.push(element.value);
     });
 
-    fetch("/facilitators/update_progress_form_response", {
+    fetch("#{update_progress_form_response_facilitators_path}", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
