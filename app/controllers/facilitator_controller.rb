@@ -139,7 +139,7 @@ class FacilitatorController < ApplicationController
 
   def get_assigned_projects
     # Returns all the projects the current user is facilitating
-    get_assigned_facilitators.map(&:course_project)
+    get_assigned_facilitators.map(&:course_project).uniq
   end
 
     def set_current_group
