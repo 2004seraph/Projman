@@ -53,16 +53,22 @@ class MarkSchemeController < ApplicationController
     @current_project = CourseProject.find(session[:current_project_id])
     authorize! :update, @current_project
     # Assessors would be a list of the assessor emails and then the marking is split evenly.
-    section = { title: params[:section_title], description: "", max_marks: 0 }
-    session[:mark_scheme]["sections"] << hash_to_json(section)
+    section_title = params[:section_title]
 
-    # Render a new section, if i re-rendered the whole mark scheme, it would reset the textareas and inputs.
-    render partial: "section", locals: {
-      section_index:       session[:mark_scheme]["sections"].length - 1,
-      section_title:       params[:section_title],
-      section_description: "",
-      max_marks:           0
-    }
+    if session[:mark_scheme]['sections'].map{|s| s['title']}.include?(section_title)
+      @error = 'Cannot have duplicate section titles.'
+
+    elsif section_title.blank?
+      @error = 'Section title cannot be empty.'
+
+    else
+      section = { title: params[:section_title], description: '', max_marks: 0 }
+      session[:mark_scheme]['sections'] << hash_to_json(section)
+    end
+
+    return unless request.xhr?
+
+    respond_to(&:js)
   end
 
   def delete_section
@@ -174,9 +180,12 @@ class MarkSchemeController < ApplicationController
     if @assessor_email.present?
       if session[:assessor_selection].nil?
         session[:assessor_selection] = [@assessor_email]
-      else
+      elsif !(session[:assessor_selection].to_a.include?(@assessor_email))
         session[:assessor_selection] << @assessor_email
+      else
+        @assessor_email = nil
       end
+    
     end
 
     if request.xhr?
@@ -345,7 +354,7 @@ class MarkSchemeController < ApplicationController
     render partial: "section_assessors", locals: { mark_scheme: milestone.json_data }
   end
 
-  def show
+  def marks
     session[:current_project_id] = params[:project_id].to_i
     @current_project = CourseProject.find(session[:current_project_id])
     session[:current_project_id] = params[:project_id].to_i
@@ -370,6 +379,93 @@ class MarkSchemeController < ApplicationController
     end
 
     render partial: "marking_table"
+  end
+
+  def export_mark_scheme_with_results
+    mark_scheme = get_mark_scheme
+
+    return if mark_scheme.nil?
+    
+    csv_data = CSV.generate(headers: true) do |csv|
+      # Write headers
+      csv << ["Team Name", "Section Title", "Marks Given", "Reason", "Assessor"]
+      
+      # Write data
+      mark_scheme.milestone_responses.each do |mr| 
+        data = mr.json_data
+        
+        team = Group.find(data["group_id"].to_i)
+
+        data["sections"].each do |section_title, section_data|
+          # Must convert empty values to nil here otherwise they are wrote to the csv as ""
+          marks_given = section_data["marks_given"].empty? ? nil : section_data["marks_given"]
+          reason = section_data["reason"].empty? ? nil : section_data["reason"]
+          assessor = section_data["assessor"].empty? ? nil : section_data["assessor"]
+          
+          csv << [
+            team.name, 
+            section_title, 
+            marks_given, 
+            reason, 
+            assessor
+          ]
+        end
+      end
+    end
+    
+    # Send the data as an attachment to download
+    filename = "#{mark_scheme.course_project.name}-marking.csv".gsub(' ', '-')
+    send_data csv_data, filename: filename, type: 'text/csv'
+  end
+
+  def import_mark_scheme
+    # Uses the given csv file to generate a mark scheme milestone
+
+    unless params[:mark_scheme_csv].present?
+      @error = "Must select a mark scheme to import."
+
+    else
+      mark_scheme_csv = CSV.new(params[:mark_scheme_csv].tempfile)
+      
+      @mark_scheme_json = hash_to_json({"sections": []})
+
+      mark_scheme_csv.each do |row|
+        title = row[0]
+        description = row[1]
+        max_marks = row[2]
+        
+        unless title.present? && description.present? && /\A\d+\z/.match(max_marks)
+          @error = "Invalid CSV format."
+          break
+        end
+
+        @mark_scheme_json['sections'] << hash_to_json({ title: title, description: description, max_marks: max_marks })
+      end
+    end
+
+    unless @error.present?
+      # Mark scheme json succesfully parsed, so destroy existing milestone to destroy responses as well
+      # TODO: When I edit a mark scheme should I also be destroying the responses to it? Or just the responses where
+      #       something has been changed?
+      get_mark_scheme&.destroy
+      
+      # Create a new milestone
+      milestone = Milestone.new(
+        json_data: hash_to_json(@mark_scheme_json),
+        deadline: Date.current.strftime('%Y-%m-%d'),  # Deadline isn't used for mark schemes
+        milestone_type: :team,                        # Marks will be given per team
+        course_project_id: params[:project_id],
+        system_type: :marking_deadline
+      )
+
+      @error = "Failed to import mark scheme." unless milestone.save
+    end
+
+    if request.xhr?
+      respond_to(&:js)
+    else
+      render :new
+    end
   end
 
   private

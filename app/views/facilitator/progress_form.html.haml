@@ -8,8 +8,8 @@
 #progress-form-partial-container
   = render partial: "progress_form/progress_form", locals: {progress_form: @progress_form.json_data, progress_response: @progress_response&.json_data, group: @current_group, facilitator: true, editing_form: false}
 
-%a.btn.btn-success.mb-2{onclick: "saveProgressForm()"} Save
-%a.btn.btn-danger.mb-2{onclick: "window.location.href = '#{facilitator_team_facilitators_path(team_id: @current_group.id)}';"} Discard
+%a.btn.btn-success.mb-2#saveButton{onclick: "saveProgressForm()"} Save
+%a.btn.btn-danger.mb-2#discardButton{onclick: "window.location.href = '#{facilitator_team_facilitators_path(team_id: @current_group.id)}';"} Discard
 
 :javascript
   function saveProgressForm() {
@@ -31,11 +31,11 @@
       question_responses.push(element.value);
     });
 
-    fetch("/facilitators/update_progress_form_response", {
+    fetch("#{update_progress_form_response_facilitators_path}", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+        "X-CSRF-Token": document.head.querySelector("meta[name=csrf-token]")?.content
       },
       body: JSON.stringify({
         "attendance": attendance,

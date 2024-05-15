@@ -10,31 +10,30 @@ class FacilitatorController < ApplicationController
   def index
     authorize! :read, :facilitator
     # Get assigned groups
-    @assigned_facilitators = get_assigned_facilitators
-    set_assigned_projects
+    @groups = get_assigned_groups
+    @assigned_projects = get_assigned_projects
   end
 
   def update_teams_list
     authorize! :read, :facilitator
+    @assigned_projects = get_assigned_projects
 
     # Apply filters to the shown teams
     if params[:assigned_only]
-      @assigned_facilitators = get_assigned_facilitators
+      @groups = get_assigned_groups
 
     else
       # I am assuming here that a facilitator will only be asked to facilitate for teams in projects
       # that they're already a facilitator for.
-      facilitator_project_ids = get_assigned_facilitators.map(&:course_project_id)
-      @assigned_facilitators = AssignedFacilitator.where(course_project_id: facilitator_project_ids)
+      @groups = Group.where(course_project_id: get_assigned_projects.map(&:id))
     end
 
     unless params[:projects_filter] == "All" || params[:projects_filter].empty?
       target_project_id = CourseProject.find_by(name: params[:projects_filter]).id
-      @assigned_facilitators = @assigned_facilitators.where(course_project_id: target_project_id)
+      @groups = @groups.select{|g| g.course_project_id == target_project_id}
     end
 
-    set_assigned_projects
-    render partial: "teams-list-card"
+    render partial: 'teams-list-card'
   end
 
   def progress_form
@@ -131,9 +130,15 @@ class FacilitatorController < ApplicationController
       end
     end
 
-    def set_assigned_projects
-      @assigned_projects = get_assigned_facilitators.flat_map(&:course_project).uniq
-    end
+  def get_assigned_groups
+    # Return all the groups that the current user is facilitating
+    get_assigned_facilitators.flat_map(&:groups)
+  end
+
+  def get_assigned_projects
+    # Returns all the projects the current user is facilitating
+    get_assigned_facilitators.map(&:course_project)
+  end
 
     def set_current_group
       # Team id will always be provided unless ajax request, then just use the cached one.
@@ -143,9 +148,11 @@ class FacilitatorController < ApplicationController
       @current_group_facilitator_repr = get_facilitator_repr(@current_group.assigned_facilitator)
     end
 
-    def get_facilitator_repr(facilitator)
-      if facilitator&.student_id
-        Student.find_by(id: facilitator.student_id).email
+  def get_facilitator_repr(facilitator)
+    return "" if facilitator.nil?
+    
+    if facilitator.student_id
+      Student.find_by(id: facilitator.student_id).email
 
       elsif facilitator&.staff_id
         Staff.find_by(id: facilitator.staff_id).email

@@ -4,4 +4,6 @@
 - if @assessor_email.present?
     var newPartialHTML = "#{j(render(partial: 'components/group-item-simple', locals: { item_text: @assessor_email, deletion_action_url: remove_from_assessor_selection_project_mark_scheme_index_path}))}";
     $("ul.list-group.list-group-flush", $(".modal.show")).append(newPartialHTML);
-    $("input.form-control.search-collection", $(".modal.show")).val('');
+    
+$("input.form-control.search-collection", $(".modal.show")).val('');
+
