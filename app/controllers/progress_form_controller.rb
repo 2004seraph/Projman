@@ -6,6 +6,11 @@
 class ProgressFormController < ApplicationController
   skip_authorization_check
 
+  # For each route we protect it by checking if the user has update rights
+  # to the attached course project. If they do, they by extension have full permissions
+  # to viewing its progress forms.
+  # This has to be done as the "ProgressForm" is not its own Model
+
   def index
     session[:current_project_id] = params[:project_id].to_i
     @current_project = CourseProject.find(session[:current_project_id])

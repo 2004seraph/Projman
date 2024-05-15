@@ -4,9 +4,12 @@
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 class MarkingController < ApplicationController
-  load_and_authorize_resource :milestone_response
+
+  skip_authorization_check
 
   def index
+    # check if user is a staff facilitator
+    authorize! :read, :facilitator_marking
     # Get all mark schemes to filter
     all_mark_schemes = Milestone.select { |m| m.system_type == 'marking_deadline' }
 
@@ -30,6 +33,10 @@ class MarkingController < ApplicationController
 
     session[:mark_scheme_id] = mark_scheme.id
     session[:mark_scheme_section_index] = params[:section_index].to_i
+
+    # Authorize whether facilitator is assessor for this section
+    additional_data = { section: @section}
+    authorize! :read_section, :facilitator_marking, additional_data: additional_data
 
     @assigned_teams = @section['assessors'][current_user.email].map { |id| Group.find(id) }
     @assigned_teams_ids = @assigned_teams.flat_map(&:id)

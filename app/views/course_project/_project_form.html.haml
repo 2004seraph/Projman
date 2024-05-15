@@ -196,9 +196,10 @@
   -# PROJECT FACILITATORS
   .card#project-facilitators.mb-3
     .card-header.d-flex.align-items-center
-      %h2.fs-4.m-0 Project Facilitators
+      %h2.fs-4.m-0 Project Facilitators / Assessors
 
     .card-body.pb-3
+      %i.fs-6 Students will not be assessors
       - if errors[:facilitators_not_found].present?
         %div
           .d-flex.flex-column.fs-6.text-danger

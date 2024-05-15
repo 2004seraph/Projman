@@ -9,7 +9,7 @@ class Ability
   # This is an amazing best practices cheatsheet that I'm using for this file:
   # https://greena13.github.io/blog/2019/07/12/cancancan-cheatsheet/
 
-  def initialize(user)
+  def initialize(user, options = {})
     # you must log in to do anything on the entire site.
     return if user.blank?
 
@@ -50,6 +50,12 @@ class Ability
         }
         can [:facilitator_team], Group do |group|
           group&.course_project&.assigned_facilitators&.pluck(:staff_id)&.include?(user.staff.id)
+        end
+        can :read, :facilitator_marking
+        can :read_section, :facilitator_marking do |action, context|
+          additional_data = context[:additional_data]
+          section = additional_data[:section]
+          section["assessors"].include?(user.staff.email)
         end
 
       elsif user.is_student?

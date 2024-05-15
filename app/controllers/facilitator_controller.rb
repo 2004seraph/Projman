@@ -7,6 +7,9 @@ class FacilitatorController < ApplicationController
 
   skip_authorization_check
 
+  # For each progress form route we check if the user is a facilitator for the project of the targeted team
+  # This has to be done as the relationship being AssignedFacilitators and Groups is misconfigured
+
   def index
     authorize! :read, :facilitator
     # Get assigned groups
@@ -37,9 +40,8 @@ class FacilitatorController < ApplicationController
   end
 
   def progress_form
-    authorize! :read, :facilitator
-
     set_current_group
+    authorize! :facilitator_team, @current_group
 
     # Get the progress form to fill in
     @progress_form = Milestone.find(params[:milestone_id].to_i)
@@ -82,7 +84,7 @@ class FacilitatorController < ApplicationController
 
   def update_progress_form_response
     set_current_group
-
+    authorize! :facilitator_team, @current_group
     @progress_form = Milestone.find(session[:progress_form_id])
 
     # Try find existing response to update
