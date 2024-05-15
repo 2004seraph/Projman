@@ -4,13 +4,13 @@
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 class MarkSchemeController < ApplicationController
-  load_and_authorize_resource :milestone_response
+  skip_authorization_check
 
   def index
     session[:current_project_id] = params[:project_id].to_i
     @current_project = CourseProject.find(session[:current_project_id])
 
-    authorize! :read, @current_project
+    authorize! :update, @current_project
 
     milestone = get_mark_scheme
     return if milestone.nil?
@@ -21,6 +21,8 @@ class MarkSchemeController < ApplicationController
   def new
     session[:current_project_id] = params[:project_id].to_i
     @current_project = CourseProject.find(session[:current_project_id])
+
+    authorize! :update, @current_project
 
     mark_scheme = get_mark_scheme
     if mark_scheme.nil?
@@ -36,6 +38,8 @@ class MarkSchemeController < ApplicationController
     session[:current_project_id] = params[:project_id].to_i
     @current_project = CourseProject.find(session[:current_project_id])
 
+    authorize! :update, @current_project
+
     mark_scheme = get_mark_scheme
     if mark_scheme.nil?
       redirect_to new_project_mark_scheme_path
@@ -45,6 +49,9 @@ class MarkSchemeController < ApplicationController
   end
 
   def add_section
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     # Assessors would be a list of the assessor emails and then the marking is split evenly.
     section = { title: params[:section_title], description: "", max_marks: 0 }
     session[:mark_scheme]["sections"] << hash_to_json(section)
@@ -59,6 +66,9 @@ class MarkSchemeController < ApplicationController
   end
 
   def delete_section
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     # Find the section with the matching title and remove it
     target_index = -1
     session[:mark_scheme]["sections"].each_with_index do |section, i|
@@ -76,6 +86,9 @@ class MarkSchemeController < ApplicationController
   end
 
   def save
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     # Everything is taken from the inputs, the session is only used for rendering stuff.
     if params[:sections].empty?
       return render json: {
@@ -134,6 +147,9 @@ class MarkSchemeController < ApplicationController
   end
 
   def search_assessors
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     # Return all possible assessors for the current project, given the search criteria.
     query = params[:query]
 
@@ -144,6 +160,9 @@ class MarkSchemeController < ApplicationController
   end
 
   def add_to_assessors_selection
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     # Section index is not a param in the confirm ajax, so set it here to use there.
     session[:current_section_index] = params[:section_index]
 
@@ -168,6 +187,9 @@ class MarkSchemeController < ApplicationController
   end
 
   def add_assessors_selection
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     section_index = session[:current_section_index].to_i
 
     milestone = get_mark_scheme
@@ -198,16 +220,25 @@ class MarkSchemeController < ApplicationController
   end
 
   def remove_from_assessor_selection
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     @assessor_email = params[:item_text].strip
     session[:assessor_selection].delete(@assessor_email)
   end
 
   def clear_assessors_selection
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     # Reset assessor selection, only called when modal is first opened
     session[:assessor_selection] = []
   end
 
   def remove_assessor_from_section
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     mark_scheme = get_mark_scheme
     mark_scheme.json_data["sections"][params[:section_index]]["assessors"].delete(params[:email])
 
@@ -217,6 +248,9 @@ class MarkSchemeController < ApplicationController
   end
 
   def get_assignable_teams
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     # Return the remaining teams available to be assigned to a assessor for the given section
     # Also contains teams already assigned to the assessor
 
@@ -250,6 +284,9 @@ class MarkSchemeController < ApplicationController
   end
 
   def assign_teams
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     # Actually assign the selected teams from the modal to the chosen assessor
     section_index = session[:current_section_index].to_i
 
@@ -273,6 +310,9 @@ class MarkSchemeController < ApplicationController
   end
 
   def auto_assign_teams
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     # Auto assign teams to all the chosen assessors for a section
     section_index = params[:section_index].to_i
 
@@ -307,14 +347,20 @@ class MarkSchemeController < ApplicationController
 
   def show
     session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    session[:current_project_id] = params[:project_id].to_i
 
     @current_project = CourseProject.find(session[:current_project_id])
     @mark_scheme = get_mark_scheme
+    authorize! :update, @current_project
   end
 
   def show_new
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
     # Show a given team's marking results table
     @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
 
     group = @current_project.groups.find_by(name: params[:group_name])
     @mark_scheme = get_mark_scheme

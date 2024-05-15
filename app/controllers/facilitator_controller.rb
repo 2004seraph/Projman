@@ -4,9 +4,11 @@
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 class FacilitatorController < ApplicationController
-  authorize_resource :milestone_response
+
+  skip_authorization_check
 
   def index
+    authorize! :read, :facilitator
     # Get assigned groups
     @assigned_facilitators = get_assigned_facilitators
     set_assigned_projects
@@ -60,7 +62,7 @@ class FacilitatorController < ApplicationController
   def team
     # Display team/group area
     set_current_group
-    authorize! :read, :facilitator
+    authorize! :facilitator_team, @current_group
 
     # Get progress forms and sort by release date
     @progress_forms = get_progress_forms_for_group.sort_by(&:deadline)
@@ -142,10 +144,10 @@ class FacilitatorController < ApplicationController
     end
 
     def get_facilitator_repr(facilitator)
-      if facilitator.student_id
+      if facilitator&.student_id
         Student.find_by(id: facilitator.student_id).email
 
-      elsif facilitator.staff_id
+      elsif facilitator&.staff_id
         Staff.find_by(id: facilitator.staff_id).email
       end
     end
@@ -158,4 +160,12 @@ class FacilitatorController < ApplicationController
           m.course_project_id == @current_group.course_project_id
       end
     end
+
+    # def authorise_facilitator
+    #   set_current_group
+    #   return if @current_group.nil?
+    #   project_id = @current_group
+
+
+    # end
 end

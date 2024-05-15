@@ -25,7 +25,7 @@ class Ability
       # students will only be able to view their own enrollments.
       # can :read, CourseModule, id: user.student.course_modules.pluck(:id)
       can %i[read search_student_name send_chat_message], CourseProject, id: user.student.course_projects.pluck(:id)
-      can :read, Group, id: user.student.groups.pluck(:id)
+      # can :read, Group, id: user.student.groups.pluck(:id)
       can :read, Event, group: { id: user.student.groups.pluck(:id) }
 
       can [:create], EventResponse
@@ -41,24 +41,36 @@ class Ability
       can :read, :facilitator
 
       if user.is_staff?
-        can :read, Group, assigned_facilitator: { staff_id: user.staff.id }
+        # can :read, Group, assigned_facilitator: { staff_id: user.staff.id }
         can %i[read update], Event, group: {
           assigned_facilitator: { staff_id: user.staff.id }
         }
         can [:read], EventResponse, event: {
           group: { assigned_facilitator: { staff_id: user.staff.id } }
         }
+        can [:facilitator_team], Group do |group|
+          group&.course_project&.assigned_facilitators&.pluck(:staff_id)&.include?(user.staff.id)
+        end
 
       elsif user.is_student?
-        can :read, Group, assigned_facilitator: { student_id: user.student.id }
+        # can :read, Group, assigned_facilitator: { student_id: user.student.id }
         can %i[read update], Event, group: {
           assigned_facilitator: { student_id: user.student.id }
         }
         can [:read], EventResponse, event: {
           group: { assigned_facilitator: { student_id: user.student.id } }
         }
+        can [:facilitator_team], Group do |group|
+          group&.course_project&.assigned_facilitators&.pluck(:student_id)&.include?(user.student.id)
+        end
       end
     end
+
+    # can [:read], MilestoneResponse do |milestone_response|
+    #   module_lead = milestone_response.milestone.course_module&.staff_id
+    #   Rails.logger.debug("AAAAAAAAAAAA #{module_lead}")
+    #   module_lead == user.staff&.id
+    # end
 
     # staff permissions
     return unless user.is_staff?
@@ -111,51 +123,53 @@ class Ability
     ], CourseProject
     can %i[read edit update], CourseProject, course_module: { staff_id: user.staff.id }
 
+
     return unless user.staff.admin
 
-    can %i[read index update_selection search_students confirm_selection clear_selection clear_student remove_students_from_module],
-    Student
+    can [:manage], :all
+    # can %i[read index update_selection search_students confirm_selection clear_selection clear_student remove_students_from_module],
+    # Student
 
-    # can [:read], :admin
-    can [:read], :facilitator 
-    can [:read], EventResponse
-    can %i[read update], Event
+    # # can [:read], :admin
+    # can [:read], :facilitator 
+    # can [:read], EventResponse
+    # can %i[read update], Event
 
-    can %i[
-      create
-      read
-      update
-      delete
-      facilitator_emails
-      set_facilitator
-      current_subproject
-      set_subproject
-      search_module_students
-      add_student_to_team
-      remove_students_from_team
-    ], Group
-    can %i[create read update destroy], CourseModule
+    # can %i[
+    #   create
+    #   read
+    #   update
+    #   delete
+    #   facilitator_emails
+    #   set_facilitator
+    #   current_subproject
+    #   set_subproject
+    #   search_module_students
+    #   add_student_to_team
+    #   remove_students_from_team
+    # ], Group
+    # can %i[create read update destroy], CourseModule
 
-    can %i[
-      create
+    # can %i[
+    #   create
 
-      add_project_choice
-      remove_project_choice
-      add_project_milestone
-      remove_project_milestone
-      clear_facilitator_selection
-      add_to_facilitator_selection
-      remove_from_facilitator_selection
-      add_facilitator_selection
-      remove_facilitator
-      search_facilitators_student
-      search_facilitators_staff
-      get_milestone_data
-      remove_milestone_email
-      set_milestone_email_data
-      set_milestone_comment
-      remake_teams
-    ], CourseProject
-    can %i[read edit update], CourseProject
+    #   add_project_choice
+    #   remove_project_choice
+    #   add_project_milestone
+    #   remove_project_milestone
+    #   clear_facilitator_selection
+    #   add_to_facilitator_selection
+    #   remove_from_facilitator_selection
+    #   add_facilitator_selection
+    #   remove_facilitator
+    #   search_facilitators_student
+    #   search_facilitators_staff
+    #   get_milestone_data
+    #   remove_milestone_email
+    #   set_milestone_email_data
+    #   set_milestone_comment
+    #   remake_teams
+    # ], CourseProject
+    # can %i[read edit update], CourseProject
   end
 end
