@@ -59,6 +59,7 @@ class Group < ApplicationRecord
     g.students = teammate_list
     g.save
     course_project.reload
+    g
   end
 
   def find_allocation_violations
@@ -89,13 +90,13 @@ class Group < ApplicationRecord
     self.students.each do |student|
       proj_form_response = student.milestone_responses.where(milestone_id: proj_form.id).first
       next if proj_form_response.nil?
-      
+
       proj_form_response.json_data.each do |rank, subproj|
         popular_projects[subproj] += rank.to_i
       end
     end
 
-    self.subproject_id = popular_projects.key(popular_projects.values.min)    
+    self.subproject_id = popular_projects.key(popular_projects.values.min)
   end
 
   private

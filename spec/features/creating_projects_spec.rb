@@ -37,7 +37,7 @@ RSpec.feature "Project Creation", type: :feature do
 
   # UX
 
-  describe "User can toggle Project Choices visibility", js: true do
+  describe "User can toggle project choices visibility", js: true do
     context "when clicking the toggle button" do
       it "hides the Project Choices panel if it is currently visible" do
         Capybara.ignore_hidden_elements = false

@@ -6,14 +6,12 @@
 require 'rails_helper'
 
 RSpec.feature 'Submitting Marking', type: :feature do
-  let!(:user) { FactoryBot.create(:standard_student_user) }
-  let!(:student) { FactoryBot.create(:standard_student) } # without this line, cant log in?
-  let!(:staff) { Staff.find_or_create_by(email: user.email) }
+  let!(:student) { FactoryBot.create(:standard_student_user) }
 
   before(:all) do
     staff_email = 'awillis4@sheffield.ac.uk'
     staff = DatabaseHelper.create_staff(staff_email)
-    
+
     DatabaseHelper.provision_module_class(
       'COM9999',
       'Test Module 2',
@@ -40,27 +38,27 @@ RSpec.feature 'Submitting Marking', type: :feature do
 
     # Create a mark scheme and assign the staff user to it
     milestone = Milestone.new(
-      json_data: JSON.parse({ 
+      json_data: JSON.parse({
         sections: [
           {
-            title: "Testing", 
-            description: 'This is a test description.', 
+            title: "Testing",
+            description: 'This is a test description.',
             max_marks: 6,
             assessors: {staff_email => [group.id]}
           }
-        ] 
+        ]
       }.to_json),
       deadline: Date.current.strftime('%Y-%m-%d'),  # Deadline isn't used for mark schemes
-      milestone_type: :team,                        
+      milestone_type: :team,
       course_project_id: 1,
       system_type: :marking_deadline
     )
-    milestone.save    
+    milestone.save
   end
 
   describe 'Submitting marking as a staff member', js: true do
-    before { 
-      login_as user 
+    before {
+      login_as student
 
       visit "markings/"
     }
@@ -68,14 +66,14 @@ RSpec.feature 'Submitting Marking', type: :feature do
     let!(:project_id) { CourseProject.find_by(name: 'Test Project 1').id }
     let!(:group) { Group.find_by(name: 'The A Team') }
 
-    context "For a section and team I am assigned to" do 
+    context "For a section and team I am assigned to" do
       specify "I can submit marking" do
         # Submit marking
         click_link "Test Project 1 - Testing"
 
         marks_given = "5"
         reasoning = "Reasoning goes here."
-        
+
         find("#marks-input-1").set marks_given
         find("#reason-input-1").set reasoning
         find("#saveButton").click
@@ -86,10 +84,10 @@ RSpec.feature 'Submitting Marking', type: :feature do
         expect(find("#reason-input-1").text).to eq(reasoning)
       end
 
-      specify "I can edit marking" do 
+      specify "I can edit marking" do
         # Set initial marking
         click_link "Test Project 1 - Testing"
-        
+
         find("#marks-input-1").set "5"
         find("#reason-input-1").set "Reasoning goes here."
         find("#saveButton").click
@@ -107,17 +105,17 @@ RSpec.feature 'Submitting Marking', type: :feature do
         expect(find("#reason-input-1").text).to eq("Average")
       end
 
-      specify "I cannot submit marking with invalid marks" do 
+      specify "I cannot submit marking with invalid marks" do
         # Submit marking
         click_link "Test Project 1 - Testing"
 
         marks_given = "11" # Marks is above max marks
         reasoning = "Reasoning goes here."
-        
+
         find("#reason-input-1").set reasoning
         find("#marks-input-1").set marks_given
         find("#saveButton").click
-        
+
         expect(page).to have_content "Invalid Marks Given"
       end
     end

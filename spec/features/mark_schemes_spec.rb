@@ -6,14 +6,13 @@
 require 'rails_helper'
 
 RSpec.feature 'Managing Mark Schemes', type: :feature do
-  let!(:user) { FactoryBot.create(:standard_student_user) }
-  let!(:student) { FactoryBot.create(:standard_student) } # without this line, cant log in?
-  let!(:staff) { Staff.find_or_create_by(email: user.email) }
+  let!(:student) { FactoryBot.create(:standard_student_user) }
+  let!(:staff) { FactoryBot.create(:standard_staff_user) }
 
   before(:all) do
     staff_email = 'awillis4@sheffield.ac.uk'
     staff = DatabaseHelper.create_staff(staff_email)
-    
+
     DatabaseHelper.provision_module_class(
       'COM9999',
       'Test Module 2',
@@ -40,8 +39,8 @@ RSpec.feature 'Managing Mark Schemes', type: :feature do
   end
 
   describe 'Managing mark schemes as a module lead', js: true do
-    before { 
-      login_as user 
+    before {
+      login_as student
 
       visit "projects/1/mark_scheme/"
     }
@@ -51,8 +50,8 @@ RSpec.feature 'Managing Mark Schemes', type: :feature do
 
     specify "I can create a mark scheme" do
       find('#new-mark-scheme-button').click
-      
-      # Hack to remove fade animation from modal as this breaks the tests due to it taking a long time, 
+
+      # Hack to remove fade animation from modal as this breaks the tests due to it taking a long time,
       # TODO: I assume this is better than using sleep?
       page.execute_script("document.getElementById('add-section-modal').classList.remove('fade');")
 
@@ -82,27 +81,27 @@ RSpec.feature 'Managing Mark Schemes', type: :feature do
     specify "I can edit an existing mark scheme" do
       # Create a mark scheme with dummy data to edit
       milestone = Milestone.new(
-        json_data: JSON.parse({ 
+        json_data: JSON.parse({
           sections: [
             {
-              title: "Testing", 
-              description: 'This is a test description.', 
-              max_marks: 6 
+              title: "Testing",
+              description: 'This is a test description.',
+              max_marks: 6
             }
-          ] 
+          ]
         }.to_json),
         deadline: Date.current.strftime('%Y-%m-%d'),  # Deadline isn't used for mark schemes
-        milestone_type: :team,                        
+        milestone_type: :team,
         course_project_id: 1,
         system_type: :marking_deadline
       ).save
 
       find('#new-mark-scheme-button').click
-      
-      # Hack to remove fade animation from modal as this breaks the tests due to it taking a long time, 
+
+      # Hack to remove fade animation from modal as this breaks the tests due to it taking a long time,
       # TODO: I assume this is better than using sleep?
       page.execute_script("document.getElementById('add-section-modal').classList.remove('fade');")
-            
+
       # Delete existing section
       find("#delete-section-0").click
 
@@ -117,7 +116,7 @@ RSpec.feature 'Managing Mark Schemes', type: :feature do
 
       find('#maximum-marks-input-0').set max_marks
       find('#description-textarea-0').set description
-      
+
       # Try save
       find('#save-button').click
 
@@ -129,20 +128,20 @@ RSpec.feature 'Managing Mark Schemes', type: :feature do
       expect(find('#description-textarea-0').value).to eq(description)
     end
 
-    specify "I can export an existing mark scheme" do 
+    specify "I can export an existing mark scheme" do
       # Create a mark scheme
       milestone = Milestone.new(
-        json_data: JSON.parse({ 
+        json_data: JSON.parse({
           sections: [
             {
-              title: "Testing", 
-              description: 'This is a test description.', 
-              max_marks: 6 
+              title: "Testing",
+              description: 'This is a test description.',
+              max_marks: 6
             }
-          ] 
+          ]
         }.to_json),
         deadline: Date.current.strftime('%Y-%m-%d'),  # Deadline isn't used for mark schemes
-        milestone_type: :team,                        
+        milestone_type: :team,
         course_project_id: 1,
         system_type: :marking_deadline
       )
@@ -155,7 +154,7 @@ RSpec.feature 'Managing Mark Schemes', type: :feature do
             "Testing" => {
               'marks_given' => "6",
               'reason' => "Good testing.",
-              'assessor' => user.email
+              'assessor' => student.email
             }
           },
           "group_id": group.id
@@ -165,14 +164,14 @@ RSpec.feature 'Managing Mark Schemes', type: :feature do
 
       # Refresh page, normally wouldn't need to but because we're just using modal we do
       visit "projects/1/mark_scheme/"
-      
+
       find("#export-button").click
 
       # TODO: Check a csv is downloaded as an attachment.
     end
 
-    specify "I can import a mark scheme csv with a correctly formatted csv" do 
-      # Hack to remove fade animation from modal as this breaks the tests due to it taking a long time, 
+    specify "I can import a mark scheme csv with a correctly formatted csv" do
+      # Hack to remove fade animation from modal as this breaks the tests due to it taking a long time,
       # TODO: I assume this is better than using sleep?
       page.execute_script("document.getElementById('import-mark-scheme-modal').classList.remove('fade');")
 
@@ -204,8 +203,8 @@ RSpec.feature 'Managing Mark Schemes', type: :feature do
       expect(find('#description-textarea-3').value).to eq("Description4")
     end
 
-    specify "I cannot import a mark scheme csv with an incorrectly formatted csv" do 
-      # Hack to remove fade animation from modal as this breaks the tests due to it taking a long time, 
+    specify "I cannot import a mark scheme csv with an incorrectly formatted csv" do
+      # Hack to remove fade animation from modal as this breaks the tests due to it taking a long time,
       # TODO: I assume this is better than using sleep?
       page.execute_script("document.getElementById('import-mark-scheme-modal').classList.remove('fade');")
 
@@ -223,27 +222,27 @@ RSpec.feature 'Managing Mark Schemes', type: :feature do
       expect(page).to have_content("Invalid CSV format.")
     end
 
-    specify "I can assign a staff member to a section of the mark scheme for teams" do 
+    specify "I can assign a staff member to a section of the mark scheme for teams" do
       # Create a mark scheme with dummy data to edit
       Milestone.new(
-        json_data: JSON.parse({ 
+        json_data: JSON.parse({
           sections: [
             {
-              title: "Testing", 
-              description: 'This is a test description.', 
-              max_marks: 6 
+              title: "Testing",
+              description: 'This is a test description.',
+              max_marks: 6
             }
-          ] 
+          ]
         }.to_json),
         deadline: Date.current.strftime('%Y-%m-%d'),  # Deadline isn't used for mark schemes
-        milestone_type: :team,                        
+        milestone_type: :team,
         course_project_id: 1,
         system_type: :marking_deadline
       ).save
-      
+
       visit "projects/1/mark_scheme/"
-      
-      # Hack to remove fade animation from modal as this breaks the tests due to it taking a long time, 
+
+      # Hack to remove fade animation from modal as this breaks the tests due to it taking a long time,
       # TODO: I assume this is better than using sleep?
       page.execute_script("document.getElementById('add-assessor-to-section-modal').classList.remove('fade');")
       page.execute_script("document.getElementById('assign-teams-modal').classList.remove('fade');")
@@ -252,7 +251,7 @@ RSpec.feature 'Managing Mark Schemes', type: :feature do
       find("#add-assessor-to-section-form").set "awillis4@sheffield.ac.uk"
       click_button "Add"
       click_button "Confirm"
-      
+
       visit "projects/1/mark_scheme/" # Refresh the page, this is instead of sleeping!
       click_button "Auto Assign"
       visit "projects/1/mark_scheme/" # Refresh the page, this is instead of sleeping!
@@ -263,17 +262,17 @@ RSpec.feature 'Managing Mark Schemes', type: :feature do
     specify "I can view the submitted marks for a team" do
       # Create a mark scheme with dummy data to edit
       milestone = Milestone.new(
-        json_data: JSON.parse({ 
+        json_data: JSON.parse({
           sections: [
             {
-              title: "Testing", 
-              description: 'This is a test description.', 
-              max_marks: 6 
+              title: "Testing",
+              description: 'This is a test description.',
+              max_marks: 6
             }
-          ] 
+          ]
         }.to_json),
         deadline: Date.current.strftime('%Y-%m-%d'),  # Deadline isn't used for mark schemes
-        milestone_type: :team,                        
+        milestone_type: :team,
         course_project_id: 1,
         system_type: :marking_deadline
       )
@@ -285,7 +284,7 @@ RSpec.feature 'Managing Mark Schemes', type: :feature do
             'Testing' => {
               'marks_given' => 5,
               'reason' => 'This team did well.',
-              'assessor' => user.email
+              'assessor' => student.email
             }
           },
           "group_id": group.id
@@ -296,7 +295,7 @@ RSpec.feature 'Managing Mark Schemes', type: :feature do
 
       find("#view-marks-button").click
       find("#team-selection-button").click
-      
+
       # Get all team dropdown links
       dropdown_links = all('div.dropdown-menu a')
 

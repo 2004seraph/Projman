@@ -108,13 +108,6 @@ class CourseProject < ApplicationRecord
 
   private
 
-    def make_groups(group_matrix)
-      group_matrix.each_with_index do |teammate_list, index|
-        Group.make self, teammate_list
-      end
-      assign_facilitators_to_groups
-    end
-
     def creation_validation
       errors.add(:main, "Project name cannot be empty") if name.blank?
       if errors[:main].blank? && CourseProject.where(name:, course_module_id:).where.not(id:).exists?
@@ -160,6 +153,26 @@ class CourseProject < ApplicationRecord
       nil
     end
 
+    def make_groups(group_matrix)
+      group_matrix.each_with_index do |teammate_list, index|
+        Group.make self, teammate_list
+      end
+      assign_facilitators_to_groups
+    end
+
+    def make_groups_with_project_preference(group_matrix_hash)
+      # expects a hash of subproject.id => [[students]]
+      group_matrix_hash.each do |subproject_id, group_matrix|
+        group_matrix.each_with_index do |teammate_list, index|
+          g = Group.make self, teammate_list
+          g.subproject = Subproject.find subproject_id
+          g.save
+        end
+      end
+      assign_facilitators_to_groups
+    end
+
+    # BEGIN BACKGROUND_JOBS
 
     class JobLogger
       def initialize(logger)
@@ -197,7 +210,7 @@ class CourseProject < ApplicationRecord
               logger.debug "\tAssigning groups using project preferences"
 
               group_matrix = DatabaseHelper.project_choices_group_allocation c.team_size, c.students, c.project_preference_deadline
-              c.make_groups group_matrix
+              c.make_groups_with_project_preference group_matrix
             end
 
           else
