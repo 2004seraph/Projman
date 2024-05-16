@@ -10,14 +10,26 @@
   - errors = project_data[:errors]
 
 = render 'project_form', project_data: project_data, errors: errors, form_url: edit_project_path(params[:id]), form_id: "edit-project-form" do
-  %div
+  .d-flex.justify-content-between.mb-3
+    .d-flex.justify-content-start.align-items-center
+      - if project_data[:status] != "draft"
+        %label.me-3.fs-5{for: "project-status-change", style: "text-wrap: nowrap;"} Project Status
+        %select.form-select.mb-0.me-3{"aria-labelledby": "project-status_change", id: "project-status-change", name: "status"}
+          - if project_data.key?(:possible_status_changes)
+            - project_data[:possible_status_changes].each do |status|
+              %option{value: status, selected: (project_data[:selected_status].present? ? project_data[:selected_status] == status : project_data[:status] == status)}
+                = "#{status.humanize}"
+
+      - if project_data[:status] != "live" && project_data[:status] != "completed"
+        = button_tag "Delete Project", type: "button", class: "btn btn-outline-danger", id: "delete-project-btn", style:"text-wrap: nowrap;"
+          
     .d-flex.justify-content-end
-      %button.btn.btn-secondary.mb-2.me-2{type: "button", onclick: "window.location='/projects/#{params[:id]}/teams'; return false;"}
+      %button.btn.btn-secondary.me-2{type: "button", onclick: "window.location='/projects/#{params[:id]}/teams'; return false;"}
         Discard Changes
-      %button.btn.btn-primary.mb-2.me-2#create-project-save-button{type: "submit"}
+      %button.btn.btn-primary.me-2#create-project-save-button{type: "submit"}
         Save Changes
       - if project_data[:status] == "draft"
-        %button.btn.btn-primary.mb-2.me-2#publish-project-button{type: "button", data: { bs_toggle: "modal", bs_target: "#confirm-publish-project-modal"}}
+        %button.btn.btn-primary.me-2#publish-project-button{type: "button", data: { bs_toggle: "modal", bs_target: "#confirm-publish-project-modal"}}
           %i.bi.bi-check
           Save and Publish
 
@@ -41,6 +53,7 @@
             %hr
             %p Once published, the project goes into the "Preparation" status, where you will wait for preference form responses to come in.
             %p At this stage, you will be able to change the project status to "Review", where preference forms will no longer appear for students, and you can make manual changes to the teams.
+            %p.text-danger Once published, you CANNOT go back to Draft
 
           .modal-footer.d-flex
             %button.btn.btn-secondary.me-2{ type: "button", "data-bs-dismiss": "modal" } Close

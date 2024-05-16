@@ -3,7 +3,7 @@
 
 - form_action = defined?(deletion_action_url) ? deletion_action_url : '/placeholder_post_url'
 
-%li.list-group-item.ps-1.d-flex.align-items-start.row.list-group-item-partial{'form_action': form_action, class: "milestone-row #{"locked" if defined?(locked) && locked}" }
+%li.list-group-item.ps-1.d-flex.align-items-start.row.list-group-item-partial{'form_action': form_action, class: "milestone-row" }
   .col.d-flex.align-items-center
     %button.btn.btn-light.btn-sm.me-2.btn-delete{type: "button"}
       %i.bi.bi-x.text-secondary
@@ -20,5 +20,5 @@
         %option{value: value, selected: (selected_type.present? ? selected_type == value : value == milestone_types.keys.first)}
           = "#{ViewHelper.unparamaterize(string)}"
 
-    %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
+    %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal", class: "#{"locked" if defined?(locked) && locked}"} Email
     %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
