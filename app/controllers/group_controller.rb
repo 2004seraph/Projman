@@ -6,7 +6,7 @@ class GroupController < ApplicationController
 
   def index
     @current_project = CourseProject.find(params[:project_id])
-    authorize! :read, @current_project
+    authorize! :update, @current_project
 
     Rails.logger.debug "INDEX ACTION"
     Rails.logger.debug @current_project

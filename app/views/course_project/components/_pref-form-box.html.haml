@@ -7,7 +7,7 @@
   Preference Form submitted successfully!
 
 = form_with(model: @milestone_response,url: "/projects/#{@current_project.id}/milestone_responses", method: "post", local: true, id: "preference-form") do |form|
-  %h3.m-0.fs-5.fw-medium Teammate Preference Form
+  %h2.fs-4 Teammate Preference Form
   %h1
   %h1.fs-6.fw-normal.fst-italic= "Please enter the students preferred name and surname."
   %hr.divider

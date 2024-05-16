@@ -1183,7 +1183,7 @@ class CourseProjectController < ApplicationController
       # Preference Form
       @show_pref_form = false
 
-      if @current_project.team_allocation == "preference_form_based"
+      if @current_project.team_allocation == "preference_form_based" && !@pref_form.nil?
         @yes_mates = @current_project.preferred_teammates.to_i
         @no_mates = @current_project.avoided_teammates.to_i
 
@@ -1204,7 +1204,11 @@ class CourseProjectController < ApplicationController
                                                  student_id:   current_user.student.id).empty?
         in_group = current_user.student.groups.find_by(course_project: @current_project).present?
 
-        @show_proj_form = (@current_project.status == "preparation") && first_response && (in_group || @current_project.teams_from_project_choice)
+        if @current_project.teams_from_project_choice
+          @show_proj_form = (@current_project.status == "preparation") && first_response
+        else
+          @show_proj_form = (@current_project.status == "live") && first_response && in_group
+        end
       end
 
       # Get group-dependent project information
@@ -1215,6 +1219,17 @@ class CourseProjectController < ApplicationController
 
         group = current_user.student.groups.find_by(course_project: @current_project)
         @group_name = group.name
+
+        # Get subproject information
+        if @current_project.subprojects.empty?
+          @subproject = nil
+        else
+          unless group.subproject.nil?
+            @subproject = group.subproject
+          else
+            @subproject = "No Subproject Currently Assigned"
+          end
+        end
 
         # Get team information
         @team_names = []
