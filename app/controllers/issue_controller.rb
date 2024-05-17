@@ -151,11 +151,17 @@ class IssueController < ApplicationController
       @resolved_issues = []
 
       if current_user.is_admin?
-        @user_projects = CourseProject.all
+        if selected_project != "All"
+          project = CourseProject.find_by(name: selected_project)
+
+          @project_groups = Group.where(course_project_id: project.id)
+          group_ids = @project_groups.all.map(&:id).uniq
+        else
+          @user_projects = CourseProject.all
+          group_ids = Group.all.map(&:id).uniq
+        end
 
         if selected_order == "Created At"
-          group_ids = Group.all.map(&:id).uniq
-
           @open_issues = Event.joins(:group)
                               .where(groups: { id: group_ids })
                               .where(event_type: :issue)
@@ -169,8 +175,6 @@ class IssueController < ApplicationController
                                   .order(created_at: :asc)
 
         else
-          group_ids = Group.all.map(&:id).uniq
-
           @open_issues = Event.joins(:group)
                               .where(groups: { id: group_ids })
                               .where(event_type: :issue)
