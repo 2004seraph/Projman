@@ -30,20 +30,20 @@ class ApplicationController < ActionController::Base
   rescue_from CanCan::AccessDenied do |exception|
     Sentry.capture_message("Access denied", level: :warn)
     # gracefully redirect the user to the previous page they were on
-    # AuthHelper.log_exception exception, session
+    AuthHelper.log_exception exception, session
 
-    # if user_initiated_page_request?
-    #   redirect_target =
-    #     if session[:redirect_url]
-    #       session[:redirect_url]
-    #     else
-    #       new_user_session_path
-    #     end
-    #   redirect_to redirect_target, alert: AuthHelper::UNAUTHORIZED_MSG
-    # else
-    #   # fail fast if it was not a get request
-    #   throw exception
-    # end
+    if user_initiated_page_request?
+      redirect_target =
+        if session[:redirect_url]
+          session[:redirect_url]
+        else
+          new_user_session_path
+        end
+      redirect_to redirect_target, alert: AuthHelper::UNAUTHORIZED_MSG
+    else
+      # fail fast if it was not a get request
+      throw exception
+    end
   end
 
   def user_initiated_page_request?
@@ -60,8 +60,7 @@ class ApplicationController < ActionController::Base
     return if current_user.is_staff? || current_user.is_student?
     Sentry.capture_message("could not find user: #{current_user.email}", level: :warn)
 
-    reset_session
-    redirect_to new_user_session_path, alert: "You are not part of any modules or projects, please contact a member of staff if this is in error."
+    redirect_to "/403.html", alert: "You are not part of any modules or projects, please contact a member of staff if this is in error."
   end
 
   private
