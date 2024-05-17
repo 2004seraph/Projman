@@ -26,7 +26,7 @@
     .d-flex.justify-content-end
       %button.btn.btn-secondary.me-2{type: "button", onclick: "window.location='/projects/#{params[:id]}/teams'; return false;"}
         Discard Changes
-      %button.btn.btn-primary.me-2#create-project-save-button{type: "submit"}
+      %button.btn.btn-primary.me-2#create-project-save-button{type: "submit", onclick: "showLoadingModal()"}
         Save Changes
       - if project_data[:status] == "draft"
         %button.btn.btn-primary.me-2#publish-project-button{type: "button", data: { bs_toggle: "modal", bs_target: "#confirm-publish-project-modal"}}
@@ -57,7 +57,7 @@
 
           .modal-footer.d-flex
             %button.btn.btn-secondary.me-2{ type: "button", "data-bs-dismiss": "modal" } Close
-            %button.btn.btn-primary#confirm-publish-project{ type: "button", "data-bs-dismiss": "modal"} Publish
+            %button.btn.btn-primary#confirm-publish-project{ type: "button", "data-bs-dismiss": "modal", onclick: "showLoadingModal()"} Publish
 
 = render partial: 'project_form_modals', locals: {project_data: project_data, errors: errors}
 
@@ -76,3 +76,5 @@
         %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Close
         = form_tag(delete_project_path, method: "post") do
           = button_tag "Yes, Delete It", type: "submit", class: "btn btn-danger"
+
+= render partial: 'components/loading_modal'

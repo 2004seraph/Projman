@@ -134,7 +134,7 @@
             %input.form-control.fs-5.fw-semibold{ type: "file", id: "new_module_student_list", name: "new_module_student_list", autocomplete: "off", accept: "text/csv", required: true}
             %h1
           .modal-footer
-            %button.btn.btn-primary{ type: "submit", id: "list_confirm" }= "Confirm"
+            %button.btn.btn-primary{ type: "submit", id: "list_confirm", "data-bs-dismiss": "modal", onclick: "showLoadingModal()" }= "Confirm"
 
 .modal.fade{ id: "delete-module-modal", tabindex: "-1", "aria-labelledby": "delete-module-modal", "aria-hidden": "true" }
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
@@ -150,3 +150,5 @@
         %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Close
         = form_tag(delete_module_path, method: "post") do
           = button_tag "Yes, Delete It", type: "submit", class: "btn btn-danger"
+
+= render partial: 'components/loading_modal'

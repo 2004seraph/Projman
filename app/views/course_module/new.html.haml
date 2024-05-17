@@ -36,4 +36,6 @@
     %hr.divider
 
     -# SUBMIT
-    %button.btn.btn-primary{ type: "submit" }= "Save"
+    %button.btn.btn-primary{ type: "submit", onclick: "showLoadingModal()" }= "Save"
+
+= render partial: 'components/loading_modal'
