@@ -58,5 +58,3 @@ package-lock.json
 /vendor/webdrivers
 __pycache__
 build/
-
-dummy_data.csv
