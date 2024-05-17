@@ -126,7 +126,9 @@
       .modal-footer
         %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Cancel
         = form_with(url: remake_teams_project_path(id: @current_project.id), method: :post, local: true, remote: false) do |form|
-          = form.submit("Confirm", class: "btn btn-primary", "data-bs-dismiss": "modal", id: "confirm-remake-button")
+          = form.submit("Confirm", class: "btn btn-primary", "data-bs-dismiss": "modal", id: "confirm-remake-button", onclick: "showLoadingModal()")
+
+= render partial: 'components/loading_modal'
 
 :javascript
 
@@ -155,10 +157,8 @@
       // Find the teams-list-container
       var teamsListContainer = document.getElementById('teams-list-container');
 
-      var newPartialHTML = "#{j(render('loading'))}";
-
       // Replace its content with the loading symbol and message
-      teamsListContainer.innerHTML = newPartialHTML;
+      teamsListContainer.innerHTML = "";
     });
   });
 

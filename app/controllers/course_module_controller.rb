@@ -131,6 +131,16 @@ class CourseModuleController < ApplicationController
     redirect_to modules_path, notice: "Student List updated successfully."
   end
 
+  def delete
+    course_module = CourseModule.find(params[:id])
+    if course_module.destroy
+      flash[:notice] = "Module successfully deleted"
+      redirect_to modules_path
+    else
+      flash[:error] = "An error occurred"
+    end
+  end
+
   private
     def set_module
       @current_module = CourseModule.find(params[:id])

@@ -1,0 +1,7 @@
+.modal.fade{ id: "loadingModal", tabindex: "-1", "aria-labelledby": "loadingModal", "aria-hidden": "true", "data-bs-backdrop": "static", "data-bs-keyboard": "false" }
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      .modal-body
+        .load-message.d-flex.flex-column.align-items-center.pt-3.pb-3
+          = image_tag(asset_pack_path("static/images/loading.gif"), style: "width: 5%; height: 100%;")
+          %i.fs-5.fw-light Please don't refresh page...
