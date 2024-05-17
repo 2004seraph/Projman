@@ -13,6 +13,9 @@ Rails.application.routes.draw do
   get "/profile", to: "page#profile"
   post "/profile/request-title-change", to: "page#request_title_change"
   get "/mail", to: "page#mail"
+  
+  get "/privacy", to: "page#privacy"
+  get "/accessibility", to: "page#accessibility"
 
   resources :projects, controller: :course_project do
     resource :milestone_responses, only: [:create], controller: :milestone_response
