@@ -31,7 +31,7 @@
                 // Renders all the chat messages for group
                 - @chat_messages.each do |chat_message|
                   .d-flex.align-items-center.justify-content-between.pb-2
-                    - if (current_user.is_staff? && chat_message.staff_id == current_user.staff.id) || (current_user.is_student? && chat_message.student_id == current_user.student.id)
+                    - if (current_user.is_staff? && chat_message&.staff_id == current_user.staff.id) || (current_user.is_student? && chat_message&.student_id == current_user.student.id)
                       .d-flex.w-100.justify-content-end
                         .w-75
                           .issue-text.border.p-2{ style: "background-color: lavender; border-radius: 10px;" }
@@ -39,7 +39,7 @@
                           .d-flex.align-items-center.justify-content-between.pb-2
                             .fw-light{ style: "font-size: 14px; padding-left: 6px;" } From: #{chat_message.json_data['author']}
                             .fw-light{ style: "font-size: 14px; padding-right: 4px;" } #{DateTime.parse(chat_message.json_data['timestamp']).strftime("%H:%M %d/%m/%Y")}
-                    - elsif (!chat_message.staff_id.nil? && chat_message.staff_id == @current_group.assigned_facilitator.staff_id) || (!chat_message.student_id.nil? && chat_message.student_id == @current_group.assigned_facilitator.student_id)
+                    - elsif (!chat_message.staff_id.nil? && chat_message&.staff_id == @current_group&.assigned_facilitator&.staff_id) || (!chat_message.student_id.nil? && chat_message.student_id == @current_group&.assigned_facilitator&.student_id)
                       .d-flex.w-100.justify-content-start
                         .w-75
                           .issue-text.border.p-2{ style: "background-color: #FFFFE0; border-radius: 10px;" }
