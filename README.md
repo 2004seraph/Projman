@@ -66,6 +66,12 @@ We use Capistrano for our deployments, and interact with the production server v
 - Ensure there are no changes to commit, that the working tree is clean. If so, use `git restore .` to undo all of them, or commit them.
 - Run `./DEPLOY.sh`
 
+## Testing
+
+To test our application you need to run one rspec file at a time. This is because our test when ran together intefere with each other, so need to be ran in isolation.
+
+` rspec ./spec/path_to_test`
+
 ## Maintainers
 
 - Adam Willis <awillis4@sheffield.ac.uk>
