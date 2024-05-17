@@ -74,7 +74,7 @@ class Group < ApplicationRecord
     end
 
     member_violations['level'] = violation_level
-    puts(member_violations)
+    # puts(member_violations)
     member_violations
   end
 

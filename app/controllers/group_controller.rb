@@ -8,13 +8,13 @@ class GroupController < ApplicationController
     @current_project = CourseProject.find(params[:project_id])
     authorize! :update, @current_project
 
-    Rails.logger.debug "INDEX ACTION"
-    Rails.logger.debug @current_project
+    # Rails.logger.debug "INDEX ACTION"
+    # Rails.logger.debug @current_project
     @teams = []
     return if @current_project.nil?
 
     @teams = @current_project.groups.order(id: :asc)
-    
+
     student_list = @current_project.students.to_a
     @teams.each do |team|
       team.students.each do |student|
@@ -22,8 +22,8 @@ class GroupController < ApplicationController
       end
     end
     @outstanding_students = student_list
-    
-    Rails.logger.debug @teams.pluck(:assigned_facilitator_id)
+
+    # Rails.logger.debug @teams.pluck(:assigned_facilitator_id)
     render "group/index"
   end
 
@@ -157,7 +157,7 @@ name: f.id, email: f.email })
       team.save if team.valid?
     end
 
-    json_data = { 
+    json_data = {
       name: team.name,
       comment: "You have been added to #{team.name} for #{project.name}"
     }
