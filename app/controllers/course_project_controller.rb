@@ -1203,11 +1203,15 @@ class CourseProjectController < ApplicationController
         first_response = MilestoneResponse.where(milestone_id: @proj_choices_form.id,
                                                  student_id:   current_user.student.id).empty?
         in_group = current_user.student.groups.find_by(course_project: @current_project).present?
+        no_subproject = false
+        if in_group
+          no_subproject = current_user.student.groups.find_by(course_project: @current_project).subproject.nil?
+        end
 
         if @current_project.teams_from_project_choice
           @show_proj_form = (@current_project.status == "preparation") && first_response
         else
-          @show_proj_form = (@current_project.status == "live") && first_response && in_group
+          @show_proj_form = (@current_project.status == "live") && first_response && in_group && no_subproject
         end
       end
 
