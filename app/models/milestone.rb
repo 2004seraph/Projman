@@ -68,15 +68,15 @@ class Milestone < ApplicationRecord
                          0 # Notification
                        end
         }
-        logger.debug "\tpushing this milestone 2"
+        # logger.debug "\tpushing this milestone 2"
         # logger.debug("MILESTONE ACTION: #{json_data["Name"]} - #{x.valid?} - #{x.persisted?}")
         g.events << Event.create({ event_type: :milestone, json_data: json, group: g, milestone: self })
         logger.debug "\tpushing this milestone 3"
         g.save
-        logger.debug "\tpushing this milestone 4"
+        # logger.debug "\tpushing this milestone 4"
         g.reload
 
-        logger.debug "\tpushing this milestone 5"
+        # logger.debug "\tpushing this milestone 5"
       end
 
       return true

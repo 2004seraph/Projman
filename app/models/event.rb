@@ -31,7 +31,7 @@
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 class Event < ApplicationRecord
-  belongs_to :event, optional: true
+  belongs_to :milestone, optional: true
   belongs_to :group
   has_one :course_project, through: :group
   has_one :course_module, through: :course_project
