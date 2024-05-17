@@ -16,6 +16,9 @@ $(function() {
             url: form_action, // Get the form action URL
             method: 'POST',
             data: {item_text: itemText},
+            headers: {
+                'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+            },
             success: function(response) {
                 // Handle success response here
                 listItem.remove(); // Remove the list item
