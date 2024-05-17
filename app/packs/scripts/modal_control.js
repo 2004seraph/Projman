@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 $.ajax({
                     url: onOpenActionUrl,
                     method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                    },
                     success: function(response) {
                     },
                     error: function(xhr, status, error) {

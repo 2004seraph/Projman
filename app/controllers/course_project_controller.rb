@@ -9,12 +9,7 @@ class CourseProjectController < ApplicationController
   load_and_authorize_resource
 
   skip_before_action :verify_authenticity_token, only: %i[
-    remove_project_choice
-    clear_facilitator_selection
     toggle_project_choices
-    remove_project_milestone
-    remove_from_facilitator_selection
-    remove_facilitator
     create
   ]
 

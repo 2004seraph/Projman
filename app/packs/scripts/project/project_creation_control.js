@@ -115,6 +115,9 @@ $(function() {
             type: 'GET',
             dataType: 'json',
             data: { milestone_name: milestoneName },
+            headers: {
+                'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+            },
             success: function(response) {
 
                 // check if milestone has email field
@@ -140,6 +143,9 @@ $(function() {
             type: 'GET',
             dataType: 'json',
             data: { milestone_name: milestoneName },
+            headers: {
+                'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+            },
             success: function(response) {
             },
             error: function(xhr, status, error) {
