@@ -305,12 +305,17 @@ class CourseProject < ApplicationRecord
 
           logger.debug "\tMilestone #{m.json_data} executed"
           m.push_milestone_to_teams? false, logger
+          logger.debug "\tmilestone pushed to teams"
           m.executed = true
           m.save!
+          logger.debug "\tmilestone updated"
           m.reload
         end
 
         c.reload
+
+        logger.debug "\tevents done"
+        logger.debug c.completion_deadline
 
         next unless c.completion_deadline < DateTime.now
 
