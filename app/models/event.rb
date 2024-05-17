@@ -48,8 +48,8 @@ class Event < ApplicationRecord
        ((user.is_staff? && event_responses.empty?) ||
        (user.is_staff? && event_responses.last.student_id.present? && json_data["reopened_by"] == "") ||
        (user.is_staff? && (json_data["reopened_by"] != "" && json_data["reopened_by"] != user.staff.email)) ||
-       (!user.is_staff? && !event_responses.empty? && event_responses.last.staff_id.present? && json_data["reopened_by"] == "") ||
-       (!user.is_staff? && (json_data["reopened_by"] != "" && json_data["reopened_by"] != user.student.username)))
+       (user.is_student? && !event_responses.empty? && event_responses.last.staff_id.present? && json_data["reopened_by"] == "") ||
+       (user.is_student? && (json_data["reopened_by"] != "" && json_data["reopened_by"] != user.student.username)))
       # when deployed this to change above elsif to commented line
       # elsif user.is_student? && !issue.event_responses.empty? && issue.event_responses.last.staff_id.present?
 
