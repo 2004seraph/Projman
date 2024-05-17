@@ -64,7 +64,7 @@ class CourseProject < ApplicationRecord
   end
 
   def project_notification?(current_user, group)
-    pref_form = self.milestones.where(system_type: "teammate_preference_deadline")
+    pref_form = self.milestones.find_by(system_type: "teammate_preference_deadline")
     first_response = MilestoneResponse.where(milestone_id: pref_form.id, student_id: current_user.student.id).empty?
 
     if Event.chat_notification?(current_user, group)
