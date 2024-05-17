@@ -96,7 +96,7 @@ class CourseProject < ApplicationRecord
     proj_pref = Milestone.find_by(system_type: :project_preference_deadline, course_project_id: id)
     pref_form = Milestone.find_by(system_type: :teammate_preference_deadline, course_project_id: id)
 
-    if status == 'draft' || status == 'preperation' || status == 'review'
+    if status == 'draft' || status == 'preparation' || status == 'review'
       if (team_allocation == "random_team_allocation" && teams_from_project_choice == false) ||
         (teams_from_project_choice == true && proj_pref && proj_pref.deadline < Time.zone.now) ||
         (team_allocation == "preference_form_based" && pref_form && pref_form.deadline < Time.zone.now)
@@ -207,6 +207,7 @@ class CourseProject < ApplicationRecord
       def debug(msg)
         puts msg
         @logger.debug(msg)
+        Sentry.capture_message(msg, level: :log)
       end
     end
 

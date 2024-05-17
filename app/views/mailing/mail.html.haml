@@ -28,7 +28,7 @@
                     %option{value: course_module.id, selected: (@selected_module && course_module.id == @selected_module)}
                       = "#{course_module.code} - #{course_module.name}"
 
-          %hr.divider
+            %hr.divider
 
           - if @projects.length > 0
             .d-flex
@@ -40,7 +40,7 @@
                     %option{value: project.id, selected: (@selected_project && project.id == @selected_project)}
                       = "#{project.course_module.code} - #{project.name}"
 
-          %hr.divider
+            %hr.divider
 
           .form_group
             .d-flex
@@ -49,7 +49,7 @@
                 = form.label :send_to_a_custom_list
                 = form.text_area :recipient_list, class: "form-control w-100", placeholder: "Comma separated list of email addresses", id: "recipient-list", value: @email_list
 
-        %hr.divider.mb-4
+          %hr.divider.mb-4
 
         .form_group.mb-2
           = form.label :subject
