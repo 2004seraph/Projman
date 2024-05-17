@@ -54,7 +54,7 @@ class Group < ApplicationRecord
   def self.make(course_project, teammate_list)
     g = Group.find_or_create_by({
       name:           "Team #{course_project.groups.count + 1}",
-      course_project: course_project
+      course_project:
     })
     g.students = teammate_list
     g.save
@@ -73,7 +73,7 @@ class Group < ApplicationRecord
       violation_level = violations.keys.first if violations.keys.first >= violation_level
     end
 
-    member_violations['level'] = violation_level
+    member_violations["level"] = violation_level
     # puts(member_violations)
     member_violations
   end

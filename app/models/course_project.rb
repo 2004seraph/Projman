@@ -69,11 +69,11 @@ class CourseProject < ApplicationRecord
 
     if Event.chat_notification?(current_user, group)
       true
-    elsif (current_user.is_student? &&
+    elsif current_user.is_student? &&
           self.team_allocation == "preference_form_based" &&
           !(pref_form.nil?) &&
           self.status == "preparation" &&
-          first_response)
+          first_response
       true
     else
       false
@@ -96,7 +96,7 @@ class CourseProject < ApplicationRecord
     proj_pref = Milestone.find_by(system_type: :project_preference_deadline, course_project_id: id)
     pref_form = Milestone.find_by(system_type: :teammate_preference_deadline, course_project_id: id)
 
-    if status == 'draft' || status == 'preparation' || status == 'review'
+    if status == "draft" || status == "preparation" || status == "review"
       if (team_allocation == "random_team_allocation" && teams_from_project_choice == false) ||
         (teams_from_project_choice == true && proj_pref && proj_pref.deadline < Time.zone.now) ||
         (team_allocation == "preference_form_based" && pref_form && pref_form.deadline < Time.zone.now)
@@ -105,7 +105,7 @@ class CourseProject < ApplicationRecord
       end
     end
 
-    return false
+    false
   end
 
   def assign_facilitators_to_groups
@@ -144,7 +144,6 @@ class CourseProject < ApplicationRecord
   end
 
   private
-
     def creation_validation
       errors.add(:main, "Project name cannot be empty") if name.blank?
       if errors[:main].blank? && CourseProject.where(name:, course_module_id:).where.not(id:).exists?

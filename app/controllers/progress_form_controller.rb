@@ -157,8 +157,8 @@ class ProgressFormController < ApplicationController
     # To save the form there must be at least one question
     if session[:new_progress_form]["questions"].empty?
       return render json: {
-        status: 'error',
-        message: 'no_questions'
+        status:  "error",
+        message: "no_questions"
       }
     end
 
@@ -197,8 +197,8 @@ class ProgressFormController < ApplicationController
       # Can't update released forms
       if milestone.deadline <= DateTime.current
         return render json: {
-          status: 'already_released',
-          message: 'Cannot update a released progress form.',
+          status:   "already_released",
+          message:  "Cannot update a released progress form.",
           redirect: project_progress_form_index_path
         }
       end
@@ -237,7 +237,7 @@ class ProgressFormController < ApplicationController
 
       # Can't delete released forms
       if milestone.deadline <= DateTime.current
-        flash.alert = 'Cannot delete a released form.'
+        flash.alert = "Cannot delete a released form."
         redirect_to project_progress_form_index_path
         return
       end

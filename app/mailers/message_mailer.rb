@@ -4,7 +4,7 @@
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 class MessageMailer < ApplicationMailer
-  def individual_message(staff, recipient_email, subject, body, project=nil)
+  def individual_message(staff, recipient_email, subject, body, project = nil)
     @student = Student.find_by(email: recipient_email)
     return false unless @student
 

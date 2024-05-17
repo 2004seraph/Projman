@@ -56,17 +56,17 @@ class Milestone < ApplicationRecord
 
       course_project.groups.each do |g|
         json = {
-          "Name"    => json_data["Name"],
-          "Comment" => json_data["Comment"],
+          "Name"     => json_data["Name"],
+          "Comment"  => json_data["Comment"],
           "Reminder" => reminder,
-          "Urgency" =>
-                       if ["project_deadline"].include? system_type
-                         2 # Most urgent
-                       elsif reminder
-                         1 # Warning
-                       else
-                         0 # Notification
-                       end
+          "Urgency"  =>
+                        if ["project_deadline"].include? system_type
+                          2 # Most urgent
+                        elsif reminder
+                          1 # Warning
+                        else
+                          0 # Notification
+                        end
         }
         # logger.debug "\tpushing this milestone 2"
         # logger.debug("MILESTONE ACTION: #{json_data["Name"]} - #{x.valid?} - #{x.persisted?}")

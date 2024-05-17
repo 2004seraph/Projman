@@ -18,7 +18,7 @@ class GroupController < ApplicationController
     student_list = @current_project.students.to_a
     @teams.each do |team|
       team.students.each do |student|
-        student_list.reject! { |s| s == student}
+        student_list.reject! { |s| s == student }
       end
     end
     @outstanding_students = student_list

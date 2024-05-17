@@ -3,68 +3,68 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-require 'rails_helper'
+require "rails_helper"
 
-RSpec.feature 'Submitting Marking', type: :feature do
+RSpec.feature "Submitting Marking", type: :feature do
   let!(:student) { FactoryBot.create(:standard_student_user) }
 
   before(:all) do
-    staff_email = 'awillis4@sheffield.ac.uk'
+    staff_email = "awillis4@sheffield.ac.uk"
     staff = DatabaseHelper.create_staff(staff_email)
 
     DatabaseHelper.provision_module_class(
-      'COM9999',
-      'Test Module 2',
+      "COM9999",
+      "Test Module 2",
       staff
     )
 
     project = CourseProject.find_or_create_by({
-      course_module: CourseModule.find_by(code: 'COM9999'),
-      name: 'Test Project 1',
-      team_size: 8,
+      course_module:   CourseModule.find_by(code: "COM9999"),
+      name:            "Test Project 1",
+      team_size:       8,
       team_allocation: :random_team_allocation,
-      status: :live
+      status:          :live
     })
 
     # Create a group with 5 random teammates and facilitator
     group = Group.find_or_create_by({
-      name: 'The A Team',
-      assigned_facilitator: AssignedFacilitator.find_or_create_by(staff: staff,
-        course_project: project),
-      course_project: project
+      name:                 "The A Team",
+      assigned_facilitator: AssignedFacilitator.find_or_create_by(staff:,
+                                                                  course_project: project),
+      course_project:       project
     })
 
     group.students << project.course_module.students[0...5]
 
     # Create a mark scheme and assign the staff user to it
     milestone = Milestone.new(
-      json_data: JSON.parse({
+      json_data:         JSON.parse({
         sections: [
           {
-            title: "Testing",
-            description: 'This is a test description.',
-            max_marks: 6,
-            assessors: {staff_email => [group.id]}
+            title:       "Testing",
+            description: "This is a test description.",
+            max_marks:   6,
+            assessors:   { staff_email => [group.id] }
           }
         ]
       }.to_json),
-      deadline: Date.current.strftime('%Y-%m-%d'),  # Deadline isn't used for mark schemes
-      milestone_type: :team,
+      deadline:          Date.current.strftime("%Y-%m-%d"),  # Deadline isn't used for mark schemes
+      milestone_type:    :team,
       course_project_id: 1,
-      system_type: :marking_deadline
+      system_type:       :marking_deadline
     )
     milestone.save
   end
 
-  describe 'Submitting marking as a staff member', js: true do
+  describe "Submitting marking as a staff member", js: true do
     before {
       login_as student
 
       visit "markings/"
     }
 
-    let!(:project_id) { CourseProject.find_by(name: 'Test Project 1').id }
-    let!(:group) { Group.find_by(name: 'The A Team') }
+    let!(:project_id) { CourseProject.find_by(name: "Test Project 1").id }
+    let!(:group) { Group.find_by(name: "The A Team") }
 
     context "For a section and team I am assigned to" do
       specify "I can submit marking" do

@@ -47,11 +47,11 @@ module DatabaseHelper
     }.merge(options)
 
     create_course_project(settings.merge({
-      preferred_teammates:   0,
-      avoided_teammates:     0,
-      team_allocation_mode:  nil,
+      preferred_teammates:       0,
+      avoided_teammates:         0,
+      team_allocation_mode:      nil,
       teams_from_project_choice: true,
-      team_pref_deadline:    nil,
+      team_pref_deadline:        nil,
     }))
   end
 
@@ -78,21 +78,21 @@ module DatabaseHelper
 
   def create_course_project(options = {})
     settings = {
-      module_code:           "COM3420",
-      name:                  "Test Project",
-      status:                "draft",
-      project_choices:       ["Choice 1", "Choice 2"],
-      team_size:             4,
-      preferred_teammates:   1,
-      avoided_teammates:     2,
-      team_allocation_mode:  "random_team_allocation",
+      module_code:               "COM3420",
+      name:                      "Test Project",
+      status:                    "draft",
+      project_choices:           ["Choice 1", "Choice 2"],
+      team_size:                 4,
+      preferred_teammates:       1,
+      avoided_teammates:         2,
+      team_allocation_mode:      "random_team_allocation",
       teams_from_project_choice: false,
 
-      project_deadline:      DateTime.now + 5.minute,
-      project_pref_deadline: DateTime.now + 2.minute,
-      team_pref_deadline:    DateTime.now + 1.minute,
+      project_deadline:          DateTime.now + 5.minute,
+      project_pref_deadline:     DateTime.now + 2.minute,
+      team_pref_deadline:        DateTime.now + 1.minute,
 
-      milestones:            [
+      milestones:                [
         {
           "Name":     "Milestone 1",
           "Deadline": DateTime.now + 1.minute,
@@ -102,17 +102,17 @@ module DatabaseHelper
         }
       ],
 
-      facilitators:          ["jbala1@sheffield.ac.uk", "sgttaseff1@sheffield.ac.uk"]
+      facilitators:              ["jbala1@sheffield.ac.uk", "sgttaseff1@sheffield.ac.uk"]
     }.merge(options)
 
     project = CourseProject.find_or_create_by(
-      course_module:       CourseModule.find_by(code: settings[:module_code]),
-      name:                settings[:name],
-      team_size:           settings[:team_size],
-      team_allocation:     settings[:team_allocation_mode],
-      preferred_teammates: settings[:preferred_teammates],
-      avoided_teammates:   settings[:avoided_teammates],
-      status:              settings[:status],
+      course_module:             CourseModule.find_by(code: settings[:module_code]),
+      name:                      settings[:name],
+      team_size:                 settings[:team_size],
+      team_allocation:           settings[:team_allocation_mode],
+      preferred_teammates:       settings[:preferred_teammates],
+      avoided_teammates:         settings[:avoided_teammates],
+      status:                    settings[:status],
       teams_from_project_choice: settings[:teams_from_project_choice]
     )
     DatabaseHelper.print_validation_errors(project)
@@ -127,9 +127,9 @@ module DatabaseHelper
     end
 
     project_deadline_json_data = {
-      "Name"       => "Project Deadline",
-      "Comment"    => "",
-      "Email"      => { "Content": "Project Deadline upcoming!", "Advance": 0 }
+      "Name"    => "Project Deadline",
+      "Comment" => "",
+      "Email"   => { "Content": "Project Deadline upcoming!", "Advance": 0 }
     }
     project_deadline_milestone = Milestone.create(
       json_data:         project_deadline_json_data,
@@ -143,9 +143,9 @@ module DatabaseHelper
 
     if !["random_team_allocation", nil].include? project.team_allocation
       team_pref_json_data = {
-        "Name"       => "Teammate Preference Deadline",
-        "Comment"    => "",
-        "Email"      => { "Content": "Teammate preference upcoming!", "Advance": 0 }
+        "Name"    => "Teammate Preference Deadline",
+        "Comment" => "",
+        "Email"   => { "Content": "Teammate preference upcoming!", "Advance": 0 }
       }
       team_pref_milestone = Milestone.create(
         json_data:         team_pref_json_data,
@@ -160,9 +160,9 @@ module DatabaseHelper
 
     if settings[:project_choices].length > 1
       project_pref_json_data = {
-        "Name"       => "Project Preference Deadline",
-        "Comment"    => "",
-        "Email"      => { "Content": "Project preference upcoming!", "Advance": 0 }
+        "Name"    => "Project Preference Deadline",
+        "Comment" => "",
+        "Email"   => { "Content": "Project preference upcoming!", "Advance": 0 }
       }
       team_pref_milestone = Milestone.create(
         json_data:         project_pref_json_data,
@@ -170,11 +170,11 @@ module DatabaseHelper
         system_type:       "project_preference_deadline",
         user_generated:    true,
         milestone_type:
-          if settings[:team_allocation] == nil
-            "student"
-          else
-            "group"
-          end,
+                           if settings[:team_allocation] == nil
+                             "student"
+                           else
+                             "group"
+                           end,
         course_project_id: project.id
       )
       DatabaseHelper.print_validation_errors(team_pref_milestone)
@@ -182,8 +182,8 @@ module DatabaseHelper
 
     settings[:milestones].each do |milestone|
       json_data = {
-        "Name"       => milestone[:Name],
-        "Comment"    => milestone[:Comment]
+        "Name"    => milestone[:Name],
+        "Comment" => milestone[:Comment]
       }
       json_data["Email"] = milestone[:Email] if milestone.key?(:Email)
 

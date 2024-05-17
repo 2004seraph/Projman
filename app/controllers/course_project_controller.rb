@@ -25,10 +25,10 @@ class CourseProjectController < ApplicationController
     elsif current_user.is_student?
       @live_projects = current_user.student.course_projects.where(status: ["preparation", "review", "live"])
       @comp_projects = current_user.student.course_projects.where(status: "completed")
-      
+
       milestones_list = @live_projects.extract_associated(:milestones)
       logger.debug milestones_list.count
-      
+
       @milestones = nil
 
       if milestones_list.count != 0
@@ -98,12 +98,12 @@ class CourseProjectController < ApplicationController
 
     possible_status_changes = []
 
-    datenow = DateTime.now.strftime('%Y-%m-%dT%H:%M')
+    datenow = DateTime.now.strftime("%Y-%m-%dT%H:%M")
 
-    if project.status == 'draft'
+    if project.status == "draft"
       @min_date = datenow
     else
-      @min_date = DateTime.parse(project.created_at.to_s).strftime('%Y-%m-%dT%H:%M')
+      @min_date = DateTime.parse(project.created_at.to_s).strftime("%Y-%m-%dT%H:%M")
     end
 
     # if we are in preparation or review, we can go to those two or also go live
@@ -716,10 +716,10 @@ class CourseProjectController < ApplicationController
 
     project_data = session[:project_data]
 
-    if project.status == 'draft'
+    if project.status == "draft"
       @min_date = "#{DateTime.now.strftime('%Y-%m-%dT%H:%M')}"
     else
-      @min_date = DateTime.parse(project.created_at.to_s).strftime('%Y-%m-%dT%H:%M')
+      @min_date = DateTime.parse(project.created_at.to_s).strftime("%Y-%m-%dT%H:%M")
     end
 
     # Load in Status to change to if its included in parameters
@@ -1424,14 +1424,14 @@ class CourseProjectController < ApplicationController
   end
 
   private
-  def rerender_edit_or_new
-    if session[:context] && session[:context] == "new"
-      render :new
-    elsif session[:context] && session[:context] == "edit"
-      render :edit
-    else
-      flash[:alert] = "Error re-rendering page"
-      redirect_back fallback_location: root_path
+    def rerender_edit_or_new
+      if session[:context] && session[:context] == "new"
+        render :new
+      elsif session[:context] && session[:context] == "edit"
+        render :edit
+      else
+        flash[:alert] = "Error re-rendering page"
+        redirect_back fallback_location: root_path
+      end
     end
-  end
 end

@@ -161,7 +161,7 @@ class Student < ApplicationRecord
     [true, student]
   end
 
-  TITLES = { 'Masculine'=>['Mr'], 'Feminine'=>['Miss', 'Ms', 'Mrs'], 'Ambiguous'=>['Mx', 'Dr', 'Prof'] }.freeze
+  TITLES = { "Masculine" => ["Mr"], "Feminine" => ["Miss", "Ms", "Mrs"], "Ambiguous" => ["Mx", "Dr", "Prof"] }.freeze
 
   def find_preference_violations(team)
     proj = CourseProject.find(team.course_project_id)
@@ -188,7 +188,7 @@ class Student < ApplicationRecord
         teammate_title_type = key if titles.include?(teammate.title)
       end
 
-      if title_type == 'Ambiguous' || title_type == teammate_title_type
+      if title_type == "Ambiguous" || title_type == teammate_title_type
         gender = true
       end
     end
@@ -201,17 +201,17 @@ class Student < ApplicationRecord
       proj_form_response = self.milestone_responses.where(milestone_id: proj_form_milestone.id).first
 
       subproj = if proj_form_response.nil?
-                  true
-                else
-                  proj_form_response.json_data['1'] == team.subproject_id
-                end
+        true
+      else
+        proj_form_response.json_data["1"] == team.subproject_id
+      end
     end
 
     # Check for preferred/avoided teammates violations
     preferred = nil
     avoided = nil
 
-    if proj.team_allocation == 'preference_form_based'
+    if proj.team_allocation == "preference_form_based"
       pref_form_milestone = proj.milestones.where(system_type: :teammate_preference_deadline).first
       pref_form_response = self.milestone_responses.where(milestone_id: pref_form_milestone.id).first
 
@@ -226,11 +226,11 @@ class Student < ApplicationRecord
         team.students.each do |teammate|
           next if teammate == self
 
-          if pref_form_response.json_data['preferred'].include?(teammate.id)
+          if pref_form_response.json_data["preferred"].include?(teammate.id)
             preferred = true
           end
 
-          if pref_form_response.json_data['avoided'].include?(teammate.id)
+          if pref_form_response.json_data["avoided"].include?(teammate.id)
             avoided = false
           end
         end
@@ -241,7 +241,6 @@ class Student < ApplicationRecord
   end
 
   private
-
     def build_violations_string(proj, preferred, avoided, subproj, gender, domicile)
       violations_hash = {}
 
@@ -251,8 +250,8 @@ class Student < ApplicationRecord
         pref_form_milestone = proj.milestones.where(system_type: :teammate_preference_deadline).first
         pref_form_response = self.milestone_responses.where(milestone_id: pref_form_milestone.id).first
 
-        str = 'Preferred Teammate(s):'
-        pref_form_response.json_data['preferred'].each do |id|
+        str = "Preferred Teammate(s):"
+        pref_form_response.json_data["preferred"].each do |id|
           student = proj.students.find(id)
           str += "\n#{student.preferred_name} #{student.surname}"
         end
@@ -265,8 +264,8 @@ class Student < ApplicationRecord
         pref_form_milestone = proj.milestones.where(system_type: :teammate_preference_deadline).first
         pref_form_response = self.milestone_responses.where(milestone_id: pref_form_milestone.id).first
 
-        str = 'Avoided Teammate(s):'
-        pref_form_response.json_data['avoided'].each do |id|
+        str = "Avoided Teammate(s):"
+        pref_form_response.json_data["avoided"].each do |id|
           student = proj.students.find(id)
           str += "\n#{student.preferred_name} #{student.surname}"
         end
@@ -281,7 +280,7 @@ class Student < ApplicationRecord
         proj_form_milestone = proj.milestones.where(system_type: :project_preference_deadline).first
         proj_form_response = self.milestone_responses.where(milestone_id: proj_form_milestone.id).first
 
-        str = 'Subproject Choices:'
+        str = "Subproject Choices:"
         proj_form_response.json_data.each do |rank, choice|
           subproj = proj.subprojects.find(choice)
           str += "\n#{rank}. #{subproj.name}"
@@ -310,7 +309,7 @@ class Student < ApplicationRecord
       end
 
       # No violations
-      violations_hash[1] = 'No student allocation violation.'
+      violations_hash[1] = "No student allocation violation."
 
       violations_hash
     end

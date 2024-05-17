@@ -34,11 +34,7 @@ class ApplicationController < ActionController::Base
 
     if user_initiated_page_request?
       redirect_target =
-        if session[:redirect_url]
-          session[:redirect_url]
-        else
-          new_user_session_path
-        end
+        session[:redirect_url] || new_user_session_path
       redirect_to redirect_target, alert: AuthHelper::UNAUTHORIZED_MSG
     else
       # fail fast if it was not a get request
@@ -54,8 +50,8 @@ class ApplicationController < ActionController::Base
     return unless user_signed_in?
 
     email = current_user.email
-    current_user.student = Student.find_by(email: email) if current_user.is_student?
-    current_user.staff = Staff.find_or_create_by(email: email) if current_user.is_staff?
+    current_user.student = Student.find_by(email:) if current_user.is_student?
+    current_user.staff = Staff.find_or_create_by(email:) if current_user.is_staff?
 
     return if current_user.is_staff? || current_user.is_student?
     Sentry.capture_message("could not find user: #{current_user.email}", level: :warn)

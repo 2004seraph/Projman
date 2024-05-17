@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: course_projects
@@ -40,7 +42,7 @@ RSpec.describe CourseProject, type: :model do
       module_code:           "COM2009",
       project_deadline:      DateTime.now + 4.minute,
       project_pref_deadline: DateTime.now - 100.minute,
-      facilitators: []
+      facilitators:          []
     })
   }
 

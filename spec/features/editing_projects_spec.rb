@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 require "rails_helper"
 
@@ -19,21 +20,21 @@ RSpec.feature "Project Creation", type: :feature do
       Staff.find_by(email: "awillis4@sheffield.ac.uk")
     )
 
-    DatabaseHelper.create_course_project(options={
-      module_code:           "COM8888",
-      name:                  "New Project",
-      status:                "draft",
-      project_choices:       ["Choice 1", "Choice 2"],
-      team_size:             5,
-      preferred_teammates:   1,
-      avoided_teammates:     2,
-      team_allocation_mode:  "random_team_allocation",
+    DatabaseHelper.create_course_project({
+      module_code:               "COM8888",
+      name:                      "New Project",
+      status:                    "draft",
+      project_choices:           ["Choice 1", "Choice 2"],
+      team_size:                 5,
+      preferred_teammates:       1,
+      avoided_teammates:         2,
+      team_allocation_mode:      "random_team_allocation",
       teams_from_project_choice: false,
 
-      project_deadline:      DateTime.now + 1.days,
-      project_pref_deadline: DateTime.now + 23.hours,
+      project_deadline:          DateTime.now + 1.days,
+      project_pref_deadline:     DateTime.now + 23.hours,
 
-      milestones:            [
+      milestones:                [
         {
           "Name":     "Milestone 1",
           "Deadline": DateTime.now + 10.minutes,
@@ -43,7 +44,7 @@ RSpec.feature "Project Creation", type: :feature do
         }
       ],
 
-      facilitators:          ["jbala1@sheffield.ac.uk", "sgttaseff1@sheffield.ac.uk"]
+      facilitators:              ["jbala1@sheffield.ac.uk", "sgttaseff1@sheffield.ac.uk"]
     })
 
     # Capybara.current_driver = :selenium

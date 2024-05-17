@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
@@ -38,7 +40,6 @@ class MailingController < ApplicationController
   end
 
   def create
-
     # {"authenticity_token"=>"uKfofLxRbHU36dRfvZYcp-bOa0bJm52qhtxwXDGB6elIkPi1KlJOznYo5fa1rQ-Vy5qZWXzY-UFROY98XnfRsQ", "module_selection"=>"1", "project_selection"=>"1", "contact_method"=>"custom_list", "recipient_list"=>"sgsdfghd", "email_body"=>"zdfxbzdsgs", "controller"=>"mailing", "action"=>"create"}
 
     return email_failiure "Invalid email format" unless base_params
@@ -73,7 +74,7 @@ class MailingController < ApplicationController
       end
     when CUSTOM_LIST_CONTACT_METHOD
       if recipient_list_valid?
-        emails = CSV.parse(params[:recipient_list].gsub("\n", "").strip, headers: false)
+        emails = CSV.parse(params[:recipient_list].delete("\n").strip, headers: false)
 
         # validate emails
         emails[0].each do |email|
@@ -94,40 +95,37 @@ class MailingController < ApplicationController
   end
 
   private
-
-  def email_successful
-    flash[:notice] = "Email sent successfully"
-  end
-  def email_failiure(msg)
-    flash[:alert] = msg
-    redirect_to mail_path
-    nil
-  end
-
-  def base_params
-    begin
-      return params.require([:contact_method, :email_subject, :email_body])
-    rescue
-      return false
+    def email_successful
+      flash[:notice] = "Email sent successfully"
     end
-  end
-  def recipient_list_valid?
-    params[:recipient_list] and params[:recipient_list].length > 0
-  end
-  def module_selection_valid?
-    c_id = Integer(params[:module_selection]) rescue false
+    def email_failiure(msg)
+      flash[:alert] = msg
+      redirect_to mail_path
+      nil
+    end
 
-    params[:module_selection] and
-    c_id and
-    CourseProject.exists?(c_id) and
-    CourseProject.find(c_id).staff == current_user.staff
-  end
-  def project_selection_valid?
-    c_id = Integer(params[:project_selection]) rescue false
+    def base_params
+      params.require([:contact_method, :email_subject, :email_body])
+    rescue
+      false
+    end
+    def recipient_list_valid?
+      params[:recipient_list] and params[:recipient_list].length > 0
+    end
+    def module_selection_valid?
+      c_id = Integer(params[:module_selection]) rescue false
 
-    params[:project_selection] and
-    c_id and
-    CourseProject.exists?(c_id) and
-    CourseProject.find(c_id).staff == current_user.staff
-  end
+      params[:module_selection] and
+      c_id and
+      CourseProject.exists?(c_id) and
+      CourseProject.find(c_id).staff == current_user.staff
+    end
+    def project_selection_valid?
+      c_id = Integer(params[:project_selection]) rescue false
+
+      params[:project_selection] and
+      c_id and
+      CourseProject.exists?(c_id) and
+      CourseProject.find(c_id).staff == current_user.staff
+    end
 end

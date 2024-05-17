@@ -10,7 +10,7 @@ class MarkSchemeController < ApplicationController
   # to the attached course project. If they do, they by extension have full permissions
   # to its mark scheme.
   # This has to be done as the "MarkScheme" is not its own Model
-  
+
   def index
     session[:current_project_id] = params[:project_id].to_i
     @current_project = CourseProject.find(session[:current_project_id])
@@ -60,15 +60,15 @@ class MarkSchemeController < ApplicationController
     # Assessors would be a list of the assessor emails and then the marking is split evenly.
     section_title = params[:section_title]
 
-    if session[:mark_scheme]['sections'].map{|s| s['title']}.include?(section_title)
-      @error = 'Cannot have duplicate section titles.'
+    if session[:mark_scheme]["sections"].map { |s| s["title"] }.include?(section_title)
+      @error = "Cannot have duplicate section titles."
 
     elsif section_title.blank?
-      @error = 'Section title cannot be empty.'
+      @error = "Section title cannot be empty."
 
     else
-      section = { title: params[:section_title], description: '', max_marks: 0 }
-      session[:mark_scheme]['sections'] << hash_to_json(section)
+      section = { title: params[:section_title], description: "", max_marks: 0 }
+      session[:mark_scheme]["sections"] << hash_to_json(section)
     end
 
     return unless request.xhr?
@@ -190,7 +190,7 @@ class MarkSchemeController < ApplicationController
       else
         @assessor_email = nil
       end
-    
+
     end
 
     if request.xhr?
@@ -390,15 +390,15 @@ class MarkSchemeController < ApplicationController
     mark_scheme = get_mark_scheme
 
     return if mark_scheme.nil?
-    
+
     csv_data = CSV.generate(headers: true) do |csv|
       # Write headers
       csv << ["Team Name", "Section Title", "Marks Given", "Reason", "Assessor"]
-      
+
       # Write data
-      mark_scheme.milestone_responses.each do |mr| 
+      mark_scheme.milestone_responses.each do |mr|
         data = mr.json_data
-        
+
         team = Group.find(data["group_id"].to_i)
 
         data["sections"].each do |section_title, section_data|
@@ -406,21 +406,21 @@ class MarkSchemeController < ApplicationController
           marks_given = section_data["marks_given"].empty? ? nil : section_data["marks_given"]
           reason = section_data["reason"].empty? ? nil : section_data["reason"]
           assessor = section_data["assessor"].empty? ? nil : section_data["assessor"]
-          
+
           csv << [
-            team.name, 
-            section_title, 
-            marks_given, 
-            reason, 
+            team.name,
+            section_title,
+            marks_given,
+            reason,
             assessor
           ]
         end
       end
     end
-    
+
     # Send the data as an attachment to download
-    filename = "#{mark_scheme.course_project.name}-marking.csv".gsub(' ', '-')
-    send_data csv_data, filename: filename, type: 'text/csv'
+    filename = "#{mark_scheme.course_project.name}-marking.csv".tr(" ", "-")
+    send_data csv_data, filename:, type: "text/csv"
   end
 
   def import_mark_scheme
@@ -431,20 +431,20 @@ class MarkSchemeController < ApplicationController
 
     else
       mark_scheme_csv = CSV.new(params[:mark_scheme_csv].tempfile)
-      
-      @mark_scheme_json = hash_to_json({"sections": []})
+
+      @mark_scheme_json = hash_to_json({ "sections": [] })
 
       mark_scheme_csv.each do |row|
         title = row[0]
         description = row[1]
         max_marks = row[2]
-        
+
         unless title.present? && description.present? && /\A\d+\z/.match(max_marks)
           @error = "Invalid CSV format."
           break
         end
 
-        @mark_scheme_json['sections'] << hash_to_json({ title: title, description: description, max_marks: max_marks })
+        @mark_scheme_json["sections"] << hash_to_json({ title:, description:, max_marks: })
       end
     end
 
@@ -453,14 +453,14 @@ class MarkSchemeController < ApplicationController
       # TODO: When I edit a mark scheme should I also be destroying the responses to it? Or just the responses where
       #       something has been changed?
       get_mark_scheme&.destroy
-      
+
       # Create a new milestone
       milestone = Milestone.new(
-        json_data: hash_to_json(@mark_scheme_json),
-        deadline: Date.current.strftime('%Y-%m-%d'),  # Deadline isn't used for mark schemes
-        milestone_type: :team,                        # Marks will be given per team
+        json_data:         hash_to_json(@mark_scheme_json),
+        deadline:          Date.current.strftime("%Y-%m-%d"),  # Deadline isn't used for mark schemes
+        milestone_type:    :team,                        # Marks will be given per team
         course_project_id: params[:project_id],
-        system_type: :marking_deadline
+        system_type:       :marking_deadline
       )
 
       @error = "Failed to import mark scheme." unless milestone.save

@@ -4,7 +4,6 @@
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 class FacilitatorController < ApplicationController
-
   skip_authorization_check
 
   # For each progress form route we check if the user is a facilitator for the project of the targeted team
@@ -33,10 +32,10 @@ class FacilitatorController < ApplicationController
 
     unless params[:projects_filter] == "All" || params[:projects_filter].empty?
       target_project_id = CourseProject.find_by(name: params[:projects_filter]).id
-      @groups = @groups.select{|g| g.course_project_id == target_project_id}
+      @groups = @groups.select { |g| g.course_project_id == target_project_id }
     end
 
-    render partial: 'teams-list-card'
+    render partial: "teams-list-card"
   end
 
   def progress_form
@@ -132,15 +131,15 @@ class FacilitatorController < ApplicationController
       end
     end
 
-  def get_assigned_groups
-    # Return all the groups that the current user is facilitating
-    get_assigned_facilitators.flat_map(&:groups)
-  end
+    def get_assigned_groups
+      # Return all the groups that the current user is facilitating
+      get_assigned_facilitators.flat_map(&:groups)
+    end
 
-  def get_assigned_projects
-    # Returns all the projects the current user is facilitating
-    get_assigned_facilitators.map(&:course_project).uniq
-  end
+    def get_assigned_projects
+      # Returns all the projects the current user is facilitating
+      get_assigned_facilitators.map(&:course_project).uniq
+    end
 
     def set_current_group
       # Team id will always be provided unless ajax request, then just use the cached one.
@@ -150,16 +149,16 @@ class FacilitatorController < ApplicationController
       @current_group_facilitator_repr = get_facilitator_repr(@current_group.assigned_facilitator)
     end
 
-  def get_facilitator_repr(facilitator)
-    return "" if facilitator.nil?
-    
-    if facilitator.student_id
-      Student.find_by(id: facilitator.student_id).email
+    def get_facilitator_repr(facilitator)
+      return "" if facilitator.nil?
+
+      if facilitator.student_id
+        Student.find_by(id: facilitator.student_id).email
 
       elsif facilitator&.staff_id
         Staff.find_by(id: facilitator.staff_id).email
       end
-    end
+      end
 
     def get_progress_forms_for_group
       # Return released progress forms for group
@@ -170,11 +169,11 @@ class FacilitatorController < ApplicationController
       end
     end
 
-    # def authorise_facilitator
-    #   set_current_group
-    #   return if @current_group.nil?
-    #   project_id = @current_group
+  # def authorise_facilitator
+  #   set_current_group
+  #   return if @current_group.nil?
+  #   project_id = @current_group
 
 
-    # end
+  # end
 end
