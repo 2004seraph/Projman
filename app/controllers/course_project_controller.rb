@@ -40,10 +40,6 @@ class CourseProjectController < ApplicationController
         end
       end
 
-      logger.debug "!!!!!!!!!!!!!!!!!!!! #{@milestones.count}"
-      puts @milestones
-
-
       render "index_student"
     else
       Sentry.capture_message("could not find user: #{current_user.student}", level: :warn)
