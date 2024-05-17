@@ -98,6 +98,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
 
   create_table "events", force: :cascade do |t|
     t.bigint "group_id", null: false
+    t.bigint "milestone_id"
     t.enum "event_type", null: false, enum_type: "group_event_type"
     t.boolean "completed", default: false
     t.json "json_data", default: "{}", null: false
@@ -106,6 +107,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_17_140249) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["group_id"], name: "index_events_on_group_id"
+    t.index ["milestone_id"], name: "index_events_on_milestone_id"
     t.index ["staff_id"], name: "index_events_on_staff_id"
     t.index ["student_id"], name: "index_events_on_student_id"
   end

@@ -4,21 +4,23 @@
 #
 # Table name: events
 #
-#  id         :bigint           not null, primary key
-#  completed  :boolean          default(FALSE)
-#  event_type :enum             not null
-#  json_data  :json             not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  group_id   :bigint           not null
-#  staff_id   :bigint
-#  student_id :bigint
+#  id           :bigint           not null, primary key
+#  completed    :boolean          default(FALSE)
+#  event_type   :enum             not null
+#  json_data    :json             not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  group_id     :bigint           not null
+#  milestone_id :bigint
+#  staff_id     :bigint
+#  student_id   :bigint
 #
 # Indexes
 #
-#  index_events_on_group_id    (group_id)
-#  index_events_on_staff_id    (staff_id)
-#  index_events_on_student_id  (student_id)
+#  index_events_on_group_id      (group_id)
+#  index_events_on_milestone_id  (milestone_id)
+#  index_events_on_staff_id      (staff_id)
+#  index_events_on_student_id    (student_id)
 #
 # Foreign Keys
 #
@@ -29,6 +31,7 @@
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 class Event < ApplicationRecord
+  belongs_to :event, optional: true
   belongs_to :group
   has_one :course_project, through: :group
   has_one :course_module, through: :course_project

@@ -9,6 +9,7 @@ class CreateEvent < ActiveRecord::Migration[7.0]
 
     create_table :events do |t|
       t.references :group, null: false, foreign_key: { to_table: :groups }
+      t.references :milestone, null: true
 
       t.column :event_type, :group_event_type, null: false
       t.boolean :completed, default: false
