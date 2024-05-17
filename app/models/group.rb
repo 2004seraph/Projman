@@ -79,20 +79,24 @@ class Group < ApplicationRecord
   end
 
   def set_subproject_from_responses
-    proj_form = self.course_project_id.milestones.where(system_type: "project_preference_deadline").first
+    proj_form = self.course_project.milestones.where(system_type: "project_preference_deadline").first
     return nil if proj_form.nil?
 
     popular_projects = {}
-    self.course_project_id.subprojects.each do |subproj|
+    self.course_project.subprojects.each do |subproj|
       popular_projects[subproj.id] = 0
     end
 
     self.students.each do |student|
       proj_form_response = student.milestone_responses.where(milestone_id: proj_form.id).first
-      next if proj_form_response.nil?
-
-      proj_form_response.json_data.each do |rank, subproj|
-        popular_projects[subproj] += rank.to_i
+      if proj_form_response.nil?
+        self.course_project.subprojects.each do |subproj|
+          popular_projects[subproj.id] += rand(1..self.course_project.subprojects.size)
+        end
+      else
+        proj_form_response.json_data.each do |rank, subproj|
+          popular_projects[subproj] += rank.to_i
+        end
       end
     end
 
