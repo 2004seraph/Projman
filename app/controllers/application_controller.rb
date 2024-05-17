@@ -23,8 +23,8 @@ class ApplicationController < ActionController::Base
   def store_location
     return unless user_initiated_page_request? && request.path != "/users/sign_in"
 
-    session[:redirect_url] = session[:previous_url]
-    session[:previous_url] = request.fullpath
+    session[:redirect_url] = session[:current_url]
+    session[:current_url] = request.fullpath
   end
 
   rescue_from CanCan::AccessDenied do |exception|
@@ -36,7 +36,7 @@ class ApplicationController < ActionController::Base
         if session[:redirect_url]
           session[:redirect_url]
         else
-          root_path
+          new_user_session_path
         end
       redirect_to redirect_target, alert: AuthHelper::UNAUTHORIZED_MSG
     else
@@ -59,7 +59,7 @@ class ApplicationController < ActionController::Base
     return if current_user.is_staff? || current_user.is_student?
 
     reset_session
-    redirect_to new_user_session_path, alert: AuthHelper::UNAUTHORIZED_MSG
+    redirect_to new_user_session_path, alert: "You are not part of any modules or projects, please contact a member of staff if this is in error."
   end
 
   private
