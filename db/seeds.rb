@@ -7,17 +7,17 @@ require "student_data_helper"
 require "database_helper"
 require "csv"
 
-sam = Student.find_or_create_by({
-  username:       "aca21sgt",
-  preferred_name: "Sam",
-  forename:       "Sam",
-  title:          "Mx",
-  ucard_number:   "777777777",
-  email:          "sgttaseff1@sheffield.ac.uk",
-  fee_status:     :home
-})
-DatabaseHelper.print_validation_errors(sam)
-Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: true })
+# sam = Student.find_or_create_by({
+#   username:       "aca21sgt",
+#   preferred_name: "Sam",
+#   forename:       "Sam",
+#   title:          "Mx",
+#   ucard_number:   "777777777",
+#   email:          "sgttaseff1@sheffield.ac.uk",
+#   fee_status:     :home
+# })
+# DatabaseHelper.print_validation_errors(sam)
+Staff.find_or_create_by({ email: "e.j.norling@sheffield.ac.uk", admin: true })
 # DatabaseHelper.print_validation_errors(sam_staff)
 
 # Student.find_or_create_by({
