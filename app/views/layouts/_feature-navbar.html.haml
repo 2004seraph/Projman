@@ -14,7 +14,7 @@
       - if current_user.is_staff?
         %li.nav-item
           = link_to students_url, class: 'btn btn-light' do
-            Students
+            Cohorts
       %li.nav-item#projects-btn
         = link_to projects_url, class: 'btn btn-light' do
           Projects
@@ -33,3 +33,7 @@
         %li.nav-item
           = link_to markings_url, class: 'btn btn-light' do
             Marking
+      - if current_user.is_staff?
+        %li.nav-item
+          = link_to mail_path, class: 'btn btn-light' do
+            Emailing
