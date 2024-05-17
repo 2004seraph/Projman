@@ -16,9 +16,22 @@
         %label.me-3.fs-5{for: "project-status-change", style: "text-wrap: nowrap;"} Project Status
         %select.form-select.mb-0.me-3{"aria-labelledby": "project-status_change", id: "project-status-change", name: "status"}
           - if project_data.key?(:possible_status_changes)
-            - project_data[:possible_status_changes].each do |status|
-              %option{value: status, selected: (project_data[:selected_status].present? ? project_data[:selected_status] == status : project_data[:status] == status)}
-                = "#{status.humanize}"
+            - if project_data[:status] == "preparation"
+              - project_data[:possible_status_changes].each do |status|
+                - if status == "preparation" || status == "review"
+                  %option{value: status, selected: (project_data[:selected_status].present? ? project_data[:selected_status] == status : project_data[:status] == status)}
+                    = "#{status.humanize}"
+            - elsif project_data[:status] == "review"
+              - project_data[:possible_status_changes].each do |status|
+                - if status == "live" || status == "review"
+                  %option{value: status, selected: (project_data[:selected_status].present? ? project_data[:selected_status] == status : project_data[:status] == status)}
+                    = "#{status.humanize}"
+            - else 
+              - project_data[:possible_status_changes].each do |status|
+                %option{value: status, selected: (project_data[:selected_status].present? ? project_data[:selected_status] == status : project_data[:status] == status)}
+                  = "#{status.humanize}"
+
+
 
       - if project_data[:status] != "live" && project_data[:status] != "completed"
         = button_tag "Delete Project", type: "button", class: "btn btn-outline-danger", id: "delete-project-btn", style:"text-wrap: nowrap;"
