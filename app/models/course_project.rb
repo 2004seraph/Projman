@@ -315,7 +315,7 @@ class CourseProject < ApplicationRecord
         c.reload
 
         logger.debug "\tevents done"
-        logger.debug c.completion_deadline
+        # logger.debug c.completion_deadline.to_s
 
         next unless c.completion_deadline < DateTime.now
 
