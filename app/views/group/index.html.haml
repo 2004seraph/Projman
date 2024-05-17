@@ -130,23 +130,26 @@
 
 = render partial: 'components/loading_modal'
 
-:javascript
+- if @current_project.show_remake_teams_button?
+  :javascript
+    function countViolations() {
+      var selector = '.team-violations-container'; 
+      var elements = document.querySelectorAll(selector);
+      return elements.length;
+    }
+    var violationCount = countViolations();
+    var noViolationsElement = document.getElementById('noViolations');
+    var someViolationsElement = document.getElementById('someViolations');
+    if (violationCount == 0) {
+      noViolationsElement.style.display = 'inline';
+      someViolationsElement.style.display = 'none';
+    } else {
+      someViolationsElement.style.display = 'inline';
+      noViolationsElement.style.display = 'none';
+    }
 
-  function countViolations() {
-    var selector = '.team-violations-container'; 
-    var elements = document.querySelectorAll(selector);
-    return elements.length;
-  }
-  var violationCount = countViolations();
-  var noViolationsElement = document.getElementById('noViolations');
-  var someViolationsElement = document.getElementById('someViolations');
-  if (violationCount == 0) {
-    noViolationsElement.style.display = 'inline';
-    someViolationsElement.style.display = 'none';
-  } else {
-    someViolationsElement.style.display = 'inline';
-    noViolationsElement.style.display = 'none';
-  }
+
+:javascript
 
   document.addEventListener('DOMContentLoaded', function() {
     // Find the confirm button

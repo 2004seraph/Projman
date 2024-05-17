@@ -57,6 +57,11 @@ $(function() {
             else{
                 emailBtn.removeClass('disabled')
             }
+            let params = new URLSearchParams(emailBtn.attr("href"))
+            params.set("recipient_list", emails.toString())
+
+            // console.log( params )
+            emailBtn.attr("href", decodeURIComponent(params.toString()))
         });
     })
 
@@ -84,7 +89,7 @@ $(function() {
                         row.remove();
                     }
                 });
-                
+
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);

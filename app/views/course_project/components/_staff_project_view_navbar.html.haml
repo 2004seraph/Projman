@@ -24,12 +24,13 @@
       %li.nav-item.side-nav-bar{ class: request.path == project_mark_scheme_index_path(project_id) ? 'active' : '' }
         = link_to project_mark_scheme_index_path(project_id), class: 'btn btn-light' do
           Mark Scheme
-      %li.nav-item{ class: request.path == '/emails' ? 'active' : '' }
-        %button.btn.btn-light Emails
+      -# %li.nav-item{ class: request.path == mail_path(project_id) ? 'active' : '' }
+      -#   = link_to mail_path(project_id), class: 'btn btn-light' do
+      -#     Emailing
 
 
 = render partial: "layouts/footer"
-        
+
 .vertical-divider
 
 :javascript

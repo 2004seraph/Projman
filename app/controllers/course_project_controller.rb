@@ -112,8 +112,11 @@ class CourseProjectController < ApplicationController
     end
 
     staff_id = Staff.where(email: current_user.email).first
-
-    modules_hash = CourseModule.all.where(staff_id:).order(:code).pluck(:code, :name).to_h
+    if current_user.is_admin?
+      modules_hash = CourseModule.all.order(:code).pluck(:code, :name).to_h
+    else
+      modules_hash = CourseModule.all.where(staff_id:).order(:code).pluck(:code, :name).to_h
+    end
     # if a staff is not a module lead for any module, do not show them the new page
     if modules_hash.empty?
       flash[:alert] = "You are not part of any modules. Please contact an admin if this is in error."
