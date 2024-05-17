@@ -15,7 +15,12 @@
     var teamContainerToAddTo = $('.project-teams-team-container input[name="team_id"][value="#{@team_id}"]').parent();
     var selectableRowContainerTableBody = teamContainerToAddTo.find('.selectable-row-container tbody').first()
     var newPartialHTML = "#{j(render(partial: 'student_selectable_row', locals: { student: @student, team: @team }))}";
-    selectableRowContainerTableBody.append(newPartialHTML)
+    selectableRowContainerTableBody.append(newPartialHTML);
+
+    var collapseElement = $('project_team_container_#{@team_id} .collapse');
+    console.log(collapseElement);
+    collapseElement.addClass('show');
+    $('team-card-header-#{@team_id}').attr('aria-expanded', 'true');
   }
   else{
     $('#no-student-found-error').removeClass('display-none');

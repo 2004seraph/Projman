@@ -139,17 +139,22 @@
 }
 
 #activity-feed-container {
-    max-height: 250px; /* Adjust this value as needed */
+    max-height: 250px;
     overflow-y: auto;
 }
 
 #chat-box-container {
-    max-height: 450px; /* Adjust this value as needed */
+    max-height: 450px;
+    overflow-y: auto;
+}
+
+#teams-display {
+    max-height: 465px;
     overflow-y: auto;
 }
 
 .issue-box-container {
-    max-height: 300px; /* Adjust this value as needed */
+    max-height: 300px;
     overflow-y: auto;
 }
 
