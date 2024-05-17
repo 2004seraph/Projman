@@ -35,7 +35,7 @@ class CourseProjectController < ApplicationController
         @milestones = milestones_list.first
         next_milestones = milestones_list.drop(0)
         next_milestones.each do |m_collection|
-          @milestones.or m_collection
+          @milestones = @milestones.or m_collection
           logger.debug m_collection.count
         end
       end
