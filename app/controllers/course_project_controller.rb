@@ -22,7 +22,7 @@ class CourseProjectController < ApplicationController
       @projects = current_user.staff.course_projects
       @course_modules = current_user.staff.course_modules.length
       render "index_module_leader"
-    else
+    elsif current_user.is_student?
       @live_projects = current_user.student.course_projects.where(status: %w[preparation review live])
       @comp_projects = current_user.student.course_projects.where(status: "completed")
 
@@ -31,6 +31,8 @@ class CourseProjectController < ApplicationController
         @milestones += project.milestones
       end
       render "index_student"
+    else
+      Sentry.capture_message("could not find user: #{current_user.student}", level: :warn)
     end
   end
 
