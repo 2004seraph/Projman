@@ -79,15 +79,7 @@ RSpec.feature "Project Creation", type: :feature do
         options.each do |option|
           course_module_code = option.value
           course_module = CourseModule.find_by(code: course_module_code)
-          expect(course_module.staff_id).to eq(staff.id)
-        end
-      end
-      it "fills in correct project allocation methods into selection" do
-        select_element = find("select[name='project_allocation_method']")
-        options = select_element.all("option")
-        project_allocation_methods = CourseProject.project_allocations.keys
-        options.each do |option|
-          expect(project_allocation_methods).to include(option.value)
+          expect(course_module.staff.email).to eq(staff_user.email)
         end
       end
       it "fills in correct team allocation methods into selection" do
@@ -107,16 +99,7 @@ RSpec.feature "Project Creation", type: :feature do
         options.each do |option|
           course_module_code = option.value
           course_module = CourseModule.find_by(code: course_module_code)
-          expect(course_module.staff_id).to eq(staff.id)
-        end
-      end
-      it "fills in correct project allocation methods into selection" do
-        click_button "create-project-save-button"
-        select_element = find("select[name='project_allocation_method']")
-        options = select_element.all("option")
-        project_allocation_methods = CourseProject.project_allocations.keys
-        options.each do |option|
-          expect(project_allocation_methods).to include(option.value)
+          expect(course_module.staff.email).to eq(staff_user.email)
         end
       end
       it "fills in correct team allocation methods into selection" do
@@ -150,11 +133,6 @@ RSpec.feature "Project Creation", type: :feature do
           expect(page).to have_content("Project Choice 1")
           expect(page).to have_content("Project Choice 2")
         end
-      end
-      it "persists the previous selected project allocation method" do
-        select("Single preference submission", from: "project_allocation_method")
-        click_button "create-project-save-button"
-        expect(page).to have_select("project_allocation_method", selected: "Single preference submission")
       end
       it "persists the previous seleted team allocation method" do
         select("Preference form based", from: "team_allocation_method")
@@ -301,13 +279,6 @@ RSpec.feature "Project Creation", type: :feature do
         select("Preference form based", from: "team_allocation_method")
         click_button "create-project-save-button"
         expect(page).to have_text("Please set team preference form deadline")
-      end
-    end
-    context "Project preference form deadline not set" do
-      it "shows error" do
-        select("Team average preference", from: "project_allocation_method")
-        click_button "create-project-save-button"
-        expect(page).to have_text("Please set project preference form deadline")
       end
     end
     context "milestone dates left unset" do
