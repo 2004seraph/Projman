@@ -16,13 +16,21 @@
                     %i.bi.bi-exclamation-circle.orange
                     Report Issue
 
-    %h2
-        -if @show_group_information
+    - if @show_group_information
+        %h2.fs-4
             #{@group_name}
-
-    - if !@show_group_information
+    - else
         .d-flex
             %i.fs.6.fw-light No Team Currently Assigned
+
+    - unless @subproject.nil?
+        - if @subproject.is_a?(Subproject)
+            %h2.fs-4
+                #{@subproject.name}
+        - else 
+            .d-flex
+                %i.fs.6.fw-light #{@subproject}
+
     %hr.divider
 
     -if @current_project.status == "preparation"
@@ -36,9 +44,18 @@
             .d-flex.justify-content-center
                 %i.fs-6.fw-light No Action Required
 
+    - elsif @current_project.status == "review"
+        .d-flex.justify-content-center
+            %i.fs-6.fw-light Project is Under Review
+    - elsif @current_project.status == "archived"
+        .d-flex.justify-content-center
+            %i.fs-6.fw-light Project is Archived
 
     -else
-        - if @show_group_information
+        - if @show_proj_form
+            = render partial: 'course_project/components/project-choices-box'
+            %hr.divider
+        - elsif @show_group_information
             %h2.fs-4
                 Activity Feed
             %hr.divider

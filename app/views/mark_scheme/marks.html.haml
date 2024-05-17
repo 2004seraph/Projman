@@ -42,11 +42,11 @@
 
     function updateMarkingTable() {
         // Make an ajax request to get a new form partial
-        fetch("show_new", {
+        fetch("#{show_new_project_mark_scheme_index_path}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+                "X-CSRF-Token": document.head.querySelector("meta[name=csrf-token]")?.content
             },
             body: JSON.stringify({
                 group_name: teamLabel.textContent.replace("Team: ", "")

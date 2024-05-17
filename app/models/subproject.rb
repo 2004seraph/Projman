@@ -27,5 +27,5 @@ class Subproject < ApplicationRecord
   belongs_to :course_project
   has_one :course_module, through: :course_project
 
-  has_many :groups
+  has_many :groups, dependent: :nullify
 end

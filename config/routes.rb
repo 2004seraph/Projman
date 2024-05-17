@@ -19,6 +19,7 @@ Rails.application.routes.draw do
 
     post "/new", to: "course_project#create", on: :collection
     post "/edit", to: "course_project#update", on: :member
+    post "/delete", to: "course_project#delete", on: :member
 
     # AJAX
     post "add_project_choice", on: :collection
@@ -78,17 +79,20 @@ Rails.application.routes.draw do
       post "save" => "mark_scheme#save", on: :collection
       post "save" => "mark_scheme#save", on: :member
 
-      post "add_to_assessors_selection" => "mark_scheme#add_to_assessors_selection", on: :collection
-      post "add_assessors_selection" => "mark_scheme#add_assessors_selection", on: :collection
-      post "clear_assessors_selection" => "mark_scheme#clear_assessors_selection", on: :collection
-      post "remove_from_assessor_selection" => "mark_scheme#remove_from_assessor_selection", on: :collection
-      post "remove_assessor_from_section" => "mark_scheme#remove_assessor_from_section", on: :collection
-      post "get_assignable_teams" => "mark_scheme#get_assignable_teams", on: :collection
-      post "assign_teams" => "mark_scheme#assign_teams", on: :collection
-      post "auto_assign_teams" => "mark_scheme#auto_assign_teams", on: :collection
-      get "search_assessors" => "mark_scheme#search_assessors", on: :collection
+      post 'add_to_assessors_selection' => 'mark_scheme#add_to_assessors_selection', on: :collection
+      post 'add_assessors_selection' => 'mark_scheme#add_assessors_selection', on: :collection
+      post 'clear_assessors_selection' => 'mark_scheme#clear_assessors_selection', on: :collection
+      post 'remove_from_assessor_selection' => 'mark_scheme#remove_from_assessor_selection', on: :collection
+      post 'remove_assessor_from_section' => 'mark_scheme#remove_assessor_from_section', on: :collection
+      post 'get_assignable_teams' => 'mark_scheme#get_assignable_teams', on: :collection
+      post 'assign_teams' => 'mark_scheme#assign_teams', on: :collection
+      post 'auto_assign_teams' => 'mark_scheme#auto_assign_teams', on: :collection
+      get 'search_assessors' => 'mark_scheme#search_assessors', on: :collection
+      post "export_mark_scheme_with_results" => "mark_scheme#export_mark_scheme_with_results", on: :collection
+      post "import_mark_scheme" => "mark_scheme#import_mark_scheme", on: :collection
 
-      post "show_new", on: :collection
+      get 'marks' => 'mark_scheme#marks', on: :collection
+      post 'show_new', on: :collection
     end
   end
 
@@ -114,12 +118,12 @@ Rails.application.routes.draw do
                                                       on: :collection
 
     # AJAX
-    post "/update_teams_list" => "facilitator#update_teams_list", on: :collection
-    post "/update_progress_form_response" => "facilitator#update_progress_form_response", on: :collection
+    post 'update_teams_list' => 'facilitator#update_teams_list', on: :collection
+    post 'update_progress_form_response' => 'facilitator#update_progress_form_response', on: :collection
   end
 
-  resources :markings, controller: :marking do
-    post "/save" => "marking#save", on: :collection
+  resources :markings, controller: :marking do 
+    post 'save' => 'marking#save', on: :collection
   end
 
   resources :modules, controller: :course_module do

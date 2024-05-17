@@ -10,6 +10,11 @@
       .container-fluid.d-flex.flex-column.fs-6.text-danger.mb-3
         Please fix all errors
 
+    - if errors[:top].present?
+      .container-fluid.d-flex.flex-column.fs-6.text-danger.mb-3
+        - errors[:top].each do |error|
+          %span= error
+
     .input-group
       %h2.input-group-text.fs-4.fw-bold.mb-0 Module
       %select.form-select.form-select-sm.fs-5{id: "module-selection", name:"module_selection", aria: {label: "Default select example"}, style: "width:auto; max-width:100%"}
@@ -141,11 +146,11 @@
           - elsif milestone[:system_type] == "project_preference_deadline"
             - proj_pref_form_milestone = milestone
 
-        - lock_proj_deadline_milestone = (project_deadline_milestone && project_deadline_milestone.key?("Email") && project_deadline_milestone["Email"].key?("Sent"))
-        - lock_team_pref_milestone = (teammate_pref_form_milestone && teammate_pref_form_milestone.key?("Email") && teammate_pref_form_milestone["Email"].key?("Sent"))
-        - lock_proj_pref_milestone = (proj_pref_form_milestone && proj_pref_form_milestone.key?("Email") && proj_pref_form_milestone["Email"].key?("Sent"))
+        - lock_proj_deadline_email = (project_deadline_milestone && project_deadline_milestone.key?("Email") && project_deadline_milestone["Email"].key?("Sent"))
+        - lock_team_pref_email = (teammate_pref_form_milestone && teammate_pref_form_milestone.key?("Email") && teammate_pref_form_milestone["Email"].key?("Sent"))
+        - lock_proj_pref_email = (proj_pref_form_milestone && proj_pref_form_milestone.key?("Email") && proj_pref_form_milestone["Email"].key?("Sent"))
 
-        .row.align-items-center#project-deadline-row.milestone-row{class: "mb-2 #{"locked" if lock_proj_deadline_milestone}"}
+        .row.align-items-center#project-deadline-row.milestone-row.mb-2
           .col
             %label.col-form-label.fs-6.me-3{for: "project-deadline"} Project Deadline
             %input{ type: "hidden", name: "milestone_Project Deadline", value: "milestone_Project Deadline", class: "hidden-row-value"}
@@ -153,10 +158,10 @@
             .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
               %input.form-control{ type: "datetime-local", id: "project-deadline", name: "milestone_Project Deadline_date", value: project_data[:project_deadline], placeholder: "Select Date", min: @min_date}
               -# = render partial: 'components/datepicker_input', locals: { id: 'project-deadline', name:"milestone_Project Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:project_deadline] }
-            %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
+            %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal", class: "#{"locked" if lock_proj_deadline_email}"} Email
             %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
 
-        .row.align-items-center#teammate-preference-form-deadline-row.milestone-row{class: "mb-2 #{"locked" if lock_team_pref_milestone}"}
+        .row.align-items-center#teammate-preference-form-deadline-row.milestone-row.mb-2
           .col
             %label.col-form-label.fs-6.me-3{for: "teammate-preference-form-deadline"} Teammate Preference Form
             %input{ type: "hidden", name: "milestone_Teammate Preference Form Deadline", value: "milestone_Teammate Preference Form Deadline", class: "hidden-row-value"}
@@ -164,10 +169,10 @@
             .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
               %input.form-control{ type: "datetime-local", id: "teammate-preference-form-deadline", name: "milestone_Teammate Preference Form Deadline_date", value: project_data[:teammate_preference_form_deadline], placeholder: "Select Date", min: @min_date}
               -# = render partial: 'components/datepicker_input', locals: { id: 'teammate-preference-form-deadline',name:"milestone_Teammate Preference Form Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:teammate_preference_form_deadline] }
-            %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
+            %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal", class: "#{"locked" if lock_team_pref_email}"} Email
             %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
 
-        .row.align-items-center#project-preference-form-deadline-row.milestone-row{class: "mb-2 #{"locked" if lock_proj_pref_milestone}"}
+        .row.align-items-center#project-preference-form-deadline-row.milestone-row.mb-2
           .col
             %label.col-form-label.fs-6.me-3{for: "project-preference-form-deadline"} Project Preference Form
             %input{ type: "hidden", name: "milestone_Project Preference Form Deadline", value: "milestone_Project Preference Form Deadline", class: "hidden-row-value"}
@@ -175,7 +180,7 @@
             .input-group.me-3{style: "min-width: fit-content; max-width: fit-content;"}
               %input.form-control{ type: "datetime-local", id: "project-preference-form-deadline", name: "milestone_Project Preference Form Deadline_date", value: project_data[:project_preference_form_deadline], placeholder: "Select Date", min: @min_date}
               -# = render partial: 'components/datepicker_input', locals: { id: 'project-preference-form-deadline',name:"milestone_Project Preference Form Deadline_date", placeholder_text: 'Select Date', date_value: project_data[:project_preference_form_deadline]}
-            %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal"} Email
+            %button.btn.btn-outline-secondary.fs-6.milestone-email-btn.me-3{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-email-modal", class: "#{"locked" if lock_proj_pref_email}"} Email
             %button.btn.btn-outline-secondary.fs-6.milestone-comment-btn{type: "button", "data-bs-toggle": "modal", "data-bs-target": "#milestone-comment-modal"} Comment
 
       %h3.fs-5.mb-2 Milestones
@@ -196,9 +201,10 @@
   -# PROJECT FACILITATORS
   .card#project-facilitators.mb-3
     .card-header.d-flex.align-items-center
-      %h2.fs-4.m-0 Project Facilitators
+      %h2.fs-4.m-0 Project Facilitators / Assessors
 
     .card-body.pb-3
+      %i.fs-6 Students will not be assessors
       - if errors[:facilitators_not_found].present?
         %div
           .d-flex.flex-column.fs-6.text-danger

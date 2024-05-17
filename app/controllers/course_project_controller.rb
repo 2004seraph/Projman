@@ -41,7 +41,7 @@ class CourseProjectController < ApplicationController
 
   def new
     staff_id = Staff.where(email: current_user.email).first
-    @min_date = "#{DateTime.now.strftime('%Y-%m-%d')}T00:00"
+    @min_date = "#{DateTime.now.strftime('%Y-%m-%dT:%H:%M')}"
 
     modules_hash = if current_user.is_admin?
       CourseModule.all.order(:code).pluck(:code, :name).to_h
@@ -87,10 +87,31 @@ class CourseProjectController < ApplicationController
     project_id = params[:id]
     project = CourseProject.find_by(id: project_id)
 
+    possible_status_changes = []
+
+    datenow = DateTime.now.strftime('%Y-%m-%dT%H:%M')
+
     if project.status == 'draft'
-      @min_date = "#{DateTime.now.strftime('%Y-%m-%d')}T00:00"
+      @min_date = datenow
     else
       @min_date = DateTime.parse(project.created_at.to_s).strftime('%Y-%m-%dT%H:%M')
+    end
+
+    # if we are in preparation or review, we can go to those two or also go live
+    p_deadline = project.milestones.find_by(system_type: "project_deadline")
+    if project.status == "preparation" || project.status == "review"
+      possible_status_changes = ["preparation", "review", "live"]
+    # if we are in live and deadline hasnt passed, we cant change to anything
+    elsif project.status == "live" && p_deadline && p_deadline.deadline > datenow
+      possible_status_changes = ["live"]
+    # if we are live, and project deadline has passed, we can either go to completed or archived, or stay in live
+    elsif project.status == "live" && p_deadline && p_deadline.deadline < datenow
+      possible_status_changes = ["completed", "archived", "live"]
+    # if compeleted, we can only go to archived, or completed
+    elsif project.status == "completed"
+      possible_status_changes = ["completed", "archived"]
+    elsif project.status == "archived"
+      possible_status_changes = ["archived"]
     end
 
     staff_id = Staff.where(email: current_user.email).first
@@ -157,7 +178,9 @@ class CourseProjectController < ApplicationController
       team_allocation_modes_hash:,
       milestone_types_hash:,
 
+      selected_status:                   project[:status],
       status:                            project[:status],
+      possible_status_changes:,
       selected_module:                   CourseModule.find(project[:course_module_id])[:code],
       project_name:                      project[:name],
       teams_from_project_choice:         project[:teams_from_project_choice],
@@ -325,6 +348,8 @@ class CourseProjectController < ApplicationController
   def create
     session[:project_data][:errors] = {}
     errors = session[:project_data][:errors]
+
+    errors[:top] = []
 
     project_data = session[:project_data]
 
@@ -525,7 +550,7 @@ class CourseProjectController < ApplicationController
 
         milestone = Milestone.new(
           json_data:,
-          deadline:          "#{date} #{time}",
+          deadline:          "#{date}T#{time}",
           system_type:       milestone_data[:system_type],
           user_generated:    true,
           milestone_type:    milestone_data[:Type],
@@ -654,6 +679,8 @@ class CourseProjectController < ApplicationController
   def update
     session[:project_data][:errors] = {}
     errors = session[:project_data][:errors]
+
+    errors[:top] = []
     
     project = CourseProject.find(params[:id])
 
@@ -662,13 +689,19 @@ class CourseProjectController < ApplicationController
     project_data = session[:project_data]
 
     if project.status == 'draft'
-      @min_date = "#{DateTime.now.strftime('%Y-%m-%d')}T00:00"
+      @min_date = "#{DateTime.now.strftime('%Y-%m-%dT%H:%M')}"
     else
       @min_date = DateTime.parse(project.created_at.to_s).strftime('%Y-%m-%dT%H:%M')
     end
 
+    # Load in Status to change to if its included in parameters
     if params.key?(:status)
-      project_data[:new_status] = params[:status]
+      if CourseProject.statuses.include?(params[:status])
+        project_data[:new_status] = params[:status]
+        project_data[:selected_status] = params[:status]
+      else
+        errors[:main] << "Invalid status selected"
+      end
     else
       project_data[:new_status] = initial_project_status
     end
@@ -782,18 +815,36 @@ class CourseProjectController < ApplicationController
 
       project_creation_date = DateTime.parse(project.created_at.to_s)
       datetime = DateTime.parse(date)
+
       if project.status != "draft" && datetime < project_creation_date
-        err = "Milestone dates cannot be set to earlier than the project publish date: #{project_creation_date.readable_inspect.split('+').first}"
+        err = "Milestone dates must be set to later than the project publish date: #{project_creation_date.readable_inspect.split('+').first}"
         errors[:timings] << err unless errors[:timings].include? err
-      elsif datetime < DateTime.now
+
+      # if we are in draft, we can only make deadlines later than today or else when it goes out of draft, it will pass instantly
+      elsif project.status == "draft" && datetime < DateTime.now
         err = "Milestone dates cannot be set to earlier than the current date"
         errors[:timings] << err unless errors[:timings].include? err
       end
-      puts datetime
-      puts project_deadline
       if datetime > project_deadline
         err = "Milestone dates must be set to earlier than the project deadline"
         errors[:timings] << err unless errors[:timings].include? err
+      end
+    end
+
+    # If we are changing status to LIVE, we must ensure that the teammate preference form deadline has passed, if its enabled
+    if project_data[:new_status] == "live" && project.status != "live"
+      pref_form = session[:project_data][:project_milestones].find do |m|
+        m[:Name] == "Teammate Preference Form Deadline"
+      end
+      # puts "CHECKING LIVE STATUS CHANGE REQUIREMENTS"
+      # puts pref_form[:Date]
+      # puts DateTime.parse(pref_form[:Date])
+      # puts DateTime.now
+      # puts DateTime.parse(pref_form[:Date]) > DateTime.now
+      # puts Time.now
+
+      if pref_form[:Date].present? && DateTime.parse(pref_form[:Date]) > DateTime.now
+        errors[:top] << "Cannot set project status to Live: Teammate Preference Form Deadline has not yet passed."
       end
     end
 
@@ -801,6 +852,8 @@ class CourseProjectController < ApplicationController
       Student.exists?(email:) || Staff.exists?(email:)
     end
     errors[:facilitators_not_found] = facilitators_not_found
+
+    no_errors = errors.all? { |_, v| v.empty? }
 
     project.course_module_id
     project.team_size
@@ -810,7 +863,7 @@ class CourseProjectController < ApplicationController
     team_allocation_method = project_data[:selected_team_allocation_mode].nil? ? nil : project_data[:selected_team_allocation_mode].to_sym
 
     # Update Project Details
-    unless project.update(
+    if no_errors && project.update(
       course_module:             project.status == "draft" ? CourseModule.find_by(code: project_data[:selected_module]) : project.course_module,
       name:                      project.status == "draft" ? project_data[:project_name] : project.name,
       teams_from_project_choice: project.status == "draft" ? project_data[:teams_from_project_choice] : project.teams_from_project_choice,
@@ -820,21 +873,22 @@ class CourseProjectController < ApplicationController
       avoided_teammates:         project.status == "draft" ? project_data[:avoided_teammates] : project.avoided_teammates,
       status:                    project_data[:new_status]
     )
+
+      project.reload
+      # Reset project's created_at field if it gets published
+      if initial_project_status == "draft" && project.status != "draft"
+        unless project.update(created_at: DateTime.now)
+          project.errors.messages.each do |section, section_errors|
+            section_errors.each do |error|
+              (errors[section.to_sym] ||= []) << error
+            end
+          end
+        end
+      end
+    else
       project.errors.messages.each do |section, section_errors|
         section_errors.each do |error|
           (errors[section.to_sym] ||= []) << error
-        end
-      end
-    end
-
-    project.reload
-    # Reset project's created_at field if it gets published
-    if initial_project_status == "draft" && project.status != "draft"
-      unless project.update(created_at: DateTime.now)
-        project.errors.messages.each do |section, section_errors|
-          section_errors.each do |error|
-            (errors[section.to_sym] ||= []) << error
-          end
         end
       end
     end
@@ -929,18 +983,49 @@ class CourseProjectController < ApplicationController
           "Name"    => milestone_name,
           "Comment" => milestone_data[:Comment]
         }
-        # dont update the email if its already been sent, and dont update deadline or type either
-        if milestone_email && milestone_email.key?("Sent") && milestone_email["Sent"] == true
+
+        puts "UPDATING MILESTONE"
+        # if the deadline has passed, or the email has been sent, we can only set the date to the same date or later
+        datetime = DateTime.now
+        milestone_new_date = DateTime.parse(milestone_data[:Date])
+        milestone_current_date = DateTime.parse(milestone.deadline.to_s)
+        puts datetime
+        puts milestone_new_date
+        puts milestone_current_date
+
+        email_sent = milestone_email && milestone_email.key?("Sent") && milestone_email["Sent"] == true
+
+        puts milestone_new_date < milestone_current_date
+        puts datetime > milestone_current_date
+
+        if milestone_new_date < milestone_current_date
+          puts "New Date Earlier than Current Date"
+          if email_sent
+            err = "The reminder email for #{milestone_name} has already been sent, and hence you may only set the date to later or equal to its current date, #{milestone_current_date}"
+            errors[:timings] << err
+            next
+          end
+
+          if datetime > milestone_current_date
+            puts "milestone less than current date"
+            err = "The deadline for #{milestone_name} has already passed, and hence you may only set the date to later than now"
+            errors[:timings] << err
+            next
+          end
+        end
+
+        # dont update the email or type if its already been sent
+        if email_sent
           puts "EMAIL ALREADY SENT"
           milestone.json_data["Email"] = milestone_email if milestone_email
         else
           milestone.json_data["Email"] = milestone_data["Email"] if milestone_data.key?("Email")
           puts "UPDATING EMAIL"
-          date_time_string = milestone_data[:Date]
-          date, time = date_time_string.split("T")
-          milestone.deadline = "#{date} #{time}"
           milestone.milestone_type = milestone_data[:Type]
         end
+        date_time_string = milestone_data[:Date]
+        date, time = date_time_string.split("T")
+        milestone.deadline = "#{date}T#{time}"
 
         if milestone.valid?
           milestone.save
@@ -963,6 +1048,8 @@ class CourseProjectController < ApplicationController
 
         date, time = date_time_string.split("T")
 
+        puts "CREATING MILESTONE OF DATE: #{DateTime.parse(date_time_string)}"
+
         json_data = {
           "Name"    => milestone_data[:Name],
           "Comment" => milestone_data[:Comment]
@@ -971,7 +1058,7 @@ class CourseProjectController < ApplicationController
 
         milestone = Milestone.new(
           json_data:,
-          deadline:          "#{date} #{time}",
+          deadline:          "#{date}T#{time}",
           system_type:       milestone_data[:system_type],
           user_generated:    true,
           milestone_type:    milestone_data[:Type],
@@ -1096,7 +1183,7 @@ class CourseProjectController < ApplicationController
       # Preference Form
       @show_pref_form = false
 
-      if @current_project.team_allocation == "preference_form_based"
+      if @current_project.team_allocation == "preference_form_based" && !@pref_form.nil?
         @yes_mates = @current_project.preferred_teammates.to_i
         @no_mates = @current_project.avoided_teammates.to_i
 
@@ -1116,8 +1203,16 @@ class CourseProjectController < ApplicationController
         first_response = MilestoneResponse.where(milestone_id: @proj_choices_form.id,
                                                  student_id:   current_user.student.id).empty?
         in_group = current_user.student.groups.find_by(course_project: @current_project).present?
+        no_subproject = false
+        if in_group
+          no_subproject = current_user.student.groups.find_by(course_project: @current_project).subproject.nil?
+        end
 
-        @show_proj_form = (@current_project.status == "preparation") && first_response && (in_group || @current_project.teams_from_project_choice)
+        if @current_project.teams_from_project_choice
+          @show_proj_form = (@current_project.status == "preparation") && first_response
+        else
+          @show_proj_form = (@current_project.status == "live") && first_response && in_group && no_subproject
+        end
       end
 
       # Get group-dependent project information
@@ -1128,6 +1223,17 @@ class CourseProjectController < ApplicationController
 
         group = current_user.student.groups.find_by(course_project: @current_project)
         @group_name = group.name
+
+        # Get subproject information
+        if @current_project.subprojects.empty?
+          @subproject = nil
+        else
+          unless group.subproject.nil?
+            @subproject = group.subproject
+          else
+            @subproject = "No Subproject Currently Assigned"
+          end
+        end
 
         # Get team information
         @team_names = []
@@ -1276,5 +1382,16 @@ class CourseProjectController < ApplicationController
       end
     end
     redirect_to project_teams_path(project_id: project.id)
+  end
+
+
+  def delete
+    project = CourseProject.find(params[:id])
+    if project.destroy
+      flash[:notice] = "Project successfully deleted"
+      redirect_to projects_path
+    else
+      flash[:error] = "An error occurred"
+    end
   end
 end

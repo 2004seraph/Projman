@@ -181,7 +181,13 @@
     margin: 2px 10px 2px 0px;
 }
 
-.locked :not(button):not(button *) {
+.locked :not(button):not(button *):not(.text-danger):not(.text-danger *) {
+    background-color: var(--locked-colour);
+}
+.locked *{
+    pointer-events: none;
+}
+.locked {
     background-color: var(--locked-colour);
     pointer-events: none;
 }

@@ -77,6 +77,7 @@
               %label.form-label.mb-1{ for: "milestone-email-modal-advance-day-picker" } Days in advance of deadline to send automatic email:
             .col-3.fs-6
               %input.form-control{ id: "milestone-email-modal-advance-day-picker", name: "milestone_email_advance", type: "number", value: "7", min: "1" }
+          %p.fs-6.text-danger.mb-0.mt-2 When this email is sent, this milestone will become uneditable
 
         .modal-footer.d-flex.justify-content-between
           %div
@@ -97,3 +98,20 @@
   submission_url: set_milestone_comment_projects_path,
   confirm_onclick_function: "" do
   %input{ type: "hidden", name: "milestone_name", value: "", class: "hidden-modal-value"}
+
+
+-# Status change warning modals
+.modal.fade{ id: "status-change-modal", tabindex: "-1", "aria-labelledby": "status-change-modal", "aria-hidden": "true" }
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      .modal-header
+        %h1.modal-title.fs-5 Change Status
+        %button.btn-close{ "aria-label": "Close", "data-bs-dismiss": "modal", type: "button" }
+
+      .modal-body
+        %p#status-change-warning.mb-3
+        %p#status-change-warning-2.mb-3
+
+      .modal-footer.d-flex.justify-content-end
+        %button.btn.btn-secondary{ type: "button", "data-bs-dismiss": "modal" } Close
+        %button.btn.btn-primary{ type: "submit", "data-bs-dismiss": "modal"} OK

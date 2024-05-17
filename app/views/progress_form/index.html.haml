@@ -66,11 +66,11 @@
 
   function updateProgressForm() {
     // Make an ajax request to get a new form partial
-    fetch("progress_form/show_new", {
+    fetch("#{show_new_project_progress_form_index_path}", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").getAttribute("content")
+        "X-CSRF-Token": document.head.querySelector("meta[name=csrf-token]")?.content
       },
       body: JSON.stringify({
         release_date: releaseDateLabel.textContent.replace("Release Date: ", ""),

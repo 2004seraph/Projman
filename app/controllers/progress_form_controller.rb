@@ -4,13 +4,18 @@
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 class ProgressFormController < ApplicationController
-  authorize_resource :milestone_response
+  skip_authorization_check
+
+  # For each route we protect it by checking if the user has update rights
+  # to the attached course project. If they do, they by extension have full permissions
+  # to viewing its progress forms.
+  # This has to be done as the "ProgressForm" is not its own Model
 
   def index
     session[:current_project_id] = params[:project_id].to_i
     @current_project = CourseProject.find(session[:current_project_id])
 
-    authorize! :read, @current_project
+    authorize! :update, @current_project
 
     # Get each progress form
     @progress_forms = get_progress_forms_for_project.sort_by(&:deadline)
@@ -23,6 +28,8 @@ class ProgressFormController < ApplicationController
   def new
     session[:current_project_id] = params[:project_id].to_i
     @current_project = CourseProject.find(session[:current_project_id])
+
+    authorize! :update, @current_project
 
     # Initialise new form
     # NOTE: Will not work without parse and to_json because its loaded from db as json
@@ -41,6 +48,8 @@ class ProgressFormController < ApplicationController
   def edit
     session[:current_project_id] = params[:project_id].to_i
     @current_project = CourseProject.find(session[:current_project_id])
+
+    authorize! :update, @current_project
 
     progress_form = Milestone.find(params[:id])
     if progress_form.nil?
@@ -67,6 +76,9 @@ class ProgressFormController < ApplicationController
 
   # AJAX Routes
   def add_question
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     question = params[:question]
 
     session[:new_progress_form]["questions"] = [] if session[:new_progress_form]["questions"].nil?
@@ -91,6 +103,9 @@ class ProgressFormController < ApplicationController
   end
 
   def delete_question
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     # This won't throw an error if the index is invalid and an invalid index would mean the question isn't there,
     # so we can just re-render the partial anyways.
     session[:new_progress_form]["questions"].delete_at(params[:question_index])
@@ -108,6 +123,9 @@ class ProgressFormController < ApplicationController
   end
 
   def change_title
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     title = params[:title]
 
     taken_titles = get_progress_forms_for_project.map { |pf| pf.json_data["title"] }
@@ -133,11 +151,14 @@ class ProgressFormController < ApplicationController
   end
 
   def save_form
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     # To save the form there must be at least one question
     if session[:new_progress_form]["questions"].empty?
       return render json: {
-        status:  "error",
-        message: "Must have at least one question!"
+        status: 'error',
+        message: 'no_questions'
       }
     end
 
@@ -173,6 +194,15 @@ class ProgressFormController < ApplicationController
         }
       end
 
+      # Can't update released forms
+      if milestone.deadline <= DateTime.current
+        return render json: {
+          status: 'already_released',
+          message: 'Cannot update a released progress form.',
+          redirect: project_progress_form_index_path
+        }
+      end
+
       # Update milestone data
       milestone.json_data = session[:new_progress_form]
       milestone.deadline = formatted_deadline
@@ -198,9 +228,19 @@ class ProgressFormController < ApplicationController
   end
 
   def delete_form
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     # Try find and delete a record if editing
     if params[:id]
       milestone = get_progress_forms_for_project.select { |m| m.id == params[:id].to_i }.first
+
+      # Can't delete released forms
+      if milestone.deadline <= DateTime.current
+        flash.alert = 'Cannot delete a released form.'
+        redirect_to project_progress_form_index_path
+        return
+      end
 
       # If we don't find a milestone to delete, there is no error because its already 'deleted'
       milestone&.destroy
@@ -212,6 +252,9 @@ class ProgressFormController < ApplicationController
   end
 
   def show_new
+    session[:current_project_id] = params[:project_id].to_i
+    @current_project = CourseProject.find(session[:current_project_id])
+    authorize! :update, @current_project
     return if params[:release_date] == ""
 
     # Update the current displayed form

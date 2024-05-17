@@ -194,4 +194,50 @@ $(function() {
         form.append(hiddenStatusParam)
         form.trigger('submit')
     })
+
+    // project change status
+    $(document).on('change', '#project-status-change', function(){
+        var new_status = $('#project-status-change').val()
+        console.log(new_status)
+        var statusChangeModal = $('#status-change-modal')
+        var statusChangeText = statusChangeModal.find('#status-change-warning')
+        var statusChangeText2 = statusChangeModal.find('#status-change-warning-2')
+        var modalTitle = statusChangeModal.find('.modal-title').first()
+
+        if (typeof new_status == 'string') {
+            modalTitle.text("Change Status To: " + new_status.charAt(0).toUpperCase() + new_status.slice(1))
+        }
+        statusChangeModal.modal('show')
+        if (new_status == "preparation"){
+            statusChangeText
+            .text("Changing status to Preparation will mean that students will be able to see the teammate preference form, if it is enabled and due.")
+            statusChangeText2
+            .text("You will be able to change to Review or Live from the Preparation status")
+        }
+        else if (new_status == "review"){
+            statusChangeText
+            .text("Changing status to Review will make the project innaccessible to students. This is where you should make manual adjustments to teams.")
+            statusChangeText2
+            .text("You will be able to change to Preparation or Live from the Review status")
+        }
+        else if (new_status == "live"){
+            statusChangeText
+            .text("Changing status to Live will set the project into motion. Students will be able to see their Project Choice form, if it is required and due.")
+            statusChangeText2
+            .text("You will not be able to change back to Preparation or Review, and you will no longer be able to adjust teams.")
+        }
+        else if (new_status == "completed"){
+            statusChangeText
+            .text("Changing status to Completed will mark the project as finished.")
+        }
+        else if (new_status == "archived"){
+            statusChangeText
+            .text("Changing status to Archived will archive the project.")
+        }
+    })
+
+    //project delete
+    $(document).on('click', '#delete-project-btn', function(){
+        $('#delete-project-modal').modal('show')
+    })
 });
