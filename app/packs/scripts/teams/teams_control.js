@@ -112,7 +112,7 @@ $(function() {
         'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
       },
       success: function(){
-        
+
       },
       error: function(xhr, status, error) {
         console.log(error)
@@ -210,7 +210,7 @@ $(function() {
         'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
       },
       success: function(){
-        
+
       },
       error: function(xhr, status, error) {
         console.log(error)
@@ -339,6 +339,10 @@ $(function() {
           else{
               emailBtn.removeClass('disabled')
           }
+
+          let params = new URLSearchParams(emailBtn.attr("href"))
+          params.set("recipient_list", emails.toString())
+          emailBtn.attr("href", decodeURIComponent(params.toString()))
       });
   })
 })
