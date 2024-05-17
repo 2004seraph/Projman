@@ -25,11 +25,25 @@ class CourseProjectController < ApplicationController
     elsif current_user.is_student?
       @live_projects = current_user.student.course_projects.where(status: ["preparation", "review", "live"])
       @comp_projects = current_user.student.course_projects.where(status: "completed")
+      
+      milestones_list = @live_projects.extract_associated(:milestones)
+      logger.debug milestones_list.count
+      
+      @milestones = nil
 
-      @milestones = []
-      @live_projects.each do |project|
-        @milestones += project.milestones
+      if milestones_list.count != 0
+        @milestones = milestones_list.first
+        next_milestones = milestones_list.drop(0)
+        next_milestones.each do |m_collection|
+          @milestones.or m_collection
+          logger.debug m_collection.count
+        end
       end
+
+      logger.debug "!!!!!!!!!!!!!!!!!!!! #{@milestones.count}"
+      puts @milestones
+
+
       render "index_student"
     else
       Sentry.capture_message("could not find user: #{current_user.student}", level: :warn)

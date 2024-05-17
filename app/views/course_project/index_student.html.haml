@@ -4,23 +4,28 @@
 -# Load all projects tied to the user
 -# Students see all their projects and alert markers
 
+- valid_milestones = @milestones&.where("deadline > ?", Time.now())
+
 .separating-section
     %h2
         Activity Feed
     %hr.divider
 
-    - if @milestones.length > 0
+    - if valid_milestones && valid_milestones.length > 0
         .container#activity-feed-container
             .row
                 .scrollable
                     -# Orders all milestones (between projects) in closest to deadline order
-                    - @milestones.sort_by(&:deadline).each do |milestone|
+                    - valid_milestones.sort_by(&:deadline).each do |milestone|
                         .card.mb-2
                             .card-body.pb-2.pt-2
                                 %h5.card-title= "#{milestone.course_module.code} #{milestone.course_project.name} - #{milestone.json_data["Name"]}"
                                 %p.card-text.mb-1
                                 %strong Due in:
-                                = "#{(milestone.deadline.to_date - DateTime.now.to_date).to_i} days"
+                                - if (milestone.deadline.to_date - DateTime.now.to_date).to_i == 0
+                                    Today
+                                - else
+                                    = "#{(milestone.deadline.to_date - DateTime.now.to_date).to_i} days"
                                 %br
                                 - unless milestone.json_data["Comment"].nil?
                                     - if milestone.json_data["Comment"].length > 0
