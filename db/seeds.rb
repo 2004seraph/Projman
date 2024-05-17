@@ -86,11 +86,11 @@ Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: true })
 
 # Rails.logger.debug ""
 
-robotics_class = DatabaseHelper.provision_module_class(
-  "COM2009",
-  "Robotics",
-  Staff.find_or_create_by(email: "sgttaseff1@sheffield.ac.uk")
-)
+# robotics_class = DatabaseHelper.provision_module_class(
+#   "COM2009",
+#   "Robotics",
+#   Staff.find_or_create_by(email: "sgttaseff1@sheffield.ac.uk")
+# )
 # sam.enroll_module "COM2009"
 # # josh.enroll_module "COM2009"
 # # jakub.enroll_module "COM2009"
@@ -154,31 +154,56 @@ robotics_class = DatabaseHelper.provision_module_class(
 #   team_allocation: :random_team_allocation,
 #   team_size: 8
 # }))
-DatabaseHelper.create_course_project(
-  {
-    module_code:           "COM2009",
-    name:                  "Turtlebot Project",
-    status:                "preparation",
-    project_choices:       ["Choice 1", "Choice 2"],
-    team_size:             4,
-    team_allocation_mode:  "preference_form_based",
+# DatabaseHelper.create_course_project(
+#   {
+#     module_code:           "COM2009",
+#     name:                  "Turtlebot Project",
+#     status:                "preparation",
+#     project_choices:       ["Choice 1", "Choice 2"],
+#     team_size:             4,
+#     team_allocation_mode:  "preference_form_based",
 
-    project_deadline:      DateTime.now + 25.minutes,
-    project_pref_deadline: DateTime.now + 20.minutes,
-    team_pref_deadline:    DateTime.now - 10.minutes,
+#     project_deadline:      DateTime.now + 25.minutes,
+#     project_pref_deadline: DateTime.now + 20.minutes,
+#     team_pref_deadline:    DateTime.now - 10.minutes,
 
-    milestones:            [
-      {
-        "Name":     "Milestone 1",
-        "Deadline": DateTime.now + 1.minute,
-        "Email":    { "Content": "This is an email", "Advance": 0 },
-        "Comment":  "This is a comment",
-        "Type":     "team"
-      }
-    ],
-    facilitators: []
-  }
-)
+#     milestones:            [
+#       {
+#         "Name":     "Milestone 1",
+#         "Deadline": DateTime.now + 1.minute,
+#         "Email":    { "Content": "This is an email", "Advance": 0 },
+#         "Comment":  "This is a comment",
+#         "Type":     "team"
+#       }
+#     ],
+#     facilitators: []
+#   }
+# )
+# DatabaseHelper.create_course_project(
+#   {
+#     module_code:           "COM2009",
+#     name:                  "Turtlebot Project 2",
+#     status:                "preparation",
+#     project_choices:       ["Choice 1", "Choice 2"],
+#     team_size:             4,
+#     team_allocation_mode:  "preference_form_based",
+
+#     project_deadline:      DateTime.now + 25.minutes,
+#     project_pref_deadline: DateTime.now + 20.minutes,
+#     team_pref_deadline:    DateTime.now - 10.minutes,
+
+#     milestones:            [
+#       {
+#         "Name":     "Milestone 1",
+#         "Deadline": DateTime.now + 1.minute,
+#         "Email":    { "Content": "This is an email", "Advance": 0 },
+#         "Comment":  "This is a comment",
+#         "Type":     "team"
+#       }
+#     ],
+#     facilitators: []
+#   }
+# )
 
 # DatabaseHelper.print_validation_errors(CourseProject.find_or_create_by({
 #   course_module: CourseModule.find_by(code: "COM2009"),
