@@ -37,21 +37,23 @@
 
       %hr.divider
 
-      %div#teams-display
-        // Display all groups by project
-        - @assigned_facilitators.group_by{|af| af.course_project}.each do |project, facilitators|
-          - facilitators.flat_map(&:groups).each do |group|
-            .navigation-list-item
-              = link_to facilitator_team_facilitators_path(team_id: group.id) do
-                %h6.p-1
-                  = "#{group.course_project.name} - #{group.name}"
+      .container#teams-display
+        .row
+          .scrollable
+            // Display all groups by project
+            - @groups.sort_by{|g| g.course_project.name}.each do |group|
+              .navigation-list-item
+                = link_to facilitator_team_facilitators_path(team_id: group.id) do
+                  %h6.p-1
+                    = "#{group.course_project.name} - #{group.name}"
+
 
   :javascript
     function update_team_list() {
       var checkbox = document.getElementById('filter-checkbox');
       var selectionButton = document.getElementById('project-selection-label');
 
-      fetch("facilitators/update_teams_list", {
+      fetch("#{update_teams_list_facilitators_path}", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,6 +66,7 @@
       })
       .then(response => response.text())
       .then(data => {
+        console.log(data)
         document.getElementById("teams-partial-container").innerHTML = data;
         document.getElementById("filter-checkbox").checked = checkbox.checked;
         document.getElementById("project-selection-label").textContent = selectionButton.textContent;
