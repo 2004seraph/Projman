@@ -60,8 +60,7 @@ class ApplicationController < ActionController::Base
     return if current_user.is_staff? || current_user.is_student?
     Sentry.capture_message("could not find user: #{current_user.email}", level: :warn)
 
-    reset_session
-    redirect_to new_user_session_path, alert: "You are not part of any modules or projects, please contact a member of staff if this is in error."
+    redirect_to "/403.html", alert: "You are not part of any modules or projects, please contact a member of staff if this is in error."
   end
 
   private
