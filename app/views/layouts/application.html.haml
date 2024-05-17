@@ -41,8 +41,8 @@
         .content-container-special
           = yield
       - else
-
-        = render partial: 'layouts/footer'
+        - unless request.path.include?("users/sign_in")
+          = render partial: 'layouts/footer'
 
         .content-container
           = yield

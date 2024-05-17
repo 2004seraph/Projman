@@ -19,7 +19,7 @@ class StudentController < ApplicationController
   def update_selection
     @student_email = params[:module_student_name]
     session[:module_data][:student_selection] << @student_email if @student_email.present?
-    Rails.logger.debug session[:module_data][:student_selection]
+    # Rails.logger.debug session[:module_data][:student_selection]
     if request.xhr?
       respond_to(&:js)
     else

@@ -292,7 +292,7 @@ class CourseProjectController < ApplicationController
 
             if !(staff_member.nil?) && staff_member.lookup[:shefuseraccounttype].include?("staff")
               new_staff = Staff.new(email: facilitator)
-              
+
               if new_staff.valid?
                 new_staff.save
               end
@@ -699,7 +699,7 @@ class CourseProjectController < ApplicationController
     errors = session[:project_data][:errors]
 
     errors[:top] = []
-    
+
     project = CourseProject.find(params[:id])
 
     initial_project_status = project.status
@@ -724,7 +724,7 @@ class CourseProjectController < ApplicationController
       project_data[:new_status] = initial_project_status
     end
 
-    puts "STATUS CHANGE TO: #{project_data[:new_status]}"
+    # puts "STATUS CHANGE TO: #{project_data[:new_status]}"
 
     # Main Data
     project_data[:project_name] = params[:project_name]
@@ -985,7 +985,7 @@ class CourseProjectController < ApplicationController
       milestones_to_delete.each do |milestone|
         milestone_email = milestone[:json_data]["Email"] if milestone[:json_data].key?("Email")
         unless milestone_email && milestone_email.key?("Sent") && milestone_email["Sent"] == true
-      
+
           # delete only if the email hasnt been sent
           milestone.destroy
         end
@@ -1002,22 +1002,22 @@ class CourseProjectController < ApplicationController
           "Comment" => milestone_data[:Comment]
         }
 
-        puts "UPDATING MILESTONE"
+        # puts "UPDATING MILESTONE"
         # if the deadline has passed, or the email has been sent, we can only set the date to the same date or later
         datetime = DateTime.now
         milestone_new_date = DateTime.parse(milestone_data[:Date])
         milestone_current_date = DateTime.parse(milestone.deadline.to_s)
-        puts datetime
-        puts milestone_new_date
-        puts milestone_current_date
+        # puts datetime
+        # puts milestone_new_date
+        # puts milestone_current_date
 
         email_sent = milestone_email && milestone_email.key?("Sent") && milestone_email["Sent"] == true
 
-        puts milestone_new_date < milestone_current_date
-        puts datetime > milestone_current_date
+        # puts milestone_new_date < milestone_current_date
+        # puts datetime > milestone_current_date
 
         if milestone_new_date < milestone_current_date
-          puts "New Date Earlier than Current Date"
+          # puts "New Date Earlier than Current Date"
           if email_sent
             err = "The reminder email for #{milestone_name} has already been sent, and hence you may only set the date to later or equal to its current date, #{milestone_current_date}"
             errors[:timings] << err
@@ -1025,7 +1025,7 @@ class CourseProjectController < ApplicationController
           end
 
           if datetime > milestone_current_date
-            puts "milestone less than current date"
+            # puts "milestone less than current date"
             err = "The deadline for #{milestone_name} has already passed, and hence you may only set the date to later than now"
             errors[:timings] << err
             next
@@ -1034,11 +1034,11 @@ class CourseProjectController < ApplicationController
 
         # dont update the email or type if its already been sent
         if email_sent
-          puts "EMAIL ALREADY SENT"
+          # puts "EMAIL ALREADY SENT"
           milestone.json_data["Email"] = milestone_email if milestone_email
         else
           milestone.json_data["Email"] = milestone_data["Email"] if milestone_data.key?("Email")
-          puts "UPDATING EMAIL"
+          # puts "UPDATING EMAIL"
           milestone.milestone_type = milestone_data[:Type]
         end
         date_time_string = milestone_data[:Date]
@@ -1066,7 +1066,7 @@ class CourseProjectController < ApplicationController
 
         date, time = date_time_string.split("T")
 
-        puts "CREATING MILESTONE OF DATE: #{DateTime.parse(date_time_string)}"
+        # puts "CREATING MILESTONE OF DATE: #{DateTime.parse(date_time_string)}"
 
         json_data = {
           "Name"    => milestone_data[:Name],

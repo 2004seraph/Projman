@@ -50,7 +50,7 @@ RSpec.feature "Issue Creation", type: :feature do
         login_as student_user
         visit "/projects"
 
-        save_and_open_page
+        # save_and_open_page
         find("#project-button-1").click
         expect(page).to have_selector("#reportIssueModal", visible: true)
       end
