@@ -89,7 +89,7 @@ Rails.logger.debug ""
 robotics_class = DatabaseHelper.provision_module_class(
   "COM2009",
   "Robotics",
-  Staff.find_or_create_by(email: "jhenson2@sheffield.ac.uk")
+  Staff.find_or_create_by(email: "sgttaseff1@sheffield.ac.uk")
 )
 sam.enroll_module "COM2009"
 # josh.enroll_module "COM2009"

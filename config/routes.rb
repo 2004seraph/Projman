@@ -12,10 +12,12 @@ Rails.application.routes.draw do
 
   get "/profile", to: "page#profile"
   post "/profile/request-title-change", to: "page#request_title_change"
-  get "/mail", to: "page#mail"
   
   get "/privacy", to: "page#privacy"
   get "/accessibility", to: "page#accessibility"
+
+  get "/mail", to: "mailing#mail"
+  post "/mail", to: "mailing#create"
 
   resources :projects, controller: :course_project do
     resource :milestone_responses, only: [:create], controller: :milestone_response
@@ -125,7 +127,7 @@ Rails.application.routes.draw do
     post 'update_progress_form_response' => 'facilitator#update_progress_form_response', on: :collection
   end
 
-  resources :markings, controller: :marking do 
+  resources :markings, controller: :marking do
     post 'save' => 'marking#save', on: :collection
   end
 
