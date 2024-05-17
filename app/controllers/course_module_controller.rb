@@ -59,7 +59,7 @@ class CourseModuleController < ApplicationController
                                    staff_id: @lead.id)
     if @new_module.save
       Student.bootstrap_class_list(params[:student_csv].read) unless @student_csv.nil?
-      redirect_to "/modules", notice: "Module was successfully created."
+      redirect_to modules_path, notice: "Module was successfully created."
     else
       redirect_to new_module_path, alert: "Creation unsuccesful."
     end
@@ -87,9 +87,9 @@ class CourseModuleController < ApplicationController
       @current_module.update_attribute(:name, @new_name)
 
       if @current_module.valid?
-        redirect_to modules_path, notice: "Module Name updated successfully."
+        redirect_to module_path, notice: "Module Name updated successfully."
       else
-        redirect_to modules_path, alert: "Update unsuccessful - Invalid name."
+        redirect_to module_path, alert: "Update unsuccessful - Invalid name."
       end
     end
 
@@ -98,7 +98,7 @@ class CourseModuleController < ApplicationController
 
       # Checks for correct e-mail confirmation
       unless @new_lead == @confirmation
-        redirect_to modules_path, alert: "Update unsuccesful - E-mail addresses did not match."
+        redirect_to module_path, alert: "Update unsuccesful - E-mail addresses did not match."
         return
       end
 
@@ -108,9 +108,9 @@ class CourseModuleController < ApplicationController
       @current_module.update_attribute(:staff_id, @new_lead.id)
 
       if @current_module.valid?
-        redirect_to modules_path, notice: "Module Leader updated successfully."
+        redirect_to module_path, notice: "Module Leader updated successfully."
       else
-        redirect_to modules_path, alert: "Update unsuccesful - Invalid e-mail."
+        redirect_to module_path, alert: "Update unsuccesful - Invalid e-mail."
       end
     end
 
@@ -120,7 +120,7 @@ class CourseModuleController < ApplicationController
     # Checks that the student_csv is compatible with the current module
     @parsed_csv = CSV.read(@new_student_list)
     unless @parsed_csv[1][12] == @current_module.code
-      redirect_to modules_path,
+      redirect_to module_path,
                   alert: "The Student List Module {#{@parsed_csv[1][12]}} is not compatible with the Module Code {#{@current_module.code}}"
       return
     end
@@ -128,7 +128,17 @@ class CourseModuleController < ApplicationController
     # Removes old student list and adds new one
     @current_module.students.clear
     Student.bootstrap_class_list(@new_student_list.read)
-    redirect_to modules_path, notice: "Student List updated successfully."
+    redirect_to module_path, notice: "Student List updated successfully."
+  end
+
+  def delete
+    course_module = CourseModule.find(params[:id])
+    if course_module.destroy
+      flash[:notice] = "Module successfully deleted"
+      redirect_to modules_path
+    else
+      flash[:error] = "An error occurred"
+    end
   end
 
   private

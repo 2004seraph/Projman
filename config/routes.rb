@@ -130,5 +130,6 @@ Rails.application.routes.draw do
   end
 
   resources :modules, controller: :course_module do
+    post "/delete", to: "course_module#delete", on: :member
   end
 end

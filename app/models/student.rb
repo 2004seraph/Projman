@@ -51,10 +51,10 @@ class Student < ApplicationRecord
   has_and_belongs_to_many :groups
   has_and_belongs_to_many :course_modules # , foreign_key: "course_module_code", association_foreign_key: "student_id", join_table: "course_modules_students"
   has_many :course_projects, through: :course_modules
-  has_many :events # , through: :group
-  has_many :event_responses # , through: :events
+  has_many :events, dependent: :nullify # , through: :group
+  has_many :event_responses, dependent: :nullify # , through: :events
   has_many :assigned_facilitators, dependent: :destroy
-  has_many :milestone_responses
+  has_many :milestone_responses, dependent: :nullify
 
   enum :fee_status, { home: "home", overseas: "overseas" }
 

@@ -1,10 +1,9 @@
 -# This file is a part of Projman, a group project orchestrator and management system,
 -# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-.separating-section
-  .d-flex.align-items-center.justify-content-between
-    %h2.fs-3
-      Students
+.separating-section.pb-0
+  %h2.fs-3
+    Students
   %hr.divider
 
 - if session[:module_student].present?
@@ -14,7 +13,7 @@
 - if cm.size == 0
   .d-flex.justify-content-center
     %i.fs-6 You are not a part of any modules currently, if you should be, please contact an admin.
--else
+- else
   = render 'components/accordion/container' do
     - for i in 0...cm.size
       = render 'student-list-box', title: cm[i].code + " " + cm[i].name, student_list_box_id: cm[i].code
