@@ -40,6 +40,7 @@ class CourseProjectController < ApplicationController
   end
 
   def new
+    session[:context] = "new"
     staff_id = Staff.where(email: current_user.email).first
     @min_date = "#{DateTime.now.strftime('%Y-%m-%dT:%H:%M')}"
 
@@ -84,6 +85,7 @@ class CourseProjectController < ApplicationController
   end
 
   def edit
+    session[:context] = "edit"
     project_id = params[:id]
     project = CourseProject.find_by(id: project_id)
 
@@ -212,7 +214,7 @@ class CourseProjectController < ApplicationController
 
     # Otherwise re-render :new
     else
-      render :new
+      rerender_edit_or_new
     end
   end
 
@@ -221,7 +223,7 @@ class CourseProjectController < ApplicationController
     session[:project_data][:project_choices].delete(@project_choice_name)
     return if request.xhr?
 
-    render :new
+    rerender_edit_or_new
   end
 
   def add_project_milestone
@@ -240,7 +242,7 @@ class CourseProjectController < ApplicationController
         format.js if project_milestone_unique
       end
     else
-      render :new
+      rerender_edit_or_new
     end
   end
 
@@ -254,7 +256,7 @@ class CourseProjectController < ApplicationController
     if request.xhr?
       respond_to(&:js)
     else
-      render :new
+      rerender_edit_or_new
     end
   end
 
@@ -268,7 +270,7 @@ class CourseProjectController < ApplicationController
     if request.xhr?
       respond_to(&:js)
     else
-      render :new
+      rerender_edit_or_new
     end
   end
 
@@ -288,7 +290,7 @@ class CourseProjectController < ApplicationController
     if request.xhr?
       respond_to(&:js)
     else
-      render :new
+      rerender_edit_or_new
     end
   end
 
@@ -463,7 +465,7 @@ class CourseProjectController < ApplicationController
         err = "Milestone dates cannot be set to earlier than the current date"
         errors[:timings] << err unless errors[:timings].include? err
       end
-      if datetime > project_deadline
+      if project_deadline && datetime > project_deadline
         err = "Milestone dates must be set to earlier than the project deadline"
         errors[:timings] << err unless errors[:timings].include? err
       end
@@ -1203,11 +1205,15 @@ class CourseProjectController < ApplicationController
         first_response = MilestoneResponse.where(milestone_id: @proj_choices_form.id,
                                                  student_id:   current_user.student.id).empty?
         in_group = current_user.student.groups.find_by(course_project: @current_project).present?
+        no_subproject = false
+        if in_group
+          no_subproject = current_user.student.groups.find_by(course_project: @current_project).subproject.nil?
+        end
 
         if @current_project.teams_from_project_choice
           @show_proj_form = (@current_project.status == "preparation") && first_response
         else
-          @show_proj_form = (@current_project.status == "live") && first_response && in_group
+          @show_proj_form = (@current_project.status == "live") && first_response && in_group && no_subproject
         end
       end
 
@@ -1388,6 +1394,18 @@ class CourseProjectController < ApplicationController
       redirect_to projects_path
     else
       flash[:error] = "An error occurred"
+    end
+  end
+
+  private
+  def rerender_edit_or_new
+    if session[:context] && session[:context] == "new"
+      render :new
+    elsif session[:context] && session[:context] == "edit"
+      render :edit
+    else
+      flash[:alert] = "Error re-rendering page"
+      redirect_back fallback_location: root_path
     end
   end
 end

@@ -23,3 +23,14 @@ import '../scripts/teams/teams_control';
 window.$ = $
 
 Rails.start();
+
+function showLoadingModal() {
+  $('#loadingModal').modal('show');
+}
+
+function hideLoadingModal() {
+  $('#loadingModal').modal('hide');
+}
+
+window.showLoadingModal = showLoadingModal;
+window.hideLoadingModal = hideLoadingModal;

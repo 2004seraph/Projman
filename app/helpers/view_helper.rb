@@ -37,4 +37,8 @@ module ViewHelper
     session[:module_data][:module_code] = code
   end
 
+  def set_session_context(context)
+    session[:context] = {} if session[:context].nil?
+    session[:context] = context
+  end
 end

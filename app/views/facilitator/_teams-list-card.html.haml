@@ -37,13 +37,16 @@
 
       %hr.divider
 
-      %div#teams-display
-        // Display all groups by project
-        - @groups.sort_by{|g| g.course_project.name}.each do |group|
-          .navigation-list-item
-            = link_to facilitator_team_facilitators_path(team_id: group.id) do
-              %h6.p-1
-                = "#{group.course_project.name} - #{group.name}"
+      .container#teams-display
+        .row
+          .scrollable
+            // Display all groups by project
+            - @groups.sort_by{|g| g.course_project.name}.each do |group|
+              .navigation-list-item
+                = link_to facilitator_team_facilitators_path(team_id: group.id) do
+                  %h6.p-1
+                    = "#{group.course_project.name} - #{group.name}"
+
 
   :javascript
     function update_team_list() {

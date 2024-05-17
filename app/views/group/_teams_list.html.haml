@@ -1,5 +1,4 @@
 = render 'components/accordion/container' do
-  - logger.debug("!!!!!!!!!!!!!!!!!!!!!!!! #{teams.length}")
   - if outstanding_students.size > 0
     = render 'group/outstanding-students-card', outstanding_students: outstanding_students
     %hr.divider
