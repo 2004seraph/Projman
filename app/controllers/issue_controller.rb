@@ -169,7 +169,7 @@ class IssueController < ApplicationController
                                   .order(created_at: :asc)
 
         else
-          group_ids = @project_groups.map(&:id).uniq
+          group_ids = Group.all.map(&:id).uniq
 
           @open_issues = Event.joins(:group)
                               .where(groups: { id: group_ids })
