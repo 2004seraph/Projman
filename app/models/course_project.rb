@@ -72,7 +72,7 @@ class CourseProject < ApplicationRecord
     elsif (current_user.is_student? &&
           self.team_allocation == "preference_form_based" && 
           !(pref_form.nil?) && 
-          self.status == "preperation" &&
+          self.status == "preparation" &&
           first_response)
       true
     else
