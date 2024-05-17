@@ -241,7 +241,9 @@ class CourseProject < ApplicationRecord
               m.reload
 
               group_matrix = DatabaseHelper.project_choices_group_allocation c.team_size, c.students, c.project_preference_deadline
+              logger.debug "\tGenerated group matrix 1"
               c.make_groups_with_project_preference group_matrix
+              logger.debug "\tBuidling groups 1"
             end
 
           else
@@ -250,6 +252,7 @@ class CourseProject < ApplicationRecord
               # assign projects to individuals, if not responded, use least popular project
               logger.debug "\tAssigning projects to individuals using project preference"
               DatabaseHelper.assign_projects_to_individuals c
+              logger.debug "\tAssigned projects to individuals"
             end
           end
 
@@ -261,13 +264,16 @@ class CourseProject < ApplicationRecord
 
               group_matrix = DatabaseHelper.preference_form_group_allocation c.team_size, c.students,
                                                                              c.teammate_preference_deadline
+              logger.debug "\tGenerated group matrix 2"
               c.make_groups group_matrix
+              logger.debug "\tBuidling groups 2"
             end
           end
           if c.project_preference_deadline && (c.project_preference_deadline.deadline < DateTime.now && !c.project_preference_deadline.executed)
             # assign projects to groups, if not responded, use least popular project
             logger.debug "\tAssigning projects to groups using group consensus"
             DatabaseHelper.assign_projects_to_groups c
+            logger.debug "\tassigned group projects"
           end
         end
 
@@ -312,6 +318,7 @@ class CourseProject < ApplicationRecord
         c.update status: :completed
         c.save
       end
+      logger.debug "\tcompleted pass"
       true
     end
 end
