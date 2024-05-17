@@ -285,8 +285,24 @@ class CourseProjectController < ApplicationController
       unless session[:project_data][:project_facilitators].include?(facilitator)
         session[:project_data][:project_facilitators] << facilitator
         @facilitators_added << facilitator
+
+        begin
+          if !(Staff.exists?(email: facilitator))
+            staff_member = SheffieldLdapLookup::LdapFinder.new(facilitator)
+
+            if !(staff_member.nil?) && staff_member.lookup[:shefuseraccounttype].include?("staff")
+              new_staff = Staff.new(email: facilitator)
+              
+              if new_staff.valid?
+                new_staff.save
+              end
+            end
+          end
+        rescue
+        end
       end
     end
+
     if request.xhr?
       respond_to(&:js)
     else
