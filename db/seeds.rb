@@ -158,14 +158,14 @@ Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: true })
 #   {
 #     module_code:           "COM2009",
 #     name:                  "Turtlebot Project",
-#     status:                "live",
+#     status:                "preparation",
 #     project_choices:       ["Choice 1", "Choice 2"],
 #     team_size:             4,
-#     team_allocation_mode:  "random_team_allocation",
+#     team_allocation_mode:  "preference_form_based",
 
-#     project_deadline:      DateTime.now + 2.minutes,
-#     project_pref_deadline: DateTime.now,# + 2.minutes,
-#     team_pref_deadline:    DateTime.now,# + 1.minute,
+#     project_deadline:      DateTime.now + 25.minutes,
+#     project_pref_deadline: DateTime.now + 20.minutes,
+#     team_pref_deadline:    DateTime.now - 10.minutes,
 
 #     milestones:            [
 #       {
@@ -175,7 +175,33 @@ Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: true })
 #         "Comment":  "This is a comment",
 #         "Type":     "team"
 #       }
-#     ]
+#     ],
+#     facilitators: []
+#   }
+# )
+# DatabaseHelper.create_course_project(
+#   {
+#     module_code:           "COM2009",
+#     name:                  "Turtlebot Project 2",
+#     status:                "preparation",
+#     project_choices:       ["Choice 1", "Choice 2"],
+#     team_size:             4,
+#     team_allocation_mode:  "preference_form_based",
+
+#     project_deadline:      DateTime.now + 25.minutes,
+#     project_pref_deadline: DateTime.now + 20.minutes,
+#     team_pref_deadline:    DateTime.now - 10.minutes,
+
+#     milestones:            [
+#       {
+#         "Name":     "Milestone 1",
+#         "Deadline": DateTime.now + 1.minute,
+#         "Email":    { "Content": "This is an email", "Advance": 0 },
+#         "Comment":  "This is a comment",
+#         "Type":     "team"
+#       }
+#     ],
+#     facilitators: []
 #   }
 # )
 

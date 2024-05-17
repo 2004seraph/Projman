@@ -15,6 +15,13 @@ class MilestoneResponseController < ApplicationController
       preferred_teammates = extract_teammates(params, :preferred_teammate)
       avoided_teammates = extract_teammates(params, :avoided_teammate)
 
+      preferred_teammates.each do |student_id|
+        if avoided_teammates.include?(student_id)
+          render json: { error: "Invalid Form Entry" }, status: :unprocessable_entity
+          return
+        end
+      end
+
       json_data = {}
       json_data["preferred"] = preferred_teammates
       json_data["avoided"] = avoided_teammates
