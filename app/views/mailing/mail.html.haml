@@ -1,0 +1,63 @@
+-# This file is a part of Projman, a group project orchestrator and management system,
+-# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
+
+-# email all teams for certain project
+-# email module class
+-# email list
+
+.seperating-section
+  %h2.fs-3
+    Mailing
+
+  %hr.divider
+
+  .card
+    .card-header.d-flex
+
+      = form_with(url: "/mail", method: "post", local: true, class: "w-100", form_id: "send-mail-form") do |form|
+        -# %input{ type: "hidden", name: "issue_id", value: "#{issue.id}"}
+        .form_group
+
+          - if @modules.length > 0
+            .d-flex
+              = form.radio_button :contact_method, 'students_in_module', id: "send_to_all_students_in_a_module", style: "flex: 1; max-width: 4vmin; margin-right: 10px;", checked: (@last_contact_method == "students_in_module")
+              .form_group{ style: "flex: 8;" }
+                = form.label :send_to_all_students_in_a_module
+                %select.form-select.form-select-sm.fs-5{id: "module-selection", name:"module_selection", aria: {label: "Select a module"}, style: "width:auto; max-width:100%"}
+                  - @modules.each do |course_module|
+                    %option{value: course_module.id, selected: (@selected_module && course_module.id == @selected_module)}
+                      = "#{course_module.code} - #{course_module.name}"
+
+          %hr.divider
+
+          - if @projects.length > 0
+            .d-flex
+              = form.radio_button :contact_method, 'teams_on_project', id: "send_to_all_teams_on_a_project", style: "flex: 1; max-width: 4vmin; margin-right: 10px;", checked: (@last_contact_method == "teams_on_project")
+              .form_group
+                = form.label :send_to_all_teams_on_a_project
+                %select.form-select.form-select-sm.fs-5{id: "project-selection", name:"project_selection", aria: {label: "Select a project"}, style: "width:auto; max-width:100%"}
+                  - @projects.each do |project|
+                    %option{value: project.id, selected: (@selected_project && project.id == @selected_project)}
+                      = "#{project.course_module.code} - #{project.name}"
+
+          %hr.divider
+
+          .form_group
+            .d-flex
+              = form.radio_button :contact_method, 'custom_list', id: "send_to_all_custom_list", style: "flex: 1; max-width: 4vmin; margin-right: 10px;", checked: (@last_contact_method == "custom_list")
+              .form_group{ style: "flex: 8;" }
+                = form.label :send_to_a_custom_list
+                = form.text_area :recipient_list, class: "form-control w-100", placeholder: "Comma separated list of email addresses", id: "recipient-list", value: @email_list
+
+        %hr.divider.mb-4
+
+        .form_group.mb-2
+          = form.label :subject
+          = form.text_area :email_subject, class: "form-control w-100", rows: 1, placeholder: "Subject", id: "email-subject", required: true
+        .form_group.mb-2
+          = form.label :body
+          = form.text_area :email_body, class: "form-control w-100", rows: 8, placeholder: "Text message", id: "email-body", required: true
+        .d-flex.justify-content-end.mb-1
+          %button.btn.btn-primary{type: "submit", class: "btn btn-primary me-2", id: "send-email", remote: true }
+            %i.bi.bi-send-fill
+            Send
