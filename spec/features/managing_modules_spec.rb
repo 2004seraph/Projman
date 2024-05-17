@@ -5,7 +5,7 @@
 
 require "rails_helper"
 
-describe "Managing modules" do
+RSpec.feature "Managing Modules", type: :feature do
   let!(:staff_user) { FactoryBot.create(:standard_staff_user, admin: true) }
 
   before { login_as staff_user }
