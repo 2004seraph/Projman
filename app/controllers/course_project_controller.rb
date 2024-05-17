@@ -23,7 +23,7 @@ class CourseProjectController < ApplicationController
       @course_modules = current_user.staff.course_modules.length
       render "index_module_leader"
     elsif current_user.is_student?
-      @live_projects = current_user.student.course_projects.where(status: %w[preparation review live])
+      @live_projects = current_user.student.course_projects.where(status: ["preparation", "review", "live"])
       @comp_projects = current_user.student.course_projects.where(status: "completed")
 
       @milestones = []
