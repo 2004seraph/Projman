@@ -32,6 +32,48 @@ module DatabaseHelper
 
   # DATA SEEDING
 
+  def create_gec_style_project(options = {})
+    settings = {
+      module_code:           "COM3420",
+      name:                  "Test Project",
+      status:                "draft",
+      project_choices:       ["Choice 1", "Choice 2"],
+      team_size:             4,
+
+      project_deadline:      DateTime.now + 5.minute,
+      project_pref_deadline: DateTime.now + 1.minute,
+    }.merge(options)
+
+    create_course_project(settings.merge({
+      preferred_teammates:   0,
+      avoided_teammates:     0,
+      team_allocation_mode:  nil,
+      teams_from_project_choice: true,
+      team_pref_deadline:    nil,
+    }))
+  end
+
+  # def create_standard_style_project(options = {})
+  #   settings = {
+  #     module_code:           "COM3420",
+  #     name:                  "Test Project",
+  #     status:                "draft",
+  #     project_choices:       ["Choice 1", "Choice 2"],
+  #     team_size:             4,
+  #     team_allocation_mode:  "random_team_allocation",
+  #     preferred_teammates:   1,
+  #     avoided_teammates:     2,
+
+  #     project_deadline:      DateTime.now + 1.minute,
+  #     project_pref_deadline: DateTime.now + 1.minute,
+  #     team_pref_deadline:    DateTime.now + 1.minute,
+  #   }.merge(options)
+
+  #   create_course_project(settings.merge({
+  #     teams_from_project_choice: false,
+  #   }))
+  # end
+
   def create_course_project(options = {})
     settings = {
       module_code:           "COM3420",
@@ -42,9 +84,10 @@ module DatabaseHelper
       preferred_teammates:   1,
       avoided_teammates:     2,
       team_allocation_mode:  "random_team_allocation",
+      teams_from_project_choice: false,
 
-      project_deadline:      DateTime.now + 1.minute,
-      project_pref_deadline: DateTime.now + 1.minute,
+      project_deadline:      DateTime.now + 5.minute,
+      project_pref_deadline: DateTime.now + 2.minute,
       team_pref_deadline:    DateTime.now + 1.minute,
 
       milestones:            [
@@ -67,7 +110,8 @@ module DatabaseHelper
       team_allocation:     settings[:team_allocation_mode],
       preferred_teammates: settings[:preferred_teammates],
       avoided_teammates:   settings[:avoided_teammates],
-      status:              settings[:status]
+      status:              settings[:status],
+      teams_from_project_choice: settings[:teams_from_project_choice]
     )
     DatabaseHelper.print_validation_errors(project)
 
@@ -95,7 +139,7 @@ module DatabaseHelper
     )
     DatabaseHelper.print_validation_errors(project_deadline_milestone)
 
-    if project.team_allocation != "random_team_allocation"
+    if !["random_team_allocation", nil].include? project.team_allocation
       team_pref_json_data = {
         "Name"       => "Teammate Preference Deadline",
         "Comment"    => "",
@@ -103,10 +147,32 @@ module DatabaseHelper
       }
       team_pref_milestone = Milestone.create(
         json_data:         team_pref_json_data,
-        deadline:          DateTime.now + 1.minute,
+        deadline:          settings[:team_pref_deadline],
         system_type:       "teammate_preference_deadline",
         user_generated:    true,
         milestone_type:    "student",
+        course_project_id: project.id
+      )
+      DatabaseHelper.print_validation_errors(team_pref_milestone)
+    end
+
+    if settings[:project_choices].length > 1
+      project_pref_json_data = {
+        "Name"       => "Project Preference Deadline",
+        "Comment"    => "",
+        "Email"      => { "Content": "Project preference upcoming!", "Advance": 0 }
+      }
+      team_pref_milestone = Milestone.create(
+        json_data:         project_pref_json_data,
+        deadline:          settings[:project_pref_deadline],
+        system_type:       "project_preference_deadline",
+        user_generated:    true,
+        milestone_type:
+          if settings[:team_allocation] == nil
+            "student"
+          else
+            "group"
+          end,
         course_project_id: project.id
       )
       DatabaseHelper.print_validation_errors(team_pref_milestone)
@@ -166,6 +232,7 @@ module DatabaseHelper
       current_group.save!
       DatabaseHelper.print_validation_errors(current_group)
     end
+    project
   end
 
   def provision_module_class(module_code, name, lead, class_list = nil)

@@ -51,7 +51,7 @@ class Group < ApplicationRecord
     end
   end
 
-  def make(course_project, teammate_list)
+  def self.make(course_project, teammate_list)
     g = Group.find_or_create_by({
       name:           "Team #{course_project.groups.count + 1}",
       course_project: course_project

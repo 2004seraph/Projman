@@ -17,7 +17,7 @@ sam = Student.find_or_create_by({
   fee_status:     :home
 })
 DatabaseHelper.print_validation_errors(sam)
-# Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: true })
+Staff.find_or_create_by({ email: "sgttaseff1@sheffield.ac.uk", admin: true })
 # DatabaseHelper.print_validation_errors(sam_staff)
 
 Student.find_or_create_by({
@@ -104,6 +104,7 @@ DatabaseHelper.provision_module_class(
   DatabaseHelper.create_staff("jbala1@sheffield.ac.uk"),
   DatabaseHelper.change_class_module(robotics_class, "COM3420")
 )
+sam.enroll_module "COM3420"
 
 DatabaseHelper.provision_module_class(
   "COM4444",

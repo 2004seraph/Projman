@@ -27,7 +27,7 @@
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 class AssignedFacilitator < ApplicationRecord
-  has_many :groups
+  has_many :groups, dependent: :nullify
 
   belongs_to :staff,    optional: true
   belongs_to :student,  optional: true
