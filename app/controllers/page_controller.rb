@@ -4,7 +4,7 @@
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
 class PageController < ApplicationController
-  authorize_resource class: false, except: :profile
+  authorize_resource class: false, except: [:profile, :privacy, :accessibility]
 
   def index
   end
@@ -15,6 +15,14 @@ class PageController < ApplicationController
 
   def mail
     # read params
+  end
+
+  def privacy
+    authorize! :read, :page
+  end
+
+  def accessibility
+    authorize! :read, :page
   end
 
   def request_title_change

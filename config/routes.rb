@@ -12,6 +12,9 @@ Rails.application.routes.draw do
 
   get "/profile", to: "page#profile"
   post "/profile/request-title-change", to: "page#request_title_change"
+  
+  get "/privacy", to: "page#privacy"
+  get "/accessibility", to: "page#accessibility"
 
   get "/mail", to: "mailing#mail"
   post "/mail", to: "mailing#create"
