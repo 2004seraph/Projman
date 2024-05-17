@@ -3,9 +3,9 @@
 = render 'components/accordion/card', title: title, additional_classes: 'students-on-module-container', id: student_list_box_id do
   .d-flex
     .justify-content-start
-      = link_to mail_path(contact_method: "students_in_module", selected_module: course_module_id), class: "btn btn-secondary fs-8 bi-envelope-at mr-4", style: "height: auto;", style: "height: auto;" do
+      = link_to mail_path(contact_method: "students_in_module", selected_module: course_module_id), class: "btn btn-secondary fs-8 bi-envelope-at mr-4", style: "height: auto; margin-right: calc(0.8rem + 0.1vw);" do
         Email Class
-      = link_to mail_path(contact_method: "custom_list"),class: "btn btn-primary fs-8 bi-envelope-at email-selected-students-btn", style: "height: auto;", style: "height: auto;" do
+      = link_to mail_path(contact_method: "custom_list"),class: "btn btn-primary fs-8 bi-envelope-at email-selected-students-btn", style: "height: auto;" do
         Email Selected Students
     .d-flex.justify-content-end{ style: "flex: 1;" }
       %button.btn.btn-secondary.me-2{type: "button", class: "remove-students-btn"}

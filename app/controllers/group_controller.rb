@@ -157,14 +157,6 @@ name: f.id, email: f.email })
       team.save if team.valid?
     end
 
-    json_data = {
-      name: team.name,
-      comment: "You have been added to #{team.name} for #{project.name}"
-    }
-
-    added_to_team_event = Event.new(event_type: :generic, json_data: json_data, group_id: team_id, student_id: student.id)
-    added_to_team_event.save if added_to_team_event.valid?
-
     respond_to(&:js)
   end
 
