@@ -79,3 +79,5 @@ To test our application you need to run one rspec file at a time. This is becaus
 - Joshua Henson <jhenson2@sheffield.ac.uk>
 - Sam Taseff <sgttaseff1@sheffield.ac.uk>
 - Oliver Pickford <opickford1@sheffield.ac.uk>
+
+Sam Taseff <sgttaseff1@sheffield.ac.uk> contributed several bulk styling commits, which makes the `git blame` output inconsistent with everyone's actual contributions. The hashes of these bulk styling commits can be found in the `.git-blame-ignore-revs` file in our repository root. This file can be passed to git blame to correct its output.
