@@ -21,11 +21,11 @@
                             .card-body.pb-2.pt-2
                                 %h5.card-title= "#{milestone.course_module.code} #{milestone.course_project.name} - #{milestone.json_data["Name"]}"
                                 %p.card-text.mb-1
-                                %strong Due in:
+                                %strong Due at:
                                 - if (milestone.deadline.to_date - DateTime.now.to_date).to_i == 0
-                                    Today
+                                    = "#{milestone.deadline.strftime("%H:%M %d/%m/%Y")} (Today)"
                                 - else
-                                    = "#{(milestone.deadline.to_date - DateTime.now.to_date).to_i} days"
+                                    = " #{milestone.deadline.strftime("%H:%M %d/%m/%Y")} (#{(milestone.deadline.to_date - DateTime.now.to_date).to_i} days)"
                                 %br
                                 - unless milestone.json_data["Comment"].nil?
                                     - if milestone.json_data["Comment"].length > 0
