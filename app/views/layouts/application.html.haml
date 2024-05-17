@@ -41,5 +41,8 @@
         .content-container-special
           = yield
       - else
+
+        = render partial: 'layouts/footer'
+
         .content-container
           = yield

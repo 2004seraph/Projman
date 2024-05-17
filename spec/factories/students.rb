@@ -75,6 +75,9 @@ FactoryBot.define do
 
       ucard_number { "001787692" }
       fee_status { :home }
+
+      # module
+      module_code { nil }
     end
 
     ou { "COM" }
@@ -100,6 +103,8 @@ FactoryBot.define do
         ucard_number:   evaluator.ucard_number,
         email:          evaluator.email
       )
+
+      user.student.enroll_module(evaluator.module_code)
 
       user.save
     end
