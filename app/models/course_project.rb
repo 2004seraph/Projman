@@ -29,6 +29,8 @@
 # This file is a part of Projman, a group project orchestrator and management system,
 # made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
+require "database_helper"
+
 class CourseProject < ApplicationRecord
   has_many :groups, dependent: :destroy
   has_many :milestones, dependent: :destroy
@@ -54,6 +56,8 @@ class CourseProject < ApplicationRecord
     random_team_allocation: "random",
     preference_form_based:  "preference_form_based"
   }
+
+  # before_destroy :remove_all_references, prepend: true
 
   def completion_deadline
     project_completion_deadline.deadline
@@ -94,6 +98,8 @@ class CourseProject < ApplicationRecord
   end
 
   def assign_facilitators_to_groups
+    return false unless assigned_facilitators.length > 0
+    return false unless groups.length > 0
     groups_per_fac = (groups.length.to_f / assigned_facilitators.length).ceil
 
     groups.each_slice(groups_per_fac).with_index do |chunk, index|
@@ -104,6 +110,19 @@ class CourseProject < ApplicationRecord
     end
     save
     reload
+    true
+  end
+
+  def make_groups_with_project_preference(group_matrix_hash)
+    # expects a hash of subproject.id => [[students]]
+    group_matrix_hash.each do |subproject_id, group_matrix|
+      group_matrix.each_with_index do |teammate_list, index|
+        g = Group.make self, teammate_list
+        g.subproject = Subproject.find subproject_id
+        g.save
+      end
+    end
+    assign_facilitators_to_groups
   end
 
   private
@@ -160,17 +179,13 @@ class CourseProject < ApplicationRecord
       assign_facilitators_to_groups
     end
 
-    def make_groups_with_project_preference(group_matrix_hash)
-      # expects a hash of subproject.id => [[students]]
-      group_matrix_hash.each do |subproject_id, group_matrix|
-        group_matrix.each_with_index do |teammate_list, index|
-          g = Group.make self, teammate_list
-          g.subproject = Subproject.find subproject_id
-          g.save
-        end
-      end
-      assign_facilitators_to_groups
-    end
+    # def remove_all_references
+    #   assigned_facilitators.delete_all
+    #   # groups.delete_all
+
+    #   save
+    #   reload
+    # end
 
     # BEGIN BACKGROUND_JOBS
 
@@ -208,6 +223,10 @@ class CourseProject < ApplicationRecord
             if c.project_preference_deadline && (c.project_preference_deadline.deadline < DateTime.now && !c.project_preference_deadline.executed)
               # assign groups based off of project preference
               logger.debug "\tAssigning groups using project preferences"
+              m = c.project_preference_deadline
+              m.executed = true
+              m.save!
+              m.reload
 
               group_matrix = DatabaseHelper.project_choices_group_allocation c.team_size, c.students, c.project_preference_deadline
               c.make_groups_with_project_preference group_matrix
@@ -242,7 +261,7 @@ class CourseProject < ApplicationRecord
 
         c.reload
 
-        c.milestones.all.find_each do |m|
+        c.milestones.all.each do |m|
           # check its email field
           #   check if pre-reminder deadline is passed
           #     send email to relevent recipients
@@ -268,8 +287,9 @@ class CourseProject < ApplicationRecord
 
           logger.debug "\tMilestone #{m.json_data} executed"
           m.push_milestone_to_teams? false, logger
-          m.update executed: true
-          m.save
+          m.executed = true
+          m.save!
+          m.reload
         end
 
         c.reload
