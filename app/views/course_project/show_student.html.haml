@@ -27,7 +27,7 @@
         - if @subproject.is_a?(Subproject)
             %h2.fs-4
                 #{@subproject.name}
-        - else 
+        - else
             .d-flex
                 %i.fs.6.fw-light #{@subproject}
 
@@ -70,13 +70,14 @@
                                             .fs-5.fw-semibold= event.json_data['Name']
                                             .fs-6.fw-light #{event.created_at.strftime("%d/%m/%Y %H:%M")}
                                         %p.card-text.mb-1
-                                            - case event.json_data['Urgency']
-                                            - when 0
-                                                %i{ class: "bi bi-exclamation-square-fill text-primary" }
-                                            - when 1
-                                                %i{ class: "bi bi-exclamation-square-fill text-warning" }
-                                            - when 2
-                                                %i{ class: "bi bi-exclamation-square-fill text-danger" }
+                                            - if event.milestone and !event.milestone.executed
+                                                - case event.json_data['Urgency']
+                                                - when 0
+                                                    %i{ class: "bi bi-exclamation-square-fill text-primary" }
+                                                - when 1
+                                                    %i{ class: "bi bi-exclamation-square-fill text-warning" }
+                                                - when 2
+                                                    %i{ class: "bi bi-exclamation-square-fill text-danger" }
                                             - if event.json_data['Comment'] && event.json_data['Comment'].length > 0
                                                 %strong= event.json_data["Comment"]
                                             - if event.json_data["Reminder"]
