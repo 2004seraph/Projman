@@ -875,7 +875,7 @@ class CourseProjectController < ApplicationController
       # puts DateTime.parse(pref_form[:Date]) > DateTime.now
       # puts Time.now
 
-      if pref_form[:Date].present? && DateTime.parse(pref_form[:Date]) > DateTime.now
+      if pref_form[:Date].present? && DateTime.parse(pref_form[:Date]) < DateTime.now
         errors[:top] << "Cannot set project status to Live: Teammate Preference Form Deadline has not yet passed."
       end
     end
