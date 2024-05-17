@@ -47,6 +47,8 @@
     .card-body.list-card{id: unique_id}
       %input{ type: "hidden", name: "team_id", value: "#{team.id}" }
       %div.overflow-auto
+        = link_to mail_path(contact_method: "custom_list") ,class: "btn btn-primary fs-8 bi-envelope-at email-selected-students-btn", style: "height: auto;", style: "height: auto;" do
+          Email Selected Students
         = button_tag '', type: 'button', class: "btn btn-light fs-6 edit-facilitator-btn", style: "height: auto;" do
           %i.bi.bi-pencil-square
           Edit Facilitator

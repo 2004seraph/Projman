@@ -312,4 +312,33 @@ $(function() {
       }
     });
   })
+
+  var studentsOnModuleContainers = $('.students-on-module-container')
+  var emails = []
+  studentsOnModuleContainers.each(function(){
+
+      var studentOnModuleContainer = $(this)
+
+      var listBoxReference = $(this).attr("id")
+      var selectableRowContainer = $(this).find('.selectable-row-container').first()
+
+      $(this).find('.email-selected-students-btn').addClass('disabled')
+      // when a selectable rows checkbox changes, check to see if now at least one of the selectable rows
+      // is selected
+      selectableRowContainer.on('row-selection-change', function() {
+          var selectedRows = selectableRowContainer.getSelectedRows()
+          emails = []
+          var emailBtn = studentOnModuleContainer.find('.email-selected-students-btn')
+          selectedRows.forEach(function(row) {
+              var email = $(row).children('td').eq(2).text().trim();
+              emails.push(email)
+          });
+          if (emails.length == 0){
+              emailBtn.addClass('disabled')
+          }
+          else{
+              emailBtn.removeClass('disabled')
+          }
+      });
+  })
 })
