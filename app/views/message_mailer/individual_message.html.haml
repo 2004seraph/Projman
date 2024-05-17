@@ -1,4 +1,11 @@
 -# This file is a part of Projman, a group project orchestrator and management system,
 -# made by Team 5 for the COM3420 module [Software Hut] at the University of Sheffield.
 
-MAIL
+%h1 You have a message from #{@staff_name}
+
+%hr
+
+%p #{@body_text}
+
+- if @project_url
+  %a{ href: @project_url } Go to project
