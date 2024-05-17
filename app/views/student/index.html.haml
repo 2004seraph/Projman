@@ -8,15 +8,15 @@
 
 - if session[:module_student].present?
   - module_student = session[:module_student]
-  
+
 - cm = retrieve_courses
 - if cm.size == 0
   .d-flex.justify-content-center
     %i.fs-6 You are not a part of any modules currently, if you should be, please contact an admin.
 - else
   = render 'components/accordion/container' do
-    - for i in 0...cm.size
-      = render 'student-list-box', title: cm[i].code + " " + cm[i].name, student_list_box_id: cm[i].code
+    - cm.each do |c|
+      = render 'student-list-box', title: c.code + " " + c.name, student_list_box_id: c.code, course_module_id: c.id
 
   .modal.fade#removeStudentsModal{tabindex: "-1", "aria-labelledby": "removeStudentsModal", "aria-hidden": "true"}
     .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
