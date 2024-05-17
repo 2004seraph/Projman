@@ -68,7 +68,7 @@ class Milestone < ApplicationRecord
                        end
         }
         # logger.debug("MILESTONE ACTION: #{json_data["Name"]} - #{x.valid?} - #{x.persisted?}")
-        g.events << Event.create({ event_type: :milestone, json_data: json, group: g })
+        g.events << Event.create({ event_type: :milestone, json_data: json, group: g, milestone: self })
         g.save
         g.reload
       end
