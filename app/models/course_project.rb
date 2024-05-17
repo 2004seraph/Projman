@@ -198,6 +198,7 @@ class CourseProject < ApplicationRecord
       def debug(msg)
         puts msg
         @logger.debug(msg)
+        Sentry.capture_message(msg, level: :log)
       end
     end
 
