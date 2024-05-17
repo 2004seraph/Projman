@@ -79,6 +79,3 @@ To test our application you need to run one rspec file at a time. This is becaus
 - Joshua Henson <jhenson2@sheffield.ac.uk>
 - Sam Taseff <sgttaseff1@sheffield.ac.uk>
 - Oliver Pickford <opickford1@sheffield.ac.uk>
-- Nahyan Khan <nkhan10@sheffield.ac.uk>
-- Mathew Salkeld <msalkeld1@sheffield.ac.uk>
-- Jack Edwards <jgedwards1@sheffield.ac.uk>

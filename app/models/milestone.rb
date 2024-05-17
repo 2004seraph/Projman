@@ -52,6 +52,7 @@ class Milestone < ApplicationRecord
     if milestone_type == "team"
       # create events
       # logger.debug("teams: #{course_project.groups.count}")
+      logger.debug "\tpushing this milestone 1"
 
       course_project.groups.each do |g|
         json = {
@@ -67,10 +68,15 @@ class Milestone < ApplicationRecord
                          0 # Notification
                        end
         }
+        # logger.debug "\tpushing this milestone 2"
         # logger.debug("MILESTONE ACTION: #{json_data["Name"]} - #{x.valid?} - #{x.persisted?}")
         g.events << Event.create({ event_type: :milestone, json_data: json, group: g, milestone: self })
+        logger.debug "\tpushing this milestone 3"
         g.save
+        # logger.debug "\tpushing this milestone 4"
         g.reload
+
+        # logger.debug "\tpushing this milestone 5"
       end
 
       return true
