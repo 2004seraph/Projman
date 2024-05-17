@@ -18,11 +18,19 @@ class MailingController < ApplicationController
       session[:mailing_form_last_contact_method] ||
       "custom_list"
 
-    @modules = current_user.staff.course_modules
+    if current_user.is_admin?
+      @modules = CourseModule.all
+    else
+      @modules = current_user.staff.course_modules
+    end
     @selected_module = nil
     @selected_module = params[:module_selection] || @modules.first if @modules.count > 0
 
-    @projects = current_user.staff.course_projects
+    if current_user.is_admin?
+      @projects = CourseProject.all
+    else
+      @projects = current_user.staff.course_projects
+    end
     @selected_project = nil
     @selected_project = params[:project_selection] || @projects.first if @projects.count > 0
 
