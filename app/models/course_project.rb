@@ -70,8 +70,8 @@ class CourseProject < ApplicationRecord
     if Event.chat_notification?(current_user, group)
       true
     elsif (current_user.is_student? &&
-          self.team_allocation == "preference_form_based" && 
-          !(pref_form.nil?) && 
+          self.team_allocation == "preference_form_based" &&
+          !(pref_form.nil?) &&
           self.status == "preparation" &&
           first_response)
       true
@@ -136,6 +136,13 @@ class CourseProject < ApplicationRecord
     assign_facilitators_to_groups
   end
 
+  def make_groups(group_matrix)
+    group_matrix.each_with_index do |teammate_list, index|
+      Group.make self, teammate_list
+    end
+    assign_facilitators_to_groups
+  end
+
   private
 
     def creation_validation
@@ -181,13 +188,6 @@ class CourseProject < ApplicationRecord
         return m if m.system_type == system_type.to_s
       end
       nil
-    end
-
-    def make_groups(group_matrix)
-      group_matrix.each_with_index do |teammate_list, index|
-        Group.make self, teammate_list
-      end
-      assign_facilitators_to_groups
     end
 
     # def remove_all_references
