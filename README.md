@@ -79,3 +79,5 @@ A bug appeared in our tests close to the project deadline, to correctly test our
 - Oliver Pickford <opickford1@sheffield.ac.uk>
 
 Sam Taseff <sgttaseff1@sheffield.ac.uk> contributed several bulk styling commits, which makes the `git blame` output inconsistent with everyone's actual contributions. The hashes of these bulk styling commits can be found in the `.git-blame-ignore-revs` file in our repository root. This file can be passed to git blame to correct its output.
+
+All rights are reserved by the maintainers listed above, this package has no warranty.
