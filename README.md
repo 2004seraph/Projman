@@ -2,8 +2,6 @@
 
 A group project orchestrator and management system, developed for the University of Sheffield as part of Software Hut \[COM3420\].
 
-This project has had several bulk styling commits, to get valid `git blame` output, please refer to using the `.git-blame-ignore-revs` file in our project root.
-
 ## Usage
 
 This system requires:
@@ -13,7 +11,7 @@ This system requires:
 - `ruby-3.1.2` installed via `rvm`
 - Rails 7
 
-Account sign-ins will only work if both the server and client are connected to the University of Sheffield's VPN.
+Account sign-ins will only work if both the server and client are connected to the University of Sheffield's VPN. Though this can be circumvented by creating a fake account with the rails console, as described in the section below.
 
 ### To run the app locally
 
@@ -68,7 +66,7 @@ We use Capistrano for our deployments, and interact with the production server v
 
 ## Testing
 
-To test our application you need to run one rspec file at a time. This is because our test when ran together intefere with each other, so need to be ran in isolation.
+A bug appeared in our tests close to the project deadline, to correctly test our application you need to run one rspec file at a time. This is because when ran together with `rspec`, they intefere with each other, so they need to be ran in isolation.
 
 ` rspec ./spec/path_to_test`
 
